@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-primary: #075FA8;
+    --color-primary-dark: #0B1F33;
+    --color-primary-light: #EBF3FA;
+    --color-accent: #F47A20;
+    --color-accent-hover: #E06912;
+    --color-zalo: #0068FF;
+    --color-whatsapp: #25D366;
+    --color-maps: #EA4335;
+    --color-bg-light: #F6F8FA;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-family: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    color: #1E293B;
+    background-color: #F6F8FA;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #075FA8;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #0B1F33;
+}
+
+/* Custom animations */
+@keyframes pulse-subtle {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(7, 95, 168, 0.4);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 0 10px rgba(7, 95, 168, 0);
+  }
+}
+
+@keyframes float-badge {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2.5s infinite ease-in-out;
+}
+
+.animate-float {
+  animation: float-badge 3s infinite ease-in-out;
+}
+
+/* Touch targets optimization for accessibility */
+button, a {
+  min-height: 44px;
+  touch-action: manipulation;
+}

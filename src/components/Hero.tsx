@@ -1,0 +1,136 @@
+import React from "react";
+import { Phone, MapPin, CheckCircle2, MessageSquare, ArrowRight, ShieldCheck } from "lucide-react";
+import { COMPANY_DATA } from "../data/company";
+
+export const Hero: React.FC = () => {
+  return (
+    <section id="trang-chu" className="relative bg-gradient-to-b from-slate-50 via-white to-[#F6F8FA] pt-6 sm:pt-10 pb-12 sm:pb-16 overflow-hidden">
+      {/* Decorative Light Background Accents */}
+      <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 rounded-full bg-blue-100/50 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-80 h-80 rounded-full bg-orange-100/40 blur-3xl pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          
+          {/* Left Column (55% on desktop -> 7 cols) */}
+          <div className="lg:col-span-7 flex flex-col text-left">
+            
+            {/* Category Tag Badge */}
+            <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200/80 px-3.5 py-1.5 rounded-full w-fit mb-4 sm:mb-6 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-[#075FA8] animate-ping" />
+              <span className="text-xs sm:text-sm font-bold text-[#075FA8] tracking-wider uppercase">
+                VẬT TƯ ĐIỆN LẠNH • ĐÀ NẴNG
+              </span>
+            </div>
+
+            {/* Main Headline */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.18] mb-4 sm:mb-6">
+              Giải pháp vật tư điện lạnh{" "}
+              <span className="text-[#075FA8] underline decoration-[#F47A20] underline-offset-8">
+                đáng tin cậy
+              </span>{" "}
+              tại Đà Nẵng
+            </h1>
+
+            {/* Secondary Description */}
+            <p className="text-base sm:text-lg md:text-xl text-slate-600 font-normal leading-relaxed mb-6 sm:mb-8 max-w-2xl">
+              Chuyên sỉ &amp; lẻ ống đồng, gas lạnh, linh kiện điều hòa – tủ lạnh – máy giặt cùng giải pháp thi công điện lạnh dân dụng và công nghiệp.
+            </p>
+
+            {/* CTAs Group */}
+            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 sm:gap-4 mb-8 sm:mb-10">
+              {/* Primary CTA: Call */}
+              <a
+                href={`tel:${COMPANY_DATA.hotlineRaw}`}
+                className="flex items-center justify-center gap-3 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold text-lg px-6 py-4 rounded-xl shadow-lg shadow-blue-700/25 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+              >
+                <Phone className="w-5 h-5 fill-current text-white" />
+                <span>Gọi tư vấn: {COMPANY_DATA.hotline}</span>
+              </a>
+
+              {/* Secondary CTA: Zalo */}
+              <a
+                href={COMPANY_DATA.zaloUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2.5 bg-[#0068FF] hover:bg-blue-700 text-white font-bold text-base px-5 py-4 rounded-xl shadow-md transition-all duration-300 transform hover:-translate-y-0.5"
+              >
+                <MessageSquare className="w-5 h-5" />
+                <span>Nhắn Zalo ngay</span>
+              </a>
+
+              {/* Tertiary CTA: Address Link */}
+              <a
+                href="#dia-chi"
+                className="inline-flex items-center justify-center gap-1.5 text-slate-700 hover:text-[#075FA8] font-bold text-base px-4 py-3 hover:bg-slate-100 rounded-xl transition-colors text-center"
+              >
+                <span>Xem địa chỉ</span>
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+
+            {/* Trust Points (3 items) */}
+            <div className="pt-6 border-t border-slate-200/80 grid grid-cols-3 gap-2 sm:gap-4">
+              <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
+                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 shrink-0" />
+                <span>Sỉ &amp; lẻ giá tốt</span>
+              </div>
+              <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
+                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 shrink-0" />
+                <span>Tư vấn kỹ thuật nhanh</span>
+              </div>
+              <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
+                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 shrink-0" />
+                <span>Giao hàng thuận tiện</span>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Right Column (45% on desktop -> 5 cols) */}
+          <div className="lg:col-span-5 relative mt-4 lg:mt-0">
+            <div className="relative mx-auto max-w-lg lg:max-w-none">
+              
+              {/* Outer decorative border frame */}
+              <div className="absolute -inset-2 bg-gradient-to-r from-[#075FA8] to-[#F47A20] rounded-3xl opacity-25 blur-lg transform -rotate-1 group-hover:rotate-0 transition-transform" />
+
+              {/* Main Image Container */}
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-slate-900 aspect-[4/3] sm:aspect-[16/11]">
+                <img
+                  src={COMPANY_DATA.storefrontUrl}
+                  alt="Mặt tiền cửa hàng Vật Tư Điện Lạnh Đông Kha tại 400 Phạm Hùng Đà Nẵng"
+                  className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+                />
+                
+                {/* Gradient overlay for text contrast */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+
+                {/* Floating Badge Bottom Left: Address */}
+                <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 bg-white/95 backdrop-blur-md p-3 sm:p-4 rounded-xl border border-slate-200/80 shadow-lg flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-orange-100 text-[#F47A20] flex items-center justify-center shrink-0">
+                    <MapPin className="w-5 h-5 fill-orange-500 text-orange-600" />
+                  </div>
+                  <div className="flex flex-col text-left overflow-hidden">
+                    <span className="text-[11px] font-bold text-[#075FA8] uppercase tracking-wide">Địa chỉ cửa hàng</span>
+                    <span className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
+                      400 Phạm Hùng, Hòa Xuân, Đà Nẵng
+                    </span>
+                  </div>
+                </div>
+
+                {/* Floating Badge Top Right: Support Hotline */}
+                <div className="absolute top-3 right-3 bg-[#075FA8] text-white px-3 py-1.5 rounded-lg shadow-md text-xs font-bold flex items-center gap-1.5 border border-blue-400/30">
+                  <ShieldCheck className="w-4 h-4 text-orange-400" />
+                  <span>Sỉ &amp; Lẻ Sẵn Kho</span>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
+};
