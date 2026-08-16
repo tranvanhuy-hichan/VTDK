@@ -86,7 +86,7 @@ export const Gallery: React.FC = () => {
                 <button
                   onClick={() => setActiveImage(null)}
                   aria-label="Đóng lightbox"
-                  className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+                  className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors min-h-0"
                 >
                   <X className="w-6 h-6" />
                 </button>

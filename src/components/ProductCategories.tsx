@@ -70,14 +70,14 @@ const CategoryImageSlider: React.FC<CategoryImageSliderProps> = ({ cat }) => {
           <button
             onClick={prevSlide}
             aria-label="Ảnh trước"
-            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-slate-900/70 hover:bg-slate-900 text-white flex items-center justify-center opacity-80 sm:opacity-0 group-hover/slider:opacity-100 transition-opacity shadow min-h-0"
+            className="absolute left-2 top-1/2 -translate-y-1/2 !w-8 !h-8 !min-h-0 rounded-full bg-slate-900/70 hover:bg-slate-900 text-white flex items-center justify-center opacity-80 sm:opacity-0 group-hover/slider:opacity-100 transition-opacity shadow"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={nextSlide}
             aria-label="Ảnh tiếp theo"
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-slate-900/70 hover:bg-slate-900 text-white flex items-center justify-center opacity-80 sm:opacity-0 group-hover/slider:opacity-100 transition-opacity shadow min-h-0"
+            className="absolute right-2 top-1/2 -translate-y-1/2 !w-8 !h-8 !min-h-0 rounded-full bg-slate-900/70 hover:bg-slate-900 text-white flex items-center justify-center opacity-80 sm:opacity-0 group-hover/slider:opacity-100 transition-opacity shadow"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
@@ -91,7 +91,7 @@ const CategoryImageSlider: React.FC<CategoryImageSliderProps> = ({ cat }) => {
                   e.stopPropagation();
                   setCurrentIndex(idx);
                 }}
-                className={`h-1.5 rounded-full transition-all min-h-0 ${
+                className={`!h-1.5 !min-h-0 rounded-full transition-all ${
                   idx === currentIndex ? "w-5 bg-white shadow" : "w-1.5 bg-white/50"
                 }`}
                 aria-label={`Chuyển đến ảnh ${idx + 1}`}
@@ -238,7 +238,7 @@ export const ProductCategories: React.FC = () => {
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 text-left relative p-6 sm:p-8">
             <button
               onClick={() => setSelectedProduct(null)}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 bg-slate-100 rounded-full transition-colors min-h-0"
+              className="absolute top-4 right-4 p-2 !min-h-0 text-slate-400 hover:text-slate-700 bg-slate-100 rounded-full transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
