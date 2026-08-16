@@ -132,7 +132,7 @@ export const Footer: React.FC = () => {
 
         {/* Footer Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <p>© {new Date().getFullYear()} Vật Tư Điện Lạnh Đông Kha Đà Nẵng. All rights reserved.</p>
+          <p>© 2026 | designed by Tran Van Huy</p>
           <button
             onClick={scrollToTop}
             className="flex items-center gap-1.5 hover:text-white transition-colors bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700"
