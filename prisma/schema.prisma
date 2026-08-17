@@ -40,3 +40,11 @@ model ProductVariant {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
+
+model GalleryImage {
+  id        String   @id @default(uuid())
+  url       String
+  title     String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+}

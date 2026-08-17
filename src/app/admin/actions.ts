@@ -301,3 +301,79 @@ export async function deleteProductAction(id: string) {
     return { error: err.message || "Lỗi hệ thống khi xóa sản phẩm!" };
   }
 }
+
+// 7. Upload Gallery Image
+export async function createGalleryImageAction(formData: FormData) {
+  const isAuth = await isAdminAuthenticated();
+  if (!isAuth) return { error: "Chưa đăng nhập!" };
+
+  try {
+    const title = (formData.get("title") as string)?.trim();
+    const imageFile = formData.get("image") as File | null;
+
+    if (!title) {
+      return { error: "Vui lòng nhập tiêu đề ảnh!" };
+    }
+    if (!imageFile || imageFile.size === 0) {
+      return { error: "Vui lòng chọn tệp hình ảnh!" };
+    }
+    if (imageFile.size > 5 * 1024 * 1024) {
+      return { error: "Dung lượng ảnh phải nhỏ hơn hoặc bằng 5MB!" };
+    }
+
+    const ext = path.extname(imageFile.name).toLowerCase();
+    if (![".jpg", ".jpeg", ".png", ".webp"].includes(ext)) {
+      return { error: "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP." };
+    }
+
+    const blob = await put(`gallery/${Date.now()}-${imageFile.name}`, imageFile, {
+      access: "public",
+    });
+
+    const maxOrder = await prisma.galleryImage.aggregate({
+      _max: { sortOrder: true },
+    });
+
+    await prisma.galleryImage.create({
+      data: {
+        url: blob.url,
+        title,
+        sortOrder: (maxOrder._max.sortOrder ?? -1) + 1,
+      },
+    });
+
+    revalidatePath("/");
+    revalidatePath("/admin/gallery");
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message || "Lỗi hệ thống khi thêm ảnh!" };
+  }
+}
+
+// 8. Delete Gallery Image
+export async function deleteGalleryImageAction(id: string) {
+  const isAuth = await isAdminAuthenticated();
+  if (!isAuth) return { error: "Chưa đăng nhập!" };
+
+  try {
+    const existingImage = await prisma.galleryImage.findUnique({ where: { id } });
+    if (!existingImage) {
+      return { error: "Ảnh không tồn tại!" };
+    }
+
+    if (
+      existingImage.url.startsWith("https://") &&
+      existingImage.url.includes("public.blob.vercel-storage.com")
+    ) {
+      await del(existingImage.url).catch(() => {});
+    }
+
+    await prisma.galleryImage.delete({ where: { id } });
+
+    revalidatePath("/");
+    revalidatePath("/admin/gallery");
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message || "Lỗi hệ thống khi xóa ảnh!" };
+  }
+}

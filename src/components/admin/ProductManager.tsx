@@ -1,18 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { 
-  Plus, 
-  Search, 
-  LogOut, 
-  Trash2, 
-  Edit3, 
-  Eye, 
-  EyeOff, 
-  X, 
-  Upload, 
+import Link from "next/link";
+import {
+  Plus,
+  Search,
+  LogOut,
+  Trash2,
+  Edit3,
+  Eye,
+  EyeOff,
+  X,
+  Upload,
   Loader2,
-  PackageOpen
+  PackageOpen,
+  ImageIcon
 } from "lucide-react";
 import { 
   createProductAction, 
@@ -228,13 +230,22 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
               </span>
             </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 bg-slate-800 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Đăng xuất</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin/gallery"
+              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
+            >
+              <ImageIcon className="w-3.5 h-3.5" />
+              <span>Hình ảnh</span>
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 bg-slate-800 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Đăng xuất</span>
+            </button>
+          </div>
         </div>
       </header>
 
