@@ -78,6 +78,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
   const [active, setActive] = useState(true);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
   const [variantRows, setVariantRows] = useState<{ label: string; price: string }[]>([]);
   const [existingGalleryUrls, setExistingGalleryUrls] = useState<string[]>([]);
   const [newGalleryFiles, setNewGalleryFiles] = useState<File[]>([]);
@@ -93,6 +94,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
     setActive(true);
     setImageFile(null);
     setImagePreview(null);
+    setRemoveImage(false);
     setVariantRows([]);
     setExistingGalleryUrls([]);
     setNewGalleryFiles([]);
@@ -110,6 +112,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
     setActive(product.active);
     setImageFile(null);
     setImagePreview(product.image);
+    setRemoveImage(false);
     setVariantRows(
       product.variants.map((v) => ({ label: v.label, price: v.price.toString() }))
     );
@@ -138,13 +141,20 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setImageFile(file);
-      
+      setRemoveImage(false);
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setRemoveImage(true);
   };
 
   // Handle Form submit
@@ -165,6 +175,9 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
     formData.append("active", active.toString());
     if (imageFile) {
       formData.append("image", imageFile);
+    }
+    if (removeImage) {
+      formData.append("removeImage", "true");
     }
     variantRows.forEach((row) => {
       if (row.label.trim() && row.price.trim()) {
@@ -518,6 +531,16 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                       />
                     </label>
                   </div>
+                  {imagePreview && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="mt-2 inline-flex items-center justify-center gap-1.5 w-full text-red-600 hover:text-red-700 border border-red-200 hover:border-red-300 bg-red-50 hover:bg-red-100 rounded-md px-2 py-2 text-xs font-bold transition-colors !min-h-0"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Xóa ảnh</span>
+                    </button>
+                  )}
                   <p className="text-[10px] text-slate-400 mt-1.5 text-center">JPG, PNG, WEBP tối đa 5MB</p>
                 </div>
 

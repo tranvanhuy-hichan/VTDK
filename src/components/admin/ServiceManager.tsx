@@ -47,6 +47,7 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
   const [featureRows, setFeatureRows] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
   const [existingGalleryUrls, setExistingGalleryUrls] = useState<string[]>([]);
   const [newGalleryFiles, setNewGalleryFiles] = useState<File[]>([]);
 
@@ -59,6 +60,7 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
     setFeatureRows([]);
     setImageFile(null);
     setImagePreview(null);
+    setRemoveImage(false);
     setExistingGalleryUrls([]);
     setNewGalleryFiles([]);
     setIsModalOpen(true);
@@ -73,6 +75,7 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
     setFeatureRows(service.features);
     setImageFile(null);
     setImagePreview(service.image);
+    setRemoveImage(false);
     setExistingGalleryUrls(service.images);
     setNewGalleryFiles([]);
     setIsModalOpen(true);
@@ -82,10 +85,17 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setImageFile(file);
+      setRemoveImage(false);
       const reader = new FileReader();
       reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setRemoveImage(true);
   };
 
   const handleAddFeatureRow = () => setFeatureRows((rows) => [...rows, ""]);
@@ -115,6 +125,9 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
     formData.append("icon", icon);
     if (imageFile) {
       formData.append("image", imageFile);
+    }
+    if (removeImage) {
+      formData.append("removeImage", "true");
     }
     featureRows.forEach((f) => {
       if (f.trim()) formData.append("feature", f.trim());
@@ -275,6 +288,16 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
                       />
                     </label>
                   </div>
+                  {isEditing && imagePreview && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="mt-2 inline-flex items-center justify-center gap-1.5 w-full text-red-600 hover:text-red-700 border border-red-200 hover:border-red-300 bg-red-50 hover:bg-red-100 rounded-md px-2 py-2 text-xs font-bold transition-colors !min-h-0"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Xóa ảnh</span>
+                    </button>
+                  )}
                   <p className="text-[10px] text-slate-400 mt-1.5 text-center">JPG, PNG, WEBP tối đa 5MB</p>
                 </div>
 

@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Loader2, Save, X, Pencil, Building2, Phone, MapPinned, Upload, Camera, Images } from "lucide-react";
+import { Loader2, Save, X, Pencil, Building2, Phone, MapPinned, Upload, Camera, Images, Trash2 } from "lucide-react";
 import { updateCompanyInfoAction } from "../../app/admin/actions";
 import type { CompanyContact } from "../../lib/company";
 import { MultiImageUpload } from "./MultiImageUpload";
+
+const PLACEHOLDER_IMAGE = "/images/placeholder.svg";
 
 interface CompanyInfoManagerProps {
   initialCompany: CompanyContact;
@@ -68,6 +70,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
   const [existingGalleryUrls, setExistingGalleryUrls] = useState<string[]>(initialCompany.images);
   const [newGalleryFiles, setNewGalleryFiles] = useState<File[]>([]);
 
@@ -79,16 +82,24 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setImageFile(file);
+      setRemoveImage(false);
       const reader = new FileReader();
       reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
 
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setRemoveImage(true);
+  };
+
   const handleStartEdit = () => {
     setForm(saved);
     setImageFile(null);
     setImagePreview(null);
+    setRemoveImage(false);
     setExistingGalleryUrls(saved.images);
     setNewGalleryFiles([]);
     setSavedMessage(null);
@@ -99,6 +110,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
     setForm(saved);
     setImageFile(null);
     setImagePreview(null);
+    setRemoveImage(false);
     setExistingGalleryUrls(saved.images);
     setNewGalleryFiles([]);
     setIsEditing(false);
@@ -116,6 +128,9 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
     formData.set("hotlineRaw", hotlineRaw);
     if (imageFile) {
       formData.append("image", imageFile);
+    }
+    if (removeImage) {
+      formData.append("removeImage", "true");
     }
     existingGalleryUrls.forEach((url) => formData.append("existingImages", url));
     newGalleryFiles.forEach((file) => formData.append("newImages", file));
@@ -185,7 +200,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                 </label>
                 <div className="aspect-[4/3] w-full rounded-md border border-slate-200 overflow-hidden bg-slate-50">
                   <img
-                    src={isEditing ? (imagePreview ?? saved.image) : saved.image}
+                    src={isEditing ? (removeImage ? PLACEHOLDER_IMAGE : imagePreview ?? saved.image) : saved.image}
                     alt="Ảnh đại diện công ty"
                     className="w-full h-full object-cover"
                   />
@@ -215,6 +230,16 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                         />
                       </label>
                     </div>
+                    {!removeImage && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="mt-2 inline-flex items-center justify-center gap-1.5 w-full text-red-600 hover:text-red-700 border border-red-200 hover:border-red-300 bg-red-50 hover:bg-red-100 rounded-md px-2 py-2 text-xs font-bold transition-colors !min-h-0"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Xóa ảnh</span>
+                      </button>
+                    )}
                     <p className="text-[10px] text-slate-400 mt-1.5 text-center">JPG, PNG, WEBP tối đa 5MB</p>
                   </>
                 )}

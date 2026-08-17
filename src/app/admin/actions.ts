@@ -9,6 +9,7 @@ import { prisma } from "../../lib/prisma";
 
 const SESSION_COOKIE = "admin_session";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "dongkha123";
+const PLACEHOLDER_IMAGE = "/images/placeholder.svg";
 
 // Simple slugify function
 function slugify(text: string): string {
@@ -136,7 +137,7 @@ export async function createProductAction(formData: FormData) {
       return { error: "Giá sản phẩm phải là số hợp lệ!" };
     }
 
-    let imagePath = "/images/placeholder.svg"; // Default image when none uploaded
+    let imagePath = PLACEHOLDER_IMAGE; // Default image when none uploaded
 
     if (imageFile && imageFile.size > 0) {
       // Validate file size (<= 5MB)
@@ -246,14 +247,16 @@ export async function updateProductAction(id: string, formData: FormData) {
       });
 
       // Optional: Delete old image if it was a Vercel Blob
-      if (
-        existingProduct.image.startsWith("https://") &&
-        existingProduct.image.includes("public.blob.vercel-storage.com")
-      ) {
+      if (isBlobUrl(existingProduct.image)) {
         await del(existingProduct.image).catch(() => {});
       }
 
       imagePath = blob.url;
+    } else if (formData.get("removeImage") === "true") {
+      if (isBlobUrl(existingProduct.image)) {
+        await del(existingProduct.image).catch(() => {});
+      }
+      imagePath = PLACEHOLDER_IMAGE;
     }
 
     let finalSlug = existingProduct.slug;
@@ -488,14 +491,16 @@ export async function updateCompanyInfoAction(formData: FormData) {
         access: "public",
       });
 
-      if (
-        existing?.image.startsWith("https://") &&
-        existing.image.includes("public.blob.vercel-storage.com")
-      ) {
+      if (existing && isBlobUrl(existing.image)) {
         await del(existing.image).catch(() => {});
       }
 
       imagePath = blob.url;
+    } else if (formData.get("removeImage") === "true") {
+      if (existing && isBlobUrl(existing.image)) {
+        await del(existing.image).catch(() => {});
+      }
+      imagePath = PLACEHOLDER_IMAGE;
     }
 
     const galleryResult = await processGalleryImages(formData, "company");
@@ -636,14 +641,16 @@ export async function updateServiceAction(id: string, formData: FormData) {
         access: "public",
       });
 
-      if (
-        existingService.image.startsWith("https://") &&
-        existingService.image.includes("public.blob.vercel-storage.com")
-      ) {
+      if (isBlobUrl(existingService.image)) {
         await del(existingService.image).catch(() => {});
       }
 
       imagePath = blob.url;
+    } else if (formData.get("removeImage") === "true") {
+      if (isBlobUrl(existingService.image)) {
+        await del(existingService.image).catch(() => {});
+      }
+      imagePath = PLACEHOLDER_IMAGE;
     }
 
     const galleryResult = await processGalleryImages(formData, "services");
