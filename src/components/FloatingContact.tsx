@@ -10,7 +10,7 @@ export const FloatingContact: React.FC<FloatingContactProps> = ({ company }) => 
   return (
     <>
       {/* Floating Contact Buttons (Right side sticky, visible on both desktop & mobile) */}
-      <div className="fixed bottom-8 right-6 z-40 flex flex-col items-end gap-3 pointer-events-auto">
+      <div className="fixed bottom-6 right-5 sm:bottom-8 sm:right-6 z-40 flex flex-col items-end gap-3 pointer-events-auto">
 
         {/* Zalo Button */}
         <a

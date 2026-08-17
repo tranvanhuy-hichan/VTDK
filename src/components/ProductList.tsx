@@ -69,9 +69,9 @@ const VariantSelector: React.FC<{
 
 const ProductCard: React.FC<{
   product: Product;
-  hotlineRaw: string;
+  company: CompanyContact;
   onViewDetail: (product: Product) => void;
-}> = ({ product, hotlineRaw, onViewDetail }) => {
+}> = ({ product, company, onViewDetail }) => {
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const selectedVariant =
     product.variants.length > 0 ? product.variants[selectedVariantIndex] : null;
@@ -142,13 +142,15 @@ const ProductCard: React.FC<{
 
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <a
-              href={`tel:${hotlineRaw}`}
+              href={`${company.zaloUrl}?text=${encodeURIComponent(`Chào Đông Kha, tôi muốn tư vấn báo giá sản phẩm: ${product.name}${selectedVariant ? ` (${selectedVariant.label})` : ""}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              aria-label="Liên hệ ngay"
-              className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] dark:hover:bg-blue-600 text-white font-extrabold text-xs sm:text-sm p-2 sm:py-2.5 sm:px-4 rounded-lg sm:rounded-xl shadow-xs transition-colors"
+              aria-label="Nhắn Zalo báo giá"
+              className="inline-flex items-center justify-center gap-1.5 bg-[#0068FF] hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm py-2 px-3 sm:py-2.5 sm:px-4 rounded-lg sm:rounded-xl shadow-xs transition-colors"
             >
-              <Phone className="w-3.5 h-3.5 fill-current" />
-              <span className="hidden sm:inline">Liên hệ ngay</span>
+              <MessageSquare className="w-3.5 h-3.5 fill-current" />
+              <span>Nhắn Zalo</span>
             </a>
           </div>
         </div>
@@ -234,22 +236,22 @@ const ProductDetailModal: React.FC<{
                 {displayPrice > 0 ? `${displayPrice.toLocaleString("vi-VN")}đ` : "Liên hệ báo giá"}
               </span>
 
-              <div className="flex flex-wrap items-center gap-2.5">
+              <div className="grid grid-cols-2 gap-2.5 w-full">
                 <a
                   href={`tel:${company.hotlineRaw}`}
-                  className="inline-flex items-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] dark:hover:bg-blue-600 text-white font-extrabold text-sm py-2.5 px-4 rounded-xl shadow-xs transition-colors"
+                  className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] dark:hover:bg-blue-600 text-white font-extrabold text-xs sm:text-sm py-3 px-2 rounded-xl shadow-xs transition-colors text-center"
                 >
-                  <Phone className="w-4 h-4 fill-current" />
-                  <span>Gọi {company.hotline}</span>
+                  <Phone className="w-4 h-4 fill-current shrink-0" />
+                  <span className="truncate">Gọi {company.hotline}</span>
                 </a>
                 <a
-                  href={company.zaloUrl}
+                  href={`${company.zaloUrl}?text=${encodeURIComponent(`Chào Đông Kha, tôi muốn tư vấn báo giá sản phẩm: ${product.name}${selectedVariant ? ` (${selectedVariant.label})` : ""}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 font-bold text-sm py-2.5 px-4 rounded-xl shadow-xs transition-colors"
+                  className="inline-flex items-center justify-center gap-1.5 bg-[#0068FF] hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm py-3 px-2 rounded-xl shadow-xs transition-colors text-center"
                 >
-                  <MessageSquare className="w-4 h-4 text-[#0068FF]" />
-                  <span>Nhắn Zalo</span>
+                  <MessageSquare className="w-4 h-4 fill-current shrink-0" />
+                  <span className="truncate">Nhắn Zalo Báo Giá</span>
                 </a>
               </div>
             </div>
@@ -407,7 +409,7 @@ export const ProductList: React.FC<ProductListProps> = ({
                 <ProductCard
                   key={product.id}
                   product={product}
-                  hotlineRaw={company.hotlineRaw}
+                  company={company}
                   onViewDetail={setDetailProduct}
                 />
               ))}
