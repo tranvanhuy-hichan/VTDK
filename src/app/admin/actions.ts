@@ -137,6 +137,7 @@ export async function createProductAction(formData: FormData) {
       return { error: "Giá sản phẩm phải là số hợp lệ!" };
     }
 
+    const mainImageUrl = formData.get("mainImageUrl") as string | null;
     let imagePath = PLACEHOLDER_IMAGE; // Default image when none uploaded
 
     if (imageFile && imageFile.size > 0) {
@@ -157,6 +158,8 @@ export async function createProductAction(formData: FormData) {
       });
 
       imagePath = blob.url;
+    } else if (mainImageUrl && mainImageUrl.trim()) {
+      imagePath = mainImageUrl.trim();
     }
 
     let baseSlug = slugify(name);
@@ -227,6 +230,7 @@ export async function updateProductAction(id: string, formData: FormData) {
       return { error: "Sản phẩm không tồn tại!" };
     }
 
+    const mainImageUrl = formData.get("mainImageUrl") as string | null;
     let imagePath = existingProduct.image;
 
     if (imageFile && imageFile.size > 0) {
@@ -247,11 +251,13 @@ export async function updateProductAction(id: string, formData: FormData) {
       });
 
       // Optional: Delete old image if it was a Vercel Blob
-      if (isBlobUrl(existingProduct.image)) {
+      if (isBlobUrl(existingProduct.image) && existingProduct.image !== mainImageUrl) {
         await del(existingProduct.image).catch(() => {});
       }
 
       imagePath = blob.url;
+    } else if (mainImageUrl && mainImageUrl.trim()) {
+      imagePath = mainImageUrl.trim();
     } else if (formData.get("removeImage") === "true") {
       if (isBlobUrl(existingProduct.image)) {
         await del(existingProduct.image).catch(() => {});
