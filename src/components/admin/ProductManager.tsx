@@ -175,17 +175,22 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
     existingGalleryUrls.forEach((url) => formData.append("existingImages", url));
     newGalleryFiles.forEach((file) => formData.append("newImages", file));
 
-    const res = isEditing && editingProduct
-      ? await updateProductAction(editingProduct.id, formData)
-      : await createProductAction(formData);
+    try {
+      const res = isEditing && editingProduct
+        ? await updateProductAction(editingProduct.id, formData)
+        : await createProductAction(formData);
 
-    if (res?.error) {
-      alert(res.error);
+      if (res?.error) {
+        alert(res.error);
+      } else {
+        setIsModalOpen(false);
+        window.location.reload();
+        return;
+      }
+    } catch (err) {
+      alert("Lỗi kết nối, vui lòng thử lại! (ảnh có thể quá lớn hoặc mạng yếu)");
+    } finally {
       setIsSubmitting(false);
-    } else {
-      setIsModalOpen(false);
-      setIsSubmitting(false);
-      window.location.reload();
     }
   };
 

@@ -120,16 +120,21 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
     existingGalleryUrls.forEach((url) => formData.append("existingImages", url));
     newGalleryFiles.forEach((file) => formData.append("newImages", file));
 
-    const res = await updateCompanyInfoAction(formData);
+    try {
+      const res = await updateCompanyInfoAction(formData);
 
-    if (res?.error) {
-      alert(res.error);
+      if (res?.error) {
+        alert(res.error);
+      } else {
+        setIsEditing(false);
+        setSavedMessage("Đã lưu thông tin công ty thành công!");
+        window.location.reload();
+        return;
+      }
+    } catch (err) {
+      alert("Lỗi kết nối, vui lòng thử lại! (ảnh có thể quá lớn hoặc mạng yếu)");
+    } finally {
       setIsSubmitting(false);
-    } else {
-      setIsSubmitting(false);
-      setIsEditing(false);
-      setSavedMessage("Đã lưu thông tin công ty thành công!");
-      window.location.reload();
     }
   };
 

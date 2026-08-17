@@ -122,17 +122,22 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
     existingGalleryUrls.forEach((url) => formData.append("existingImages", url));
     newGalleryFiles.forEach((file) => formData.append("newImages", file));
 
-    const res = isEditing && editingService
-      ? await updateServiceAction(editingService.id, formData)
-      : await createServiceAction(formData);
+    try {
+      const res = isEditing && editingService
+        ? await updateServiceAction(editingService.id, formData)
+        : await createServiceAction(formData);
 
-    if (res?.error) {
-      alert(res.error);
+      if (res?.error) {
+        alert(res.error);
+      } else {
+        setIsModalOpen(false);
+        window.location.reload();
+        return;
+      }
+    } catch (err) {
+      alert("Lỗi kết nối, vui lòng thử lại! (ảnh có thể quá lớn hoặc mạng yếu)");
+    } finally {
       setIsSubmitting(false);
-    } else {
-      setIsModalOpen(false);
-      setIsSubmitting(false);
-      window.location.reload();
     }
   };
 

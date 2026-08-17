@@ -76,15 +76,20 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
     formData.append("title", title);
     formData.append("image", imageFile);
 
-    const res = await createGalleryImageAction(formData);
+    try {
+      const res = await createGalleryImageAction(formData);
 
-    if (res?.error) {
-      alert(res.error);
+      if (res?.error) {
+        alert(res.error);
+      } else {
+        setIsModalOpen(false);
+        window.location.reload();
+        return;
+      }
+    } catch (err) {
+      alert("Lỗi kết nối, vui lòng thử lại! (ảnh có thể quá lớn hoặc mạng yếu)");
+    } finally {
       setIsSubmitting(false);
-    } else {
-      setIsModalOpen(false);
-      setIsSubmitting(false);
-      window.location.reload();
     }
   };
 
