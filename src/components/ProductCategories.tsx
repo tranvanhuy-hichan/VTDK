@@ -237,67 +237,78 @@ export const ProductCategories: React.FC = () => {
 
       {/* Product Detail Modal */}
       {selectedProduct && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 flex flex-col text-left">
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 lg:p-8 animate-in fade-in duration-200"
+          onClick={() => setSelectedProduct(null)}
+        >
+          <div
+            className="bg-white rounded-3xl max-w-4xl lg:max-w-5xl w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-slate-100 flex flex-col text-left"
+            onClick={(e) => e.stopPropagation()}
+          >
             
             {/* Modal Header */}
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+            <div className="px-6 py-4 sm:px-8 sm:py-5 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-20">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
                   {getCategoryIcon(selectedProduct.icon)}
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-slate-900">
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900">
                   {selectedProduct.name}
                 </h3>
               </div>
               <button
                 onClick={() => setSelectedProduct(null)}
-                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors !min-h-0"
+                aria-label="Đóng"
+                className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors !min-h-0 cursor-pointer"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 space-y-6">
-              <div>
-                <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Giới thiệu sản phẩm</h4>
-                <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
-                  {selectedProduct.fullDesc}
-                </p>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 p-6 sm:p-8 items-start">
+              <div className="md:col-span-6 lg:col-span-7 rounded-2xl overflow-hidden bg-slate-50 border border-slate-200/80 shadow-sm w-full min-h-[280px] sm:min-h-[380px]">
+                <CategoryImageSlider cat={selectedProduct} />
               </div>
 
-              <div>
-                <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">Các chủng loại, quy cách có sẵn</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {selectedProduct.items.map((item, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                      <span className="text-xs sm:text-sm text-slate-800 font-bold">{item}</span>
-                    </div>
-                  ))}
+              <div className="md:col-span-6 lg:col-span-5 flex flex-col justify-between h-full space-y-6">
+                <div>
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Giới thiệu danh mục</h4>
+                  <p className="text-slate-600 leading-relaxed text-sm sm:text-base mb-6">
+                    {selectedProduct.fullDesc}
+                  </p>
+
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Các chủng loại, quy cách có sẵn</h4>
+                  <div className="grid grid-cols-1 gap-2.5">
+                    {selectedProduct.items.map((item, idx) => (
+                      <div key={idx} className="flex items-start gap-2.5 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <span className="text-xs sm:text-sm text-slate-800 font-bold">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
+                  <a
+                    href={`tel:${COMPANY_DATA.hotlineRaw}`}
+                    className="flex-1 inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-black text-sm sm:text-base py-3.5 px-4 rounded-2xl shadow transition-all text-center"
+                  >
+                    <Phone className="w-5 h-5 fill-current shrink-0" />
+                    <span>Gọi tư vấn: {COMPANY_DATA.hotline}</span>
+                  </a>
+                  <a
+                    href={COMPANY_DATA.zaloUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 inline-flex items-center justify-center gap-2 bg-[#0068FF] hover:bg-blue-700 text-white font-black text-sm sm:text-base py-3.5 px-4 rounded-2xl shadow transition-all text-center"
+                  >
+                    <MessageSquare className="w-5 h-5 fill-current shrink-0" />
+                    <span>Nhắn Zalo</span>
+                  </a>
                 </div>
               </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="p-6 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row gap-3">
-              <a
-                href={`tel:${COMPANY_DATA.hotlineRaw}`}
-                className="flex-1 inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold py-3 px-4 rounded-xl transition-all shadow"
-              >
-                <Phone className="w-4 h-4 fill-current" />
-                <span>Gọi điện hỏi hàng: {COMPANY_DATA.hotline}</span>
-              </a>
-              <a
-                href={COMPANY_DATA.zaloUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 inline-flex items-center justify-center gap-2 bg-[#0068FF] hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition-all"
-              >
-                <MessageSquare className="w-4 h-4" />
-                <span>Nhắn Zalo trao đổi</span>
-              </a>
             </div>
 
           </div>

@@ -183,74 +183,87 @@ const ProductDetailModal: React.FC<{
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 lg:p-8 animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-slate-900 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 dark:border-slate-800 text-left"
+        className="bg-white dark:bg-slate-900 rounded-3xl max-w-4xl lg:max-w-5xl w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-slate-100 dark:border-slate-800 text-left flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10">
-          <span className="text-xs font-extrabold text-[#075FA8] dark:text-amber-400 uppercase tracking-wider">
+        <div className="flex items-center justify-between px-6 py-4 sm:px-8 sm:py-5 border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md z-20">
+          <span className="text-xs font-black text-[#075FA8] dark:text-blue-400 uppercase tracking-wider bg-blue-50 dark:bg-blue-950/60 px-3.5 py-1.5 rounded-full border border-blue-100 dark:border-blue-900">
             {product.category.name}
           </span>
           <button
             onClick={onClose}
             aria-label="Đóng"
-            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors !min-h-0"
+            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 transition-colors !min-h-0 cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-6 h-6" />
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5">
-          <div className="aspect-[4/3] rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-            <ImageCarousel images={[product.image, ...product.images]} alt={product.name} className="w-full h-full" />
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 p-6 sm:p-8 items-start">
+          {/* Image carousel container */}
+          <div className="md:col-span-6 lg:col-span-7 aspect-[4/3] sm:aspect-[16/11] rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 shadow-sm w-full min-h-[280px] sm:min-h-[380px]">
+            <ImageCarousel
+              images={[product.image, ...product.images]}
+              alt={product.name}
+              className="w-full h-full"
+              priority
+            />
           </div>
 
-          <div className="flex flex-col">
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-3">
-              {product.name}
-            </h2>
+          {/* Details & Actions container */}
+          <div className="md:col-span-6 lg:col-span-5 flex flex-col justify-between h-full text-left">
+            <div>
+              <h2 className="text-2xl sm:text-3xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-3 sm:mb-4 leading-snug">
+                {product.name}
+              </h2>
 
-            {product.shortDesc && (
-              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-4">{product.shortDesc}</p>
-            )}
+              {product.shortDesc && (
+                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed mb-6 font-normal">
+                  {product.shortDesc}
+                </p>
+              )}
 
-            {product.variants.length > 0 && (
-              <div className="mb-4">
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5">
-                  Chọn phân loại
-                </span>
-                <VariantSelector
-                  variants={product.variants}
-                  selectedIndex={selectedVariantIndex}
-                  onSelect={setSelectedVariantIndex}
-                />
-              </div>
-            )}
+              {product.variants.length > 0 && (
+                <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
+                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2.5">
+                    Chọn phân loại sản phẩm
+                  </span>
+                  <VariantSelector
+                    variants={product.variants}
+                    selectedIndex={selectedVariantIndex}
+                    onSelect={setSelectedVariantIndex}
+                  />
+                </div>
+              )}
+            </div>
 
-            <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-bold uppercase tracking-wider">Giá bán lẻ</span>
-              <span className="text-2xl font-black text-orange-600 dark:text-orange-400 block mb-4">
+            <div className="pt-6 border-t border-slate-100 dark:border-slate-800 mt-4 sm:mt-6">
+              <span className="text-xs text-slate-400 dark:text-slate-500 block font-bold uppercase tracking-wider mb-1">
+                Giá bán lẻ tham khảo
+              </span>
+              <span className="text-3xl sm:text-4xl font-black text-orange-600 dark:text-orange-400 block mb-6">
                 {displayPrice > 0 ? `${displayPrice.toLocaleString("vi-VN")}đ` : "Liên hệ báo giá"}
               </span>
 
-              <div className="grid grid-cols-2 gap-2.5 w-full">
+              <div className="grid grid-cols-2 gap-3 w-full">
                 <a
                   href={`tel:${company.hotlineRaw}`}
-                  className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] dark:hover:bg-blue-600 text-white font-extrabold text-xs sm:text-sm py-3 px-2 rounded-xl shadow-xs transition-colors text-center"
+                  className="inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] dark:hover:bg-blue-600 text-white font-black text-sm sm:text-base py-3.5 px-3 sm:px-5 rounded-2xl shadow-md hover:shadow-lg transition-all text-center"
                 >
-                  <Phone className="w-4 h-4 fill-current shrink-0" />
+                  <Phone className="w-5 h-5 fill-current shrink-0" />
                   <span>Gọi tư vấn</span>
                 </a>
                 <a
                   href={`${company.zaloUrl}?text=${encodeURIComponent(`Chào Đông Kha, tôi muốn tư vấn báo giá sản phẩm: ${product.name}${selectedVariant ? ` (${selectedVariant.label})` : ""}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 bg-[#0068FF] hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm py-3 px-2 rounded-xl shadow-xs transition-colors text-center"
+                  className="inline-flex items-center justify-center gap-2 bg-[#0068FF] hover:bg-blue-700 text-white font-black text-sm sm:text-base py-3.5 px-3 sm:px-5 rounded-2xl shadow-md hover:shadow-lg transition-all text-center"
                 >
-                  <MessageSquare className="w-4 h-4 fill-current shrink-0" />
+                  <MessageSquare className="w-5 h-5 fill-current shrink-0" />
                   <span>Nhắn Zalo</span>
                 </a>
               </div>

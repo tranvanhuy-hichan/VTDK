@@ -65,30 +65,42 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({
         <>
           <button
             type="button"
-            onClick={() => scrollToIndex(activeIndex - 1)}
+            onClick={(e) => {
+              e.stopPropagation();
+              scrollToIndex(activeIndex - 1);
+            }}
             aria-label="Ảnh trước"
-            className="!min-h-0 absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-md opacity-0 group-hover/carousel:opacity-100 transition-opacity"
+            className="!min-h-0 absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-slate-900/70 hover:bg-slate-900 text-white shadow-md opacity-80 sm:opacity-0 group-hover/carousel:opacity-100 transition-opacity z-10 cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             type="button"
-            onClick={() => scrollToIndex(activeIndex + 1)}
+            onClick={(e) => {
+              e.stopPropagation();
+              scrollToIndex(activeIndex + 1);
+            }}
             aria-label="Ảnh sau"
-            className="!min-h-0 absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-md opacity-0 group-hover/carousel:opacity-100 transition-opacity"
+            className="!min-h-0 absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-slate-900/70 hover:bg-slate-900 text-white shadow-md opacity-80 sm:opacity-0 group-hover/carousel:opacity-100 transition-opacity z-10 cursor-pointer"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
 
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+          <div
+            className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10"
+            onClick={(e) => e.stopPropagation()}
+          >
             {images.map((_, i) => (
               <button
                 key={i}
                 type="button"
-                onClick={() => scrollToIndex(i)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  scrollToIndex(i);
+                }}
                 aria-label={`Xem ảnh ${i + 1}`}
-                className={`!min-h-0 h-1.5 rounded-full transition-all ${
-                  i === activeIndex ? "w-4 bg-white" : "w-1.5 bg-white/60"
+                className={`!min-h-0 h-1.5 rounded-full transition-all cursor-pointer ${
+                  i === activeIndex ? "w-4 bg-white shadow-xs" : "w-1.5 bg-white/60"
                 }`}
               />
             ))}
