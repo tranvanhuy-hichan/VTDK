@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { Phone, PackageOpen, X, MessageSquare, Eye } from "lucide-react";
 import type { CompanyContact } from "../lib/company";
 import { Pagination } from "./Pagination";
@@ -97,8 +98,14 @@ const ProductCard: React.FC<{
       {/* Card Body */}
       <div className="p-5 flex-1 flex flex-col justify-between">
         <div>
-          <h3 className="text-lg font-bold text-slate-900 leading-snug group-hover:text-[#075FA8] transition-colors mb-2 line-clamp-2">
-            {product.name}
+          <h3 className="text-lg font-bold text-slate-900 leading-snug mb-2 line-clamp-2">
+            <Link
+              href={`/san-pham/${product.slug}`}
+              onClick={(e) => e.stopPropagation()}
+              className="hover:text-[#075FA8] transition-colors"
+            >
+              {product.name}
+            </Link>
           </h3>
           {product.shortDesc && (
             <p className="text-xs sm:text-sm text-slate-500 leading-relaxed mb-4 line-clamp-3">

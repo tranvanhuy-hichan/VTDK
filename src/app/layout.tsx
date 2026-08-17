@@ -1,6 +1,9 @@
 import React from "react";
+import type { Metadata } from "next";
 import { Be_Vietnam_Pro, Inter } from "next/font/google";
 import "../index.css";
+
+const SITE_URL = "https://vattudongkha.tranvanhuy.io.vn";
 
 const beVietnamPro = Be_Vietnam_Pro({
   subsets: ["latin", "vietnamese"],
@@ -16,12 +19,49 @@ const inter = Inter({
   display: "swap",
 });
 
-export const metadata = {
-  title: "Công ty TNHH Vật Tư Đông Kha",
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+
+  title: {
+    default: "Vật Tư Điện Lạnh Đông Kha",
+    template: "%s | Đông Kha",
+  },
+
   description:
     "Chuyên sỉ và lẻ vật tư điện lạnh tại Đà Nẵng: Ống đồng, gas lạnh R32/R410A, linh kiện điều hòa, tủ lạnh, máy giặt. Thi công trọn gói hệ thống điện lạnh tại 400 Phạm Hùng, Hòa Xuân. Hotline: 0905 487 441.",
-  keywords:
-    "vật tư điện lạnh Đà Nẵng, vật tư điện lạnh Hòa Xuân, ống đồng Đà Nẵng, gas lạnh Đà Nẵng, linh kiện điều hòa Đà Nẵng, linh kiện tủ lạnh Đà Nẵng, linh kiện máy giặt Đà Nẵng, cửa hàng vật tư điện lạnh Đà Nẵng, Đông Kha Đà Nẵng",
+
+  keywords: [
+    "vật tư điện lạnh Đà Nẵng",
+    "vật tư điều hòa Đà Nẵng",
+    "ống đồng điều hòa",
+    "gas lạnh R32 R410A",
+    "linh kiện điều hòa Đà Nẵng",
+    "linh kiện tủ lạnh Đà Nẵng",
+    "linh kiện máy giặt Đà Nẵng",
+    "cửa hàng vật tư điện lạnh Đà Nẵng",
+    "Đông Kha",
+  ],
+
+  alternates: {
+    canonical: "/",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+
+  openGraph: {
+    title: "Vật Tư Điện Lạnh Đông Kha",
+    description:
+      "Chuyên sỉ và lẻ vật tư điện lạnh tại Đà Nẵng: ống đồng, gas lạnh, linh kiện điều hòa, tủ lạnh, máy giặt.",
+    url: SITE_URL,
+    siteName: "Vật Tư Điện Lạnh Đông Kha",
+    images: ["/images/storefront.png"],
+    locale: "vi_VN",
+    type: "website",
+  },
+
   icons: {
     icon: "/images/logo.png",
     apple: "/images/logo.png",
@@ -45,8 +85,8 @@ export default function RootLayout({
               "name": "Công ty TNHH Vật Tư Đông Kha",
               "image": "/images/storefront.png",
               "logo": "/images/logo.png",
-              "@id": "https://vattudienlanhdongkha.vn",
-              "url": "https://vattudienlanhdongkha.vn",
+              "@id": SITE_URL,
+              "url": SITE_URL,
               "telephone": "0905487441",
               "priceRange": "$$",
               "address": {
