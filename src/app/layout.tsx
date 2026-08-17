@@ -24,7 +24,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const title = `${company.name} | Hotline: ${company.hotline}`;
   const description = `Nhà Phân Phối Vật Tư Điện Lạnh Chính Hãng Đà Nẵng - Chuyên sỉ & lẻ ống đồng, gas lạnh R32/R410A, linh kiện điều hòa, tủ lạnh, máy giặt tại ${company.address}. Hotline: ${company.hotline}.`;
-  const shareImage = company.image || "/images/storefront.png";
+  
+  const rawImage = company.image || "/images/storefront.png";
+  const shareImage = rawImage.startsWith("http")
+    ? rawImage
+    : `${SITE_URL}${rawImage.startsWith("/") ? "" : "/"}${rawImage}`;
 
   return {
     metadataBase: new URL(SITE_URL),
