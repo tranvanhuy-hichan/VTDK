@@ -22,12 +22,12 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
 
   title: {
-    default: "Vật Tư Điện Lạnh Đông Kha",
+    default: "Vật Tư Điện Lạnh Đông Kha | Hotline 0905 487 441",
     template: "%s | Đông Kha",
   },
 
   description:
-    "Chuyên sỉ và lẻ vật tư điện lạnh tại Đà Nẵng: Ống đồng, gas lạnh R32/R410A, linh kiện điều hòa, tủ lạnh, máy giặt. Thi công trọn gói hệ thống điện lạnh tại 400 Phạm Hùng, Hòa Xuân. Hotline: 0905 487 441.",
+    "Nhà Phân Phối Vật Tư Điện Lạnh Chính Hãng Đà Nẵng - Chuyên sỉ & lẻ ống đồng, gas lạnh R32/R410A, linh kiện điều hòa, tủ lạnh, máy giặt. Hotline: 0905 487 441.",
 
   keywords: [
     "vật tư điện lạnh Đà Nẵng",
@@ -51,14 +51,29 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "Vật Tư Điện Lạnh Đông Kha",
+    title: "Vật Tư Điện Lạnh Đông Kha | Hotline: 0905 487 441",
     description:
-      "Chuyên sỉ và lẻ vật tư điện lạnh tại Đà Nẵng: ống đồng, gas lạnh, linh kiện điều hòa, tủ lạnh, máy giặt.",
+      "Nhà Phân Phối Vật Tư Điện Lạnh Chính Hãng Đà Nẵng - Chuyên sỉ & lẻ ống đồng, gas lạnh, linh kiện điều hòa - tủ lạnh - máy giặt tại 400 Phạm Hùng. Hotline: 0905 487 441.",
     url: SITE_URL,
     siteName: "Vật Tư Điện Lạnh Đông Kha",
-    images: ["/images/storefront.png"],
+    images: [
+      {
+        url: "/images/storefront.png",
+        width: 1200,
+        height: 630,
+        alt: "Vật Tư Điện Lạnh Đông Kha Đà Nẵng - 400 Phạm Hùng",
+      },
+    ],
     locale: "vi_VN",
     type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Vật Tư Điện Lạnh Đông Kha | Hotline: 0905 487 441",
+    description:
+      "Nhà Phân Phối Vật Tư Điện Lạnh Chính Hãng Đà Nẵng - Hotline: 0905 487 441.",
+    images: ["/images/storefront.png"],
   },
 
   icons: {
