@@ -2,8 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 import { Be_Vietnam_Pro, Inter } from "next/font/google";
 import "../index.css";
-
-const SITE_URL = "https://vattudongkha.tranvanhuy.io.vn";
+import { SITE_URL } from "../lib/site";
 
 const beVietnamPro = Be_Vietnam_Pro({
   subsets: ["latin", "vietnamese"],

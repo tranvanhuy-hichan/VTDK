@@ -6,8 +6,7 @@ import { ChevronRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCompanyInfo } from "@/lib/company";
 import { ProductDetailView } from "@/components/ProductDetailView";
-
-const SITE_URL = "https://vattudongkha.tranvanhuy.io.vn";
+import { SITE_URL } from "@/lib/site";
 
 interface ProductPageParams {
   params: Promise<{ slug: string }>;
