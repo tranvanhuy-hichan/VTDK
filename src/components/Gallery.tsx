@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { ZoomIn, X, Camera, Image as ImageIcon } from "lucide-react";
-import { COMPANY_DATA } from "../data/company";
 import { Pagination } from "./Pagination";
 
 const PAGE_SIZE = 9;
@@ -22,28 +21,11 @@ export const Gallery: React.FC = () => {
     fetch("/api/gallery")
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setGalleryItems(data);
-        } else {
-          // Fallback to static gallery data
-          const fallbacks = COMPANY_DATA.gallery.map((g) => ({
-            id: g.id,
-            url: g.image,
-            title: g.title,
-            filename: g.id,
-          }));
-          setGalleryItems(fallbacks);
         }
       })
-      .catch(() => {
-        const fallbacks = COMPANY_DATA.gallery.map((g) => ({
-          id: g.id,
-          url: g.image,
-          title: g.title,
-          filename: g.id,
-        }));
-        setGalleryItems(fallbacks);
-      });
+      .catch(() => {});
   }, []);
 
   const [activeImage, setActiveImage] = useState<DynamicGalleryItem | null>(null);
@@ -51,6 +33,8 @@ export const Gallery: React.FC = () => {
 
   const totalPages = Math.max(1, Math.ceil(galleryItems.length / PAGE_SIZE));
   const pagedItems = galleryItems.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  if (galleryItems.length === 0) return null;
 
   return (
     <section id="hinh-anh" className="py-16 sm:py-24 bg-white relative">

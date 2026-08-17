@@ -28,6 +28,8 @@ interface ServicesProps {
 }
 
 export const Services: React.FC<ServicesProps> = ({ company, services }) => {
+  if (services.length === 0) return null;
+
   const getServiceIcon = (iconName: string) => {
     switch (iconName) {
       case "Building2":
