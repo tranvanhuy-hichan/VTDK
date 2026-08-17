@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Loader2, Save, X, Pencil, Building2, Phone, MapPinned, Upload } from "lucide-react";
+import { Loader2, Save, X, Pencil, Building2, Phone, MapPinned, Upload, Images } from "lucide-react";
 import { updateCompanyInfoAction } from "../../app/admin/actions";
 import type { CompanyContact } from "../../lib/company";
 import { MultiImageUpload } from "./MultiImageUpload";
@@ -15,6 +15,7 @@ interface FieldDef {
   label: string;
   placeholder: string;
   multiline?: boolean;
+  wide?: boolean;
 }
 
 interface Section {
@@ -30,9 +31,9 @@ const SECTIONS: Section[] = [
     title: "Thông tin chung",
     icon: Building2,
     fields: [
-      { key: "name", label: "Tên công ty", placeholder: "Công ty TNHH Vật Tư Đông Kha" },
-      { key: "address", label: "Địa chỉ", placeholder: "400 Phạm Hùng, Phường Hòa Xuân, TP. Đà Nẵng" },
-      { key: "workingHours", label: "Giờ mở cửa - đóng cửa", placeholder: "07:00 – 18:30 (Tất cả các ngày trong tuần)" },
+      { key: "name", label: "Tên công ty", placeholder: "Công ty TNHH Vật Tư Đông Kha", wide: true },
+      { key: "address", label: "Địa chỉ", placeholder: "400 Phạm Hùng, Phường Hòa Xuân, TP. Đà Nẵng", wide: true },
+      { key: "workingHours", label: "Giờ mở cửa - đóng cửa", placeholder: "07:00 – 18:30 (Tất cả các ngày trong tuần)", wide: true },
     ],
   },
   {
@@ -51,8 +52,8 @@ const SECTIONS: Section[] = [
     title: "Google Maps",
     icon: MapPinned,
     fields: [
-      { key: "googleMapsUrl", label: "Link chỉ đường", placeholder: "https://www.google.com/maps/..." },
-      { key: "googleMapsEmbed", label: "Link nhúng bản đồ (embed)", placeholder: "https://www.google.com/maps/embed?...", multiline: true },
+      { key: "googleMapsUrl", label: "Link chỉ đường", placeholder: "https://www.google.com/maps/...", wide: true },
+      { key: "googleMapsEmbed", label: "Link nhúng bản đồ (embed)", placeholder: "https://www.google.com/maps/embed?...", multiline: true, wide: true },
     ],
   },
 ];
@@ -134,7 +135,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 text-left">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 text-left">
         <div>
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">THÔNG TIN CÔNG TY</h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
@@ -153,127 +154,133 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
       </div>
 
       {savedMessage && !isEditing && (
-        <div className="bg-emerald-50 border border-emerald-100 rounded-md p-3 text-xs sm:text-sm text-emerald-700 font-bold mb-5 text-left">
+        <div className="bg-emerald-50 border border-emerald-100 rounded-md p-3 text-xs sm:text-sm text-emerald-700 font-bold mb-6 text-left max-w-3xl">
           {savedMessage}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          {/* Cover Image */}
-          <div className="lg:col-span-4 bg-white rounded-lg border border-slate-200 shadow-sm p-4 text-left">
-            <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-3">
-              Ảnh đại diện (hiển thị đầu trang chủ)
+      <form onSubmit={handleSubmit} className="max-w-3xl space-y-5">
+        {/* Images Card */}
+        <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-5 text-left">
+          <div className="flex items-center gap-2 mb-5">
+            <div className="p-1.5 bg-blue-50 text-[#075FA8] rounded-md border border-blue-100">
+              <Images className="w-4 h-4" />
+            </div>
+            <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
+              Hình ảnh công ty
             </h3>
-            {isEditing ? (
-              <>
-                <div className="aspect-[4/3] w-full rounded-md border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center">
+          </div>
+
+          <div className="space-y-5">
+            {/* Cover image */}
+            <div>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+                Ảnh đại diện (hiển thị đầu trang chủ)
+              </label>
+              <div className="flex items-center gap-4">
+                <div className="w-32 h-24 shrink-0 rounded-md border border-slate-200 overflow-hidden bg-slate-50">
                   <img
-                    src={imagePreview ?? saved.image}
+                    src={isEditing ? (imagePreview ?? saved.image) : saved.image}
                     alt="Ảnh đại diện công ty"
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <label className="mt-3 inline-flex items-center justify-center gap-1.5 w-full cursor-pointer text-slate-600 hover:text-[#075FA8] border border-slate-200 hover:border-[#075FA8] rounded-md px-3 py-2 text-xs font-bold transition-colors">
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>Chọn ảnh khác</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
-                </label>
-                <p className="text-[10px] text-slate-400 mt-1.5 text-center">JPG, PNG, WEBP tối đa 5MB</p>
-              </>
-            ) : (
-              <div className="aspect-[4/3] w-full rounded-md border border-slate-200 overflow-hidden bg-slate-50">
-                <img src={saved.image} alt="Ảnh đại diện công ty" className="w-full h-full object-cover" />
-              </div>
-            )}
-          </div>
-
-          {/* Info Sections */}
-          <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {SECTIONS.map((section) => (
-              <div
-                key={section.id}
-                className={`bg-white rounded-lg border border-slate-200 shadow-sm p-4 text-left ${
-                  section.id === "contact" ? "sm:col-span-2" : ""
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-1.5 bg-blue-50 text-[#075FA8] rounded-md border border-blue-100">
-                    <section.icon className="w-4 h-4" />
+                {isEditing && (
+                  <div>
+                    <label className="inline-flex items-center justify-center gap-1.5 cursor-pointer text-slate-600 hover:text-[#075FA8] border border-slate-200 hover:border-[#075FA8] rounded-md px-3 py-2 text-xs font-bold transition-colors">
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>Chọn ảnh khác</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                    </label>
+                    <p className="text-[10px] text-slate-400 mt-1.5">JPG, PNG, WEBP tối đa 5MB</p>
                   </div>
-                  <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
-                    {section.title}
-                  </h3>
-                </div>
+                )}
+              </div>
+            </div>
 
-                <div className={section.id === "contact" ? "grid grid-cols-1 sm:grid-cols-2 gap-3" : "space-y-3"}>
-                  {section.fields.map(({ key, label, placeholder, multiline }) => (
-                    <div key={key}>
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                        {label}
-                      </label>
-                      {isEditing ? (
-                        multiline ? (
-                          <textarea
-                            value={form[key]}
-                            onChange={(e) => handleChange(key, e.target.value)}
-                            placeholder={placeholder}
-                            rows={3}
-                            className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-3 py-2 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
-                          />
-                        ) : (
-                          <input
-                            type="text"
-                            value={form[key]}
-                            onChange={(e) => handleChange(key, e.target.value)}
-                            placeholder={placeholder}
-                            className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-3 py-2 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
-                          />
-                        )
-                      ) : (
-                        <p className="text-sm font-semibold text-slate-800 break-words">
-                          {saved[key] || <span className="text-slate-400 font-normal italic">Chưa có</span>}
-                        </p>
-                      )}
+            {/* Gallery */}
+            <div className="pt-5 border-t border-slate-100">
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+                Thư viện ảnh
+              </label>
+              {isEditing ? (
+                <MultiImageUpload
+                  existingUrls={existingGalleryUrls}
+                  onExistingUrlsChange={setExistingGalleryUrls}
+                  newFiles={newGalleryFiles}
+                  onNewFilesChange={setNewGalleryFiles}
+                  label=""
+                />
+              ) : saved.images.length > 0 ? (
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2.5">
+                  {saved.images.map((url, i) => (
+                    <div key={i} className="aspect-square rounded-md border border-slate-200 overflow-hidden bg-slate-50">
+                      <img src={url} alt="" className="w-full h-full object-cover" />
                     </div>
                   ))}
                 </div>
-              </div>
-            ))}
+              ) : (
+                <p className="text-xs text-slate-400 italic">Chưa có ảnh nào trong thư viện.</p>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Gallery Images */}
-        <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-4 text-left">
-          <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-3">
-            Thư viện ảnh công ty
-          </h3>
-          {isEditing ? (
-            <MultiImageUpload
-              existingUrls={existingGalleryUrls}
-              onExistingUrlsChange={setExistingGalleryUrls}
-              newFiles={newGalleryFiles}
-              onNewFilesChange={setNewGalleryFiles}
-              label=""
-            />
-          ) : saved.images.length > 0 ? (
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
-              {saved.images.map((url, i) => (
-                <div key={i} className="aspect-square rounded-md border border-slate-200 overflow-hidden bg-slate-50">
-                  <img src={url} alt="" className="w-full h-full object-cover" />
+        {/* Info Sections */}
+        {SECTIONS.map((section) => (
+          <div
+            key={section.id}
+            className="bg-white rounded-lg border border-slate-200 shadow-sm p-5 text-left"
+          >
+            <div className="flex items-center gap-2 mb-5">
+              <div className="p-1.5 bg-blue-50 text-[#075FA8] rounded-md border border-blue-100">
+                <section.icon className="w-4 h-4" />
+              </div>
+              <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
+                {section.title}
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
+              {section.fields.map(({ key, label, placeholder, multiline, wide }) => (
+                <div key={key} className={wide ? "sm:col-span-2" : ""}>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                    {label}
+                  </label>
+                  {isEditing ? (
+                    multiline ? (
+                      <textarea
+                        value={form[key]}
+                        onChange={(e) => handleChange(key, e.target.value)}
+                        placeholder={placeholder}
+                        rows={3}
+                        className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-3.5 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        value={form[key]}
+                        onChange={(e) => handleChange(key, e.target.value)}
+                        placeholder={placeholder}
+                        className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-3.5 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                      />
+                    )
+                  ) : (
+                    <p className="text-sm font-semibold text-slate-800 break-words">
+                      {saved[key] || <span className="text-slate-400 font-normal italic">Chưa có</span>}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
-          ) : (
-            <p className="text-xs text-slate-400 italic">Chưa có ảnh nào trong thư viện.</p>
-          )}
-        </div>
+          </div>
+        ))}
 
         {isEditing && (
           <div className="sticky bottom-0 bg-white/95 backdrop-blur-xs border border-slate-200 rounded-lg shadow-lg p-3.5 flex items-center gap-3">
