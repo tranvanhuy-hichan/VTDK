@@ -1,25 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import {
   Plus,
-  LogOut,
   Trash2,
   Edit3,
   X,
   Upload,
   Loader2,
   Wrench,
-  ArrowLeft,
-  ImageIcon,
-  Building2,
 } from "lucide-react";
 import {
   createServiceAction,
   updateServiceAction,
   deleteServiceAction,
-  logoutAction,
 } from "../../app/admin/actions";
 
 interface Service {
@@ -142,75 +136,23 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
     }
   };
 
-  const handleLogout = async () => {
-    await logoutAction();
-    window.location.href = "/admin/login";
-  };
-
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      {/* Admin Topbar */}
-      <header className="bg-slate-900 text-white shadow-md py-4 px-6 sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/images/logo.png" alt="Logo" className="h-10 w-auto" />
-            <div>
-              <h1 className="text-lg font-black tracking-tight leading-none">ĐÔNG KHA ADMIN</h1>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1 block">
-                Quản lý giải pháp thi công & kỹ thuật
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/admin/gallery"
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
-            >
-              <ImageIcon className="w-3.5 h-3.5" />
-              <span>Hình ảnh</span>
-            </Link>
-            <Link
-              href="/admin/company"
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
-            >
-              <Building2 className="w-3.5 h-3.5" />
-              <span>Thông tin công ty</span>
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Đăng xuất</span>
-            </button>
-          </div>
+    <>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 text-left">
+        <div>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">GIẢI PHÁP THI CÔNG & KỸ THUẬT</h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
+            Quản lý các giải pháp hiển thị trong mục "Dịch vụ" trên trang chủ.
+          </p>
         </div>
-      </header>
-
-      {/* Admin Dashboard Body */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 text-left">
-          <div>
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-[#075FA8] mb-2"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Quay lại danh sách sản phẩm
-            </Link>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">GIẢI PHÁP THI CÔNG & KỸ THUẬT</h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
-              Quản lý các giải pháp hiển thị trong mục "Dịch vụ" trên trang chủ.
-            </p>
-          </div>
-          <button
-            onClick={handleOpenAdd}
-            className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-xl shadow transition-colors w-full sm:w-auto"
-          >
-            <Plus className="w-4 h-4" />
-            <span>THÊM GIẢI PHÁP</span>
-          </button>
-        </div>
+        <button
+          onClick={handleOpenAdd}
+          className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-xl shadow transition-colors w-full sm:w-auto"
+        >
+          <Plus className="w-4 h-4" />
+          <span>THÊM GIẢI PHÁP</span>
+        </button>
+      </div>
 
         {/* Service List */}
         {initialServices.length > 0 ? (
@@ -263,7 +205,6 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
             <p className="text-slate-500 text-sm mt-1">Bấm "Thêm giải pháp" để tạo mới.</p>
           </div>
         )}
-      </main>
 
       {/* Modal Dialog */}
       {isModalOpen && (
@@ -385,7 +326,13 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
                     <Upload className="w-5 h-5 text-slate-400 mb-1" />
                     <span className="text-xs font-bold">Chọn tệp hình ảnh</span>
                     <span className="text-[10px] text-slate-400 mt-0.5">JPG, PNG, WEBP tối đa 5MB</span>
-                    <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
                   </label>
                 </div>
               </div>
@@ -417,6 +364,6 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };

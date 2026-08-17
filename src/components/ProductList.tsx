@@ -1,8 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Phone, Grid, PackageOpen } from "lucide-react";
 import type { CompanyContact } from "../lib/company";
+import { Pagination } from "./Pagination";
+
+const PAGE_SIZE = 9;
 
 interface Category {
   id: string;
@@ -117,12 +120,23 @@ export const ProductList: React.FC<ProductListProps> = ({
   company,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Filter products based on selected tab
   const filteredProducts =
     selectedCategory === "all"
       ? initialProducts
       : initialProducts.filter((p) => p.category.slug === selectedCategory);
+
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
+  const pagedProducts = filteredProducts.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
 
   return (
     <section id="san-pham" className="py-16 sm:py-24 bg-[#F6F8FA] relative">
@@ -170,11 +184,18 @@ export const ProductList: React.FC<ProductListProps> = ({
 
         {/* Products Grid */}
         {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} hotlineRaw={company.hotlineRaw} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              {pagedProducts.map((product) => (
+                <ProductCard key={product.id} product={product} hotlineRaw={company.hotlineRaw} />
+              ))}
+            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </>
         ) : (
           <div className="text-center py-12 bg-white rounded-xl border border-slate-200 shadow-xs max-w-md mx-auto">
             <PackageOpen className="w-10 h-10 text-slate-300 mx-auto mb-3" />

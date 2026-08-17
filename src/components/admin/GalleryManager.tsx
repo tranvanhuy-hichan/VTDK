@@ -1,23 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import {
   Plus,
-  LogOut,
   Trash2,
   Upload,
   Loader2,
   ImageOff,
-  ArrowLeft,
-  Building2,
-  Wrench,
 } from "lucide-react";
 import {
   createGalleryImageAction,
   deleteGalleryImageAction,
-  logoutAction,
 } from "../../app/admin/actions";
+import { Pagination } from "../Pagination";
+
+const PAGE_SIZE = 12;
 
 interface GalleryImage {
   id: string;
@@ -37,6 +34,13 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
   const [title, setTitle] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.max(1, Math.ceil(initialImages.length / PAGE_SIZE));
+  const pagedImages = initialImages.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
 
   const handleOpenAdd = () => {
     setTitle("");
@@ -94,109 +98,59 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
     }
   };
 
-  const handleLogout = async () => {
-    await logoutAction();
-    window.location.href = "/admin/login";
-  };
-
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      {/* Admin Topbar */}
-      <header className="bg-slate-900 text-white shadow-md py-4 px-6 sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/images/logo.png" alt="Logo" className="h-10 w-auto" />
-            <div>
-              <h1 className="text-lg font-black tracking-tight leading-none">ĐÔNG KHA ADMIN</h1>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1 block">
-                Quản lý hình ảnh tại Đông Kha
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/admin/company"
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
-            >
-              <Building2 className="w-3.5 h-3.5" />
-              <span>Thông tin công ty</span>
-            </Link>
-            <Link
-              href="/admin/services"
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
-            >
-              <Wrench className="w-3.5 h-3.5" />
-              <span>Giải pháp</span>
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Đăng xuất</span>
-            </button>
-          </div>
+    <>
+      {/* Action Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 text-left">
+        <div>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">HÌNH ẢNH TẠI ĐÔNG KHA</h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
+            Quản lý hình ảnh hiển thị trong mục "Hình ảnh tại Đông Kha" trên trang chủ.
+          </p>
         </div>
-      </header>
+        <button
+          onClick={handleOpenAdd}
+          className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-xl shadow transition-colors w-full sm:w-auto"
+        >
+          <Plus className="w-4 h-4" />
+          <span>THÊM HÌNH ẢNH</span>
+        </button>
+      </div>
 
-      {/* Admin Dashboard Body */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-        {/* Action Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 text-left">
-          <div>
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-[#075FA8] mb-2"
+      {/* Image Grid */}
+      {initialImages.length > 0 ? (
+        <>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          {pagedImages.map((img) => (
+            <div
+              key={img.id}
+              className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden group text-left"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Quay lại danh sách sản phẩm
-            </Link>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">HÌNH ẢNH TẠI ĐÔNG KHA</h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
-              Quản lý hình ảnh hiển thị trong mục "Hình ảnh tại Đông Kha" trên trang chủ.
-            </p>
-          </div>
-          <button
-            onClick={handleOpenAdd}
-            className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-xl shadow transition-colors w-full sm:w-auto"
-          >
-            <Plus className="w-4 h-4" />
-            <span>THÊM HÌNH ẢNH</span>
-          </button>
-        </div>
-
-        {/* Image Grid */}
-        {initialImages.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {initialImages.map((img) => (
-              <div
-                key={img.id}
-                className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden group text-left"
-              >
-                <div className="relative aspect-[4/3] bg-slate-50">
-                  <img src={img.url} alt={img.title} className="w-full h-full object-cover" />
-                  <button
-                    onClick={() => handleDelete(img.id)}
-                    aria-label="Xóa ảnh"
-                    className="absolute top-2 right-2 p-2 bg-white/90 hover:bg-red-50 text-slate-500 hover:text-red-600 border border-slate-200 rounded-lg shadow-sm transition-colors !min-h-0"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-                <div className="p-3">
-                  <p className="text-sm font-bold text-slate-900 truncate">{img.title}</p>
-                </div>
+              <div className="relative aspect-[4/3] bg-slate-50">
+                <img src={img.url} alt={img.title} className="w-full h-full object-cover" />
+                <button
+                  onClick={() => handleDelete(img.id)}
+                  aria-label="Xóa ảnh"
+                  className="absolute top-2 right-2 p-2 bg-white/90 hover:bg-red-50 text-slate-500 hover:text-red-600 border border-slate-200 rounded-lg shadow-sm transition-colors !min-h-0"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
-            <ImageOff className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <h3 className="font-bold text-slate-900 text-lg">Chưa có hình ảnh nào</h3>
-            <p className="text-slate-500 text-sm mt-1">Bấm "Thêm hình ảnh" để tải ảnh lên.</p>
-          </div>
-        )}
-      </main>
+              <div className="p-3">
+                <p className="text-sm font-bold text-slate-900 truncate">{img.title}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+        </>
+      ) : (
+        <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
+          <ImageOff className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+          <h3 className="font-bold text-slate-900 text-lg">Chưa có hình ảnh nào</h3>
+          <p className="text-slate-500 text-sm mt-1">Bấm "Thêm hình ảnh" để tải ảnh lên.</p>
+        </div>
+      )}
 
       {/* Upload Modal Dialog */}
       {isModalOpen && (
@@ -243,7 +197,13 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
                     <Upload className="w-5 h-5 text-slate-400 mb-1" />
                     <span className="text-xs font-bold">Chọn tệp hình ảnh</span>
                     <span className="text-[10px] text-slate-400 mt-0.5">JPG, PNG, WEBP tối đa 5MB</span>
-                    <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
                   </label>
                 </div>
               </div>
@@ -275,6 +235,6 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };

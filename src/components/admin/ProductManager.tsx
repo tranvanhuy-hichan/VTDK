@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
+import React, { useState, useEffect } from "react";
 import {
   Plus,
   Search,
-  LogOut,
   Trash2,
   Edit3,
   Eye,
@@ -13,18 +11,17 @@ import {
   X,
   Upload,
   Loader2,
-  PackageOpen,
-  ImageIcon,
-  Building2,
-  Wrench
+  PackageOpen
 } from "lucide-react";
-import { 
-  createProductAction, 
-  updateProductAction, 
-  deleteProductAction, 
-  toggleProductActiveAction, 
-  logoutAction 
+import {
+  createProductAction,
+  updateProductAction,
+  deleteProductAction,
+  toggleProductActiveAction,
 } from "../../app/admin/actions";
+import { Pagination } from "../Pagination";
+
+const PAGE_SIZE = 10;
 
 interface Category {
   id: string;
@@ -203,12 +200,6 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
     }
   };
 
-  // Logout admin
-  const handleLogout = async () => {
-    await logoutAction();
-    window.location.href = "/admin/login";
-  };
-
   // Filter products by search and category
   const filteredProducts = initialProducts.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -217,58 +208,20 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
     return matchesSearch && matchesCategory;
   });
 
-  return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      
-      {/* Admin Topbar */}
-      <header className="bg-slate-900 text-white shadow-md py-4 px-6 sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/images/logo.png" alt="Logo" className="h-10 w-auto" />
-            <div>
-              <h1 className="text-lg font-black tracking-tight leading-none">ĐÔNG KHA ADMIN</h1>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1 block">
-                Bảng quản trị sản phẩm vật tư
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/admin/gallery"
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
-            >
-              <ImageIcon className="w-3.5 h-3.5" />
-              <span>Hình ảnh</span>
-            </Link>
-            <Link
-              href="/admin/company"
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
-            >
-              <Building2 className="w-3.5 h-3.5" />
-              <span>Thông tin công ty</span>
-            </Link>
-            <Link
-              href="/admin/services"
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
-            >
-              <Wrench className="w-3.5 h-3.5" />
-              <span>Giải pháp</span>
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Đăng xuất</span>
-            </button>
-          </div>
-        </div>
-      </header>
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
+  const pagedProducts = filteredProducts.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
 
-      {/* Admin Dashboard Body */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-        
-        {/* Action Header */}
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory]);
+
+  return (
+    <>
+      {/* Action Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 text-left">
           <div>
             <h2 className="text-2xl font-black text-slate-900 tracking-tight">DANH SÁCH SẢN PHẨM</h2>
@@ -346,7 +299,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm">
-                  {filteredProducts.map((product) => (
+                  {pagedProducts.map((product) => (
                     <tr key={product.id} className="hover:bg-slate-50/50 transition-colors">
                       {/* Image Thumbnail */}
                       <td className="py-4 px-6 text-left">
@@ -432,6 +385,9 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                 </tbody>
               </table>
             </div>
+            <div className="px-4 sm:px-6 pb-6">
+              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            </div>
           </div>
         ) : (
           <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
@@ -442,7 +398,6 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
             </p>
           </div>
         )}
-      </main>
 
       {/* CRUD Product Modal Dialog */}
       {isModalOpen && (
@@ -554,6 +509,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                     <input
                       type="file"
                       accept="image/*"
+                      capture="environment"
                       onChange={handleImageChange}
                       className="hidden"
                     />
@@ -656,7 +612,6 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
           </div>
         </div>
       )}
-
-    </div>
+    </>
   );
 };

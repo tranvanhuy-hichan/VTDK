@@ -401,6 +401,7 @@ export async function updateCompanyInfoAction(formData: FormData) {
     const googleMapsUrl = (formData.get("googleMapsUrl") as string)?.trim();
     const googleMapsEmbed = (formData.get("googleMapsEmbed") as string)?.trim();
     const workingHours = (formData.get("workingHours") as string)?.trim();
+    const imageFile = formData.get("image") as File | null;
 
     if (
       !name ||
@@ -417,6 +418,33 @@ export async function updateCompanyInfoAction(formData: FormData) {
       return { error: "Vui lòng nhập đầy đủ các trường!" };
     }
 
+    const existing = await prisma.companyInfo.findFirst();
+
+    let imagePath = existing?.image ?? "/images/storefront.png";
+
+    if (imageFile && imageFile.size > 0) {
+      if (imageFile.size > 5 * 1024 * 1024) {
+        return { error: "Dung lượng ảnh phải nhỏ hơn hoặc bằng 5MB!" };
+      }
+      const ext = path.extname(imageFile.name).toLowerCase();
+      if (![".jpg", ".jpeg", ".png", ".webp"].includes(ext)) {
+        return { error: "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP." };
+      }
+
+      const blob = await put(`company/${Date.now()}-${imageFile.name}`, imageFile, {
+        access: "public",
+      });
+
+      if (
+        existing?.image.startsWith("https://") &&
+        existing.image.includes("public.blob.vercel-storage.com")
+      ) {
+        await del(existing.image).catch(() => {});
+      }
+
+      imagePath = blob.url;
+    }
+
     const data = {
       name,
       address,
@@ -428,9 +456,9 @@ export async function updateCompanyInfoAction(formData: FormData) {
       googleMapsUrl,
       googleMapsEmbed,
       workingHours,
+      image: imagePath,
     };
 
-    const existing = await prisma.companyInfo.findFirst();
     if (existing) {
       await prisma.companyInfo.update({ where: { id: existing.id }, data });
     } else {

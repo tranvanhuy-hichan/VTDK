@@ -3,6 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { ZoomIn, X, Camera, Image as ImageIcon } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
+import { Pagination } from "./Pagination";
+
+const PAGE_SIZE = 9;
 
 interface DynamicGalleryItem {
   id: string;
@@ -43,6 +46,10 @@ export const Gallery: React.FC = () => {
   }, []);
 
   const [activeImage, setActiveImage] = useState<DynamicGalleryItem | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.max(1, Math.ceil(galleryItems.length / PAGE_SIZE));
+  const pagedItems = galleryItems.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
     <section id="hinh-anh" className="py-16 sm:py-24 bg-white relative">
@@ -63,7 +70,7 @@ export const Gallery: React.FC = () => {
 
         {/* Gallery Grid (2 cols mobile, 3 cols desktop) */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {galleryItems.map((item) => (
+          {pagedItems.map((item) => (
             <div
               key={item.id}
               onClick={() => setActiveImage(item)}
@@ -96,6 +103,8 @@ export const Gallery: React.FC = () => {
             </div>
           ))}
         </div>
+
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
 
         {/* Lightbox Modal */}
         {activeImage && (

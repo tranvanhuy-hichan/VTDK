@@ -1,18 +1,18 @@
 import React from "react";
-import { prisma } from "../lib/prisma";
-import { getCompanyInfo } from "../lib/company";
-import { Hero } from "../components/Hero";
-import { BrandSlider } from "../components/BrandSlider";
-import { QuickContactBar } from "../components/QuickContactBar";
-import { ProductList } from "../components/ProductList";
-import { Services } from "../components/Services";
-import { WhyChooseUs } from "../components/WhyChooseUs";
-import { BTUCalculator } from "../components/BTUCalculator";
-import { CustomerTypes } from "../components/CustomerTypes";
-import { Testimonials } from "../components/Testimonials";
-import { Gallery } from "../components/Gallery";
-import { ContactCTA } from "../components/ContactCTA";
-import { Location } from "../components/Location";
+import { prisma } from "../../lib/prisma";
+import { getCompanyInfo } from "../../lib/company";
+import { Hero } from "../../components/Hero";
+import { BrandSlider } from "../../components/BrandSlider";
+import { QuickContactBar } from "../../components/QuickContactBar";
+import { ProductList } from "../../components/ProductList";
+import { Services } from "../../components/Services";
+import { WhyChooseUs } from "../../components/WhyChooseUs";
+import { BTUCalculator } from "../../components/BTUCalculator";
+import { CustomerTypes } from "../../components/CustomerTypes";
+import { Testimonials } from "../../components/Testimonials";
+import { Gallery } from "../../components/Gallery";
+import { ContactCTA } from "../../components/ContactCTA";
+import { Location } from "../../components/Location";
 
 export const revalidate = 0; // Disable caching to reflect database updates immediately
 

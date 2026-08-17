@@ -1,6 +1,5 @@
 import React from "react";
 import { Phone, MapPin, CheckCircle2, MessageSquare, ArrowRight, ShieldCheck } from "lucide-react";
-import { COMPANY_DATA } from "../data/company";
 import type { CompanyContact } from "../lib/company";
 
 interface HeroProps {
@@ -98,7 +97,7 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
               {/* Main Image Container */}
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-slate-900 aspect-[4/3] sm:aspect-[16/11]">
                 <img
-                  src={COMPANY_DATA.storefrontUrl}
+                  src={company.image}
                   alt="Mặt tiền cửa hàng Vật Tư Điện Lạnh Đông Kha tại 400 Phạm Hùng Đà Nẵng"
                   className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
                 />
