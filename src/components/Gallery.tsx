@@ -1,11 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { ZoomIn, X, Camera, Image as ImageIcon } from "lucide-react";
-import { Pagination } from "./Pagination";
-
-const PAGE_SIZE = 9;
+import { ZoomIn, X, Camera, Image as ImageIcon, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface DynamicGalleryItem {
   id: string;
@@ -16,6 +13,8 @@ interface DynamicGalleryItem {
 
 export const Gallery: React.FC = () => {
   const [galleryItems, setGalleryItems] = useState<DynamicGalleryItem[]>([]);
+  const [activeImage, setActiveImage] = useState<DynamicGalleryItem | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch("/api/gallery")
@@ -28,44 +27,72 @@ export const Gallery: React.FC = () => {
       .catch(() => {});
   }, []);
 
-  const [activeImage, setActiveImage] = useState<DynamicGalleryItem | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const totalPages = Math.max(1, Math.ceil(galleryItems.length / PAGE_SIZE));
-  const pagedItems = galleryItems.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const scroll = (direction: "left" | "right") => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = scrollContainerRef.current.clientWidth * 0.75;
+      scrollContainerRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
 
   if (galleryItems.length === 0) return null;
 
   return (
-    <section id="hinh-anh" className="py-16 sm:py-24 bg-white dark:bg-slate-900 relative transition-colors duration-300">
+    <section id="hinh-anh" className="py-12 sm:py-16 bg-white dark:bg-slate-900 relative transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/20 text-[#075FA8] dark:text-blue-400 px-3.5 py-1 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-3">
-            HÌNH ẢNH THỰC TẾ
+        {/* Section Header with Slider Navigation Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-4">
+          <div className="text-left max-w-2xl">
+            <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/20 text-[#075FA8] dark:text-blue-400 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2.5">
+              HÌNH ẢNH THỰC TẾ
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              Hình ảnh hoạt động tại Đông Kha
+            </h2>
+            <p className="mt-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal">
+              Hình ảnh thực tế cửa hàng, kho bãi và giao hàng tại Đà Nẵng. Vuốt ngang để xem thêm.
+            </p>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Hình ảnh hoạt động tại Đông Kha
-          </h2>
-          <p className="mt-3 text-base sm:text-lg text-slate-600 dark:text-slate-300 font-normal">
-            Hình ảnh thực tế cửa hàng, kho bãi và giao hàng tại Đà Nẵng.
-          </p>
+
+          {/* Slider Arrow Buttons */}
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => scroll("left")}
+              aria-label="Hình trước"
+              className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-[#075FA8] hover:text-white dark:hover:bg-blue-600 border border-slate-200 dark:border-slate-700 transition-all shadow-xs !min-h-0"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              aria-label="Hình kế tiếp"
+              className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-[#075FA8] hover:text-white dark:hover:bg-blue-600 border border-slate-200 dark:border-slate-700 transition-all shadow-xs !min-h-0"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
-        {/* Gallery Grid (2 cols mobile, 3 cols desktop) */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {pagedItems.map((item) => (
+        {/* Horizontal Carousel Container */}
+        <div
+          ref={scrollContainerRef}
+          className="flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-4 pt-1"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {galleryItems.map((item) => (
             <div
               key={item.id}
               onClick={() => setActiveImage(item)}
-              className="group relative rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-950 cursor-pointer border border-slate-200 dark:border-slate-800 shadow-xs hover:shadow-xl transition-all duration-300 aspect-[4/3]"
+              className="snap-start shrink-0 w-[280px] sm:w-[340px] md:w-[380px] group relative rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-950 cursor-pointer border border-slate-200 dark:border-slate-800 shadow-xs hover:shadow-xl transition-all duration-300 aspect-[4/3]"
             >
               <Image
                 src={item.url}
                 alt={item.title}
                 fill
-                sizes="(min-width: 1024px) 33vw, 50vw"
+                sizes="(min-width: 1024px) 380px, 300px"
                 loading="lazy"
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
@@ -92,8 +119,6 @@ export const Gallery: React.FC = () => {
           ))}
         </div>
 
-        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-
         {/* Lightbox Modal */}
         {activeImage && (
           <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
@@ -108,7 +133,7 @@ export const Gallery: React.FC = () => {
                 <button
                   onClick={() => setActiveImage(null)}
                   aria-label="Đóng lightbox"
-                  className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors min-h-0"
+                  className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors !min-h-0"
                 >
                   <X className="w-6 h-6" />
                 </button>

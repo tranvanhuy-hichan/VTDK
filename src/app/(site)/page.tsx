@@ -38,10 +38,10 @@ export default async function HomePage() {
       <Hero company={company} />
       <BrandSlider />
       <QuickContactBar company={company} />
+      <WhyChooseUs />
       {/* Render the dynamic product catalog */}
       <ProductList initialCategories={categories} initialProducts={products} company={company} />
       <Services company={company} services={services} />
-      <WhyChooseUs />
       <CustomerTypes />
       <Testimonials />
       <Gallery />

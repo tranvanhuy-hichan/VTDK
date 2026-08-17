@@ -15,6 +15,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ company }) => {
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSectionState, setActiveSectionState] = useState<string>("trang-chu");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,8 +49,27 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
+
+      const sectionIds = ["trang-chu", "gioi-thieu", "san-pham", "dich-vu", "hinh-anh", "lien-he"];
+      const scrollPosition = window.scrollY + 160;
+
+      const sections = sectionIds
+        .map((id) => document.getElementById(id))
+        .filter((el): el is HTMLElement => el !== null)
+        .sort((a, b) => a.offsetTop - b.offsetTop);
+
+      let currentActive = "trang-chu";
+      for (let i = sections.length - 1; i >= 0; i--) {
+        if (scrollPosition >= sections[i].offsetTop) {
+          currentActive = sections[i].id;
+          break;
+        }
+      }
+      setActiveSectionState(currentActive);
     };
-    window.addEventListener("scroll", handleScroll);
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -134,17 +154,25 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
           </div>
 
           {/* Desktop Navigation Links & Theme Toggle */}
-          <div className="hidden lg:flex items-center gap-6">
-            <nav className="flex items-center gap-6">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="text-slate-700 dark:text-slate-300 hover:text-[#075FA8] dark:hover:text-[#F47A20] font-bold text-sm transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#075FA8] dark:after:bg-[#F47A20] hover:after:w-full after:transition-all"
-                >
-                  {link.name}
-                </a>
-              ))}
+          <div className="hidden lg:flex items-center gap-4">
+            <nav className="flex items-center gap-1 sm:gap-1.5">
+              {navLinks.map((link) => {
+                const sectionId = link.href.replace("#", "");
+                const isActive = activeSectionState === sectionId;
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className={`text-sm font-bold transition-all px-3 py-1.5 rounded-lg relative ${
+                      isActive
+                        ? "text-[#075FA8] dark:text-[#F47A20] bg-blue-50 dark:bg-slate-800 font-extrabold shadow-2xs after:content-[''] after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-[#075FA8] dark:after:bg-[#F47A20]"
+                        : "text-slate-700 dark:text-slate-300 hover:text-[#075FA8] dark:hover:text-[#F47A20] hover:bg-slate-100/70 dark:hover:bg-slate-800/50"
+                    }`}
+                  >
+                    {link.name}
+                  </a>
+                );
+              })}
             </nav>
             <div className="h-6 w-px bg-slate-200 dark:bg-slate-800" />
             <button
@@ -213,22 +241,30 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
 
         {/* Mobile Menu Drawer */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden bg-white border-b border-slate-200 shadow-xl px-4 py-5 animate-in slide-in-from-top-2 duration-200">
-            <div className="flex flex-col gap-2">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between p-3 rounded-lg text-slate-800 font-bold text-lg hover:bg-slate-50 hover:text-[#075FA8] transition-colors border-b border-slate-100 last:border-0"
-                >
-                  <span>{link.name}</span>
-                  <ChevronRight className="w-5 h-5 text-slate-400" />
-                </a>
-              ))}
+          <div className="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xl px-4 py-5 animate-in slide-in-from-top-2 duration-200">
+            <div className="flex flex-col gap-1.5">
+              {navLinks.map((link) => {
+                const sectionId = link.href.replace("#", "");
+                const isActive = activeSectionState === sectionId;
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center justify-between p-3 rounded-xl font-bold text-base transition-colors ${
+                      isActive
+                        ? "bg-[#075FA8]/10 dark:bg-blue-900/30 text-[#075FA8] dark:text-blue-400 font-extrabold border-l-4 border-[#075FA8] dark:border-blue-400"
+                        : "text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    <span>{link.name}</span>
+                    <ChevronRight className={`w-5 h-5 ${isActive ? "text-[#075FA8] dark:text-blue-400" : "text-slate-400"}`} />
+                  </a>
+                );
+              })}
             </div>
 
-            <div className="mt-5 pt-4 border-t border-slate-200 flex flex-col gap-3">
+            <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-3">
               <a
                 href={`tel:${company.hotlineRaw}`}
                 className="w-full flex items-center justify-center gap-3 bg-[#075FA8] text-white font-bold py-3.5 px-4 rounded-xl shadow text-lg"

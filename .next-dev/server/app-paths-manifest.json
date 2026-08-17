@@ -1,5 +1,4 @@
 {
-  "/api/gallery/route": "app/api/gallery/route.js",
-  "/(site)/san-pham/[slug]/page": "app/(site)/san-pham/[slug]/page.js",
-  "/(site)/page": "app/(site)/page.js"
+  "/(site)/page": "app/(site)/page.js",
+  "/(site)/san-pham/[slug]/page": "app/(site)/san-pham/[slug]/page.js"
 }
