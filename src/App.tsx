@@ -1,11 +1,14 @@
 import React from "react";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
+import { BrandSlider } from "./components/BrandSlider";
 import { QuickContactBar } from "./components/QuickContactBar";
 import { ProductCategories } from "./components/ProductCategories";
 import { Services } from "./components/Services";
 import { WhyChooseUs } from "./components/WhyChooseUs";
+import { BTUCalculator } from "./components/BTUCalculator";
 import { CustomerTypes } from "./components/CustomerTypes";
+import { Testimonials } from "./components/Testimonials";
 import { Gallery } from "./components/Gallery";
 import { ContactCTA } from "./components/ContactCTA";
 import { Location } from "./components/Location";
@@ -23,20 +26,29 @@ export const App: React.FC = () => {
         {/* 2. Hero Section (55/45 split, trust points, image badge) */}
         <Hero />
 
+        {/* Brand Logos Slider (Infinite Marquee) */}
+        <BrandSlider />
+
         {/* 3. Quick Contact Bar (Immediate action bar) */}
         <QuickContactBar />
 
-        {/* 4. Product Categories Section (6 main HVAC supply groups) */}
+        {/* 4. Product Categories Section (with Search & Tab Filters) */}
         <ProductCategories />
 
-        {/* 5. Services & Solutions Section (4 main HVAC engineering solutions) */}
+        {/* 5. Services & Solutions Section */}
         <Services />
 
         {/* 6. Why Choose Us Section (4 core brand pillars) */}
         <WhyChooseUs />
 
+        {/* Interactive AC BTU & Pipe Spec Calculator */}
+        <BTUCalculator />
+
         {/* 7. Target Customer Types Section */}
         <CustomerTypes />
+
+        {/* Customer Testimonials Reviews */}
+        <Testimonials />
 
         {/* 8. Real Gallery Section with Lightbox */}
         <Gallery />

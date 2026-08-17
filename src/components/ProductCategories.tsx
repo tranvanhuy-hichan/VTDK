@@ -238,62 +238,68 @@ export const ProductCategories: React.FC = () => {
       {/* Product Detail Modal */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 text-left relative p-6 sm:p-8">
-            <button
-              onClick={() => setSelectedProduct(null)}
-              className="absolute top-4 right-4 p-2 !min-h-0 text-slate-400 hover:text-slate-700 bg-slate-100 rounded-full transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-blue-50 rounded-xl text-[#075FA8]">
-                {getCategoryIcon(selectedProduct.icon)}
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold text-slate-900">{selectedProduct.name}</h3>
-                <span className="text-xs text-[#075FA8] font-bold uppercase tracking-wider">Vật tư điện lạnh Đông Kha</span>
-              </div>
-            </div>
-
-            <p className="text-slate-700 text-base leading-relaxed mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
-              {selectedProduct.fullDesc}
-            </p>
-
-            <h4 className="font-bold text-slate-900 text-base mb-3">Các chủng loại &amp; thông số sẵn có:</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-8">
-              {selectedProduct.items.map((item, idx) => (
-                <div key={idx} className="flex items-center gap-2.5 p-3 rounded-lg bg-blue-50/50 border border-blue-100 text-slate-800 text-sm font-semibold">
-                  <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>{item}</span>
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 flex flex-col text-left">
+            
+            {/* Modal Header */}
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                  {getCategoryIcon(selectedProduct.icon)}
                 </div>
-              ))}
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-900">
+                  {selectedProduct.name}
+                </h3>
+              </div>
+              <button
+                onClick={() => setSelectedProduct(null)}
+                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors !min-h-0"
+              >
+                <X className="w-6 h-6" />
+              </button>
             </div>
 
-            <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl mb-6">
-              <p className="text-xs sm:text-sm text-orange-950 font-medium">
-                💡 <strong>Lưu ý thợ &amp; khách hàng:</strong> Đông Kha không niêm yết giá cố định trên web để luôn đảm bảo giá sỉ tốt nhất theo biến động thị trường &amp; số lượng đơn hàng. Hãy gọi hotline hoặc nhắn Zalo để nhận báo giá ưu đãi tức thì!
-              </p>
+            {/* Modal Body */}
+            <div className="p-6 space-y-6">
+              <div>
+                <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Giới thiệu sản phẩm</h4>
+                <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
+                  {selectedProduct.fullDesc}
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">Các chủng loại, quy cách có sẵn</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {selectedProduct.items.map((item, idx) => (
+                    <div key={idx} className="flex items-start gap-2.5 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span className="text-xs sm:text-sm text-slate-800 font-bold">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-3">
+            {/* Modal Footer */}
+            <div className="p-6 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row gap-3">
               <a
                 href={`tel:${COMPANY_DATA.hotlineRaw}`}
-                className="w-full sm:flex-1 flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold py-3.5 px-4 rounded-xl shadow text-base"
+                className="flex-1 inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold py-3 px-4 rounded-xl transition-all shadow"
               >
-                <Phone className="w-5 h-5 fill-current" />
-                <span>Gọi báo giá ngay: {COMPANY_DATA.hotline}</span>
+                <Phone className="w-4 h-4 fill-current" />
+                <span>Gọi điện hỏi hàng: {COMPANY_DATA.hotline}</span>
               </a>
               <a
                 href={COMPANY_DATA.zaloUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:flex-1 flex items-center justify-center gap-2 bg-[#0068FF] hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl text-base"
+                className="flex-1 inline-flex items-center justify-center gap-2 bg-[#0068FF] hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition-all"
               >
-                <MessageSquare className="w-5 h-5" />
-                <span>Gửi mẫu qua Zalo</span>
+                <MessageSquare className="w-4 h-4" />
+                <span>Nhắn Zalo trao đổi</span>
               </a>
             </div>
+
           </div>
         </div>
       )}

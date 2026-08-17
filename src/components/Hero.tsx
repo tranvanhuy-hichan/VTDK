@@ -4,7 +4,7 @@ import { COMPANY_DATA } from "../data/company";
 
 export const Hero: React.FC = () => {
   return (
-    <section id="trang-chu" className="relative bg-gradient-to-b from-slate-50 via-white to-[#F6F8FA] pt-6 sm:pt-10 pb-12 sm:pb-16 overflow-hidden">
+    <section id="trang-chu" className="relative bg-gradient-to-b from-slate-50 via-white to-[#F6F8FA] pt-12 sm:pt-16 lg:pt-20 pb-16 sm:pb-20 overflow-hidden">
       {/* Decorative Light Background Accents */}
       <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 rounded-full bg-blue-100/50 blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-80 h-80 rounded-full bg-orange-100/40 blur-3xl pointer-events-none" />
@@ -15,14 +15,10 @@ export const Hero: React.FC = () => {
           {/* Left Column (55% on desktop -> 7 cols) */}
           <div className="lg:col-span-7 flex flex-col text-left">
             
-            {/* Category Tag Badge */}
-            <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200/80 px-3.5 py-1.5 rounded-full w-fit mb-4 sm:mb-6 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-[#075FA8] animate-ping" />
-              <span className="text-xs sm:text-sm font-bold text-[#075FA8] tracking-wider uppercase">
-                VẬT TƯ ĐIỆN LẠNH • ĐÀ NẴNG
-              </span>
-            </div>
-
+            {/* Small Corporate Intro Line */}
+            <span className="text-xs sm:text-sm font-extrabold text-[#075FA8] tracking-widest uppercase mb-3 sm:mb-4 block">
+              Công ty TNHH Vật Tư Đông Kha
+            </span>
             {/* Main Headline */}
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.18] mb-4 sm:mb-6">
               Giải pháp vật tư điện lạnh{" "}

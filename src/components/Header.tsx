@@ -30,19 +30,19 @@ export const Header: React.FC<HeaderProps> = () => {
   return (
     <>
       {/* Top Banner Notice for Local Customers */}
-      <div className="bg-[#0B1F33] text-slate-200 text-xs sm:text-sm py-2 px-4 border-b border-slate-800">
-        <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
-          <div className="flex items-center gap-2 text-slate-300">
-            <MapPin className="w-4 h-4 text-[#F47A20] shrink-0" />
+      <div className="bg-[#0B1F33] text-slate-200 text-[11px] sm:text-xs py-1 px-4 border-b border-slate-800">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex items-center gap-1.5 text-slate-300 truncate">
+            <MapPin className="w-3.5 h-3.5 text-[#F47A20] shrink-0" />
             <span className="truncate">
               <strong>Cửa hàng:</strong> 400 Phạm Hùng, Hòa Xuân, Đà Nẵng
             </span>
           </div>
-          <div className="hidden md:flex items-center gap-4 text-xs">
-            <span className="flex items-center gap-1.5 text-slate-300">
-              <Shield className="w-3.5 h-3.5 text-emerald-400" /> Sỉ &amp; Lẻ Vật Tư Điện Lạnh Chuẩn Kỹ Thuật
+          <div className="hidden lg:flex items-center gap-3.5 text-[11px]">
+            <span className="flex items-center gap-1 text-slate-300">
+              <Shield className="w-3 h-3 text-emerald-400" /> Sỉ &amp; Lẻ Vật Tư Điện Lạnh Chuẩn Kỹ Thuật
             </span>
-            <span className="text-slate-500">|</span>
+            <span className="text-slate-650">|</span>
             <span className="text-slate-300">Mở cửa: {COMPANY_DATA.workingHours}</span>
           </div>
         </div>
