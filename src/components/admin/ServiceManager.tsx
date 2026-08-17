@@ -7,6 +7,7 @@ import {
   Edit3,
   X,
   Upload,
+  Camera,
   Loader2,
   Wrench,
 } from "lucide-react";
@@ -246,17 +247,29 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
                       <Upload className="w-10 h-10 text-slate-300" />
                     )}
                   </div>
-                  <label className="mt-3 inline-flex items-center justify-center gap-1.5 w-full cursor-pointer text-slate-600 hover:text-[#075FA8] border border-slate-200 hover:border-[#075FA8] rounded-md px-3 py-2 text-xs font-bold transition-colors">
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>Chọn ảnh khác</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      onChange={handleImageChange}
-                      className="hidden"
-                    />
-                  </label>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <label className="inline-flex items-center justify-center gap-1.5 cursor-pointer text-slate-600 hover:text-[#075FA8] border border-slate-200 hover:border-[#075FA8] rounded-md px-2 py-2 text-xs font-bold transition-colors">
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Chụp ảnh</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                    </label>
+                    <label className="inline-flex items-center justify-center gap-1.5 cursor-pointer text-slate-600 hover:text-[#075FA8] border border-slate-200 hover:border-[#075FA8] rounded-md px-2 py-2 text-xs font-bold transition-colors">
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>Tải lên</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
                   <p className="text-[10px] text-slate-400 mt-1.5 text-center">JPG, PNG, WEBP tối đa 5MB</p>
                 </div>
 

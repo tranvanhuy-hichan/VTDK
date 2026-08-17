@@ -5,6 +5,7 @@ import {
   Plus,
   Trash2,
   Upload,
+  Camera,
   Loader2,
   ImageOff,
 } from "lucide-react";
@@ -193,18 +194,29 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
                       <Upload className="w-6 h-6 text-slate-400" />
                     )}
                   </div>
-                  <label className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-slate-350 rounded-md p-4 cursor-pointer text-slate-500 hover:text-slate-700 transition-colors">
-                    <Upload className="w-5 h-5 text-slate-400 mb-1" />
-                    <span className="text-xs font-bold">Chọn tệp hình ảnh</span>
-                    <span className="text-[10px] text-slate-400 mt-0.5">JPG, PNG, WEBP tối đa 5MB</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      onChange={handleImageChange}
-                      className="hidden"
-                    />
-                  </label>
+                  <div className="flex-1 grid grid-cols-2 gap-2">
+                    <label className="flex flex-col items-center justify-center gap-1 border-2 border-dashed border-slate-200 hover:border-[#075FA8] rounded-md p-3 cursor-pointer text-slate-500 hover:text-[#075FA8] transition-colors">
+                      <Camera className="w-5 h-5" />
+                      <span className="text-xs font-bold">Chụp ảnh</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                    </label>
+                    <label className="flex flex-col items-center justify-center gap-1 border-2 border-dashed border-slate-200 hover:border-[#075FA8] rounded-md p-3 cursor-pointer text-slate-500 hover:text-[#075FA8] transition-colors">
+                      <Upload className="w-5 h-5" />
+                      <span className="text-xs font-bold">Tải ảnh lên</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
                 </div>
               </div>
 

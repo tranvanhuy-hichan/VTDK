@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo } from "react";
-import { X, Plus, ImagePlus } from "lucide-react";
+import { X, Camera, Upload } from "lucide-react";
 
 interface MultiImageUploadProps {
   existingUrls: string[];
@@ -79,14 +79,23 @@ export const MultiImageUpload: React.FC<MultiImageUploadProps> = ({
         ))}
 
         <label className="aspect-square flex flex-col items-center justify-center gap-1 border-2 border-dashed border-slate-200 hover:border-[#075FA8] rounded-md cursor-pointer text-slate-400 hover:text-[#075FA8] transition-colors">
-          <ImagePlus className="w-5 h-5" />
-          <span className="text-[10px] font-bold flex items-center gap-0.5">
-            <Plus className="w-3 h-3" /> Thêm ảnh
-          </span>
+          <Camera className="w-5 h-5" />
+          <span className="text-[10px] font-bold">Chụp ảnh</span>
           <input
             type="file"
             accept="image/*"
             capture="environment"
+            onChange={handleFilesSelected}
+            className="hidden"
+          />
+        </label>
+
+        <label className="aspect-square flex flex-col items-center justify-center gap-1 border-2 border-dashed border-slate-200 hover:border-[#075FA8] rounded-md cursor-pointer text-slate-400 hover:text-[#075FA8] transition-colors">
+          <Upload className="w-5 h-5" />
+          <span className="text-[10px] font-bold">Tải ảnh lên</span>
+          <input
+            type="file"
+            accept="image/*"
             multiple
             onChange={handleFilesSelected}
             className="hidden"
