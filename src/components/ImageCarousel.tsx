@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ImageCarouselProps {
@@ -8,6 +9,7 @@ interface ImageCarouselProps {
   alt: string;
   className?: string;
   imgClassName?: string;
+  priority?: boolean;
 }
 
 export const ImageCarousel: React.FC<ImageCarouselProps> = ({
@@ -15,6 +17,7 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({
   alt,
   className = "",
   imgClassName = "",
+  priority = false,
 }) => {
   const trackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -44,12 +47,17 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({
         className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full h-full scroll-smooth"
       >
         {images.map((src, i) => (
-          <img
-            key={`${src}-${i}`}
-            src={src}
-            alt={`${alt} ${i + 1}`}
-            className={`w-full h-full object-cover shrink-0 snap-start ${imgClassName}`}
-          />
+          <div key={`${src}-${i}`} className="relative w-full h-full shrink-0 snap-start">
+            <Image
+              src={src}
+              alt={`${alt} ${i + 1}`}
+              fill
+              sizes="(min-width: 1024px) 33vw, 100vw"
+              className={`object-cover ${imgClassName}`}
+              priority={priority && i === 0}
+              loading={priority && i === 0 ? undefined : "lazy"}
+            />
+          </div>
         ))}
       </div>
 

@@ -102,6 +102,7 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
                   alt="Mặt tiền cửa hàng Vật Tư Điện Lạnh Đông Kha tại 400 Phạm Hùng Đà Nẵng"
                   className="w-full h-full"
                   imgClassName="hover:scale-105 transition-transform duration-700"
+                  priority
                 />
 
                 {/* Gradient overlay for text contrast */}

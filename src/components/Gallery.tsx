@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { ZoomIn, X, Camera, Image as ImageIcon } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
 import { Pagination } from "./Pagination";
@@ -76,10 +77,13 @@ export const Gallery: React.FC = () => {
               onClick={() => setActiveImage(item)}
               className="group relative rounded-2xl overflow-hidden bg-slate-100 cursor-pointer border border-slate-200 shadow-xs hover:shadow-xl transition-all duration-300 aspect-[4/3]"
             >
-              <img
+              <Image
                 src={item.url}
                 alt={item.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                fill
+                sizes="(min-width: 1024px) 33vw, 50vw"
+                loading="lazy"
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
               
               {/* Hover Overlay */}

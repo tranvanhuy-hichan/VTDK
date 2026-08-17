@@ -12,10 +12,11 @@ import { Testimonials } from "../../components/Testimonials";
 import { Gallery } from "../../components/Gallery";
 import { Location } from "../../components/Location";
 
-export const revalidate = 0; // Disable caching to reflect database updates immediately
+// Statically cached and refreshed on-demand via revalidatePath("/") in
+// admin/actions.ts whenever a product/service/gallery/company edit is saved.
 
 export default async function HomePage() {
-  // Fetch categories and active products from SQLite
+  // Fetch categories and active products
   const categories = await prisma.category.findMany({
     orderBy: { name: "asc" },
   });

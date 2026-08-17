@@ -402,6 +402,7 @@ export async function createGalleryImageAction(formData: FormData) {
 
     revalidatePath("/");
     revalidatePath("/admin/gallery");
+    revalidatePath("/api/gallery");
     return { success: true };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi thêm ảnh!" };
@@ -430,6 +431,7 @@ export async function deleteGalleryImageAction(id: string) {
 
     revalidatePath("/");
     revalidatePath("/admin/gallery");
+    revalidatePath("/api/gallery");
     return { success: true };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi xóa ảnh!" };

@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Phone, MapPin, MessageSquare, ArrowUp, Lock } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
 import type { CompanyContact } from "../lib/company";
@@ -25,9 +26,12 @@ export const Footer: React.FC<FooterProps> = ({ company }) => {
           {/* Col 1: Brand Info (4 cols) */}
           <div className="lg:col-span-4 flex flex-col">
             <a href="#trang-chu" className="flex items-center gap-3 mb-4">
-              <img
+              <Image
                 src={COMPANY_DATA.logoUrl}
                 alt="Logo Vật Tư Điện Lạnh Đông Kha"
+                width={48}
+                height={48}
+                loading="lazy"
                 className="h-10 sm:h-12 w-auto object-contain"
               />
               <span className="font-black text-xl text-white tracking-tight">

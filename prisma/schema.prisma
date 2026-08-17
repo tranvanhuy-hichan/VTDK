@@ -29,6 +29,9 @@ model Product {
   variants    ProductVariant[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@index([active, createdAt])
+  @@index([categoryId])
 }
 
 model ProductVariant {
@@ -40,6 +43,8 @@ model ProductVariant {
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@index([productId])
 }
 
 model GalleryImage {
@@ -48,6 +53,8 @@ model GalleryImage {
   title     String
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
+
+  @@index([sortOrder])
 }
 
 model Service {
@@ -61,6 +68,8 @@ model Service {
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([sortOrder])
 }
 
 // Single-row table holding editable company contact info

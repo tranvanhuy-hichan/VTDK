@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { Phone, Menu, X, MapPin, ChevronRight, Shield } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
 import type { CompanyContact } from "../lib/company";
@@ -64,9 +65,12 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
           
           {/* Logo Area */}
           <a href="#trang-chu" className="flex items-center gap-2 group">
-            <img
+            <Image
               src={COMPANY_DATA.logoUrl}
               alt="Logo Vật Tư Điện Lạnh Đông Kha Đà Nẵng"
+              width={56}
+              height={56}
+              priority
               className="h-10 sm:h-12 lg:h-14 w-auto object-contain transition-transform group-hover:scale-105"
             />
             <div className="flex flex-col">
