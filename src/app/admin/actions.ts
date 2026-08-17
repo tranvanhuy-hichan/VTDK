@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import fs from "fs/promises";
 import path from "path";
+import { put, del } from "@vercel/blob";
 import { prisma } from "../../lib/prisma";
 
 const SESSION_COOKIE = "admin_session";
@@ -88,20 +89,12 @@ export async function createProductAction(formData: FormData) {
         return { error: "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP." };
       }
 
-      // Save file locally in public/uploads/
-      const uploadsDir = path.join(process.cwd(), "public", "uploads");
-      await fs.mkdir(uploadsDir, { recursive: true });
+      // Upload directly to Vercel Blob cloud storage
+      const blob = await put(`products/${Date.now()}-${imageFile.name}`, imageFile, {
+        access: "public",
+      });
 
-      const timestamp = Date.now();
-      const random = Math.floor(Math.random() * 10000);
-      const filename = `${timestamp}-${random}${ext}`;
-      const filePath = path.join(uploadsDir, filename);
-
-      const arrayBuffer = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      await fs.writeFile(filePath, buffer);
-
-      imagePath = `/uploads/${filename}`;
+      imagePath = blob.url;
     }
 
     let baseSlug = slugify(name);
@@ -177,26 +170,20 @@ export async function updateProductAction(id: string, formData: FormData) {
         return { error: "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP." };
       }
 
-      // Save file locally in public/uploads/
-      const uploadsDir = path.join(process.cwd(), "public", "uploads");
-      await fs.mkdir(uploadsDir, { recursive: true });
+      // Upload directly to Vercel Blob cloud storage
+      const blob = await put(`products/${Date.now()}-${imageFile.name}`, imageFile, {
+        access: "public",
+      });
 
-      const timestamp = Date.now();
-      const random = Math.floor(Math.random() * 10000);
-      const filename = `${timestamp}-${random}${ext}`;
-      const filePath = path.join(uploadsDir, filename);
-
-      const arrayBuffer = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      await fs.writeFile(filePath, buffer);
-
-      // Optional: Delete old image if it was in /uploads/
-      if (existingProduct.image.startsWith("/uploads/")) {
-        const oldFilePath = path.join(process.cwd(), "public", existingProduct.image);
-        await fs.unlink(oldFilePath).catch(() => {});
+      // Optional: Delete old image if it was a Vercel Blob
+      if (
+        existingProduct.image.startsWith("https://") &&
+        existingProduct.image.includes("public.blob.vercel-storage.com")
+      ) {
+        await del(existingProduct.image).catch(() => {});
       }
 
-      imagePath = `/uploads/${filename}`;
+      imagePath = blob.url;
     }
 
     let finalSlug = existingProduct.slug;
@@ -267,10 +254,15 @@ export async function deleteProductAction(id: string) {
       return { error: "Sản phẩm không tồn tại!" };
     }
 
-    // Delete image if it is in /uploads/
+    // Delete image if it is in /uploads/ or Vercel Blob
     if (existingProduct.image.startsWith("/uploads/")) {
       const filePath = path.join(process.cwd(), "public", existingProduct.image);
       await fs.unlink(filePath).catch(() => {});
+    } else if (
+      existingProduct.image.startsWith("https://") &&
+      existingProduct.image.includes("public.blob.vercel-storage.com")
+    ) {
+      await del(existingProduct.image).catch(() => {});
     }
 
     await prisma.product.delete({
