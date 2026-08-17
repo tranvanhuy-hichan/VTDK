@@ -16,6 +16,7 @@ import { logoutAction } from "../../app/admin/actions";
 
 interface AdminShellProps {
   children: React.ReactNode;
+  companyName: string;
 }
 
 const NAV_ITEMS = [
@@ -25,7 +26,7 @@ const NAV_ITEMS = [
   { href: "/admin/company", label: "Thông tin công ty", icon: Building2 },
 ];
 
-export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
+export const AdminShell: React.FC<AdminShellProps> = ({ children, companyName }) => {
   const pathname = usePathname();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
@@ -45,7 +46,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
         <img src="/images/logo.png" alt="Logo" className="h-9 w-auto shrink-0" />
         <div className="min-w-0">
           <h1 className="text-sm font-black tracking-tight leading-none text-white truncate">
-            ĐÔNG KHA ADMIN
+            {companyName}
           </h1>
           <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1 block">
             Bảng quản trị

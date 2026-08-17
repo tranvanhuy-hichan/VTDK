@@ -1,6 +1,7 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "../actions";
+import { getCompanyInfo } from "../../../lib/company";
 import { AdminShell } from "../../../components/admin/AdminShell";
 
 export default async function AdminDashboardLayout({
@@ -14,5 +15,7 @@ export default async function AdminDashboardLayout({
     redirect("/admin/login");
   }
 
-  return <AdminShell>{children}</AdminShell>;
+  const company = await getCompanyInfo();
+
+  return <AdminShell companyName={company.name}>{children}</AdminShell>;
 }
