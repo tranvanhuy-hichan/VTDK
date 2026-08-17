@@ -159,26 +159,26 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="max-w-3xl space-y-5">
-        {/* Images Card */}
-        <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-5 text-left">
-          <div className="flex items-center gap-2 mb-5">
-            <div className="p-1.5 bg-blue-50 text-[#075FA8] rounded-md border border-blue-100">
-              <Images className="w-4 h-4" />
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          {/* Images Card */}
+          <div className="lg:col-span-5 bg-white rounded-lg border border-slate-200 shadow-sm p-5 text-left">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="p-1.5 bg-blue-50 text-[#075FA8] rounded-md border border-blue-100">
+                <Images className="w-4 h-4" />
+              </div>
+              <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
+                Hình ảnh công ty
+              </h3>
             </div>
-            <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
-              Hình ảnh công ty
-            </h3>
-          </div>
 
-          <div className="space-y-5">
-            {/* Cover image */}
-            <div>
-              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
-                Ảnh đại diện (hiển thị đầu trang chủ)
-              </label>
-              <div className="flex items-center gap-4">
-                <div className="w-32 h-24 shrink-0 rounded-md border border-slate-200 overflow-hidden bg-slate-50">
+            <div className="space-y-5">
+              {/* Cover image */}
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+                  Ảnh đại diện (hiển thị đầu trang chủ)
+                </label>
+                <div className="aspect-[4/3] w-full rounded-md border border-slate-200 overflow-hidden bg-slate-50">
                   <img
                     src={isEditing ? (imagePreview ?? saved.image) : saved.image}
                     alt="Ảnh đại diện công ty"
@@ -186,8 +186,8 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                   />
                 </div>
                 {isEditing && (
-                  <div>
-                    <label className="inline-flex items-center justify-center gap-1.5 cursor-pointer text-slate-600 hover:text-[#075FA8] border border-slate-200 hover:border-[#075FA8] rounded-md px-3 py-2 text-xs font-bold transition-colors">
+                  <>
+                    <label className="mt-3 inline-flex items-center justify-center gap-1.5 w-full cursor-pointer text-slate-600 hover:text-[#075FA8] border border-slate-200 hover:border-[#075FA8] rounded-md px-3 py-2 text-xs font-bold transition-colors">
                       <Upload className="w-3.5 h-3.5" />
                       <span>Chọn ảnh khác</span>
                       <input
@@ -198,89 +198,91 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                         className="hidden"
                       />
                     </label>
-                    <p className="text-[10px] text-slate-400 mt-1.5">JPG, PNG, WEBP tối đa 5MB</p>
+                    <p className="text-[10px] text-slate-400 mt-1.5 text-center">JPG, PNG, WEBP tối đa 5MB</p>
+                  </>
+                )}
+              </div>
+
+              {/* Gallery */}
+              <div className="pt-5 border-t border-slate-100">
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+                  Thư viện ảnh
+                </label>
+                {isEditing ? (
+                  <MultiImageUpload
+                    existingUrls={existingGalleryUrls}
+                    onExistingUrlsChange={setExistingGalleryUrls}
+                    newFiles={newGalleryFiles}
+                    onNewFilesChange={setNewGalleryFiles}
+                    label=""
+                  />
+                ) : saved.images.length > 0 ? (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+                    {saved.images.map((url, i) => (
+                      <div key={i} className="aspect-square rounded-md border border-slate-200 overflow-hidden bg-slate-50">
+                        <img src={url} alt="" className="w-full h-full object-cover" />
+                      </div>
+                    ))}
                   </div>
+                ) : (
+                  <p className="text-xs text-slate-400 italic">Chưa có ảnh nào trong thư viện.</p>
                 )}
               </div>
             </div>
+          </div>
 
-            {/* Gallery */}
-            <div className="pt-5 border-t border-slate-100">
-              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
-                Thư viện ảnh
-              </label>
-              {isEditing ? (
-                <MultiImageUpload
-                  existingUrls={existingGalleryUrls}
-                  onExistingUrlsChange={setExistingGalleryUrls}
-                  newFiles={newGalleryFiles}
-                  onNewFilesChange={setNewGalleryFiles}
-                  label=""
-                />
-              ) : saved.images.length > 0 ? (
-                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2.5">
-                  {saved.images.map((url, i) => (
-                    <div key={i} className="aspect-square rounded-md border border-slate-200 overflow-hidden bg-slate-50">
-                      <img src={url} alt="" className="w-full h-full object-cover" />
+          {/* Info Sections */}
+          <div className="lg:col-span-7 space-y-5">
+            {SECTIONS.map((section) => (
+              <div
+                key={section.id}
+                className="bg-white rounded-lg border border-slate-200 shadow-sm p-5 text-left"
+              >
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="p-1.5 bg-blue-50 text-[#075FA8] rounded-md border border-blue-100">
+                    <section.icon className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
+                    {section.title}
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
+                  {section.fields.map(({ key, label, placeholder, multiline, wide }) => (
+                    <div key={key} className={wide ? "sm:col-span-2" : ""}>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                        {label}
+                      </label>
+                      {isEditing ? (
+                        multiline ? (
+                          <textarea
+                            value={form[key]}
+                            onChange={(e) => handleChange(key, e.target.value)}
+                            placeholder={placeholder}
+                            rows={3}
+                            className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-3.5 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            value={form[key]}
+                            onChange={(e) => handleChange(key, e.target.value)}
+                            placeholder={placeholder}
+                            className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-3.5 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                          />
+                        )
+                      ) : (
+                        <p className="text-sm font-semibold text-slate-800 break-words">
+                          {saved[key] || <span className="text-slate-400 font-normal italic">Chưa có</span>}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
-              ) : (
-                <p className="text-xs text-slate-400 italic">Chưa có ảnh nào trong thư viện.</p>
-              )}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
-
-        {/* Info Sections */}
-        {SECTIONS.map((section) => (
-          <div
-            key={section.id}
-            className="bg-white rounded-lg border border-slate-200 shadow-sm p-5 text-left"
-          >
-            <div className="flex items-center gap-2 mb-5">
-              <div className="p-1.5 bg-blue-50 text-[#075FA8] rounded-md border border-blue-100">
-                <section.icon className="w-4 h-4" />
-              </div>
-              <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
-                {section.title}
-              </h3>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
-              {section.fields.map(({ key, label, placeholder, multiline, wide }) => (
-                <div key={key} className={wide ? "sm:col-span-2" : ""}>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-                    {label}
-                  </label>
-                  {isEditing ? (
-                    multiline ? (
-                      <textarea
-                        value={form[key]}
-                        onChange={(e) => handleChange(key, e.target.value)}
-                        placeholder={placeholder}
-                        rows={3}
-                        className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-3.5 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
-                      />
-                    ) : (
-                      <input
-                        type="text"
-                        value={form[key]}
-                        onChange={(e) => handleChange(key, e.target.value)}
-                        placeholder={placeholder}
-                        className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-3.5 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
-                      />
-                    )
-                  ) : (
-                    <p className="text-sm font-semibold text-slate-800 break-words">
-                      {saved[key] || <span className="text-slate-400 font-normal italic">Chưa có</span>}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
 
         {isEditing && (
           <div className="sticky bottom-0 bg-white/95 backdrop-blur-xs border border-slate-200 rounded-lg shadow-lg p-3.5 flex items-center gap-3">
