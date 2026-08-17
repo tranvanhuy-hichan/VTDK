@@ -15,6 +15,7 @@ import {
   updateServiceAction,
   deleteServiceAction,
 } from "../../app/admin/actions";
+import { MultiImageUpload } from "./MultiImageUpload";
 
 interface Service {
   id: string;
@@ -23,6 +24,7 @@ interface Service {
   features: string[];
   icon: string;
   image: string;
+  images: string[];
   sortOrder: number;
 }
 
@@ -44,6 +46,8 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
   const [featureRows, setFeatureRows] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [existingGalleryUrls, setExistingGalleryUrls] = useState<string[]>([]);
+  const [newGalleryFiles, setNewGalleryFiles] = useState<File[]>([]);
 
   const handleOpenAdd = () => {
     setIsEditing(false);
@@ -54,6 +58,8 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
     setFeatureRows([]);
     setImageFile(null);
     setImagePreview(null);
+    setExistingGalleryUrls([]);
+    setNewGalleryFiles([]);
     setIsModalOpen(true);
   };
 
@@ -66,6 +72,8 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
     setFeatureRows(service.features);
     setImageFile(null);
     setImagePreview(service.image);
+    setExistingGalleryUrls(service.images);
+    setNewGalleryFiles([]);
     setIsModalOpen(true);
   };
 
@@ -110,6 +118,8 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
     featureRows.forEach((f) => {
       if (f.trim()) formData.append("feature", f.trim());
     });
+    existingGalleryUrls.forEach((url) => formData.append("existingImages", url));
+    newGalleryFiles.forEach((file) => formData.append("newImages", file));
 
     const res = isEditing && editingService
       ? await updateServiceAction(editingService.id, formData)
@@ -339,6 +349,17 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
                       ))}
                     </div>
                   )}
+                </div>
+
+                {/* Full Width: Gallery Images */}
+                <div className="lg:col-span-12">
+                  <MultiImageUpload
+                    existingUrls={existingGalleryUrls}
+                    onExistingUrlsChange={setExistingGalleryUrls}
+                    newFiles={newGalleryFiles}
+                    onNewFilesChange={setNewGalleryFiles}
+                    label="Thư viện ảnh giải pháp (khách hàng lướt xem)"
+                  />
                 </div>
               </div>
 

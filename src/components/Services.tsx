@@ -10,6 +10,7 @@ import {
   ShieldAlert
 } from "lucide-react";
 import type { CompanyContact } from "../lib/company";
+import { ImageCarousel } from "./ImageCarousel";
 
 interface ServiceItem {
   id: string;
@@ -18,6 +19,7 @@ interface ServiceItem {
   features: string[];
   icon: string;
   image: string;
+  images: string[];
 }
 
 interface ServicesProps {
@@ -68,12 +70,13 @@ export const Services: React.FC<ServicesProps> = ({ company, services }) => {
                 {/* Image Col (5 cols) */}
                 <div className={`lg:col-span-5 ${isEven ? "lg:order-2" : "lg:order-1"}`}>
                   <div className="relative rounded-2xl overflow-hidden shadow-lg aspect-[16/10] bg-slate-200">
-                    <img
-                      src={service.image}
+                    <ImageCarousel
+                      images={[service.image, ...service.images]}
                       alt={service.title}
-                      className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full"
+                      imgClassName="hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent pointer-events-none" />
                     <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-200 shadow text-xs font-bold text-slate-800 flex items-center gap-2">
                       <ShieldAlert className="w-4 h-4 text-emerald-600" />
                       <span>Cam kết chuẩn kỹ thuật 100%</span>

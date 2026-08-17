@@ -48,6 +48,44 @@ function parseFeatures(formData: FormData) {
     .filter((f) => f.length > 0);
 }
 
+const isBlobUrl = (url: string) =>
+  url.startsWith("https://") && url.includes("public.blob.vercel-storage.com");
+
+// Upload any new gallery image files (field "newImages") to Vercel Blob and
+// combine with the existing URLs the client kept (field "existingImages").
+async function processGalleryImages(
+  formData: FormData,
+  folder: string
+): Promise<{ images: string[] } | { error: string }> {
+  const existingImages = (formData.getAll("existingImages") as string[]).filter(Boolean);
+  const newFiles = (formData.getAll("newImages") as File[]).filter((f) => f && f.size > 0);
+
+  const uploadedUrls: string[] = [];
+  for (const file of newFiles) {
+    if (file.size > 5 * 1024 * 1024) {
+      return { error: `Ảnh "${file.name}" vượt quá 5MB!` };
+    }
+    const ext = path.extname(file.name).toLowerCase();
+    if (![".jpg", ".jpeg", ".png", ".webp"].includes(ext)) {
+      return { error: `Ảnh "${file.name}" sai định dạng. Chỉ chấp nhận JPG, JPEG, PNG, WEBP.` };
+    }
+    const blob = await put(`${folder}/${Date.now()}-${file.name}`, file, { access: "public" });
+    uploadedUrls.push(blob.url);
+  }
+
+  return { images: [...existingImages, ...uploadedUrls] };
+}
+
+// Delete blob-hosted images that were removed (present in oldImages but not in keptImages)
+async function deleteRemovedBlobImages(oldImages: string[], keptImages: string[]) {
+  const keptSet = new Set(keptImages);
+  await Promise.all(
+    oldImages
+      .filter((url) => !keptSet.has(url) && isBlobUrl(url))
+      .map((url) => del(url).catch(() => {}))
+  );
+}
+
 // 1. Admin Login
 export async function loginAction(password: string) {
   if (password === ADMIN_PASSWORD) {
@@ -131,6 +169,11 @@ export async function createProductAction(formData: FormData) {
 
     const variants = parseVariants(formData);
 
+    const galleryResult = await processGalleryImages(formData, "products");
+    if ("error" in galleryResult) {
+      return { error: galleryResult.error };
+    }
+
     await prisma.product.create({
       data: {
         name,
@@ -138,6 +181,7 @@ export async function createProductAction(formData: FormData) {
         price,
         shortDesc: shortDesc || null,
         image: imagePath,
+        images: galleryResult.images,
         active,
         categoryId,
         variants: { create: variants },
@@ -229,6 +273,12 @@ export async function updateProductAction(id: string, formData: FormData) {
 
     const variants = parseVariants(formData);
 
+    const galleryResult = await processGalleryImages(formData, "products");
+    if ("error" in galleryResult) {
+      return { error: galleryResult.error };
+    }
+    await deleteRemovedBlobImages(existingProduct.images, galleryResult.images);
+
     await prisma.product.update({
       where: { id },
       data: {
@@ -237,6 +287,7 @@ export async function updateProductAction(id: string, formData: FormData) {
         price,
         shortDesc: shortDesc || null,
         image: imagePath,
+        images: galleryResult.images,
         active,
         categoryId,
         variants: {
@@ -290,12 +341,12 @@ export async function deleteProductAction(id: string) {
     if (existingProduct.image.startsWith("/uploads/")) {
       const filePath = path.join(process.cwd(), "public", existingProduct.image);
       await fs.unlink(filePath).catch(() => {});
-    } else if (
-      existingProduct.image.startsWith("https://") &&
-      existingProduct.image.includes("public.blob.vercel-storage.com")
-    ) {
+    } else if (isBlobUrl(existingProduct.image)) {
       await del(existingProduct.image).catch(() => {});
     }
+    await Promise.all(
+      existingProduct.images.filter(isBlobUrl).map((url) => del(url).catch(() => {}))
+    );
 
     await prisma.product.delete({
       where: { id },
@@ -445,6 +496,14 @@ export async function updateCompanyInfoAction(formData: FormData) {
       imagePath = blob.url;
     }
 
+    const galleryResult = await processGalleryImages(formData, "company");
+    if ("error" in galleryResult) {
+      return { error: galleryResult.error };
+    }
+    if (existing) {
+      await deleteRemovedBlobImages(existing.images, galleryResult.images);
+    }
+
     const data = {
       name,
       address,
@@ -457,6 +516,7 @@ export async function updateCompanyInfoAction(formData: FormData) {
       googleMapsEmbed,
       workingHours,
       image: imagePath,
+      images: galleryResult.images,
     };
 
     if (existing) {
@@ -510,6 +570,11 @@ export async function createServiceAction(formData: FormData) {
 
     const maxOrder = await prisma.service.aggregate({ _max: { sortOrder: true } });
 
+    const galleryResult = await processGalleryImages(formData, "services");
+    if ("error" in galleryResult) {
+      return { error: galleryResult.error };
+    }
+
     await prisma.service.create({
       data: {
         title,
@@ -517,6 +582,7 @@ export async function createServiceAction(formData: FormData) {
         features,
         icon,
         image: blob.url,
+        images: galleryResult.images,
         sortOrder: (maxOrder._max.sortOrder ?? -1) + 1,
       },
     });
@@ -578,9 +644,15 @@ export async function updateServiceAction(id: string, formData: FormData) {
       imagePath = blob.url;
     }
 
+    const galleryResult = await processGalleryImages(formData, "services");
+    if ("error" in galleryResult) {
+      return { error: galleryResult.error };
+    }
+    await deleteRemovedBlobImages(existingService.images, galleryResult.images);
+
     await prisma.service.update({
       where: { id },
-      data: { title, description, features, icon, image: imagePath },
+      data: { title, description, features, icon, image: imagePath, images: galleryResult.images },
     });
 
     revalidatePath("/");
@@ -602,12 +674,12 @@ export async function deleteServiceAction(id: string) {
       return { error: "Giải pháp không tồn tại!" };
     }
 
-    if (
-      existingService.image.startsWith("https://") &&
-      existingService.image.includes("public.blob.vercel-storage.com")
-    ) {
+    if (isBlobUrl(existingService.image)) {
       await del(existingService.image).catch(() => {});
     }
+    await Promise.all(
+      existingService.images.filter(isBlobUrl).map((url: string) => del(url).catch(() => {}))
+    );
 
     await prisma.service.delete({ where: { id } });
 

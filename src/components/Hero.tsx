@@ -1,6 +1,7 @@
 import React from "react";
 import { Phone, MapPin, CheckCircle2, MessageSquare, ArrowRight, ShieldCheck } from "lucide-react";
 import type { CompanyContact } from "../lib/company";
+import { ImageCarousel } from "./ImageCarousel";
 
 interface HeroProps {
   company: CompanyContact;
@@ -96,14 +97,15 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
 
               {/* Main Image Container */}
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-slate-900 aspect-[4/3] sm:aspect-[16/11]">
-                <img
-                  src={company.image}
+                <ImageCarousel
+                  images={[company.image, ...company.images]}
                   alt="Mặt tiền cửa hàng Vật Tư Điện Lạnh Đông Kha tại 400 Phạm Hùng Đà Nẵng"
-                  className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full"
+                  imgClassName="hover:scale-105 transition-transform duration-700"
                 />
-                
+
                 {/* Gradient overlay for text contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
 
                 {/* Floating Badge Bottom Left: Address */}
                 <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 bg-white/95 backdrop-blur-md p-3 sm:p-4 rounded-xl border border-slate-200/80 shadow-lg flex items-center gap-3">

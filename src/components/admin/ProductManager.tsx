@@ -20,6 +20,7 @@ import {
   toggleProductActiveAction,
 } from "../../app/admin/actions";
 import { Pagination } from "../Pagination";
+import { MultiImageUpload } from "./MultiImageUpload";
 
 const PAGE_SIZE = 10;
 
@@ -43,6 +44,7 @@ interface Product {
   price: number;
   shortDesc: string | null;
   image: string;
+  images: string[];
   active: boolean;
   categoryId: string;
   category: Category;
@@ -76,6 +78,8 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [variantRows, setVariantRows] = useState<{ label: string; price: string }[]>([]);
+  const [existingGalleryUrls, setExistingGalleryUrls] = useState<string[]>([]);
+  const [newGalleryFiles, setNewGalleryFiles] = useState<File[]>([]);
 
   // Open modal for creating product
   const handleOpenAdd = () => {
@@ -89,6 +93,8 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
     setImageFile(null);
     setImagePreview(null);
     setVariantRows([]);
+    setExistingGalleryUrls([]);
+    setNewGalleryFiles([]);
     setIsModalOpen(true);
   };
 
@@ -106,6 +112,8 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
     setVariantRows(
       product.variants.map((v) => ({ label: v.label, price: v.price.toString() }))
     );
+    setExistingGalleryUrls(product.images);
+    setNewGalleryFiles([]);
     setIsModalOpen(true);
   };
 
@@ -163,6 +171,8 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
         formData.append("variantPrice", row.price);
       }
     });
+    existingGalleryUrls.forEach((url) => formData.append("existingImages", url));
+    newGalleryFiles.forEach((file) => formData.append("newImages", file));
 
     const res = isEditing && editingProduct
       ? await updateProductAction(editingProduct.id, formData)
@@ -516,6 +526,17 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                       Hiển thị sản phẩm lên Website
                     </label>
                   </div>
+                </div>
+
+                {/* Full Width: Gallery Images (customers can browse multiple photos) */}
+                <div className="lg:col-span-12">
+                  <MultiImageUpload
+                    existingUrls={existingGalleryUrls}
+                    onExistingUrlsChange={setExistingGalleryUrls}
+                    newFiles={newGalleryFiles}
+                    onNewFilesChange={setNewGalleryFiles}
+                    label="Thư viện ảnh sản phẩm (khách hàng lướt xem)"
+                  />
                 </div>
 
                 {/* Full Width: Product Variants (size/thickness/length options with own price) */}

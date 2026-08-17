@@ -13,6 +13,7 @@ export interface CompanyContact {
   googleMapsEmbed: string;
   workingHours: string;
   image: string;
+  images: string[];
 }
 
 const FALLBACK: CompanyContact = {
@@ -27,6 +28,7 @@ const FALLBACK: CompanyContact = {
   googleMapsEmbed: COMPANY_DATA.googleMapsEmbed,
   workingHours: COMPANY_DATA.workingHours,
   image: COMPANY_DATA.storefrontUrl,
+  images: [],
 };
 
 export async function getCompanyInfo(): Promise<CompanyContact> {

@@ -21,7 +21,8 @@ model Product {
   slug        String    @unique
   price       Int
   shortDesc   String?
-  image       String    // e.g. /uploads/xxx.webp
+  image       String    // cover image, e.g. /uploads/xxx.webp
+  images      String[]  @default([]) // additional gallery images
   active      Boolean   @default(true)
   categoryId  String
   category    Category  @relation(fields: [categoryId], references: [id])
@@ -55,7 +56,8 @@ model Service {
   description String
   features    String[]
   icon        String   @default("ThermometerSun")
-  image       String
+  image       String    // cover image
+  images      String[] @default([]) // additional gallery images
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -74,6 +76,7 @@ model CompanyInfo {
   googleMapsUrl   String
   googleMapsEmbed String
   workingHours    String
-  image           String   @default("/images/storefront.png")
+  image           String   @default("/images/storefront.png") // cover image
+  images          String[] @default([]) // additional gallery images
   updatedAt       DateTime @updatedAt
 }

@@ -46,6 +46,14 @@
   background: #0B1F33;
 }
 
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Custom animations */
 @keyframes pulse-subtle {
   0%, 100% {
