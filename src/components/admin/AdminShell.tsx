@@ -32,7 +32,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children, companyName })
 
   const handleLogout = async () => {
     await logoutAction();
-    window.location.href = "/admin/login";
+    window.location.href = "/";
   };
 
   const isActive = (href: string) =>

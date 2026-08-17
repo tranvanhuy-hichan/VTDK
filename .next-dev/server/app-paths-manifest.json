@@ -1,5 +1,6 @@
 {
-  "/api/gallery/route": "app/api/gallery/route.js",
+  "/admin/login/page": "app/admin/login/page.js",
   "/(site)/san-pham/[slug]/page": "app/(site)/san-pham/[slug]/page.js",
-  "/(site)/page": "app/(site)/page.js"
+  "/(site)/page": "app/(site)/page.js",
+  "/admin/(dashboard)/page": "app/admin/(dashboard)/page.js"
 }
