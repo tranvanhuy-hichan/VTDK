@@ -7,7 +7,6 @@ import { QuickContactBar } from "../../components/QuickContactBar";
 import { ProductList } from "../../components/ProductList";
 import { Services } from "../../components/Services";
 import { WhyChooseUs } from "../../components/WhyChooseUs";
-import { BTUCalculator } from "../../components/BTUCalculator";
 import { CustomerTypes } from "../../components/CustomerTypes";
 import { Testimonials } from "../../components/Testimonials";
 import { Gallery } from "../../components/Gallery";
@@ -43,7 +42,6 @@ export default async function HomePage() {
       <ProductList initialCategories={categories} initialProducts={products} company={company} />
       <Services company={company} services={services} />
       <WhyChooseUs company={company} />
-      <BTUCalculator />
       <CustomerTypes />
       <Testimonials />
       <Gallery />

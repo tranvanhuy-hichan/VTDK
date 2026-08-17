@@ -5,6 +5,7 @@ import { Phone, PackageOpen, X, MessageSquare, Eye } from "lucide-react";
 import type { CompanyContact } from "../lib/company";
 import { Pagination } from "./Pagination";
 import { ImageCarousel } from "./ImageCarousel";
+import { BTUCalculatorModal } from "./BTUCalculatorModal";
 
 const PAGE_SIZE = 9;
 
@@ -297,6 +298,9 @@ export const ProductList: React.FC<ProductListProps> = ({
           <p className="mt-3 text-base sm:text-lg text-slate-600 font-normal">
             Bảng giá tham khảo vật tư điện lạnh chất lượng cao của Đông Kha.
           </p>
+          <div className="mt-5">
+            <BTUCalculatorModal />
+          </div>
         </div>
 
         {/* Category Tabs Filter */}
