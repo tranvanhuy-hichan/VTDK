@@ -114,7 +114,7 @@ const ProductCard: React.FC<{
           )}
 
           {product.variants.length > 0 && (
-            <div className="mb-2 sm:mb-4">
+            <div className="hidden sm:block mb-2 sm:mb-4">
               <VariantSelector
                 variants={product.variants}
                 selectedIndex={selectedVariantIndex}
