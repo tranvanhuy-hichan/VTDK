@@ -242,7 +242,7 @@ const ProductDetailModal: React.FC<{
                   className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] dark:hover:bg-blue-600 text-white font-extrabold text-xs sm:text-sm py-3 px-2 rounded-xl shadow-xs transition-colors text-center"
                 >
                   <Phone className="w-4 h-4 fill-current shrink-0" />
-                  <span className="truncate">Gọi {company.hotline}</span>
+                  <span>Gọi tư vấn</span>
                 </a>
                 <a
                   href={`${company.zaloUrl}?text=${encodeURIComponent(`Chào Đông Kha, tôi muốn tư vấn báo giá sản phẩm: ${product.name}${selectedVariant ? ` (${selectedVariant.label})` : ""}`)}`}
@@ -251,7 +251,7 @@ const ProductDetailModal: React.FC<{
                   className="inline-flex items-center justify-center gap-1.5 bg-[#0068FF] hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm py-3 px-2 rounded-xl shadow-xs transition-colors text-center"
                 >
                   <MessageSquare className="w-4 h-4 fill-current shrink-0" />
-                  <span className="truncate">Nhắn Zalo Báo Giá</span>
+                  <span>Nhắn Zalo</span>
                 </a>
               </div>
             </div>
