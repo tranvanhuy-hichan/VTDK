@@ -2837,6 +2837,9 @@
     .sm\:aspect-\[16\/11\] {
       aspect-ratio: 16/11;
     }
+    .sm\:h-3\.5 {
+      height: calc(var(--spacing) * 3.5);
+    }
     .sm\:h-5 {
       height: calc(var(--spacing) * 5);
     }
@@ -2845,6 +2848,9 @@
     }
     .sm\:min-h-\[420px\] {
       min-height: 420px;
+    }
+    .sm\:w-3\.5 {
+      width: calc(var(--spacing) * 3.5);
     }
     .sm\:w-5 {
       width: calc(var(--spacing) * 5);

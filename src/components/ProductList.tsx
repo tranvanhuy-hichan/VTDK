@@ -147,10 +147,10 @@ const ProductCard: React.FC<{
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               aria-label="Nhắn Zalo báo giá"
-              className="inline-flex items-center justify-center gap-1.5 bg-[#0068FF] hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm py-2 px-3 sm:py-2.5 sm:px-4 rounded-lg sm:rounded-xl shadow-xs transition-colors"
+              className="inline-flex items-center justify-center gap-1.5 bg-[#0068FF] hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm p-2.5 sm:py-2.5 sm:px-4 rounded-xl shadow-xs transition-colors"
             >
-              <MessageSquare className="w-3.5 h-3.5 fill-current" />
-              <span>Nhắn Zalo</span>
+              <MessageSquare className="w-4 h-4 sm:w-3.5 sm:h-3.5 fill-current" />
+              <span className="hidden sm:inline">Nhắn Zalo</span>
             </a>
           </div>
         </div>
