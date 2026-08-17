@@ -64,7 +64,7 @@ export const Gallery: React.FC = () => {
             Hình ảnh hoạt động tại Đông Kha
           </h2>
           <p className="mt-3 text-base sm:text-lg text-slate-600 font-normal">
-            Hình ảnh thực tế cửa hàng, kho bãi và giao hàng tại Đà Nẵng. (Tự động hiển thị tất cả ảnh thả vào thư mục <code className="bg-slate-100 px-2 py-0.5 rounded text-blue-700 font-bold">public/images/gallery/</code>).
+            Hình ảnh thực tế cửa hàng, kho bãi và giao hàng tại Đà Nẵng.
           </p>
         </div>
 
