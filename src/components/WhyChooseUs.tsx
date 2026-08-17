@@ -1,13 +1,8 @@
 import React from "react";
-import { Layers, Headphones, BadgePercent, Store, ShieldCheck } from "lucide-react";
+import { Layers, Headphones, BadgePercent, Store } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
-import type { CompanyContact } from "../lib/company";
 
-interface WhyChooseUsProps {
-  company: CompanyContact;
-}
-
-export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ company }) => {
+export const WhyChooseUs: React.FC = () => {
   const getPillarIcon = (iconName: string) => {
     switch (iconName) {
       case "Layers":
@@ -66,27 +61,6 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ company }) => {
               </p>
             </div>
           ))}
-        </div>
-
-        {/* Highlight Guarantee Box */}
-        <div className="mt-12 sm:mt-16 bg-gradient-to-r from-blue-900/50 via-slate-900 to-blue-900/50 rounded-2xl p-6 sm:p-8 border border-blue-700/50 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
-            <div>
-              <h4 className="text-lg font-bold text-white">An tâm kiểm tra hàng trước khi thanh toán</h4>
-              <p className="text-xs sm:text-sm text-slate-300">
-                Khách hàng tại Đà Nẵng có thể qua trực tiếp 400 Phạm Hùng để thử lốc, thử bo mạch và nhận vật tư ngay.
-              </p>
-            </div>
-          </div>
-          <a
-            href={`tel:${company.hotlineRaw}`}
-            className="shrink-0 bg-[#F47A20] hover:bg-[#E06912] text-white font-extrabold text-base px-6 py-3.5 rounded-xl shadow transition-colors"
-          >
-            Liên hệ Đông Kha ngay
-          </a>
         </div>
 
       </div>
