@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Phone, MapPin, MessageSquare, ArrowUp } from "lucide-react";
+import Link from "next/link";
+import { Phone, MapPin, MessageSquare, ArrowUp, Lock } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
 import type { CompanyContact } from "../lib/company";
 
@@ -139,7 +140,15 @@ export const Footer: React.FC<FooterProps> = ({ company }) => {
 
         {/* Footer Bottom Bar */}
         <div className="pt-8 border-t border-slate-800/60 grid grid-cols-1 sm:grid-cols-3 items-center gap-4 text-xs text-slate-400">
-          <div className="hidden sm:block"></div>
+          <div className="flex justify-center sm:justify-start order-2 sm:order-1">
+            <Link
+              href="/admin/login"
+              className="flex items-center gap-1.5 hover:text-white transition-colors"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>Đăng nhập quản trị</span>
+            </Link>
+          </div>
           <p className="text-center">© 2026 | designed by Tran Van Huy</p>
           <div className="flex justify-center sm:justify-end">
             <button
