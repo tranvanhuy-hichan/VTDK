@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Phone, PackageOpen, X, MessageSquare, Eye, Search } from "lucide-react";
+import { Phone, PackageOpen, X, MessageSquare, Search } from "lucide-react";
 import type { CompanyContact } from "../lib/company";
 import { Pagination } from "./Pagination";
 import { ImageCarousel } from "./ImageCarousel";
@@ -90,7 +90,7 @@ const ProductCard: React.FC<{
           className="w-full h-full"
           imgClassName="group-hover:scale-105 transition-transform duration-500"
         />
-        <span className="absolute top-3 left-3 bg-[#075FA8]/90 backdrop-blur-xs text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md shadow uppercase tracking-wider pointer-events-none">
+        <span className="hidden sm:inline absolute top-3 left-3 bg-[#075FA8]/90 backdrop-blur-xs text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md shadow uppercase tracking-wider pointer-events-none">
           {product.category.name}
         </span>
       </div>
@@ -136,17 +136,6 @@ const ProductCard: React.FC<{
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onViewDetail(product);
-              }}
-              aria-label="Xem chi tiết"
-              className="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-xs sm:text-sm p-2 sm:py-2.5 sm:px-3 rounded-lg sm:rounded-xl shadow-xs transition-colors !min-h-0"
-            >
-              <Eye className="w-3.5 h-3.5" />
-            </button>
             <a
               href={`tel:${hotlineRaw}`}
               onClick={(e) => e.stopPropagation()}
