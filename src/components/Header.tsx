@@ -3,12 +3,14 @@
 import React, { useState, useEffect } from "react";
 import { Phone, Menu, X, MapPin, ChevronRight, Shield } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
+import type { CompanyContact } from "../lib/company";
 
 interface HeaderProps {
   activeSection?: string;
+  company: CompanyContact;
 }
 
-export const Header: React.FC<HeaderProps> = () => {
+export const Header: React.FC<HeaderProps> = ({ company }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -37,7 +39,7 @@ export const Header: React.FC<HeaderProps> = () => {
           <div className="flex items-center gap-1.5 text-slate-300 truncate">
             <MapPin className="w-3.5 h-3.5 text-[#F47A20] shrink-0" />
             <span className="truncate">
-              <strong>Cửa hàng:</strong> 400 Phạm Hùng, Hòa Xuân, Đà Nẵng
+              <strong>Cửa hàng:</strong> {company.address}
             </span>
           </div>
           <div className="hidden lg:flex items-center gap-3.5 text-[11px]">
@@ -45,7 +47,7 @@ export const Header: React.FC<HeaderProps> = () => {
               <Shield className="w-3 h-3 text-emerald-400" /> Sỉ &amp; Lẻ Vật Tư Điện Lạnh Chuẩn Kỹ Thuật
             </span>
             <span className="text-slate-650">|</span>
-            <span className="text-slate-300">Mở cửa: {COMPANY_DATA.workingHours}</span>
+            <span className="text-slate-300">Mở cửa: {company.workingHours}</span>
           </div>
         </div>
       </div>
@@ -93,11 +95,11 @@ export const Header: React.FC<HeaderProps> = () => {
           {/* Desktop Hotline CTA Button */}
           <div className="hidden sm:flex items-center gap-3">
             <a
-              href={`tel:${COMPANY_DATA.hotlineRaw}`}
+              href={`tel:${company.hotlineRaw}`}
               className="inline-flex items-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-4 py-2.5 rounded-lg shadow-sm transition-all duration-200"
             >
               <Phone className="w-3.5 h-3.5 fill-current text-white" />
-              <span>Hotline: {COMPANY_DATA.hotline}</span>
+              <span>Hotline: {company.hotline}</span>
             </a>
           </div>
 
@@ -132,15 +134,15 @@ export const Header: React.FC<HeaderProps> = () => {
 
             <div className="mt-5 pt-4 border-t border-slate-200 flex flex-col gap-3">
               <a
-                href={`tel:${COMPANY_DATA.hotlineRaw}`}
+                href={`tel:${company.hotlineRaw}`}
                 className="w-full flex items-center justify-center gap-3 bg-[#075FA8] text-white font-bold py-3.5 px-4 rounded-xl shadow text-lg"
               >
                 <Phone className="w-5 h-5 fill-current" />
-                <span>Gọi Hotline: {COMPANY_DATA.hotline}</span>
+                <span>Gọi Hotline: {company.hotline}</span>
               </a>
               
               <a
-                href={COMPANY_DATA.zaloUrl}
+                href={company.zaloUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full flex items-center justify-center gap-2 bg-[#0068FF] text-white font-bold py-3 px-4 rounded-xl text-base"

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Phone, Grid, PackageOpen } from "lucide-react";
-import { COMPANY_DATA } from "../data/company";
+import type { CompanyContact } from "../lib/company";
 
 interface Category {
   id: string;
@@ -31,9 +31,10 @@ interface Product {
 interface ProductListProps {
   initialCategories: Category[];
   initialProducts: Product[];
+  company: CompanyContact;
 }
 
-const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
+const ProductCard: React.FC<{ product: Product; hotlineRaw: string }> = ({ product, hotlineRaw }) => {
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const selectedVariant =
     product.variants.length > 0 ? product.variants[selectedVariantIndex] : null;
@@ -98,7 +99,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
           </div>
 
           <a
-            href={`tel:${COMPANY_DATA.hotlineRaw}`}
+            href={`tel:${hotlineRaw}`}
             className="inline-flex items-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm py-2.5 px-4 rounded-xl shadow-xs transition-colors"
           >
             <Phone className="w-3.5 h-3.5 fill-current" />
@@ -113,6 +114,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
 export const ProductList: React.FC<ProductListProps> = ({
   initialCategories,
   initialProducts,
+  company,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
@@ -170,7 +172,7 @@ export const ProductList: React.FC<ProductListProps> = ({
         {filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} hotlineRaw={company.hotlineRaw} />
             ))}
           </div>
         ) : (

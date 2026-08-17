@@ -10,6 +10,7 @@ import {
   Loader2,
   ImageOff,
   ArrowLeft,
+  Building2,
 } from "lucide-react";
 import {
   createGalleryImageAction,
@@ -111,13 +112,22 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
               </span>
             </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 bg-slate-800 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Đăng xuất</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin/company"
+              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
+            >
+              <Building2 className="w-3.5 h-3.5" />
+              <span>Thông tin công ty</span>
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 bg-slate-800 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Đăng xuất</span>
+            </button>
+          </div>
         </div>
       </header>
 

@@ -3,6 +3,7 @@ import "../index.css";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { FloatingContact } from "../components/FloatingContact";
+import { getCompanyInfo } from "../lib/company";
 
 export const metadata = {
   title: "Công ty TNHH Vật Tư Đông Kha",
@@ -16,11 +17,13 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const company = await getCompanyInfo();
+
   return (
     <html lang="vi">
       <head>
@@ -80,10 +83,10 @@ export default function RootLayout({
       </head>
       <body className="bg-[#F6F8FA] text-slate-800 antialiased selection:bg-[#075FA8] selection:text-white">
         <div className="min-h-screen flex flex-col bg-[#F6F8FA] text-slate-800 antialiased font-sans">
-          <Header />
+          <Header company={company} />
           <main className="flex-1">{children}</main>
-          <FloatingContact />
-          <Footer />
+          <FloatingContact company={company} />
+          <Footer company={company} />
         </div>
       </body>
     </html>

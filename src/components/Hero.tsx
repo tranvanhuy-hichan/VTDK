@@ -1,8 +1,13 @@
 import React from "react";
 import { Phone, MapPin, CheckCircle2, MessageSquare, ArrowRight, ShieldCheck } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
+import type { CompanyContact } from "../lib/company";
 
-export const Hero: React.FC = () => {
+interface HeroProps {
+  company: CompanyContact;
+}
+
+export const Hero: React.FC<HeroProps> = ({ company }) => {
   return (
     <section id="trang-chu" className="relative bg-gradient-to-b from-slate-50 via-white to-[#F6F8FA] pt-12 sm:pt-16 lg:pt-20 pb-16 sm:pb-20 overflow-hidden">
       {/* Decorative Light Background Accents */}
@@ -37,16 +42,16 @@ export const Hero: React.FC = () => {
             <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 sm:gap-4 mb-8 sm:mb-10">
               {/* Primary CTA: Call */}
               <a
-                href={`tel:${COMPANY_DATA.hotlineRaw}`}
+                href={`tel:${company.hotlineRaw}`}
                 className="flex items-center justify-center gap-3 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold text-lg px-6 py-4 rounded-xl shadow-lg shadow-blue-700/25 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
               >
                 <Phone className="w-5 h-5 fill-current text-white" />
-                <span>Gọi tư vấn: {COMPANY_DATA.hotline}</span>
+                <span>Gọi tư vấn: {company.hotline}</span>
               </a>
 
               {/* Secondary CTA: Zalo */}
               <a
-                href={COMPANY_DATA.zaloUrl}
+                href={company.zaloUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2.5 bg-[#0068FF] hover:bg-blue-700 text-white font-bold text-base px-5 py-4 rounded-xl shadow-md transition-all duration-300 transform hover:-translate-y-0.5"
@@ -109,7 +114,7 @@ export const Hero: React.FC = () => {
                   <div className="flex flex-col text-left overflow-hidden">
                     <span className="text-[11px] font-bold text-[#075FA8] uppercase tracking-wide">Địa chỉ cửa hàng</span>
                     <span className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
-                      400 Phạm Hùng, Hòa Xuân, Đà Nẵng
+                      {company.address}
                     </span>
                   </div>
                 </div>

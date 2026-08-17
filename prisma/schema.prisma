@@ -48,3 +48,19 @@ model GalleryImage {
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
 }
+
+// Single-row table holding editable company contact info
+model CompanyInfo {
+  id              String   @id @default(uuid())
+  name            String
+  address         String
+  hotline         String
+  hotlineRaw      String
+  zaloUrl         String
+  whatsAppUrl     String
+  facebookUrl     String
+  googleMapsUrl   String
+  googleMapsEmbed String
+  workingHours    String
+  updatedAt       DateTime @updatedAt
+}

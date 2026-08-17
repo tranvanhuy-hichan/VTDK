@@ -10,8 +10,13 @@ import {
   ShieldAlert
 } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
+import type { CompanyContact } from "../lib/company";
 
-export const Services: React.FC = () => {
+interface ServicesProps {
+  company: CompanyContact;
+}
+
+export const Services: React.FC<ServicesProps> = ({ company }) => {
   const getServiceIcon = (iconName: string) => {
     switch (iconName) {
       case "Building2":
@@ -100,14 +105,14 @@ export const Services: React.FC = () => {
                   {/* Action CTAs */}
                   <div className="flex flex-wrap items-center gap-3">
                     <a
-                      href={`tel:${COMPANY_DATA.hotlineRaw}`}
+                      href={`tel:${company.hotlineRaw}`}
                       className="inline-flex items-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold px-5 py-3 rounded-xl shadow transition-colors text-sm sm:text-base"
                     >
                       <Phone className="w-4 h-4 fill-current" />
-                      <span>Tư vấn kỹ thuật: {COMPANY_DATA.hotline}</span>
+                      <span>Tư vấn kỹ thuật: {company.hotline}</span>
                     </a>
                     <a
-                      href={COMPANY_DATA.zaloUrl}
+                      href={company.zaloUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-bold px-5 py-3 rounded-xl shadow-xs transition-colors text-sm sm:text-base"

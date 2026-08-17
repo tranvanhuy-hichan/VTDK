@@ -1,5 +1,6 @@
 import React from "react";
 import { prisma } from "../lib/prisma";
+import { getCompanyInfo } from "../lib/company";
 import { Hero } from "../components/Hero";
 import { BrandSlider } from "../components/BrandSlider";
 import { QuickContactBar } from "../components/QuickContactBar";
@@ -27,21 +28,23 @@ export default async function HomePage() {
     orderBy: { createdAt: "desc" },
   });
 
+  const company = await getCompanyInfo();
+
   return (
     <>
-      <Hero />
+      <Hero company={company} />
       <BrandSlider />
-      <QuickContactBar />
+      <QuickContactBar company={company} />
       {/* Render the dynamic product catalog */}
-      <ProductList initialCategories={categories} initialProducts={products} />
-      <Services />
-      <WhyChooseUs />
+      <ProductList initialCategories={categories} initialProducts={products} company={company} />
+      <Services company={company} />
+      <WhyChooseUs company={company} />
       <BTUCalculator />
       <CustomerTypes />
       <Testimonials />
       <Gallery />
-      <ContactCTA />
-      <Location />
+      <ContactCTA company={company} />
+      <Location company={company} />
     </>
   );
 }

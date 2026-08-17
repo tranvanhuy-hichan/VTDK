@@ -14,7 +14,8 @@ import {
   Upload,
   Loader2,
   PackageOpen,
-  ImageIcon
+  ImageIcon,
+  Building2
 } from "lucide-react";
 import { 
   createProductAction, 
@@ -237,6 +238,13 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
             >
               <ImageIcon className="w-3.5 h-3.5" />
               <span>Hình ảnh</span>
+            </Link>
+            <Link
+              href="/admin/company"
+              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
+            >
+              <Building2 className="w-3.5 h-3.5" />
+              <span>Thông tin công ty</span>
             </Link>
             <button
               onClick={handleLogout}

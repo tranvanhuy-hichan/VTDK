@@ -3,8 +3,13 @@
 import React from "react";
 import { Phone, MapPin, MessageSquare, ArrowUp } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
+import type { CompanyContact } from "../lib/company";
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  company: CompanyContact;
+}
+
+export const Footer: React.FC<FooterProps> = ({ company }) => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -35,7 +40,7 @@ export const Footer: React.FC = () => {
 
             <div className="flex items-center gap-3">
               <a
-                href={COMPANY_DATA.facebookUrl}
+                href={company.facebookUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook Đông Kha"
@@ -46,7 +51,7 @@ export const Footer: React.FC = () => {
                 </svg>
               </a>
               <a
-                href={COMPANY_DATA.zaloUrl}
+                href={company.zaloUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Zalo Đông Kha"
@@ -55,7 +60,7 @@ export const Footer: React.FC = () => {
                 Zalo
               </a>
               <a
-                href={COMPANY_DATA.whatsAppUrl}
+                href={company.whatsAppUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp Đông Kha"
@@ -115,17 +120,17 @@ export const Footer: React.FC = () => {
             <div className="space-y-3 text-sm">
               <div className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-[#F47A20] shrink-0 mt-1" />
-                <span>{COMPANY_DATA.address}</span>
+                <span>{company.address}</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-sky-400 shrink-0" />
-                <a href={`tel:${COMPANY_DATA.hotlineRaw}`} className="font-bold text-white hover:text-[#F47A20]">
-                  {COMPANY_DATA.hotline}
+                <a href={`tel:${company.hotlineRaw}`} className="font-bold text-white hover:text-[#F47A20]">
+                  {company.hotline}
                 </a>
               </div>
               <div className="flex items-center gap-2.5">
                 <MessageSquare className="w-4 h-4 text-[#0068FF] shrink-0" />
-                <span>Zalo: {COMPANY_DATA.hotline}</span>
+                <span>Zalo: {company.hotline}</span>
               </div>
             </div>
           </div>

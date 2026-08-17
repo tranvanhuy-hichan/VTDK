@@ -1,8 +1,12 @@
 import React from "react";
 import { Phone, MessageSquare, MapPin } from "lucide-react";
-import { COMPANY_DATA } from "../data/company";
+import type { CompanyContact } from "../lib/company";
 
-export const QuickContactBar: React.FC = () => {
+interface QuickContactBarProps {
+  company: CompanyContact;
+}
+
+export const QuickContactBar: React.FC<QuickContactBarProps> = ({ company }) => {
   return (
     <section className="bg-gradient-to-r from-[#0B1F33] via-[#075FA8] to-[#0B1F33] text-white py-5 sm:py-6 shadow-md relative z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,7 +31,7 @@ export const QuickContactBar: React.FC = () => {
           <div className="flex items-center flex-wrap justify-center gap-2.5 sm:gap-3 w-full md:w-auto shrink-0">
             {/* Call */}
             <a
-              href={`tel:${COMPANY_DATA.hotlineRaw}`}
+              href={`tel:${company.hotlineRaw}`}
               className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-[#F47A20] hover:bg-[#E06912] text-white font-extrabold px-4 py-2.5 sm:py-3 rounded-xl shadow transition-all duration-200 text-sm sm:text-base whitespace-nowrap"
             >
               <Phone className="w-4 h-4 fill-current" />
@@ -36,7 +40,7 @@ export const QuickContactBar: React.FC = () => {
 
             {/* Zalo */}
             <a
-              href={COMPANY_DATA.zaloUrl}
+              href={company.zaloUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-[#0068FF] hover:bg-blue-700 text-white font-extrabold px-4 py-2.5 sm:py-3 rounded-xl shadow transition-all duration-200 text-sm sm:text-base whitespace-nowrap"
@@ -47,7 +51,7 @@ export const QuickContactBar: React.FC = () => {
 
             {/* Directions */}
             <a
-              href={COMPANY_DATA.googleMapsUrl}
+              href={company.googleMapsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-200 text-sm sm:text-base whitespace-nowrap"

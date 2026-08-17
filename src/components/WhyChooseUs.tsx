@@ -1,8 +1,13 @@
 import React from "react";
 import { Layers, Headphones, BadgePercent, Store, ShieldCheck } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
+import type { CompanyContact } from "../lib/company";
 
-export const WhyChooseUs: React.FC = () => {
+interface WhyChooseUsProps {
+  company: CompanyContact;
+}
+
+export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ company }) => {
   const getPillarIcon = (iconName: string) => {
     switch (iconName) {
       case "Layers":
@@ -77,7 +82,7 @@ export const WhyChooseUs: React.FC = () => {
             </div>
           </div>
           <a
-            href={`tel:${COMPANY_DATA.hotlineRaw}`}
+            href={`tel:${company.hotlineRaw}`}
             className="shrink-0 bg-[#F47A20] hover:bg-[#E06912] text-white font-extrabold text-base px-6 py-3.5 rounded-xl shadow transition-colors"
           >
             Liên hệ Đông Kha ngay

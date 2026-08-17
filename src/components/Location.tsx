@@ -1,8 +1,12 @@
 import React from "react";
 import { MapPin, Phone, MessageSquare, Navigation, Clock, ShieldCheck } from "lucide-react";
-import { COMPANY_DATA } from "../data/company";
+import type { CompanyContact } from "../lib/company";
 
-export const Location: React.FC = () => {
+interface LocationProps {
+  company: CompanyContact;
+}
+
+export const Location: React.FC<LocationProps> = ({ company }) => {
   return (
     <section id="lien-he" className="py-16 bg-[#F6F8FA] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -28,7 +32,7 @@ export const Location: React.FC = () => {
             <div className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-sm flex-1 min-h-[340px] sm:min-h-[420px] relative">
               <iframe
                 title="Bản đồ chỉ đường đến Vật Tư Điện Lạnh Đông Kha Đà Nẵng"
-                src={COMPANY_DATA.googleMapsEmbed}
+                src={company.googleMapsEmbed}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -66,7 +70,7 @@ export const Location: React.FC = () => {
                       Địa chỉ cửa hàng
                     </span>
                     <span className="text-sm sm:text-base font-extrabold text-slate-900 leading-snug block">
-                      {COMPANY_DATA.address}
+                      {company.address}
                     </span>
                     <span className="text-[11px] text-slate-400 mt-1 block">
                       (Mặt tiền đường Phạm Hùng, Phường Hòa Xuân, quận Cẩm Lệ, Đà Nẵng)
@@ -84,10 +88,10 @@ export const Location: React.FC = () => {
                       Hotline &amp; Zalo hỗ trợ
                     </span>
                     <a
-                      href={`tel:${COMPANY_DATA.hotlineRaw}`}
+                      href={`tel:${company.hotlineRaw}`}
                       className="text-lg sm:text-xl font-extrabold text-[#075FA8] hover:text-[#0B1F33] transition-colors block"
                     >
-                      {COMPANY_DATA.hotline}
+                      {company.hotline}
                     </a>
                   </div>
                 </div>
@@ -102,7 +106,7 @@ export const Location: React.FC = () => {
                       Thời gian mở cửa
                     </span>
                     <span className="text-sm font-bold text-slate-800 block">
-                      {COMPANY_DATA.workingHours}
+                      {company.workingHours}
                     </span>
                   </div>
                 </div>
@@ -115,7 +119,7 @@ export const Location: React.FC = () => {
               
               {/* Directions */}
               <a
-                href={COMPANY_DATA.googleMapsUrl}
+                href={company.googleMapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-extrabold py-3 px-1 rounded-lg transition-colors text-xs"
@@ -126,7 +130,7 @@ export const Location: React.FC = () => {
 
               {/* Call */}
               <a
-                href={`tel:${COMPANY_DATA.hotlineRaw}`}
+                href={`tel:${company.hotlineRaw}`}
                 className="flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold py-3 px-1 rounded-lg transition-colors text-xs shadow-xs"
               >
                 <Phone className="w-3.5 h-3.5 fill-current" />
@@ -135,7 +139,7 @@ export const Location: React.FC = () => {
 
               {/* Zalo */}
               <a
-                href={COMPANY_DATA.zaloUrl}
+                href={company.zaloUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-extrabold py-3 px-1 rounded-lg transition-colors text-xs"

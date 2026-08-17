@@ -1,8 +1,12 @@
 import React from "react";
 import { Phone, MessageSquare, MapPin, Clock } from "lucide-react";
-import { COMPANY_DATA } from "../data/company";
+import type { CompanyContact } from "../lib/company";
 
-export const ContactCTA: React.FC = () => {
+interface ContactCTAProps {
+  company: CompanyContact;
+}
+
+export const ContactCTA: React.FC<ContactCTAProps> = ({ company }) => {
   return (
     <section className="py-12 sm:py-16 bg-[#0B1F33] text-white relative overflow-hidden">
       {/* Subtle Background Glows */}
@@ -31,16 +35,16 @@ export const ContactCTA: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 max-w-md mx-auto mb-8">
             {/* Phone Button */}
             <a
-              href={`tel:${COMPANY_DATA.hotlineRaw}`}
+              href={`tel:${company.hotlineRaw}`}
               className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 bg-[#F47A20] hover:bg-[#E06912] text-white font-extrabold text-sm sm:text-base px-6 py-3.5 rounded-xl shadow-md transition-colors"
             >
               <Phone className="w-4 h-4 fill-current text-white" />
-              <span>Gọi {COMPANY_DATA.hotline}</span>
+              <span>Gọi {company.hotline}</span>
             </a>
 
             {/* Zalo Button */}
             <a
-              href={COMPANY_DATA.zaloUrl}
+              href={company.zaloUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 bg-transparent hover:bg-white/10 border border-white/20 text-white font-bold text-sm sm:text-base px-6 py-3.5 rounded-xl transition-colors"
@@ -54,12 +58,12 @@ export const ContactCTA: React.FC = () => {
           <div className="pt-6 border-t border-slate-800/60 flex flex-wrap items-center justify-center gap-5 text-xs text-slate-400 font-medium">
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-orange-400/80" />
-              <span>400 Phạm Hùng, Hòa Xuân, Đà Nẵng</span>
+              <span>{company.address}</span>
             </div>
             <div className="hidden sm:block text-slate-800">•</div>
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-emerald-500/80" />
-              <span>Phục vụ: {COMPANY_DATA.workingHours}</span>
+              <span>Phục vụ: {company.workingHours}</span>
             </div>
           </div>
 

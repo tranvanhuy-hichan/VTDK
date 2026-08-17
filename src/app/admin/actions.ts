@@ -377,3 +377,63 @@ export async function deleteGalleryImageAction(id: string) {
     return { error: err.message || "Lỗi hệ thống khi xóa ảnh!" };
   }
 }
+
+// 9. Update Company Info
+export async function updateCompanyInfoAction(formData: FormData) {
+  const isAuth = await isAdminAuthenticated();
+  if (!isAuth) return { error: "Chưa đăng nhập!" };
+
+  try {
+    const name = (formData.get("name") as string)?.trim();
+    const address = (formData.get("address") as string)?.trim();
+    const hotline = (formData.get("hotline") as string)?.trim();
+    const hotlineRaw = (formData.get("hotlineRaw") as string)?.trim();
+    const zaloUrl = (formData.get("zaloUrl") as string)?.trim();
+    const whatsAppUrl = (formData.get("whatsAppUrl") as string)?.trim();
+    const facebookUrl = (formData.get("facebookUrl") as string)?.trim();
+    const googleMapsUrl = (formData.get("googleMapsUrl") as string)?.trim();
+    const googleMapsEmbed = (formData.get("googleMapsEmbed") as string)?.trim();
+    const workingHours = (formData.get("workingHours") as string)?.trim();
+
+    if (
+      !name ||
+      !address ||
+      !hotline ||
+      !hotlineRaw ||
+      !zaloUrl ||
+      !whatsAppUrl ||
+      !facebookUrl ||
+      !googleMapsUrl ||
+      !googleMapsEmbed ||
+      !workingHours
+    ) {
+      return { error: "Vui lòng nhập đầy đủ các trường!" };
+    }
+
+    const data = {
+      name,
+      address,
+      hotline,
+      hotlineRaw,
+      zaloUrl,
+      whatsAppUrl,
+      facebookUrl,
+      googleMapsUrl,
+      googleMapsEmbed,
+      workingHours,
+    };
+
+    const existing = await prisma.companyInfo.findFirst();
+    if (existing) {
+      await prisma.companyInfo.update({ where: { id: existing.id }, data });
+    } else {
+      await prisma.companyInfo.create({ data });
+    }
+
+    revalidatePath("/");
+    revalidatePath("/admin/company");
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message || "Lỗi hệ thống khi cập nhật thông tin công ty!" };
+  }
+}
