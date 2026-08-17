@@ -54,6 +54,18 @@
   display: none;
 }
 
+/* iOS Safari auto-zooms the page when focusing an input/select/textarea
+   with a computed font-size under 16px. Force 16px on small screens so
+   the keyboard opening never triggers that zoom, regardless of the
+   Tailwind text size utility used on any given field. */
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
 /* Custom animations */
 @keyframes pulse-subtle {
   0%, 100% {

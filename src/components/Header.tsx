@@ -16,12 +16,14 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const q = searchQuery.trim();
     setIsMobileMenuOpen(false);
+    setIsMobileSearchOpen(false);
     router.push(q ? `/?q=${encodeURIComponent(q)}#san-pham` : "/#san-pham");
   };
 
@@ -126,10 +128,23 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
             </form>
           </div>
 
-          {/* Mobile Right Controls: Hamburger Menu */}
-          <div className="flex items-center lg:hidden">
+          {/* Mobile Right Controls: Search + Hamburger Menu */}
+          <div className="flex items-center gap-1.5 lg:hidden">
             <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={() => {
+                setIsMobileSearchOpen(!isMobileSearchOpen);
+                setIsMobileMenuOpen(false);
+              }}
+              aria-label="Tìm kiếm"
+              className="p-2 rounded-lg text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors"
+            >
+              {isMobileSearchOpen ? <X className="w-6 h-6 text-slate-900" /> : <Search className="w-6 h-6 text-slate-900" />}
+            </button>
+            <button
+              onClick={() => {
+                setIsMobileMenuOpen(!isMobileMenuOpen);
+                setIsMobileSearchOpen(false);
+              }}
               aria-label="Mở menu"
               className="p-2 rounded-lg text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors"
             >
@@ -138,16 +153,17 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
           </div>
         </div>
 
-        {/* Mobile Menu Drawer */}
-        {isMobileMenuOpen && (
-          <div className="lg:hidden bg-white border-b border-slate-200 shadow-xl px-4 py-5 animate-in slide-in-from-top-2 duration-200">
-            <form onSubmit={handleSearchSubmit} className="relative mb-4">
+        {/* Mobile Search Bar */}
+        {isMobileSearchOpen && (
+          <div className="lg:hidden bg-white border-b border-slate-200 shadow-xl px-4 py-4 animate-in slide-in-from-top-2 duration-200">
+            <form onSubmit={handleSearchSubmit} className="relative">
               <input
                 type="text"
+                autoFocus
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm sản phẩm..."
-                className="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                className="w-full text-base bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
               />
               <button
                 type="submit"
@@ -157,7 +173,12 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                 <Search className="w-4.5 h-4.5" />
               </button>
             </form>
+          </div>
+        )}
 
+        {/* Mobile Menu Drawer */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden bg-white border-b border-slate-200 shadow-xl px-4 py-5 animate-in slide-in-from-top-2 duration-200">
             <div className="flex flex-col gap-2">
               {navLinks.map((link) => (
                 <a
