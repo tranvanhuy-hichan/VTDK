@@ -138,7 +138,7 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 text-left">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 text-left">
         <div>
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">GIẢI PHÁP THI CÔNG & KỸ THUẬT</h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
@@ -147,7 +147,7 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
         </div>
         <button
           onClick={handleOpenAdd}
-          className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-xl shadow transition-colors w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-md shadow transition-colors w-full sm:w-auto"
         >
           <Plus className="w-4 h-4" />
           <span>THÊM GIẢI PHÁP</span>
@@ -156,11 +156,11 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
 
         {/* Service List */}
         {initialServices.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {initialServices.map((service) => (
               <div
                 key={service.id}
-                className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col text-left"
+                className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden flex flex-col text-left"
               >
                 <div className="relative aspect-[16/9] bg-slate-50">
                   <img src={service.image} alt={service.title} className="w-full h-full object-cover" />
@@ -199,7 +199,7 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
+          <div className="text-center py-16 bg-white rounded-lg border border-slate-200 shadow-sm">
             <Wrench className="w-12 h-12 text-slate-300 mx-auto mb-3" />
             <h3 className="font-bold text-slate-900 text-lg">Chưa có giải pháp nào</h3>
             <p className="text-slate-500 text-sm mt-1">Bấm "Thêm giải pháp" để tạo mới.</p>
@@ -209,123 +209,36 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
       {/* Modal Dialog */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200 text-left">
-          <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 flex flex-col">
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-lg border border-slate-100 flex flex-col">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between shrink-0">
               <h3 className="text-lg font-black text-slate-900">
                 {isEditing ? "CHỈNH SỬA GIẢI PHÁP" : "THÊM GIẢI PHÁP MỚI"}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors !min-h-0"
+                className="p-1.5 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors !min-h-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-5 space-y-4 flex-1">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Tiêu đề *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Ví dụ: Tư Vấn & Thi Công Điều Hòa & Thông Gió"
-                  className="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Mô tả *
-                </label>
-                <textarea
-                  required
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={3}
-                  className="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Biểu tượng
-                </label>
-                <select
-                  value={icon}
-                  onChange={(e) => setIcon(e.target.value)}
-                  className="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
-                >
-                  {ICON_OPTIONS.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Features */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Điểm nổi bật
+            <form onSubmit={handleSubmit} className="p-4 sm:p-5 flex-1">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                {/* Left Column: Image */}
+                <div className="lg:col-span-4">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    Hình ảnh {!isEditing && "*"}
                   </label>
-                  <button
-                    type="button"
-                    onClick={handleAddFeatureRow}
-                    className="text-xs font-bold text-[#075FA8] hover:text-[#0B1F33] flex items-center gap-1 !min-h-0"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    Thêm dòng
-                  </button>
-                </div>
-                {featureRows.length === 0 ? (
-                  <p className="text-xs text-slate-400 italic">Chưa có điểm nổi bật nào.</p>
-                ) : (
-                  <div className="space-y-2">
-                    {featureRows.map((f, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={f}
-                          onChange={(e) => handleFeatureChange(index, e.target.value)}
-                          placeholder="Ví dụ: Khảo sát thực tế & lập bản vẽ kỹ thuật chi tiết"
-                          className="flex-1 text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveFeatureRow(index)}
-                          aria-label="Xóa dòng"
-                          className="p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 border border-slate-200 rounded-lg transition-colors !min-h-0 shrink-0"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Image Upload */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Hình ảnh {!isEditing && "*"}
-                </label>
-                <div className="flex gap-4 items-center">
-                  <div className="w-20 h-20 rounded-xl border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center shrink-0">
+                  <div className="aspect-square w-full rounded-md border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center">
                     {imagePreview ? (
                       <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
-                      <Upload className="w-6 h-6 text-slate-400" />
+                      <Upload className="w-10 h-10 text-slate-300" />
                     )}
                   </div>
-                  <label className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-slate-350 rounded-xl p-4 cursor-pointer text-slate-500 hover:text-slate-700 transition-colors">
-                    <Upload className="w-5 h-5 text-slate-400 mb-1" />
-                    <span className="text-xs font-bold">Chọn tệp hình ảnh</span>
-                    <span className="text-[10px] text-slate-400 mt-0.5">JPG, PNG, WEBP tối đa 5MB</span>
+                  <label className="mt-3 inline-flex items-center justify-center gap-1.5 w-full cursor-pointer text-slate-600 hover:text-[#075FA8] border border-slate-200 hover:border-[#075FA8] rounded-md px-3 py-2 text-xs font-bold transition-colors">
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Chọn ảnh khác</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -334,21 +247,113 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
                       className="hidden"
                     />
                   </label>
+                  <p className="text-[10px] text-slate-400 mt-1.5 text-center">JPG, PNG, WEBP tối đa 5MB</p>
+                </div>
+
+                {/* Right Column: Fields */}
+                <div className="lg:col-span-8 space-y-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                      Tiêu đề *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="Ví dụ: Tư Vấn & Thi Công Điều Hòa & Thông Gió"
+                      className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-4 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                        Biểu tượng
+                      </label>
+                      <select
+                        value={icon}
+                        onChange={(e) => setIcon(e.target.value)}
+                        className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-4 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                      >
+                        {ICON_OPTIONS.map((opt) => (
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                      Mô tả *
+                    </label>
+                    <textarea
+                      required
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      rows={3}
+                      className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-4 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Full Width: Features */}
+                <div className="lg:col-span-12">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      Điểm nổi bật
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleAddFeatureRow}
+                      className="text-xs font-bold text-[#075FA8] hover:text-[#0B1F33] flex items-center gap-1 !min-h-0"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Thêm dòng
+                    </button>
+                  </div>
+                  {featureRows.length === 0 ? (
+                    <p className="text-xs text-slate-400 italic">Chưa có điểm nổi bật nào.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {featureRows.map((f, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={f}
+                            onChange={(e) => handleFeatureChange(index, e.target.value)}
+                            placeholder="Ví dụ: Khảo sát thực tế & lập bản vẽ kỹ thuật chi tiết"
+                            className="flex-1 text-sm bg-slate-50 border border-slate-200 rounded-md px-3 py-2 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveFeatureRow(index)}
+                            aria-label="Xóa dòng"
+                            className="p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 border border-slate-200 rounded-md transition-colors !min-h-0 shrink-0"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 pt-4 border-t border-slate-100 mt-6">
+              <div className="flex items-center gap-3 pt-4 border-t border-slate-100 mt-5">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl text-center text-sm transition-colors !min-h-0"
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-4 rounded-md text-center text-sm transition-colors !min-h-0"
                 >
                   Hủy bỏ
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold py-3 px-4 rounded-xl text-center text-sm transition-all shadow flex items-center justify-center gap-2 disabled:opacity-50 !min-h-0"
+                  className="flex-1 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold py-2.5 px-4 rounded-md text-center text-sm transition-all shadow flex items-center justify-center gap-2 disabled:opacity-50 !min-h-0"
                 >
                   {isSubmitting ? (
                     <>

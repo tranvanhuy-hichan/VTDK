@@ -222,7 +222,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
   return (
     <>
       {/* Action Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 text-left">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 text-left">
           <div>
             <h2 className="text-2xl font-black text-slate-900 tracking-tight">DANH SÁCH SẢN PHẨM</h2>
             <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
@@ -231,7 +231,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
           </div>
           <button
             onClick={handleOpenAdd}
-            className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-xl shadow transition-colors w-full sm:w-auto"
+            className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-md shadow transition-colors w-full sm:w-auto"
           >
             <Plus className="w-4 h-4" />
             <span>THÊM SẢN PHẨM</span>
@@ -239,33 +239,22 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
         </div>
 
         {/* Filter & Search Bar */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm mb-6 flex flex-col md:flex-row items-center justify-between gap-4 text-left">
+        <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-sm mb-6 flex flex-col md:flex-row items-center justify-between gap-4 text-left">
           
-          {/* Category Tabs */}
-          <div className="flex flex-wrap items-center gap-1.5 w-full md:w-auto overflow-x-auto no-scrollbar py-0.5">
-            <button
-              onClick={() => setSelectedCategory("all")}
-              className={`!min-h-0 px-3.5 py-2 text-xs sm:text-sm font-bold rounded-lg border transition-all ${
-                selectedCategory === "all"
-                  ? "bg-[#075FA8] border-[#075FA8] text-white shadow-xs"
-                  : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
-              }`}
+          {/* Category Filter Dropdown */}
+          <div className="w-full md:w-64 shrink-0">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3.5 py-2.5 font-bold text-slate-700 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
             >
-              Tất cả
-            </button>
-            {initialCategories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.slug)}
-                className={`!min-h-0 px-3.5 py-2 text-xs sm:text-sm font-bold rounded-lg border transition-all ${
-                  selectedCategory === cat.slug
-                    ? "bg-[#075FA8] border-[#075FA8] text-white shadow-xs"
-                    : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
-                }`}
-              >
-                {cat.name}
-              </button>
-            ))}
+              <option value="all">Tất cả danh mục</option>
+              {initialCategories.map((cat) => (
+                <option key={cat.id} value={cat.slug}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Search Input */}
@@ -285,7 +274,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
 
         {/* Product Table Grid */}
         {filteredProducts.length > 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden text-left">
+          <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden text-left">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
@@ -341,7 +330,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                       <td className="py-4 px-6 text-center">
                         <button
                           onClick={() => handleToggleActive(product)}
-                          className={`!min-h-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs shadow-xs border transition-all ${
+                          className={`!min-h-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md font-bold text-xs shadow-xs border transition-all ${
                             product.active
                               ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100"
                               : "bg-slate-100 border-slate-200 text-slate-500 hover:bg-slate-200"
@@ -390,7 +379,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
             </div>
           </div>
         ) : (
-          <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
+          <div className="text-center py-16 bg-white rounded-lg border border-slate-200 shadow-sm">
             <PackageOpen className="w-12 h-12 text-slate-300 mx-auto mb-3" />
             <h3 className="font-bold text-slate-900 text-lg">Không tìm thấy sản phẩm nào</h3>
             <p className="text-slate-500 text-sm mt-1">
@@ -402,10 +391,10 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
       {/* CRUD Product Modal Dialog */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200 text-left">
-          <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 flex flex-col">
-            
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-lg border border-slate-100 flex flex-col">
+
             {/* Modal Header */}
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between shrink-0">
               <h3 className="text-lg font-black text-slate-900">
                 {isEditing ? "CHỈNH SỬA SẢN PHẨM" : "THÊM SẢN PHẨM MỚI"}
               </h3>
@@ -418,94 +407,23 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
             </div>
 
             {/* Modal Form */}
-            <form onSubmit={handleSubmit} className="p-5 space-y-4 flex-1">
-              {/* Product Name */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Tên sản phẩm *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ví dụ: Ống đồng Thái Lan cuộn 6.35 - 9.52"
-                  className="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
-                />
-              </div>
-
-              {/* Grid 2 Columns: Category & Price */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Category */}
-                <div>
+            <form onSubmit={handleSubmit} className="p-4 flex-1">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                {/* Left Column: Image */}
+                <div className="lg:col-span-4">
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                    Danh mục *
+                    Hình ảnh sản phẩm
                   </label>
-                  <select
-                    required
-                    value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
-                  >
-                    {initialCategories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Price */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                    Giá bán (VND) *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    placeholder="Ví dụ: 1250000"
-                    className="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
-                  />
-                </div>
-              </div>
-
-              {/* Short Description */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Mô tả ngắn
-                </label>
-                <textarea
-                  value={shortDesc}
-                  onChange={(e) => setShortDesc(e.target.value)}
-                  placeholder="Nhập mô tả ngắn gọn về sản phẩm..."
-                  rows={3}
-                  className="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
-                />
-              </div>
-
-              {/* Image Upload */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Hình ảnh sản phẩm
-                </label>
-                
-                <div className="flex gap-4 items-center">
-                  {/* Preview box */}
-                  <div className="w-20 h-20 rounded-xl border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center shrink-0">
+                  <div className="aspect-square w-full rounded-lg border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center">
                     {imagePreview ? (
                       <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
-                      <Upload className="w-6 h-6 text-slate-400" />
+                      <Upload className="w-10 h-10 text-slate-300" />
                     )}
                   </div>
-                  
-                  {/* File selector input */}
-                  <label className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-slate-350 rounded-xl p-4 cursor-pointer text-slate-500 hover:text-slate-700 transition-colors">
-                    <Upload className="w-5 h-5 text-slate-400 mb-1" />
-                    <span className="text-xs font-bold">Chọn tệp hình ảnh</span>
-                    <span className="text-[10px] text-slate-400 mt-0.5">JPG, PNG, WEBP tối đa 5MB</span>
+                  <label className="mt-3 inline-flex items-center justify-center gap-1.5 w-full cursor-pointer text-slate-600 hover:text-[#075FA8] border border-slate-200 hover:border-[#075FA8] rounded-md px-3 py-2 text-xs font-bold transition-colors">
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Chọn ảnh khác</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -514,88 +432,158 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                       className="hidden"
                     />
                   </label>
-                </div>
-              </div>
-
-              {/* Product Variants (size/thickness/length options with own price) */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Phân loại (kích thước / độ dày / chiều dài...)
-                  </label>
-                  <button
-                    type="button"
-                    onClick={handleAddVariantRow}
-                    className="text-xs font-bold text-[#075FA8] hover:text-[#0B1F33] flex items-center gap-1 !min-h-0"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    Thêm phân loại
-                  </button>
+                  <p className="text-[10px] text-slate-400 mt-1.5 text-center">JPG, PNG, WEBP tối đa 5MB</p>
                 </div>
 
-                {variantRows.length === 0 ? (
-                  <p className="text-xs text-slate-400 italic">
-                    Chưa có phân loại nào. Nếu không thêm, sản phẩm chỉ dùng giá bán chung ở trên.
-                  </p>
-                ) : (
-                  <div className="space-y-2">
-                    {variantRows.map((row, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={row.label}
-                          onChange={(e) => handleVariantChange(index, "label", e.target.value)}
-                          placeholder="Ví dụ: Độ dày 13mm"
-                          className="flex-1 text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
-                        />
-                        <input
-                          type="number"
-                          value={row.price}
-                          onChange={(e) => handleVariantChange(index, "price", e.target.value)}
-                          placeholder="Giá (VND)"
-                          className="w-32 text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveVariantRow(index)}
-                          aria-label="Xóa phân loại"
-                          className="p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 border border-slate-200 rounded-lg transition-colors !min-h-0 shrink-0"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
+                {/* Right Column: Fields */}
+                <div className="lg:col-span-8 space-y-4">
+                  {/* Product Name */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                      Tên sản phẩm *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Ví dụ: Ống đồng Thái Lan cuộn 6.35 - 9.52"
+                      className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-4 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                    />
                   </div>
-                )}
-              </div>
 
-              {/* Active Toggle Option */}
-              <div className="flex items-center gap-2 pt-2">
-                <input
-                  id="active-toggle"
-                  type="checkbox"
-                  checked={active}
-                  onChange={(e) => setActive(e.target.checked)}
-                  className="w-4 h-4 text-[#075FA8] border-slate-300 rounded-sm focus:ring-[#075FA8]"
-                />
-                <label htmlFor="active-toggle" className="text-sm font-bold text-slate-700 cursor-pointer">
-                  Hiển thị sản phẩm lên Website
-                </label>
+                  {/* Grid 2 Columns: Category & Price */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Category */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                        Danh mục *
+                      </label>
+                      <select
+                        required
+                        value={categoryId}
+                        onChange={(e) => setCategoryId(e.target.value)}
+                        className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-4 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                      >
+                        {initialCategories.map((cat) => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Price */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                        Giá bán (VND) *
+                      </label>
+                      <input
+                        type="number"
+                        required
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        placeholder="Ví dụ: 1250000"
+                        className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-4 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Short Description */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                      Mô tả ngắn
+                    </label>
+                    <textarea
+                      value={shortDesc}
+                      onChange={(e) => setShortDesc(e.target.value)}
+                      placeholder="Nhập mô tả ngắn gọn về sản phẩm..."
+                      rows={3}
+                      className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-4 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                    />
+                  </div>
+
+                  {/* Active Toggle Option */}
+                  <div className="flex items-center gap-2">
+                    <input
+                      id="active-toggle"
+                      type="checkbox"
+                      checked={active}
+                      onChange={(e) => setActive(e.target.checked)}
+                      className="w-4 h-4 text-[#075FA8] border-slate-300 rounded-sm focus:ring-[#075FA8]"
+                    />
+                    <label htmlFor="active-toggle" className="text-sm font-bold text-slate-700 cursor-pointer">
+                      Hiển thị sản phẩm lên Website
+                    </label>
+                  </div>
+                </div>
+
+                {/* Full Width: Product Variants (size/thickness/length options with own price) */}
+                <div className="lg:col-span-12">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      Phân loại (kích thước / độ dày / chiều dài...)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleAddVariantRow}
+                      className="text-xs font-bold text-[#075FA8] hover:text-[#0B1F33] flex items-center gap-1 !min-h-0"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Thêm phân loại
+                    </button>
+                  </div>
+
+                  {variantRows.length === 0 ? (
+                    <p className="text-xs text-slate-400 italic">
+                      Chưa có phân loại nào. Nếu không thêm, sản phẩm chỉ dùng giá bán chung ở trên.
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {variantRows.map((row, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={row.label}
+                            onChange={(e) => handleVariantChange(index, "label", e.target.value)}
+                            placeholder="Ví dụ: Độ dày 13mm"
+                            className="flex-1 text-sm bg-slate-50 border border-slate-200 rounded-md px-3 py-2 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                          />
+                          <input
+                            type="number"
+                            value={row.price}
+                            onChange={(e) => handleVariantChange(index, "price", e.target.value)}
+                            placeholder="Giá (VND)"
+                            className="w-28 text-sm bg-slate-50 border border-slate-200 rounded-md px-3 py-2 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveVariantRow(index)}
+                            aria-label="Xóa phân loại"
+                            className="p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 border border-slate-200 rounded-lg transition-colors !min-h-0 shrink-0"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Submit Actions */}
-              <div className="flex items-center gap-3 pt-4 border-t border-slate-100 mt-6 bg-slate-550/5">
+              <div className="flex items-center gap-3 pt-4 border-t border-slate-100 mt-6">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl text-center text-sm transition-colors !min-h-0"
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-4 rounded-md text-center text-sm transition-colors !min-h-0"
                 >
                   Hủy bỏ
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold py-3 px-4 rounded-xl text-center text-sm transition-all shadow flex items-center justify-center gap-2 disabled:opacity-50 !min-h-0"
+                  className="flex-1 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold py-2.5 px-4 rounded-md text-center text-sm transition-all shadow flex items-center justify-center gap-2 disabled:opacity-50 !min-h-0"
                 >
                   {isSubmitting ? (
                     <>

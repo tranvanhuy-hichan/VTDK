@@ -61,7 +61,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
               key={href}
               href={href}
               onClick={() => setIsMobileNavOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-colors ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-bold transition-colors ${
                 active
                   ? "bg-[#075FA8] text-white shadow-sm"
                   : "text-slate-300 hover:bg-slate-800 hover:text-white"
@@ -77,7 +77,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
       <div className="px-3 py-4 border-t border-slate-800">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-300 hover:bg-red-700 hover:text-white transition-colors !min-h-0"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-bold text-slate-300 hover:bg-red-700 hover:text-white transition-colors !min-h-0"
         >
           <LogOut className="w-4.5 h-4.5 shrink-0" />
           <span>Đăng xuất</span>
@@ -100,7 +100,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
             className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
             onClick={() => setIsMobileNavOpen(false)}
           />
-          <aside className="relative flex flex-col w-64 bg-slate-900 h-full shadow-2xl animate-in slide-in-from-left duration-200">
+          <aside className="relative flex flex-col w-64 bg-slate-900 h-full shadow-lg animate-in slide-in-from-left duration-200">
             <button
               onClick={() => setIsMobileNavOpen(false)}
               aria-label="Đóng menu"
@@ -131,7 +131,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
           </div>
         </header>
 
-        <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">{children}</main>
+        <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-5 lg:p-6">{children}</main>
       </div>
     </div>
   );

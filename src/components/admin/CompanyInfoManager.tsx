@@ -137,7 +137,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 text-left">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 text-left">
         <div>
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">THÔNG TIN CÔNG TY</h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
@@ -147,7 +147,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
         {!isEditing && (
           <button
             onClick={handleStartEdit}
-            className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-xl shadow transition-colors w-full sm:w-auto !min-h-0"
+            className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-md shadow transition-colors w-full sm:w-auto !min-h-0"
           >
             <Pencil className="w-4 h-4" />
             <span>CHỈNH SỬA</span>
@@ -156,14 +156,14 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
       </div>
 
       {savedMessage && !isEditing && (
-        <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-3.5 text-xs sm:text-sm text-emerald-700 font-bold mb-6 text-left">
+        <div className="bg-emerald-50 border border-emerald-100 rounded-md p-3.5 text-xs sm:text-sm text-emerald-700 font-bold mb-6 text-left">
           {savedMessage}
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
         {/* Company Image Section */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 text-left mb-5">
+        <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-4 text-left mb-5">
           <div className="flex items-center gap-2 mb-5">
             <div className="p-1.5 bg-blue-50 text-[#075FA8] rounded-lg border border-blue-100">
               <ImageIcon className="w-4 h-4" />
@@ -178,14 +178,14 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
 
           {isEditing ? (
             <div className="flex gap-4 items-center">
-              <div className="w-28 h-28 rounded-xl border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center shrink-0">
+              <div className="w-28 h-28 rounded-md border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center shrink-0">
                 <img
                   src={imagePreview ?? saved.image}
                   alt="Ảnh công ty"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <label className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-slate-350 rounded-xl p-4 cursor-pointer text-slate-500 hover:text-slate-700 transition-colors">
+              <label className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-slate-350 rounded-md p-4 cursor-pointer text-slate-500 hover:text-slate-700 transition-colors">
                 <Upload className="w-5 h-5 text-slate-400 mb-1" />
                 <span className="text-xs font-bold">Chọn tệp hình ảnh mới</span>
                 <span className="text-[10px] text-slate-400 mt-0.5">JPG, PNG, WEBP tối đa 5MB</span>
@@ -199,17 +199,17 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
               </label>
             </div>
           ) : (
-            <div className="w-full max-w-xs aspect-[4/3] rounded-xl border border-slate-200 overflow-hidden bg-slate-50">
+            <div className="w-full max-w-xs aspect-[4/3] rounded-md border border-slate-200 overflow-hidden bg-slate-50">
               <img src={saved.image} alt="Ảnh công ty" className="w-full h-full object-cover" />
             </div>
           )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           {SECTIONS.map((section) => (
             <div
               key={section.id}
-              className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 text-left"
+              className="bg-white rounded-lg border border-slate-200 shadow-sm p-4 text-left"
             >
               <div className="flex items-center gap-2 mb-5">
                 <div className="p-1.5 bg-blue-50 text-[#075FA8] rounded-lg border border-blue-100">
@@ -233,7 +233,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                           onChange={(e) => handleChange(key, e.target.value)}
                           placeholder={placeholder}
                           rows={3}
-                          className="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                          className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-3.5 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
                         />
                       ) : (
                         <input
@@ -241,7 +241,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                           value={form[key]}
                           onChange={(e) => handleChange(key, e.target.value)}
                           placeholder={placeholder}
-                          className="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                          className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-3.5 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
                         />
                       )
                     ) : (
@@ -257,12 +257,12 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
         </div>
 
         {isEditing && (
-          <div className="sticky bottom-0 mt-6 bg-white/95 backdrop-blur-xs border border-slate-200 rounded-2xl shadow-lg p-4 flex items-center gap-3">
+          <div className="sticky bottom-0 mt-6 bg-white/95 backdrop-blur-xs border border-slate-200 rounded-lg shadow-lg p-4 flex items-center gap-3">
             <button
               type="button"
               onClick={handleCancel}
               disabled={isSubmitting}
-              className="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-5 rounded-xl text-center text-sm transition-colors !min-h-0 flex items-center justify-center gap-2 disabled:opacity-50"
+              className="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-5 rounded-md text-center text-sm transition-colors !min-h-0 flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <X className="w-4 h-4" />
               <span>Hủy bỏ</span>
@@ -270,7 +270,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 sm:flex-none bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold py-3 px-6 rounded-xl text-center text-sm transition-all shadow flex items-center justify-center gap-2 disabled:opacity-50 !min-h-0"
+              className="flex-1 sm:flex-none bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold py-3 px-6 rounded-md text-center text-sm transition-all shadow flex items-center justify-center gap-2 disabled:opacity-50 !min-h-0"
             >
               {isSubmitting ? (
                 <>
