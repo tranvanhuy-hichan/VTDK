@@ -558,28 +558,31 @@ export async function createServiceAction(formData: FormData) {
     const description = (formData.get("description") as string)?.trim();
     const icon = (formData.get("icon") as string) || "ThermometerSun";
     const imageFile = formData.get("image") as File | null;
+    const mainImageUrl = formData.get("mainImageUrl") as string | null;
     const features = parseFeatures(formData);
+    let imagePath = "";
 
-    if (!title || !description) {
-      return { error: "Vui lòng nhập đầy đủ tiêu đề và mô tả!" };
-    }
-    if (!imageFile || imageFile.size === 0) {
-      return { error: "Vui lòng chọn tệp hình ảnh!" };
-    }
-    if (imageFile.size > 5 * 1024 * 1024) {
-      return { error: "Dung lượng ảnh phải nhỏ hơn hoặc bằng 5MB!" };
-    }
-    const ext = path.extname(imageFile.name).toLowerCase();
-    if (![".jpg", ".jpeg", ".png", ".webp"].includes(ext)) {
-      return { error: "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP." };
-    }
-    if (!SERVICE_ICONS.includes(icon)) {
-      return { error: "Biểu tượng không hợp lệ!" };
-    }
+    if (imageFile && imageFile.size > 0) {
+      if (imageFile.size > 5 * 1024 * 1024) {
+        return { error: "Dung lượng ảnh phải nhỏ hơn hoặc bằng 5MB!" };
+      }
+      const ext = path.extname(imageFile.name).toLowerCase();
+      if (![".jpg", ".jpeg", ".png", ".webp"].includes(ext)) {
+        return { error: "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP." };
+      }
+      if (!SERVICE_ICONS.includes(icon)) {
+        return { error: "Biểu tượng không hợp lệ!" };
+      }
 
-    const blob = await put(`services/${Date.now()}-${imageFile.name}`, imageFile, {
-      access: "public",
-    });
+      const blob = await put(`services/${Date.now()}-${imageFile.name}`, imageFile, {
+        access: "public",
+      });
+      imagePath = blob.url;
+    } else if (mainImageUrl && mainImageUrl.trim()) {
+      imagePath = mainImageUrl.trim();
+    } else {
+      return { error: "Vui lòng chọn hình ảnh cho giải pháp!" };
+    }
 
     const maxOrder = await prisma.service.aggregate({ _max: { sortOrder: true } });
 
@@ -594,7 +597,7 @@ export async function createServiceAction(formData: FormData) {
         description,
         features,
         icon,
-        image: blob.url,
+        image: imagePath,
         images: galleryResult.images,
         sortOrder: (maxOrder._max.sortOrder ?? -1) + 1,
       },
@@ -618,6 +621,7 @@ export async function updateServiceAction(id: string, formData: FormData) {
     const description = (formData.get("description") as string)?.trim();
     const icon = (formData.get("icon") as string) || "ThermometerSun";
     const imageFile = formData.get("image") as File | null;
+    const mainImageUrl = formData.get("mainImageUrl") as string | null;
     const features = parseFeatures(formData);
 
     if (!title || !description) {
@@ -647,11 +651,13 @@ export async function updateServiceAction(id: string, formData: FormData) {
         access: "public",
       });
 
-      if (isBlobUrl(existingService.image)) {
+      if (isBlobUrl(existingService.image) && existingService.image !== mainImageUrl) {
         await del(existingService.image).catch(() => {});
       }
 
       imagePath = blob.url;
+    } else if (mainImageUrl && mainImageUrl.trim()) {
+      imagePath = mainImageUrl.trim();
     } else if (formData.get("removeImage") === "true") {
       if (isBlobUrl(existingService.image)) {
         await del(existingService.image).catch(() => {});

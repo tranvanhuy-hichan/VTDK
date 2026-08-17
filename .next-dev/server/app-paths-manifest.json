@@ -1,6 +1,7 @@
 {
   "/admin/login/page": "app/admin/login/page.js",
-  "/(site)/san-pham/[slug]/page": "app/(site)/san-pham/[slug]/page.js",
   "/(site)/page": "app/(site)/page.js",
-  "/admin/(dashboard)/page": "app/admin/(dashboard)/page.js"
+  "/admin/(dashboard)/page": "app/admin/(dashboard)/page.js",
+  "/admin/(dashboard)/gallery/page": "app/admin/(dashboard)/gallery/page.js",
+  "/admin/(dashboard)/services/page": "app/admin/(dashboard)/services/page.js"
 }
