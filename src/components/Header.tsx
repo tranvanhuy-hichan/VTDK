@@ -106,15 +106,15 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
             ))}
           </nav>
 
-          {/* Desktop Search + Hotline CTA */}
-          <div className="hidden sm:flex items-center gap-3">
-            <form onSubmit={handleSearchSubmit} className="relative hidden md:block">
+          {/* Desktop Search */}
+          <div className="hidden md:flex items-center flex-1 max-w-md mx-4">
+            <form onSubmit={handleSearchSubmit} className="relative w-full">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm sản phẩm..."
-                className="w-40 lg:w-52 text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
               />
               <button
                 type="submit"
@@ -124,13 +124,6 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                 <Search className="w-4 h-4" />
               </button>
             </form>
-            <a
-              href={`tel:${company.hotlineRaw}`}
-              className="inline-flex items-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-4 py-2.5 rounded-lg shadow-sm transition-all duration-200 whitespace-nowrap"
-            >
-              <Phone className="w-3.5 h-3.5 fill-current text-white" />
-              <span>Hotline: {company.hotline}</span>
-            </a>
           </div>
 
           {/* Mobile Right Controls: Hamburger Menu */}
