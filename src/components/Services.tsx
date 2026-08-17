@@ -115,22 +115,24 @@ export const Services: React.FC<ServicesProps> = ({ company, services }) => {
                   </div>
 
                   {/* Action CTAs */}
-                  <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2 sm:gap-3">
                     <a
                       href={`tel:${company.hotlineRaw}`}
-                      className="inline-flex items-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold px-5 py-3 rounded-xl shadow transition-colors text-sm sm:text-base"
+                      className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold px-3 py-2.5 sm:px-5 sm:py-3 rounded-xl shadow transition-colors text-xs sm:text-base whitespace-nowrap"
                     >
-                      <Phone className="w-4 h-4 fill-current" />
-                      <span>Tư vấn kỹ thuật: {company.hotline}</span>
+                      <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current shrink-0" />
+                      <span className="sm:hidden">Gọi {company.hotline}</span>
+                      <span className="hidden sm:inline">Tư vấn kỹ thuật: {company.hotline}</span>
                     </a>
                     <a
                       href={company.zaloUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-bold px-5 py-3 rounded-xl shadow-xs transition-colors text-sm sm:text-base"
+                      className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-bold px-3 py-2.5 sm:px-5 sm:py-3 rounded-xl shadow-xs transition-colors text-xs sm:text-base whitespace-nowrap"
                     >
-                      <MessageSquare className="w-4 h-4 text-[#0068FF]" />
-                      <span>Gửi thông tin công trình</span>
+                      <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0068FF] shrink-0" />
+                      <span className="sm:hidden">Nhắn Zalo</span>
+                      <span className="hidden sm:inline">Gửi thông tin công trình</span>
                     </a>
                   </div>
 

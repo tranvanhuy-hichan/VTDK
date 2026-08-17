@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Phone, Menu, X, MapPin, ChevronRight, Shield } from "lucide-react";
+import { Phone, Menu, X, MapPin, ChevronRight, Shield, Search } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
 import type { CompanyContact } from "../lib/company";
 
@@ -12,8 +13,17 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ company }) => {
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    setIsMobileMenuOpen(false);
+    router.push(q ? `/?q=${encodeURIComponent(q)}#san-pham` : "/#san-pham");
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -96,11 +106,27 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
             ))}
           </nav>
 
-          {/* Desktop Hotline CTA Button */}
+          {/* Desktop Search + Hotline CTA */}
           <div className="hidden sm:flex items-center gap-3">
+            <form onSubmit={handleSearchSubmit} className="relative hidden md:block">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Tìm sản phẩm..."
+                className="w-40 lg:w-52 text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+              />
+              <button
+                type="submit"
+                aria-label="Tìm kiếm"
+                className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 hover:text-[#075FA8] !min-h-0"
+              >
+                <Search className="w-4 h-4" />
+              </button>
+            </form>
             <a
               href={`tel:${company.hotlineRaw}`}
-              className="inline-flex items-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-4 py-2.5 rounded-lg shadow-sm transition-all duration-200"
+              className="inline-flex items-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-4 py-2.5 rounded-lg shadow-sm transition-all duration-200 whitespace-nowrap"
             >
               <Phone className="w-3.5 h-3.5 fill-current text-white" />
               <span>Hotline: {company.hotline}</span>
@@ -122,6 +148,23 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
         {/* Mobile Menu Drawer */}
         {isMobileMenuOpen && (
           <div className="lg:hidden bg-white border-b border-slate-200 shadow-xl px-4 py-5 animate-in slide-in-from-top-2 duration-200">
+            <form onSubmit={handleSearchSubmit} className="relative mb-4">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Tìm sản phẩm..."
+                className="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+              />
+              <button
+                type="submit"
+                aria-label="Tìm kiếm"
+                className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 hover:text-[#075FA8] !min-h-0"
+              >
+                <Search className="w-4.5 h-4.5" />
+              </button>
+            </form>
+
             <div className="flex flex-col gap-2">
               {navLinks.map((link) => (
                 <a

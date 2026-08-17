@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Phone, PackageOpen, X, MessageSquare, Eye } from "lucide-react";
+import { Phone, PackageOpen, X, MessageSquare, Eye, Search } from "lucide-react";
 import type { CompanyContact } from "../lib/company";
 import { Pagination } from "./Pagination";
 import { ImageCarousel } from "./ImageCarousel";
@@ -96,9 +96,9 @@ const ProductCard: React.FC<{
       </div>
 
       {/* Card Body */}
-      <div className="p-5 flex-1 flex flex-col justify-between">
+      <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between">
         <div>
-          <h3 className="text-lg font-bold text-slate-900 leading-snug mb-2 line-clamp-2">
+          <h3 className="text-sm sm:text-lg font-bold text-slate-900 leading-snug mb-1.5 sm:mb-2 line-clamp-2">
             <Link
               href={`/san-pham/${product.slug}`}
               onClick={(e) => e.stopPropagation()}
@@ -108,13 +108,13 @@ const ProductCard: React.FC<{
             </Link>
           </h3>
           {product.shortDesc && (
-            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed mb-4 line-clamp-3">
+            <p className="hidden sm:block text-xs sm:text-sm text-slate-500 leading-relaxed mb-4 line-clamp-3">
               {product.shortDesc}
             </p>
           )}
 
           {product.variants.length > 0 && (
-            <div className="mb-4">
+            <div className="mb-2 sm:mb-4">
               <VariantSelector
                 variants={product.variants}
                 selectedIndex={selectedVariantIndex}
@@ -125,17 +125,17 @@ const ProductCard: React.FC<{
         </div>
 
         {/* Price & Action */}
-        <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-4 mt-auto">
-          <div>
-            <span className="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Giá bán lẻ</span>
-            <span className="text-lg font-black text-orange-600">
+        <div className="pt-3 sm:pt-4 border-t border-slate-100 flex items-center justify-between gap-2 sm:gap-4 mt-auto">
+          <div className="min-w-0">
+            <span className="text-[9px] sm:text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Giá bán lẻ</span>
+            <span className="text-sm sm:text-lg font-black text-orange-600 truncate block">
               {displayPrice > 0
                 ? `${displayPrice.toLocaleString("vi-VN")}đ`
                 : "Liên hệ báo giá"}
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               type="button"
               onClick={(e) => {
@@ -143,17 +143,18 @@ const ProductCard: React.FC<{
                 onViewDetail(product);
               }}
               aria-label="Xem chi tiết"
-              className="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-xs sm:text-sm py-2.5 px-3 rounded-xl shadow-xs transition-colors !min-h-0"
+              className="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-xs sm:text-sm p-2 sm:py-2.5 sm:px-3 rounded-lg sm:rounded-xl shadow-xs transition-colors !min-h-0"
             >
               <Eye className="w-3.5 h-3.5" />
             </button>
             <a
               href={`tel:${hotlineRaw}`}
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm py-2.5 px-4 rounded-xl shadow-xs transition-colors"
+              aria-label="Liên hệ ngay"
+              className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm p-2 sm:py-2.5 sm:px-4 rounded-lg sm:rounded-xl shadow-xs transition-colors"
             >
               <Phone className="w-3.5 h-3.5 fill-current" />
-              <span>Liên hệ ngay</span>
+              <span className="hidden sm:inline">Liên hệ ngay</span>
             </a>
           </div>
         </div>
@@ -271,14 +272,26 @@ export const ProductList: React.FC<ProductListProps> = ({
   company,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
 
-  // Filter products based on selected tab
-  const filteredProducts =
-    selectedCategory === "all"
-      ? initialProducts
-      : initialProducts.filter((p) => p.category.slug === selectedCategory);
+  // Pick up ?q= from the header search on initial load
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("q");
+    if (q) setSearchTerm(q);
+  }, []);
+
+  // Filter products based on selected tab + search term
+  const filteredProducts = initialProducts.filter((p) => {
+    const matchesCategory = selectedCategory === "all" || p.category.slug === selectedCategory;
+    const matchesSearch =
+      searchTerm.trim() === "" ||
+      p.name.toLowerCase().includes(searchTerm.trim().toLowerCase()) ||
+      (p.shortDesc && p.shortDesc.toLowerCase().includes(searchTerm.trim().toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
 
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
   const pagedProducts = filteredProducts.slice(
@@ -288,7 +301,7 @@ export const ProductList: React.FC<ProductListProps> = ({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategory]);
+  }, [selectedCategory, searchTerm]);
 
   return (
     <section id="san-pham" className="py-16 sm:py-24 bg-[#F6F8FA] relative">
@@ -308,6 +321,30 @@ export const ProductList: React.FC<ProductListProps> = ({
           <div className="mt-5">
             <BTUCalculatorModal />
           </div>
+        </div>
+
+        {/* Search Box */}
+        <div className="relative max-w-md mx-auto mb-6">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Tìm sản phẩm theo tên..."
+            className="w-full text-sm bg-white border border-slate-200 rounded-lg pl-10 pr-9 py-2.5 focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all shadow-xs"
+          />
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 pointer-events-none">
+            <Search className="w-4 h-4" />
+          </span>
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={() => setSearchTerm("")}
+              aria-label="Xóa tìm kiếm"
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 !min-h-0"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         {/* Category Tabs Filter */}
@@ -340,7 +377,7 @@ export const ProductList: React.FC<ProductListProps> = ({
         {/* Products Grid */}
         {filteredProducts.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
               {pagedProducts.map((product) => (
                 <ProductCard
                   key={product.id}
@@ -359,7 +396,11 @@ export const ProductList: React.FC<ProductListProps> = ({
         ) : (
           <div className="text-center py-12 bg-white rounded-xl border border-slate-200 shadow-xs max-w-md mx-auto">
             <PackageOpen className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500 text-sm font-medium">Chưa có sản phẩm nào được hiển thị trong danh mục này.</p>
+            <p className="text-slate-500 text-sm font-medium">
+              {searchTerm
+                ? `Không tìm thấy sản phẩm nào khớp với "${searchTerm}".`
+                : "Chưa có sản phẩm nào được hiển thị trong danh mục này."}
+            </p>
           </div>
         )}
 
