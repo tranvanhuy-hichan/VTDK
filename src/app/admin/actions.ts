@@ -136,7 +136,7 @@ export async function createProductAction(formData: FormData) {
       return { error: "Giá sản phẩm phải là số hợp lệ!" };
     }
 
-    let imagePath = "/images/storefront.png"; // Default image
+    let imagePath = "/images/placeholder.svg"; // Default image when none uploaded
 
     if (imageFile && imageFile.size > 0) {
       // Validate file size (<= 5MB)
