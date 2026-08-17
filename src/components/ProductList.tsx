@@ -133,6 +133,11 @@ const ProductCard: React.FC<{
                 ? `${displayPrice.toLocaleString("vi-VN")}đ`
                 : "Liên hệ báo giá"}
             </span>
+            {product.variants.length > 0 && (
+              <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 block">
+                {product.variants.length} phân loại
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
