@@ -37,18 +37,18 @@ export const Gallery: React.FC = () => {
   if (galleryItems.length === 0) return null;
 
   return (
-    <section id="hinh-anh" className="py-16 sm:py-24 bg-white relative">
+    <section id="hinh-anh" className="py-16 sm:py-24 bg-white dark:bg-slate-900 relative transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 bg-blue-100 text-[#075FA8] px-3.5 py-1 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/20 text-[#075FA8] dark:text-blue-400 px-3.5 py-1 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-3">
             HÌNH ẢNH THỰC TẾ
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Hình ảnh hoạt động tại Đông Kha
           </h2>
-          <p className="mt-3 text-base sm:text-lg text-slate-600 font-normal">
+          <p className="mt-3 text-base sm:text-lg text-slate-600 dark:text-slate-300 font-normal">
             Hình ảnh thực tế cửa hàng, kho bãi và giao hàng tại Đà Nẵng.
           </p>
         </div>
@@ -59,7 +59,7 @@ export const Gallery: React.FC = () => {
             <div
               key={item.id}
               onClick={() => setActiveImage(item)}
-              className="group relative rounded-2xl overflow-hidden bg-slate-100 cursor-pointer border border-slate-200 shadow-xs hover:shadow-xl transition-all duration-300 aspect-[4/3]"
+              className="group relative rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-950 cursor-pointer border border-slate-200 dark:border-slate-800 shadow-xs hover:shadow-xl transition-all duration-300 aspect-[4/3]"
             >
               <Image
                 src={item.url}
@@ -85,7 +85,7 @@ export const Gallery: React.FC = () => {
               </div>
 
               {/* Tag Category top left badge */}
-              <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-bold text-slate-800 shadow">
+              <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-850/95 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-bold text-slate-800 dark:text-slate-200 shadow">
                 Đông Kha Photo
               </div>
             </div>

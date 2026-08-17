@@ -12,7 +12,7 @@ export default async function SiteLayout({
   const company = await getCompanyInfo();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F6F8FA] text-slate-800 antialiased font-sans">
+    <div className="min-h-screen flex flex-col bg-[#F6F8FA] dark:bg-[#0F172A] text-slate-800 dark:text-slate-100 antialiased font-sans transition-colors duration-300">
       <Header company={company} />
       <main className="flex-1">{children}</main>
       <FloatingContact company={company} />

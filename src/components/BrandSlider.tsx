@@ -25,13 +25,13 @@ export const BrandSlider: React.FC = () => {
   const duplicatedBrands = [...brands, ...brands];
 
   return (
-    <section className="py-4 bg-[#F6F8FA] border-y border-slate-200/80 relative overflow-hidden select-none">
+    <section className="py-4 bg-[#F6F8FA] dark:bg-[#0F172A] border-y border-slate-200/80 dark:border-slate-800 relative overflow-hidden select-none transition-colors duration-300">
       {/* Absolute Gradient Overlays on Sides to create a fading edge effect */}
-      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-r from-[#F6F8FA] to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-l from-[#F6F8FA] to-transparent z-10 pointer-events-none" />
+      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-r from-[#F6F8FA] dark:from-[#0F172A] to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-l from-[#F6F8FA] dark:from-[#0F172A] to-transparent z-10 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 mb-2.5 text-center">
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+        <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
           Thương hiệu vật tư phân phối &amp; đối tác liên kết
         </p>
       </div>
@@ -42,17 +42,17 @@ export const BrandSlider: React.FC = () => {
           {duplicatedBrands.map((brand, index) => (
             <div
               key={index}
-              className="flex items-center gap-2.5 bg-white border border-slate-200/80 rounded-lg px-4 py-1.5 shadow-2xs hover:border-slate-350 transition-colors shrink-0"
+              className="flex items-center gap-2.5 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-lg px-4 py-1.5 shadow-2xs hover:border-slate-350 dark:hover:border-slate-700 transition-colors shrink-0"
             >
-              <div className="p-1 bg-slate-50 border border-slate-100 rounded-md">
+              <div className="p-1 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-md">
                 {brand.icon}
               </div>
               <div className="text-left">
-                <span className="text-xs sm:text-sm font-bold text-slate-700 tracking-wide block">
+                <span className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 tracking-wide block">
                   {brand.name}
                 </span>
                 {brand.country && (
-                  <span className="text-[8px] font-semibold text-slate-400 block uppercase leading-none mt-0.5">
+                  <span className="text-[8px] font-semibold text-slate-400 dark:text-slate-500 block uppercase leading-none mt-0.5">
                     {brand.country}
                   </span>
                 )}

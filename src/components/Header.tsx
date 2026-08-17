@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Phone, Menu, X, MapPin, ChevronRight, Shield, Search } from "lucide-react";
+import { Phone, Menu, X, MapPin, ChevronRight, Shield, Search, Sun, Moon } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
 import type { CompanyContact } from "../lib/company";
 
@@ -18,6 +18,24 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "dark" : "light");
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "light" ? "dark" : "light";
+    setTheme(nextTheme);
+    if (nextTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,8 +87,8 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
       <header
         className={`sticky top-0 z-40 transition-all duration-300 ${
           isScrolled
-            ? "bg-white/95 backdrop-blur-md shadow-md py-2 border-b border-slate-200"
-            : "bg-white py-2.5 sm:py-3 border-b border-slate-100"
+            ? "bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-md py-2 border-b border-slate-200 dark:border-slate-800"
+            : "bg-white dark:bg-slate-900 py-2.5 sm:py-3 border-b border-slate-100 dark:border-slate-800"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
@@ -86,27 +104,14 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
               className="h-10 sm:h-12 lg:h-14 w-auto object-contain transition-transform group-hover:scale-105"
             />
             <div className="flex flex-col">
-              <div className="font-black text-slate-900 tracking-tight text-base sm:text-lg leading-none flex items-center gap-1">
+              <div className="font-black text-slate-900 dark:text-white tracking-tight text-base sm:text-lg leading-none flex items-center gap-1">
                 <span>ĐÔNG KHA</span>
               </div>
-              <span className="text-[10px] sm:text-xs text-slate-400 font-bold tracking-wider mt-1.5 uppercase">
+              <span className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-555 font-bold tracking-wider mt-1.5 uppercase">
                 Vật Tư Điện Lạnh Chính Hãng
               </span>
             </div>
           </a>
-
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-6">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="text-slate-700 hover:text-[#075FA8] font-bold text-sm transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#075FA8] hover:after:w-full after:transition-all"
-              >
-                {link.name}
-              </a>
-            ))}
-          </nav>
 
           {/* Desktop Search */}
           <div className="hidden md:flex items-center flex-1 max-w-md mx-4">
@@ -116,29 +121,59 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm sản phẩm..."
-                className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3 py-2.5 text-slate-900 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:border-[#075FA8] dark:focus:border-blue-500 focus:ring-1 focus:ring-[#075FA8] dark:focus:ring-blue-500 transition-all"
               />
               <button
                 type="submit"
                 aria-label="Tìm kiếm"
-                className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 hover:text-[#075FA8] !min-h-0"
+                className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-slate-500 hover:text-[#075FA8] dark:hover:text-blue-400 !min-h-0"
               >
                 <Search className="w-4 h-4" />
               </button>
             </form>
           </div>
 
-          {/* Mobile Right Controls: Search + Hamburger Menu */}
+          {/* Desktop Navigation Links & Theme Toggle */}
+          <div className="hidden lg:flex items-center gap-6">
+            <nav className="flex items-center gap-6">
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="text-slate-700 dark:text-slate-300 hover:text-[#075FA8] dark:hover:text-[#F47A20] font-bold text-sm transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#075FA8] dark:after:bg-[#F47A20] hover:after:w-full after:transition-all"
+                >
+                  {link.name}
+                </a>
+              ))}
+            </nav>
+            <div className="h-6 w-px bg-slate-200 dark:bg-slate-800" />
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer !min-h-0"
+              aria-label="Đổi giao diện"
+            >
+              {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5 text-amber-400" />}
+            </button>
+          </div>
+
+          {/* Mobile Right Controls: Search + Theme + Hamburger Menu */}
           <div className="flex items-center gap-1.5 lg:hidden">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg text-slate-700 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
+              aria-label="Đổi giao diện"
+            >
+              {theme === "light" ? <Moon className="w-6 h-6 text-slate-900 dark:text-slate-100" /> : <Sun className="w-6 h-6 text-amber-400" />}
+            </button>
             <button
               onClick={() => {
                 setIsMobileSearchOpen(!isMobileSearchOpen);
                 setIsMobileMenuOpen(false);
               }}
               aria-label="Tìm kiếm"
-              className="p-2 rounded-lg text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors"
+              className="p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
             >
-              {isMobileSearchOpen ? <X className="w-6 h-6 text-slate-900" /> : <Search className="w-6 h-6 text-slate-900" />}
+              {isMobileSearchOpen ? <X className="w-6 h-6 text-slate-900 dark:text-white" /> : <Search className="w-6 h-6 text-slate-900 dark:text-white" />}
             </button>
             <button
               onClick={() => {
@@ -146,16 +181,16 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                 setIsMobileSearchOpen(false);
               }}
               aria-label="Mở menu"
-              className="p-2 rounded-lg text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors"
+              className="p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
             >
-              {isMobileMenuOpen ? <X className="w-6 h-6 text-slate-900" /> : <Menu className="w-6 h-6 text-slate-900" />}
+              {isMobileMenuOpen ? <X className="w-6 h-6 text-slate-900 dark:text-white" /> : <Menu className="w-6 h-6 text-slate-900 dark:text-white" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Search Bar */}
         {isMobileSearchOpen && (
-          <div className="lg:hidden bg-white border-b border-slate-200 shadow-xl px-4 py-4 animate-in slide-in-from-top-2 duration-200">
+          <div className="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xl px-4 py-4 animate-in slide-in-from-top-2 duration-200">
             <form onSubmit={handleSearchSubmit} className="relative">
               <input
                 type="text"
@@ -163,12 +198,12 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm sản phẩm..."
-                className="w-full text-base bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                className="w-full text-base bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-slate-900 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:border-[#075FA8] dark:focus:border-blue-500 focus:ring-1 focus:ring-[#075FA8] dark:focus:ring-blue-500 transition-all"
               />
               <button
                 type="submit"
                 aria-label="Tìm kiếm"
-                className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 hover:text-[#075FA8] !min-h-0"
+                className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 dark:text-slate-500 hover:text-[#075FA8] dark:hover:text-blue-400 !min-h-0"
               >
                 <Search className="w-4.5 h-4.5" />
               </button>
