@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Phone, MapPin, MessageSquare, ArrowUp } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";

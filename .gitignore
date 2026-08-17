@@ -22,3 +22,26 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+/src/generated/prisma
+
+# Next.js
+.next/
+out/
+
+# Environment variables
+.env
+.env*.local
+
+# Database
+/prisma/*.db
+/prisma/*.db-journal
+
+# Uploads
+/public/uploads/
+
+# Agent IDE files
+.agents/
+.claude/
+.windsurf/
+skills-lock.json

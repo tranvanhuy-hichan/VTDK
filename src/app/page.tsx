@@ -1,0 +1,47 @@
+import React from "react";
+import { prisma } from "../lib/prisma";
+import { Hero } from "../components/Hero";
+import { BrandSlider } from "../components/BrandSlider";
+import { QuickContactBar } from "../components/QuickContactBar";
+import { ProductList } from "../components/ProductList";
+import { Services } from "../components/Services";
+import { WhyChooseUs } from "../components/WhyChooseUs";
+import { BTUCalculator } from "../components/BTUCalculator";
+import { CustomerTypes } from "../components/CustomerTypes";
+import { Testimonials } from "../components/Testimonials";
+import { Gallery } from "../components/Gallery";
+import { ContactCTA } from "../components/ContactCTA";
+import { Location } from "../components/Location";
+
+export const revalidate = 0; // Disable caching to reflect database updates immediately
+
+export default async function HomePage() {
+  // Fetch categories and active products from SQLite
+  const categories = await prisma.category.findMany({
+    orderBy: { name: "asc" },
+  });
+
+  const products = await prisma.product.findMany({
+    where: { active: true },
+    include: { category: true },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return (
+    <>
+      <Hero />
+      <BrandSlider />
+      <QuickContactBar />
+      {/* Render the dynamic product catalog */}
+      <ProductList initialCategories={categories} initialProducts={products} />
+      <Services />
+      <WhyChooseUs />
+      <BTUCalculator />
+      <CustomerTypes />
+      <Testimonials />
+      <Gallery />
+      <ContactCTA />
+      <Location />
+    </>
+  );
+}

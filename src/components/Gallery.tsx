@@ -1,21 +1,46 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import { ZoomIn, X, Camera, Image as ImageIcon } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
-import { getGalleryImages, type DynamicGalleryItem } from "../utils/imageLoader";
+
+interface DynamicGalleryItem {
+  id: string;
+  url: string;
+  title: string;
+  filename: string;
+}
 
 export const Gallery: React.FC = () => {
-  // Dynamically scan public/images/gallery/ folder for any images
-  const dynamicGallery = getGalleryImages();
+  const [galleryItems, setGalleryItems] = useState<DynamicGalleryItem[]>([]);
 
-  // Combine dynamic folder images with company fallback items
-  const galleryItems: DynamicGalleryItem[] = dynamicGallery.length > 0
-    ? dynamicGallery
-    : COMPANY_DATA.gallery.map((g) => ({
-        id: g.id,
-        url: g.image,
-        title: g.title,
-        filename: g.id
-      }));
+  useEffect(() => {
+    fetch("/api/gallery")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setGalleryItems(data);
+        } else {
+          // Fallback to static gallery data
+          const fallbacks = COMPANY_DATA.gallery.map((g) => ({
+            id: g.id,
+            url: g.image,
+            title: g.title,
+            filename: g.id,
+          }));
+          setGalleryItems(fallbacks);
+        }
+      })
+      .catch(() => {
+        const fallbacks = COMPANY_DATA.gallery.map((g) => ({
+          id: g.id,
+          url: g.image,
+          title: g.title,
+          filename: g.id,
+        }));
+        setGalleryItems(fallbacks);
+      });
+  }, []);
 
   const [activeImage, setActiveImage] = useState<DynamicGalleryItem | null>(null);
 
