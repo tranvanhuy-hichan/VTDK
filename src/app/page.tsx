@@ -23,7 +23,7 @@ export default async function HomePage() {
 
   const products = await prisma.product.findMany({
     where: { active: true },
-    include: { category: true },
+    include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
     orderBy: { createdAt: "desc" },
   });
 

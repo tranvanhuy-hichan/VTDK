@@ -19,7 +19,7 @@ export default async function AdminDashboardPage() {
   });
 
   const products = await prisma.product.findMany({
-    include: { category: true },
+    include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
     orderBy: { createdAt: "desc" },
   });
 

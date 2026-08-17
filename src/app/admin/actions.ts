@@ -25,6 +25,22 @@ function slugify(text: string): string {
     .replace(/-+$/, ""); // Trim - from end
 }
 
+// Parse repeatable variant rows (label + price) from FormData
+function parseVariants(formData: FormData) {
+  const labels = formData.getAll("variantLabel") as string[];
+  const prices = formData.getAll("variantPrice") as string[];
+
+  const variants: { label: string; price: number; sortOrder: number }[] = [];
+  for (let i = 0; i < labels.length; i++) {
+    const label = labels[i]?.trim();
+    const price = parseInt(prices[i], 10);
+    if (label && !isNaN(price)) {
+      variants.push({ label, price, sortOrder: i });
+    }
+  }
+  return variants;
+}
+
 // 1. Admin Login
 export async function loginAction(password: string) {
   if (password === ADMIN_PASSWORD) {
@@ -106,6 +122,8 @@ export async function createProductAction(formData: FormData) {
       finalSlug = `${baseSlug}-${count++}`;
     }
 
+    const variants = parseVariants(formData);
+
     await prisma.product.create({
       data: {
         name,
@@ -115,6 +133,7 @@ export async function createProductAction(formData: FormData) {
         image: imagePath,
         active,
         categoryId,
+        variants: { create: variants },
       },
     });
 
@@ -201,6 +220,8 @@ export async function updateProductAction(id: string, formData: FormData) {
       }
     }
 
+    const variants = parseVariants(formData);
+
     await prisma.product.update({
       where: { id },
       data: {
@@ -211,6 +232,10 @@ export async function updateProductAction(id: string, formData: FormData) {
         image: imagePath,
         active,
         categoryId,
+        variants: {
+          deleteMany: {},
+          create: variants,
+        },
       },
     });
 

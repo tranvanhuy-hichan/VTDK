@@ -10,6 +10,12 @@ interface Category {
   slug: string;
 }
 
+interface ProductVariant {
+  id: string;
+  label: string;
+  price: number;
+}
+
 interface Product {
   id: string;
   name: string;
@@ -19,12 +25,90 @@ interface Product {
   image: string;
   active: boolean;
   category: Category;
+  variants: ProductVariant[];
 }
 
 interface ProductListProps {
   initialCategories: Category[];
   initialProducts: Product[];
 }
+
+const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+  const selectedVariant =
+    product.variants.length > 0 ? product.variants[selectedVariantIndex] : null;
+  const displayPrice = selectedVariant ? selectedVariant.price : product.price;
+
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-xl hover:border-blue-200 transition-all duration-300 flex flex-col overflow-hidden group text-left">
+      {/* Product Image */}
+      <div className="relative aspect-[16/10] overflow-hidden bg-slate-50 border-b border-slate-100">
+        <img
+          src={product.image}
+          alt={product.name}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+        <span className="absolute top-3 left-3 bg-[#075FA8]/90 backdrop-blur-xs text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md shadow uppercase tracking-wider">
+          {product.category.name}
+        </span>
+      </div>
+
+      {/* Card Body */}
+      <div className="p-5 flex-1 flex flex-col justify-between">
+        <div>
+          <h3 className="text-lg font-bold text-slate-900 leading-snug group-hover:text-[#075FA8] transition-colors mb-2 line-clamp-2">
+            {product.name}
+          </h3>
+          {product.shortDesc && (
+            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed mb-4 line-clamp-3">
+              {product.shortDesc}
+            </p>
+          )}
+
+          {/* Variant Selector */}
+          {product.variants.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mb-4">
+              {product.variants.map((variant, index) => (
+                <button
+                  key={variant.id}
+                  type="button"
+                  onClick={() => setSelectedVariantIndex(index)}
+                  className={`!min-h-0 px-2.5 py-1.5 text-xs font-bold rounded-lg border transition-all ${
+                    index === selectedVariantIndex
+                      ? "bg-[#075FA8] border-[#075FA8] text-white shadow-xs"
+                      : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  {variant.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Price & Action */}
+        <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-4 mt-auto">
+          <div>
+            <span className="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Giá bán lẻ</span>
+            <span className="text-lg font-black text-orange-600">
+              {displayPrice > 0
+                ? `${displayPrice.toLocaleString("vi-VN")}đ`
+                : "Liên hệ báo giá"}
+            </span>
+          </div>
+
+          <a
+            href={`tel:${COMPANY_DATA.hotlineRaw}`}
+            className="inline-flex items-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm py-2.5 px-4 rounded-xl shadow-xs transition-colors"
+          >
+            <Phone className="w-3.5 h-3.5 fill-current" />
+            <span>Liên hệ ngay</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const ProductList: React.FC<ProductListProps> = ({
   initialCategories,
@@ -86,56 +170,7 @@ export const ProductList: React.FC<ProductListProps> = ({
         {filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {filteredProducts.map((product) => (
-              <div
-                key={product.id}
-                className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-xl hover:border-blue-200 transition-all duration-300 flex flex-col overflow-hidden group text-left"
-              >
-                {/* Product Image */}
-                <div className="relative aspect-[16/10] overflow-hidden bg-slate-50 border-b border-slate-100">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span className="absolute top-3 left-3 bg-[#075FA8]/90 backdrop-blur-xs text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md shadow uppercase tracking-wider">
-                    {product.category.name}
-                  </span>
-                </div>
-
-                {/* Card Body */}
-                <div className="p-5 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-lg font-bold text-slate-900 leading-snug group-hover:text-[#075FA8] transition-colors mb-2 line-clamp-2">
-                      {product.name}
-                    </h3>
-                    {product.shortDesc && (
-                      <p className="text-xs sm:text-sm text-slate-500 leading-relaxed mb-4 line-clamp-3">
-                        {product.shortDesc}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Price & Action */}
-                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-4 mt-auto">
-                    <div>
-                      <span className="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Giá bán lẻ</span>
-                      <span className="text-lg font-black text-orange-600">
-                        {product.price > 0
-                          ? `${product.price.toLocaleString("vi-VN")}đ`
-                          : "Liên hệ báo giá"}
-                      </span>
-                    </div>
-                    
-                    <a
-                      href={`tel:${COMPANY_DATA.hotlineRaw}`}
-                      className="inline-flex items-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm py-2.5 px-4 rounded-xl shadow-xs transition-colors"
-                    >
-                      <Phone className="w-3.5 h-3.5 fill-current" />
-                      <span>Liên hệ ngay</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (

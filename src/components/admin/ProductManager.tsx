@@ -28,6 +28,13 @@ interface Category {
   slug: string;
 }
 
+interface ProductVariant {
+  id: string;
+  label: string;
+  price: number;
+  sortOrder: number;
+}
+
 interface Product {
   id: string;
   name: string;
@@ -38,6 +45,7 @@ interface Product {
   active: boolean;
   categoryId: string;
   category: Category;
+  variants: ProductVariant[];
 }
 
 interface ProductManagerProps {
@@ -66,6 +74,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
   const [active, setActive] = useState(true);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [variantRows, setVariantRows] = useState<{ label: string; price: string }[]>([]);
 
   // Open modal for creating product
   const handleOpenAdd = () => {
@@ -78,6 +87,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
     setActive(true);
     setImageFile(null);
     setImagePreview(null);
+    setVariantRows([]);
     setIsModalOpen(true);
   };
 
@@ -92,7 +102,25 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
     setActive(product.active);
     setImageFile(null);
     setImagePreview(product.image);
+    setVariantRows(
+      product.variants.map((v) => ({ label: v.label, price: v.price.toString() }))
+    );
     setIsModalOpen(true);
+  };
+
+  // Variant row helpers
+  const handleAddVariantRow = () => {
+    setVariantRows((rows) => [...rows, { label: "", price: "" }]);
+  };
+
+  const handleVariantChange = (index: number, field: "label" | "price", value: string) => {
+    setVariantRows((rows) =>
+      rows.map((row, i) => (i === index ? { ...row, [field]: value } : row))
+    );
+  };
+
+  const handleRemoveVariantRow = (index: number) => {
+    setVariantRows((rows) => rows.filter((_, i) => i !== index));
   };
 
   // Handle image selection preview
@@ -128,6 +156,12 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
     if (imageFile) {
       formData.append("image", imageFile);
     }
+    variantRows.forEach((row) => {
+      if (row.label.trim() && row.price.trim()) {
+        formData.append("variantLabel", row.label.trim());
+        formData.append("variantPrice", row.price);
+      }
+    });
 
     const res = isEditing && editingProduct
       ? await updateProductAction(editingProduct.id, formData)
@@ -313,9 +347,14 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
 
                       {/* Price */}
                       <td className="py-4 px-6 text-left font-black text-slate-900">
-                        {product.price > 0 
-                          ? `${product.price.toLocaleString("vi-VN")}đ` 
+                        {product.price > 0
+                          ? `${product.price.toLocaleString("vi-VN")}đ`
                           : "Liên hệ báo giá"}
+                        {product.variants.length > 0 && (
+                          <div className="text-[10px] font-bold text-slate-400 mt-0.5">
+                            {product.variants.length} phân loại
+                          </div>
+                        )}
                       </td>
 
                       {/* Active Status Switch */}
@@ -493,6 +532,58 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                     />
                   </label>
                 </div>
+              </div>
+
+              {/* Product Variants (size/thickness/length options with own price) */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Phân loại (kích thước / độ dày / chiều dài...)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleAddVariantRow}
+                    className="text-xs font-bold text-[#075FA8] hover:text-[#0B1F33] flex items-center gap-1 !min-h-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Thêm phân loại
+                  </button>
+                </div>
+
+                {variantRows.length === 0 ? (
+                  <p className="text-xs text-slate-400 italic">
+                    Chưa có phân loại nào. Nếu không thêm, sản phẩm chỉ dùng giá bán chung ở trên.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {variantRows.map((row, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={row.label}
+                          onChange={(e) => handleVariantChange(index, "label", e.target.value)}
+                          placeholder="Ví dụ: Độ dày 13mm"
+                          className="flex-1 text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                        />
+                        <input
+                          type="number"
+                          value={row.price}
+                          onChange={(e) => handleVariantChange(index, "price", e.target.value)}
+                          placeholder="Giá (VND)"
+                          className="w-32 text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveVariantRow(index)}
+                          aria-label="Xóa phân loại"
+                          className="p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 border border-slate-200 rounded-lg transition-colors !min-h-0 shrink-0"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Active Toggle Option */}
