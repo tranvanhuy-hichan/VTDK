@@ -140,7 +140,7 @@ export const Footer: React.FC<FooterProps> = ({ company }) => {
 
         {/* Footer Bottom Bar */}
         <div className="pt-8 border-t border-slate-800/60 grid grid-cols-1 sm:grid-cols-3 items-center gap-4 text-xs text-slate-400">
-          <div className="flex justify-center sm:justify-start order-2 sm:order-1">
+          <div className="flex justify-center sm:justify-start">
             <Link
               href="/admin/login"
               className="flex items-center gap-1.5 hover:text-white transition-colors"

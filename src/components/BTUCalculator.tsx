@@ -169,23 +169,22 @@ export const BTUCalculator: React.FC = () => {
               </div>
 
               {/* Room type selection */}
-              <div className="mb-2">
+              <div>
                 <span className="text-sm font-bold text-slate-700 block mb-2">
                   Không gian sử dụng phòng
                 </span>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="flex flex-wrap gap-2">
                   {roomTypes.map((type) => (
                     <button
                       key={type.id}
                       onClick={() => setRoomType(type.id as RoomType)}
-                      className={`!min-h-0 p-3 text-left rounded-lg border transition-all ${
+                      className={`!min-h-0 px-3.5 py-2 text-xs sm:text-sm font-bold rounded-lg border transition-all ${
                         roomType === type.id
-                          ? "bg-blue-550/5 border-[#075FA8] text-slate-900 ring-1 ring-[#075FA8]"
+                          ? "bg-[#075FA8] border-[#075FA8] text-white"
                           : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
                       }`}
                     >
-                      <span className="text-xs sm:text-sm font-bold block">{type.label}</span>
-                      <span className="text-[10px] text-slate-400 block mt-0.5">{type.desc}</span>
+                      {type.label}
                     </button>
                   ))}
                 </div>
@@ -193,10 +192,10 @@ export const BTUCalculator: React.FC = () => {
             </div>
 
             {activeTypeInfo && (
-              <div className="mt-6 p-3 bg-blue-50/60 border border-blue-100/70 rounded-lg flex items-start gap-2 text-xs text-slate-600">
+              <div className="mt-4 p-3 bg-blue-50/60 border border-blue-100/70 rounded-lg flex items-start gap-2 text-xs text-slate-600">
                 <AlertCircle className="w-4 h-4 text-[#075FA8] shrink-0 mt-0.5" />
                 <span>
-                  Hệ số áp dụng: <strong>{calcMode === "area" ? activeTypeInfo.factorArea : activeTypeInfo.factorVolume} BTU</strong> trên mỗi {calcMode === "area" ? "m²" : "m³"}.
+                  {activeTypeInfo.desc} Hệ số áp dụng: <strong>{calcMode === "area" ? activeTypeInfo.factorArea : activeTypeInfo.factorVolume} BTU</strong> trên mỗi {calcMode === "area" ? "m²" : "m³"}.
                 </span>
               </div>
             )}
