@@ -4,37 +4,37 @@ import { COMPANY_DATA } from "../data/company";
 
 export const ContactCTA: React.FC = () => {
   return (
-    <section className="py-16 sm:py-24 bg-[#0B1F33] text-white relative overflow-hidden">
-      {/* Dynamic Background Glows */}
-      <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#075FA8]/20 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full bg-orange-600/20 blur-3xl pointer-events-none" />
+    <section className="py-12 sm:py-16 bg-[#0B1F33] text-white relative overflow-hidden">
+      {/* Subtle Background Glows */}
+      <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-[#075FA8]/10 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-orange-600/10 blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Main CTA Box */}
-        <div className="bg-gradient-to-br from-slate-900 via-[#075FA8]/30 to-slate-900 border border-blue-700/50 rounded-3xl p-8 sm:p-12 lg:p-16 shadow-2xl text-center relative">
+        <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-6 sm:p-10 lg:p-12 shadow-2xl text-center relative">
           
-          <div className="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-400/40 text-[#F47A20] px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-6">
-            <Phone className="w-4 h-4 animate-bounce" />
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-orange-400 uppercase tracking-widest mb-4">
+            <Phone className="w-3.5 h-3.5 text-orange-400" />
             HỖ TRỢ &amp; BÁO GIÁ NHANH
           </div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight max-w-3xl mx-auto mb-6">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-snug max-w-2xl mx-auto mb-4">
             Bạn đang cần tìm vật tư điện lạnh?
           </h2>
 
-          <p className="text-base sm:text-lg md:text-xl text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed mb-8 sm:mb-10">
+          <p className="text-sm sm:text-base text-slate-400 max-w-xl mx-auto leading-relaxed mb-8">
             Liên hệ Đông Kha ngay để được hỗ trợ nhanh về sản phẩm, linh kiện và giải pháp điện lạnh phù hợp nhất với nhu cầu của bạn.
           </p>
 
-          {/* Large Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-xl mx-auto mb-10">
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 max-w-md mx-auto mb-8">
             {/* Phone Button */}
             <a
               href={`tel:${COMPANY_DATA.hotlineRaw}`}
-              className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-3 bg-[#075FA8] hover:bg-blue-600 text-white font-extrabold text-lg sm:text-xl px-8 py-4 sm:py-5 rounded-2xl shadow-xl shadow-blue-900/40 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+              className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 bg-[#F47A20] hover:bg-[#E06912] text-white font-extrabold text-sm sm:text-base px-6 py-3.5 rounded-xl shadow-md transition-colors"
             >
-              <Phone className="w-6 h-6 fill-current text-white" />
+              <Phone className="w-4 h-4 fill-current text-white" />
               <span>Gọi {COMPANY_DATA.hotline}</span>
             </a>
 
@@ -43,22 +43,22 @@ export const ContactCTA: React.FC = () => {
               href={COMPANY_DATA.zaloUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-3 bg-[#0068FF] hover:bg-blue-600 text-white font-extrabold text-lg sm:text-xl px-8 py-4 sm:py-5 rounded-2xl shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 bg-transparent hover:bg-white/10 border border-white/20 text-white font-bold text-sm sm:text-base px-6 py-3.5 rounded-xl transition-colors"
             >
-              <MessageSquare className="w-6 h-6" />
+              <MessageSquare className="w-4 h-4" />
               <span>Nhắn Zalo ngay</span>
             </a>
           </div>
 
           {/* Quick Info Strip */}
-          <div className="pt-8 border-t border-slate-800 flex flex-wrap items-center justify-center gap-6 text-xs sm:text-sm text-slate-300 font-semibold">
+          <div className="pt-6 border-t border-slate-800/60 flex flex-wrap items-center justify-center gap-5 text-xs text-slate-400 font-medium">
             <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-[#F47A20]" />
+              <MapPin className="w-4 h-4 text-orange-400/80" />
               <span>400 Phạm Hùng, Hòa Xuân, Đà Nẵng</span>
             </div>
-            <div className="hidden sm:block text-slate-700">•</div>
+            <div className="hidden sm:block text-slate-800">•</div>
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-emerald-400" />
+              <Clock className="w-4 h-4 text-emerald-500/80" />
               <span>Phục vụ: {COMPANY_DATA.workingHours}</span>
             </div>
           </div>

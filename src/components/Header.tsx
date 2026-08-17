@@ -67,9 +67,6 @@ export const Header: React.FC<HeaderProps> = () => {
             <div className="flex flex-col">
               <div className="font-black text-slate-900 tracking-tight text-base sm:text-xl leading-none flex items-center gap-1">
                 <span>ĐÔNG KHA</span>
-                <span className="text-[#F47A20] text-xs sm:text-sm font-bold bg-orange-50 text-[#F47A20] px-1.5 py-0.5 rounded border border-orange-200">
-                  ĐÀ NẴNG
-                </span>
               </div>
               <span className="text-[11px] sm:text-xs text-slate-500 font-semibold tracking-wide mt-1 uppercase">
                 Vật Tư Điện Lạnh Chuyên Nghiệp
@@ -110,15 +107,8 @@ export const Header: React.FC<HeaderProps> = () => {
             </a>
           </div>
 
-          {/* Mobile Right Controls: Mini Phone + Hamburger */}
-          <div className="flex items-center gap-2 sm:hidden">
-            <a
-              href={`tel:${COMPANY_DATA.hotlineRaw}`}
-              aria-label="Gọi hotline"
-              className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#075FA8] text-white font-bold shadow"
-            >
-              <Phone className="w-5 h-5 fill-current" />
-            </a>
+          {/* Mobile Right Controls: Hamburger Menu */}
+          <div className="flex items-center lg:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Mở menu"
@@ -131,7 +121,7 @@ export const Header: React.FC<HeaderProps> = () => {
 
         {/* Mobile Menu Drawer */}
         {isMobileMenuOpen && (
-          <div className="sm:hidden bg-white border-b border-slate-200 shadow-xl px-4 py-5 animate-in slide-in-from-top-2 duration-200">
+          <div className="lg:hidden bg-white border-b border-slate-200 shadow-xl px-4 py-5 animate-in slide-in-from-top-2 duration-200">
             <div className="flex flex-col gap-2">
               {navLinks.map((link) => (
                 <a

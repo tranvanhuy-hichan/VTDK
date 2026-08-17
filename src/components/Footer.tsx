@@ -131,15 +131,18 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Footer Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <p>© 2026 | designed by Tran Van Huy</p>
-          <button
-            onClick={scrollToTop}
-            className="flex items-center gap-1.5 hover:text-white transition-colors bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700"
-          >
-            <span>Về đầu trang</span>
-            <ArrowUp className="w-3.5 h-3.5" />
-          </button>
+        <div className="pt-8 border-t border-slate-800/60 grid grid-cols-1 sm:grid-cols-3 items-center gap-4 text-xs text-slate-400">
+          <div className="hidden sm:block"></div>
+          <p className="text-center">© 2026 | designed by Tran Van Huy</p>
+          <div className="flex justify-center sm:justify-end">
+            <button
+              onClick={scrollToTop}
+              className="flex items-center gap-1.5 hover:text-white transition-colors bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700"
+            >
+              <span>Về đầu trang</span>
+              <ArrowUp className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
 
       </div>

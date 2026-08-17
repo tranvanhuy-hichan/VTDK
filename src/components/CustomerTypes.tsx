@@ -54,10 +54,13 @@ export const CustomerTypes: React.FC = () => {
                 </p>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1 text-xs font-bold text-[#075FA8]">
-                <span>Phục vụ chu đáo</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </div>
+              <a
+                href="#lien-he"
+                className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1 text-xs font-bold text-[#075FA8] hover:text-[#0B1F33] transition-colors"
+              >
+                <span>Liên hệ ngay</span>
+                <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+              </a>
             </div>
           ))}
         </div>

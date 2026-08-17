@@ -201,30 +201,33 @@ export const ProductCategories: React.FC = () => {
         </div>
 
         {/* Section Bottom CTA */}
-        <div className="mt-12 sm:mt-16 bg-white rounded-2xl p-6 sm:p-8 border border-blue-200/80 shadow-md text-center max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="text-left">
-            <h4 className="text-lg sm:text-xl font-bold text-slate-900">
+        <div className="mt-16 bg-slate-50 rounded-xl p-8 sm:p-10 border border-slate-200 shadow-xs max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="text-left max-w-xl">
+            <h4 className="text-xl font-bold text-slate-900 tracking-tight">
               Không tìm thấy chủng loại vật tư bạn đang cần?
             </h4>
-            <p className="text-sm text-slate-600 mt-1">
-              Liên hệ ngay Đông Kha – chúng tôi hỗ trợ tra cứu đúng thông số &amp; kiểm tra hàng tồn kho trong 2 phút.
+            <p className="text-sm text-slate-500 mt-2 leading-relaxed">
+              Hãy liên hệ trực tiếp với Đông Kha. Chúng tôi sẽ hỗ trợ tra cứu đúng quy cách kỹ thuật và kiểm tra tình trạng hàng tồn kho tức thì.
             </p>
           </div>
-          <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
+          <div className="flex items-center gap-3 shrink-0 w-full md:w-auto">
+            {/* Call */}
             <a
               href={`tel:${COMPANY_DATA.hotlineRaw}`}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold px-5 py-3 rounded-xl shadow transition-colors text-sm"
+              className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold px-6 py-3.5 rounded-lg shadow-xs transition-colors text-sm sm:text-base whitespace-nowrap"
             >
               <Phone className="w-4 h-4 fill-current" />
               <span>{COMPANY_DATA.hotline}</span>
             </a>
+
+            {/* Zalo */}
             <a
               href={COMPANY_DATA.zaloUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-[#0068FF] hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-xl shadow transition-colors text-sm"
+              className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border border-slate-350 text-slate-700 font-bold px-6 py-3.5 rounded-lg shadow-xs transition-colors text-sm sm:text-base whitespace-nowrap"
             >
-              <MessageSquare className="w-4 h-4" />
+              <MessageSquare className="w-4 h-4 text-[#0068FF]" />
               <span>Nhắn Zalo</span>
             </a>
           </div>
