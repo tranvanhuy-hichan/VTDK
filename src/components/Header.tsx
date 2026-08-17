@@ -184,15 +184,8 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
             </button>
           </div>
 
-          {/* Mobile Right Controls: Search + Theme + Hamburger Menu */}
+          {/* Mobile Right Controls: Search + Hamburger Menu */}
           <div className="flex items-center gap-1.5 lg:hidden">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg text-slate-700 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
-              aria-label="Đổi giao diện"
-            >
-              {theme === "light" ? <Moon className="w-6 h-6 text-slate-900 dark:text-slate-100" /> : <Sun className="w-6 h-6 text-amber-400" />}
-            </button>
             <button
               onClick={() => {
                 setIsMobileSearchOpen(!isMobileSearchOpen);
@@ -242,6 +235,30 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
         {/* Mobile Menu Drawer */}
         {isMobileMenuOpen && (
           <div className="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xl px-4 py-5 animate-in slide-in-from-top-2 duration-200">
+            {/* Theme Toggle row inside mobile sidebar */}
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 mb-3">
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                Giao diện: {theme === "light" ? "Chế độ Sáng" : "Chế độ Tối"}
+              </span>
+              <button
+                onClick={toggleTheme}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold text-xs shadow-xs border border-slate-200 dark:border-slate-600 transition-colors cursor-pointer !min-h-0"
+                aria-label="Đổi giao diện"
+              >
+                {theme === "light" ? (
+                  <>
+                    <Moon className="w-4 h-4 text-slate-700" />
+                    <span>Tối</span>
+                  </>
+                ) : (
+                  <>
+                    <Sun className="w-4 h-4 text-amber-400" />
+                    <span>Sáng</span>
+                  </>
+                )}
+              </button>
+            </div>
+
             <div className="flex flex-col gap-1.5">
               {navLinks.map((link) => {
                 const sectionId = link.href.replace("#", "");

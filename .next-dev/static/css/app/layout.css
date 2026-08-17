@@ -3229,6 +3229,9 @@
       background-color: color-mix(in oklab, var(--color-orange-950) 20%, transparent);
     }
   }
+  .dark\:bg-slate-700:where(.dark, .dark *) {
+    background-color: var(--color-slate-700);
+  }
   .dark\:bg-slate-800:where(.dark, .dark *) {
     background-color: var(--color-slate-800);
   }
