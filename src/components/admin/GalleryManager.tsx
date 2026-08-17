@@ -11,6 +11,7 @@ import {
   ImageOff,
   ArrowLeft,
   Building2,
+  Wrench,
 } from "lucide-react";
 import {
   createGalleryImageAction,
@@ -119,6 +120,13 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
             >
               <Building2 className="w-3.5 h-3.5" />
               <span>Thông tin công ty</span>
+            </Link>
+            <Link
+              href="/admin/services"
+              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
+            >
+              <Wrench className="w-3.5 h-3.5" />
+              <span>Giải pháp</span>
             </Link>
             <button
               onClick={handleLogout}

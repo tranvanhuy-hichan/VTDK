@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { LogOut, Loader2, ArrowLeft, Save, ImageIcon } from "lucide-react";
+import { LogOut, Loader2, ArrowLeft, Save, ImageIcon, Wrench } from "lucide-react";
 import { updateCompanyInfoAction, logoutAction } from "../../app/admin/actions";
 import type { CompanyContact } from "../../lib/company";
 
@@ -77,6 +77,13 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
             >
               <ImageIcon className="w-3.5 h-3.5" />
               <span>Hình ảnh</span>
+            </Link>
+            <Link
+              href="/admin/services"
+              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm !min-h-0"
+            >
+              <Wrench className="w-3.5 h-3.5" />
+              <span>Giải pháp</span>
             </Link>
             <button
               onClick={handleLogout}

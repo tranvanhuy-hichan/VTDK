@@ -41,6 +41,13 @@ function parseVariants(formData: FormData) {
   return variants;
 }
 
+// Parse repeatable feature bullet rows from FormData
+function parseFeatures(formData: FormData) {
+  return (formData.getAll("feature") as string[])
+    .map((f) => f.trim())
+    .filter((f) => f.length > 0);
+}
+
 // 1. Admin Login
 export async function loginAction(password: string) {
   if (password === ADMIN_PASSWORD) {
@@ -435,5 +442,151 @@ export async function updateCompanyInfoAction(formData: FormData) {
     return { success: true };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi cập nhật thông tin công ty!" };
+  }
+}
+
+const SERVICE_ICONS = ["Building2", "Fan", "Wind", "ThermometerSun"];
+
+// 10. Create Service
+export async function createServiceAction(formData: FormData) {
+  const isAuth = await isAdminAuthenticated();
+  if (!isAuth) return { error: "Chưa đăng nhập!" };
+
+  try {
+    const title = (formData.get("title") as string)?.trim();
+    const description = (formData.get("description") as string)?.trim();
+    const icon = (formData.get("icon") as string) || "ThermometerSun";
+    const imageFile = formData.get("image") as File | null;
+    const features = parseFeatures(formData);
+
+    if (!title || !description) {
+      return { error: "Vui lòng nhập đầy đủ tiêu đề và mô tả!" };
+    }
+    if (!imageFile || imageFile.size === 0) {
+      return { error: "Vui lòng chọn tệp hình ảnh!" };
+    }
+    if (imageFile.size > 5 * 1024 * 1024) {
+      return { error: "Dung lượng ảnh phải nhỏ hơn hoặc bằng 5MB!" };
+    }
+    const ext = path.extname(imageFile.name).toLowerCase();
+    if (![".jpg", ".jpeg", ".png", ".webp"].includes(ext)) {
+      return { error: "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP." };
+    }
+    if (!SERVICE_ICONS.includes(icon)) {
+      return { error: "Biểu tượng không hợp lệ!" };
+    }
+
+    const blob = await put(`services/${Date.now()}-${imageFile.name}`, imageFile, {
+      access: "public",
+    });
+
+    const maxOrder = await prisma.service.aggregate({ _max: { sortOrder: true } });
+
+    await prisma.service.create({
+      data: {
+        title,
+        description,
+        features,
+        icon,
+        image: blob.url,
+        sortOrder: (maxOrder._max.sortOrder ?? -1) + 1,
+      },
+    });
+
+    revalidatePath("/");
+    revalidatePath("/admin/services");
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message || "Lỗi hệ thống khi thêm giải pháp!" };
+  }
+}
+
+// 11. Update Service
+export async function updateServiceAction(id: string, formData: FormData) {
+  const isAuth = await isAdminAuthenticated();
+  if (!isAuth) return { error: "Chưa đăng nhập!" };
+
+  try {
+    const title = (formData.get("title") as string)?.trim();
+    const description = (formData.get("description") as string)?.trim();
+    const icon = (formData.get("icon") as string) || "ThermometerSun";
+    const imageFile = formData.get("image") as File | null;
+    const features = parseFeatures(formData);
+
+    if (!title || !description) {
+      return { error: "Vui lòng nhập đầy đủ tiêu đề và mô tả!" };
+    }
+    if (!SERVICE_ICONS.includes(icon)) {
+      return { error: "Biểu tượng không hợp lệ!" };
+    }
+
+    const existingService = await prisma.service.findUnique({ where: { id } });
+    if (!existingService) {
+      return { error: "Giải pháp không tồn tại!" };
+    }
+
+    let imagePath = existingService.image;
+
+    if (imageFile && imageFile.size > 0) {
+      if (imageFile.size > 5 * 1024 * 1024) {
+        return { error: "Dung lượng ảnh phải nhỏ hơn hoặc bằng 5MB!" };
+      }
+      const ext = path.extname(imageFile.name).toLowerCase();
+      if (![".jpg", ".jpeg", ".png", ".webp"].includes(ext)) {
+        return { error: "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP." };
+      }
+
+      const blob = await put(`services/${Date.now()}-${imageFile.name}`, imageFile, {
+        access: "public",
+      });
+
+      if (
+        existingService.image.startsWith("https://") &&
+        existingService.image.includes("public.blob.vercel-storage.com")
+      ) {
+        await del(existingService.image).catch(() => {});
+      }
+
+      imagePath = blob.url;
+    }
+
+    await prisma.service.update({
+      where: { id },
+      data: { title, description, features, icon, image: imagePath },
+    });
+
+    revalidatePath("/");
+    revalidatePath("/admin/services");
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message || "Lỗi hệ thống khi sửa giải pháp!" };
+  }
+}
+
+// 12. Delete Service
+export async function deleteServiceAction(id: string) {
+  const isAuth = await isAdminAuthenticated();
+  if (!isAuth) return { error: "Chưa đăng nhập!" };
+
+  try {
+    const existingService = await prisma.service.findUnique({ where: { id } });
+    if (!existingService) {
+      return { error: "Giải pháp không tồn tại!" };
+    }
+
+    if (
+      existingService.image.startsWith("https://") &&
+      existingService.image.includes("public.blob.vercel-storage.com")
+    ) {
+      await del(existingService.image).catch(() => {});
+    }
+
+    await prisma.service.delete({ where: { id } });
+
+    revalidatePath("/");
+    revalidatePath("/admin/services");
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message || "Lỗi hệ thống khi xóa giải pháp!" };
   }
 }

@@ -9,14 +9,23 @@ import {
   MessageSquare,
   ShieldAlert
 } from "lucide-react";
-import { COMPANY_DATA } from "../data/company";
 import type { CompanyContact } from "../lib/company";
+
+interface ServiceItem {
+  id: string;
+  title: string;
+  description: string;
+  features: string[];
+  icon: string;
+  image: string;
+}
 
 interface ServicesProps {
   company: CompanyContact;
+  services: ServiceItem[];
 }
 
-export const Services: React.FC<ServicesProps> = ({ company }) => {
+export const Services: React.FC<ServicesProps> = ({ company, services }) => {
   const getServiceIcon = (iconName: string) => {
     switch (iconName) {
       case "Building2":
@@ -49,7 +58,7 @@ export const Services: React.FC<ServicesProps> = ({ company }) => {
 
         {/* Services List (Alternating Layouts) */}
         <div className="space-y-12 sm:space-y-16">
-          {COMPANY_DATA.services.map((service, index) => {
+          {services.map((service, index) => {
             const isEven = index % 2 === 0;
             return (
               <div

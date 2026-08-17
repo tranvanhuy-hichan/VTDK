@@ -30,6 +30,10 @@ export default async function HomePage() {
 
   const company = await getCompanyInfo();
 
+  const services = await prisma.service.findMany({
+    orderBy: { sortOrder: "asc" },
+  });
+
   return (
     <>
       <Hero company={company} />
@@ -37,7 +41,7 @@ export default async function HomePage() {
       <QuickContactBar company={company} />
       {/* Render the dynamic product catalog */}
       <ProductList initialCategories={categories} initialProducts={products} company={company} />
-      <Services company={company} />
+      <Services company={company} services={services} />
       <WhyChooseUs company={company} />
       <BTUCalculator />
       <CustomerTypes />
