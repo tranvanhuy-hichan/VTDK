@@ -141,26 +141,33 @@ export const Footer: React.FC<FooterProps> = ({ company }) => {
         </div>
 
         {/* Footer Bottom Bar */}
-        <div className="pt-3 border-t border-slate-800 flex flex-row items-center justify-between gap-2 text-xs text-slate-400">
-          <div className="flex items-center gap-2">
+        <div className="pt-3 sm:pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-4 text-xs text-slate-400 text-center sm:text-left">
+          {/* Copyright Text */}
+          <p className="whitespace-nowrap sm:whitespace-normal">
+            © 2026 | Designed by Tran Van Huy
+          </p>
+
+          {/* Admin Link & Scroll to Top Button */}
+          <div className="flex items-center gap-3">
             <Link
               href="/admin/login"
-              className="flex items-center gap-1 hover:text-white transition-colors"
+              className="inline-flex items-center gap-1 hover:text-white transition-colors py-0.5"
             >
               <Lock className="w-3 h-3" />
               <span>Quản trị</span>
             </Link>
-            <span>•</span>
-            <p>© 2026 | Designed by Tran Van Huy</p>
-          </div>
 
-          <button
-            onClick={scrollToTop}
-            className="flex items-center gap-1 hover:text-white transition-colors bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 rounded-lg border border-slate-700 cursor-pointer !min-h-0 text-[11px]"
-          >
-            <span>Đầu trang</span>
-            <ArrowUp className="w-3 h-3" />
-          </button>
+            <span className="text-slate-600">•</span>
+
+            <button
+              type="button"
+              onClick={scrollToTop}
+              className="inline-flex items-center gap-1 hover:text-white transition-colors bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 rounded-lg border border-slate-700 cursor-pointer !min-h-0 text-[11px]"
+            >
+              <span>Về đầu trang</span>
+              <ArrowUp className="w-3 h-3" />
+            </button>
+          </div>
         </div>
 
       </div>
