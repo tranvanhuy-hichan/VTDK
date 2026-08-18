@@ -190,16 +190,19 @@ export const ProductDetailModal: React.FC<{
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 text-left animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 text-left animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-slate-900 rounded-3xl max-w-4xl w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between relative animate-in zoom-in-95 duration-200"
+        className="bg-white dark:bg-slate-900 w-full sm:max-w-2xl max-h-[90vh] rounded-t-3xl sm:rounded-3xl shadow-2xl border-t sm:border border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between relative animate-in slide-in-from-bottom-5 sm:zoom-in-95 duration-200 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Mobile Pull Handle Indicator */}
+        <div className="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mt-2.5 sm:hidden shrink-0" />
+
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 sm:px-6 sm:py-5 border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md z-20 shrink-0">
-          <span className="text-[11px] sm:text-xs font-black text-[#075FA8] dark:text-blue-400 uppercase tracking-wider bg-blue-50 dark:bg-blue-950/60 px-3.5 py-1.5 rounded-full border border-blue-100 dark:border-blue-900">
+        <div className="flex items-center justify-between px-4 py-2.5 sm:px-6 sm:py-4 border-b border-slate-100 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md z-20 shrink-0">
+          <span className="text-[11px] sm:text-xs font-black text-[#075FA8] dark:text-blue-400 uppercase tracking-wider bg-blue-50 dark:bg-blue-950/60 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-900">
             {product.category.name}
           </span>
           <button
@@ -211,75 +214,75 @@ export const ProductDetailModal: React.FC<{
           </button>
         </div>
 
-        {/* 2-Column Body */}
-        <div className="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-          {/* Left Column: Image Carousel */}
-          <div className="md:col-span-6 flex flex-col">
-            <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 shadow-sm w-full relative min-h-[220px]">
-              <ImageCarousel
-                images={[product.image, ...product.images]}
-                alt={product.name}
-                className="w-full h-full"
-                priority
-              />
-            </div>
+        {/* Scrollable Content Body */}
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1">
+          {/* Top Section: Image Carousel */}
+          <div className="aspect-[16/10] sm:aspect-[16/10] rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 shadow-xs w-full relative">
+            <ImageCarousel
+              images={[product.image, ...product.images]}
+              alt={product.name}
+              className="w-full h-full"
+              priority
+            />
           </div>
 
-          {/* Right Column: Details, Price & Actions */}
-          <div className="md:col-span-6 flex flex-col justify-between">
-            <div>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2 leading-snug">
-                {product.name}
-              </h2>
+          {/* Title & Short Description */}
+          <div>
+            <h2 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-snug mb-1">
+              {product.name}
+            </h2>
 
-              {product.shortDesc && (
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-4 font-normal">
-                  {product.shortDesc}
-                </p>
-              )}
+            {product.shortDesc && (
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+                {product.shortDesc}
+              </p>
+            )}
+          </div>
 
-              {product.variants.length > 0 && (
-                <div className="p-3 sm:p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-800 mb-4">
-                  <span className="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">
-                    Chọn phân loại sản phẩm
-                  </span>
-                  <VariantSelector
-                    variants={product.variants}
-                    selectedIndex={selectedVariantIndex}
-                    onSelect={setSelectedVariantIndex}
-                  />
-                </div>
-              )}
-            </div>
+          {/* Price Tag */}
+          <div className="flex items-baseline gap-2 pt-1 border-t border-slate-100 dark:border-slate-800/60">
+            <span className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
+              Giá tham khảo:
+            </span>
+            <span className="text-xl sm:text-2xl font-black text-orange-600 dark:text-orange-400 tracking-tight">
+              {displayPrice > 0 ? `${displayPrice.toLocaleString("vi-VN")}đ` : "Liên hệ báo giá"}
+            </span>
+          </div>
 
-            {/* Price & Action Buttons Footer Area */}
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 mt-4">
-              <span className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider block mb-1">
-                Giá bán lẻ tham khảo
+          {/* Variant Selector */}
+          {product.variants.length > 0 && (
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
+              <span className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">
+                Chọn phân loại sản phẩm:
               </span>
-              <span className="text-2xl sm:text-3xl font-black text-orange-600 dark:text-orange-400 tracking-tight block mb-4">
-                {displayPrice > 0 ? `${displayPrice.toLocaleString("vi-VN")}đ` : "Liên hệ báo giá"}
-              </span>
-
-              <div className="grid grid-cols-2 gap-2.5 sm:gap-3 w-full">
-                <a
-                  href={`tel:${company.hotlineRaw}`}
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-[#075FA8] hover:bg-[#0B1F33] dark:hover:bg-blue-600 text-white font-black text-xs sm:text-sm py-3.5 px-3 sm:px-4 rounded-xl shadow-md hover:shadow-lg transition-all text-center"
-                >
-                  <Phone className="w-4 h-4 sm:w-4.5 sm:h-4.5 fill-current shrink-0" />
-                  <span>Gọi tư vấn</span>
-                </a>
-                <a
-                  href={`${company.zaloUrl}?text=${encodeURIComponent(`Chào Đông Kha, tôi muốn tư vấn báo giá sản phẩm: ${product.name}${selectedVariant ? ` (${selectedVariant.label})` : ""}`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-[#0068FF] hover:bg-blue-700 text-white font-black text-xs sm:text-sm py-3.5 px-3 sm:px-4 rounded-xl shadow-md hover:shadow-lg transition-all text-center"
-                >
-                  <MessageSquare className="w-4 h-4 sm:w-4.5 sm:h-4.5 fill-current shrink-0" />
-                  <span>Nhắn Zalo</span>
-                </a>
-              </div>
+              <VariantSelector
+                variants={product.variants}
+                selectedIndex={selectedVariantIndex}
+                onSelect={setSelectedVariantIndex}
+              />
             </div>
+          )}
+        </div>
+
+        {/* Action Buttons Footer Area */}
+        <div className="p-4 sm:p-6 pb-6 sm:pb-6 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3 w-full">
+            <a
+              href={`tel:${company.hotlineRaw}`}
+              className="inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] dark:hover:bg-blue-600 text-white font-black text-xs sm:text-sm py-3 px-3 sm:px-4 rounded-xl shadow-md hover:shadow-lg transition-all text-center active:scale-98"
+            >
+              <Phone className="w-4 h-4 sm:w-4.5 sm:h-4.5 fill-current shrink-0" />
+              <span>Gọi tư vấn</span>
+            </a>
+            <a
+              href={`${company.zaloUrl}?text=${encodeURIComponent(`Chào Đông Kha, tôi muốn tư vấn báo giá sản phẩm: ${product.name}${selectedVariant ? ` (${selectedVariant.label})` : ""}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 bg-[#0068FF] hover:bg-blue-700 text-white font-black text-xs sm:text-sm py-3 px-3 sm:px-4 rounded-xl shadow-md hover:shadow-lg transition-all text-center active:scale-98"
+            >
+              <MessageSquare className="w-4 h-4 sm:w-4.5 sm:h-4.5 fill-current shrink-0" />
+              <span>Nhắn Zalo</span>
+            </a>
           </div>
         </div>
       </div>

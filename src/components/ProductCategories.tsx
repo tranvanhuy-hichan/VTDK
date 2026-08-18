@@ -222,46 +222,49 @@ export const ProductCategories: React.FC = () => {
 
       </div>
 
-      {/* Product Detail Modal - Left Slide-In Drawer */}
+      {/* Category Detail Modal - Slide-Up Bottom Sheet on Mobile / Drawer on Desktop */}
       {selectedProduct && (
         <div
-          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex justify-start animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-end sm:items-center justify-start sm:justify-center p-0 sm:p-4 animate-in fade-in duration-200"
           onClick={() => setSelectedProduct(null)}
         >
           <div
-            className="bg-white dark:bg-slate-900 w-full max-w-lg sm:max-w-xl md:max-w-2xl h-full shadow-2xl border-r border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between overflow-y-auto animate-in slide-in-from-left duration-300"
+            className="bg-white dark:bg-slate-900 w-full sm:max-w-xl md:max-w-2xl max-h-[90vh] sm:h-full rounded-t-3xl sm:rounded-3xl shadow-2xl border-t sm:border border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between overflow-hidden animate-in slide-in-from-bottom-5 sm:slide-in-from-left duration-300"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="px-5 py-4 sm:px-6 sm:py-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md z-20 shrink-0">
-              <div className="flex items-center gap-2.5 sm:gap-3">
+            {/* Mobile Pull Handle Indicator */}
+            <div className="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mt-2.5 sm:hidden shrink-0" />
+
+            <div className="px-4 py-3 sm:px-6 sm:py-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md z-20 shrink-0">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-100 dark:border-blue-900 flex items-center justify-center shrink-0">
                   {getCategoryIcon(selectedProduct.icon)}
                 </div>
-                <h3 className="text-base sm:text-2xl font-black text-slate-900 dark:text-white">
+                <h3 className="text-base sm:text-2xl font-black text-slate-900 dark:text-white truncate">
                   {selectedProduct.name}
                 </h3>
               </div>
               <button
                 onClick={() => setSelectedProduct(null)}
                 aria-label="Đóng"
-                className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 transition-colors !min-h-0 cursor-pointer"
+                className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 transition-colors !min-h-0 cursor-pointer shrink-0 ml-2"
               >
                 <X className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
 
-            <div className="p-5 sm:p-6 flex-1 space-y-5">
-              <div className="aspect-[16/10] sm:aspect-[16/11] rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 shadow-sm w-full min-h-[200px] sm:min-h-[280px]">
+            <div className="p-4 sm:p-6 flex-1 overflow-y-auto space-y-4">
+              <div className="aspect-[16/10] sm:aspect-[16/11] rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 shadow-xs w-full">
                 <CategoryImageSlider cat={selectedProduct} />
               </div>
 
               <div>
-                <h4 className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 sm:mb-2">Giới thiệu danh mục</h4>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-xs sm:text-sm mb-4">
+                <h4 className="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Giới thiệu danh mục</h4>
+                <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-xs sm:text-sm mb-3">
                   {selectedProduct.fullDesc}
                 </p>
 
-                <h4 className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Các chủng loại, quy cách có sẵn</h4>
+                <h4 className="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Các chủng loại, quy cách có sẵn</h4>
                 <div className="grid grid-cols-1 gap-2">
                   {selectedProduct.items.map((item, idx) => (
                     <div key={idx} className="flex items-start gap-2 p-2.5 sm:p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
@@ -273,11 +276,11 @@ export const ProductCategories: React.FC = () => {
               </div>
             </div>
 
-            <div className="sticky bottom-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-4 sm:p-6 border-t border-slate-100 dark:border-slate-800 shrink-0 z-20">
+            <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-4 sm:p-6 pb-6 sm:pb-6 border-t border-slate-100 dark:border-slate-800 shrink-0 z-20">
               <div className="grid grid-cols-2 gap-2.5 sm:gap-3 w-full">
                 <a
                   href={`tel:${COMPANY_DATA.hotlineRaw}`}
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-[#075FA8] hover:bg-[#0B1F33] dark:hover:bg-blue-600 text-white font-black text-xs sm:text-sm py-3 px-3 sm:px-4 rounded-xl shadow-md hover:shadow-lg transition-all text-center"
+                  className="inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] dark:hover:bg-blue-600 text-white font-black text-xs sm:text-sm py-3 px-3 sm:px-4 rounded-xl shadow-md hover:shadow-lg transition-all text-center active:scale-98"
                 >
                   <Phone className="w-4 h-4 sm:w-4.5 sm:h-4.5 fill-current shrink-0" />
                   <span>Gọi tư vấn</span>
@@ -286,7 +289,7 @@ export const ProductCategories: React.FC = () => {
                   href={COMPANY_DATA.zaloUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-[#0068FF] hover:bg-blue-700 text-white font-black text-xs sm:text-sm py-3 px-3 sm:px-4 rounded-xl shadow-md hover:shadow-lg transition-all text-center"
+                  className="inline-flex items-center justify-center gap-2 bg-[#0068FF] hover:bg-blue-700 text-white font-black text-xs sm:text-sm py-3 px-3 sm:px-4 rounded-xl shadow-md hover:shadow-lg transition-all text-center active:scale-98"
                 >
                   <MessageSquare className="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0" />
                   <span>Nhắn Zalo</span>
