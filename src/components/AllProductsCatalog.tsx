@@ -237,16 +237,16 @@ export const AllProductsCatalog: React.FC<AllProductsCatalogProps> = ({
             </p>
 
             {/* Search & Tool Bar inside Hero */}
-            <div className="max-w-xl mx-auto pt-2 flex flex-col sm:flex-row items-center gap-2.5">
+            <div className="max-w-xl mx-auto pt-2 flex flex-row items-center gap-2">
               <div className="relative flex-1 w-full">
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Tìm sản phẩm (vd: Ống đồng, Gas R32)..."
-                  className="w-full text-xs sm:text-sm bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white border border-white/20 rounded-xl pl-9 pr-8 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md backdrop-blur-md"
+                  placeholder="Tìm sản phẩm (vd: Ống đồng)..."
+                  className="w-full text-xs sm:text-sm bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white border border-white/20 rounded-xl pl-8 pr-7 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md backdrop-blur-md"
                 />
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 pointer-events-none">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400 pointer-events-none">
                   <Search className="w-3.5 h-3.5" />
                 </span>
                 {searchTerm && (
@@ -254,14 +254,14 @@ export const AllProductsCatalog: React.FC<AllProductsCatalogProps> = ({
                     type="button"
                     onClick={() => setSearchTerm("")}
                     aria-label="Xóa tìm kiếm"
-                    className="absolute inset-y-0 right-0 flex items-center pr-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 !min-h-0 cursor-pointer"
+                    className="absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 !min-h-0 cursor-pointer"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
-              <div className="w-full sm:w-auto shrink-0">
-                <BTUCalculatorModal buttonClassName="inline-flex items-center justify-center gap-1.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-white/20 shadow-2xs transition-all cursor-pointer !min-h-0 w-full sm:w-auto" />
+              <div className="shrink-0">
+                <BTUCalculatorModal buttonClassName="inline-flex items-center justify-center gap-1 bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl border border-white/20 shadow-2xs transition-all cursor-pointer !min-h-0 w-auto truncate" />
               </div>
             </div>
 

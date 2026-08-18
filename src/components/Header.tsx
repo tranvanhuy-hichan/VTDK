@@ -81,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
     { name: "Giới thiệu", hash: "#gioi-thieu" },
     { name: "Sản phẩm", hash: "#san-pham" },
     { name: "Dịch vụ", hash: "#dich-vu" },
-    { name: "Hình ảnh", hash: "#hinh-anh" },
+    { name: "Kho & cửa hàng", hash: "#hinh-anh" },
     { name: "Liên hệ", hash: "#lien-he" },
   ];
 
@@ -200,7 +200,7 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
           <div className="flex items-center gap-1.5 lg:hidden">
             <button
               onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors !min-h-0 cursor-pointer"
+              className="hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors !min-h-0 cursor-pointer sm:block"
               aria-label="Mở tìm kiếm"
             >
               <Search className="w-5 h-5" />
@@ -208,7 +208,7 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
 
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer !min-h-0"
+              className="hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer !min-h-0 sm:block"
               aria-label="Đổi giao diện"
             >
               {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5 text-amber-400" />}
@@ -279,6 +279,18 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
             </div>
 
             <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-800 transition-colors hover:border-blue-200 hover:bg-blue-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-slate-600 dark:hover:bg-slate-750"
+                aria-label="Chuyển giao diện sáng tối"
+              >
+                <span className="flex items-center gap-3">
+                  {theme === "light" ? <Moon className="h-5 w-5 text-[#075FA8]" /> : <Sun className="h-5 w-5 text-amber-400" />}
+                  {theme === "light" ? "Giao diện tối" : "Giao diện sáng"}
+                </span>
+                <span className="text-xs font-semibold text-slate-400">Chuyển</span>
+              </button>
               <a
                 href={`tel:${company.hotlineRaw}`}
                 className="w-full flex items-center justify-center gap-3 bg-[#075FA8] text-white font-bold py-3.5 px-4 rounded-xl shadow text-lg"

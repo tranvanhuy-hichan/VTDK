@@ -31,7 +31,7 @@ export const BrandSlider: React.FC = () => {
       <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-l from-[#F6F8FA] dark:from-[#0F172A] to-transparent z-10 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 mb-2.5 text-center">
-        <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+        <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
           Thương hiệu vật tư phân phối &amp; đối tác liên kết
         </p>
       </div>

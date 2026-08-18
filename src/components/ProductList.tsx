@@ -367,61 +367,67 @@ export const ProductList: React.FC<ProductListProps> = ({
         </div>
 
         {/* Unified Search & Category Control Toolbar */}
-        <div className="max-w-4xl mx-auto mb-5 sm:mb-10">
+        <div className="max-w-4xl mx-auto mb-4 sm:mb-10">
           
-          {/* Top Row: Search Input + BTU Calculator Modal Trigger */}
-          <div className="flex flex-col sm:flex-row items-center gap-3 mb-4">
-            <div className="relative flex-1 w-full">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Tìm kiếm sản phẩm theo tên..."
-                className="w-full text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-9 py-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#075FA8] dark:focus:border-blue-500 focus:ring-1 focus:ring-[#075FA8] shadow-2xs transition-all"
-              />
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 pointer-events-none">
-                <Search className="w-4 h-4" />
-              </span>
-              {searchTerm && (
-                <button
-                  type="button"
-                  onClick={() => setSearchTerm("")}
-                  aria-label="Xóa tìm kiếm"
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 !min-h-0"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-
-            <div className="shrink-0 w-full sm:w-auto">
-              <BTUCalculatorModal />
-            </div>
+          {/* Top Row: Search Input */}
+          <div className="relative w-full mb-3 sm:mb-4">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Tìm kiếm sản phẩm theo tên..."
+              className="w-full text-xs sm:text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-9 pr-8 py-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#075FA8] dark:focus:border-blue-500 focus:ring-1 focus:ring-[#075FA8] shadow-2xs transition-all"
+            />
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 pointer-events-none">
+              <Search className="w-4 h-4" />
+            </span>
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm("")}
+                aria-label="Xóa tìm kiếm"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 !min-h-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
-          {/* Category Filter: Mobile Dropdown Select (< sm) vs Desktop Full Buttons (>= sm) */}
+          {/* Category Filter & Calculator Row: 1 Row on Mobile (< sm) */}
           <div>
-            {/* Mobile Dropdown Select */}
-            <div className="sm:hidden relative w-full">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full appearance-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 pr-10 font-bold text-sm text-slate-900 dark:text-slate-100 shadow-2xs focus:outline-none focus:border-[#075FA8] dark:focus:border-blue-500 focus:ring-1 focus:ring-[#075FA8]"
-              >
-                <option value="all">Tất cả danh mục sản phẩm</option>
-                {initialCategories.map((cat) => (
-                  <option key={cat.id} value={cat.slug}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-500">
-                <ChevronDown className="w-5 h-5" />
+            {/* Mobile Row (< sm): Filter Select + Calculator Button in 1 Row */}
+            <div className="grid grid-cols-2 gap-2 sm:hidden">
+              {/* Category Select Dropdown */}
+              <div className="relative w-full">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full appearance-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-3 pr-7 py-2.5 font-bold text-xs text-slate-900 dark:text-slate-100 shadow-2xs focus:outline-none focus:border-[#075FA8] dark:focus:border-blue-500 focus:ring-1 focus:ring-[#075FA8] truncate cursor-pointer"
+                >
+                  <option value="all">Tất cả danh mục sản phẩm</option>
+                  {initialCategories.map((cat) => (
+                    <option key={cat.id} value={cat.slug}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-slate-500">
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+              </div>
+
+              {/* Calculator Button */}
+              <div className="w-full">
+                <BTUCalculatorModal buttonClassName="inline-flex items-center justify-center gap-1 bg-amber-50 dark:bg-slate-800 hover:bg-amber-100 dark:hover:bg-slate-700 text-amber-900 dark:text-amber-300 font-bold text-xs px-2 py-2.5 rounded-xl border border-amber-200/80 dark:border-slate-700 shadow-2xs transition-all cursor-pointer !min-h-0 w-full truncate" />
               </div>
             </div>
 
-            {/* Desktop Full Category Buttons Row */}
+            {/* Desktop View (>= sm): BTU Calculator Button + Full Category Pills */}
             <div className="hidden sm:flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
+              <div className="shrink-0">
+                <BTUCalculatorModal />
+              </div>
+
               <button
                 onClick={() => setSelectedCategory("all")}
                 className={`!min-h-0 px-4 py-2 text-sm font-bold rounded-xl border transition-all cursor-pointer ${
