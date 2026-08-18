@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MessageSquare } from "lucide-react";
@@ -37,38 +37,27 @@ interface ProductCardProps {
   company: CompanyContact;
 }
 
-const VariantSelector: React.FC<{
-  variants: ProductVariant[];
-  selectedIndex: number;
-  onSelect: (index: number) => void;
-}> = ({ variants, selectedIndex, onSelect }) => (
-  <div className="flex flex-wrap gap-1">
-    {variants.map((variant, index) => (
-      <button
-        key={variant.id}
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onSelect(index);
-        }}
-        className={`!min-h-0 px-2 py-1 text-[11px] font-bold rounded-md border transition-all cursor-pointer ${
-          index === selectedIndex
-            ? "bg-[#075FA8] border-[#075FA8] text-white shadow-2xs"
-            : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700"
-        }`}
-      >
-        {variant.label}
-      </button>
-    ))}
-  </div>
-);
-
 export const ProductCard: React.FC<ProductCardProps> = ({ product, company }) => {
   const router = useRouter();
-  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
-  const selectedVariant =
-    product.variants.length > 0 ? product.variants[selectedVariantIndex] : null;
-  const displayPrice = selectedVariant ? selectedVariant.price : product.price;
+
+  // Calculate price display (Min price - Max price range if variants have different prices)
+  const validPrices =
+    product.variants.length > 0
+      ? product.variants.map((v) => v.price).filter((p) => p > 0)
+      : product.price > 0
+      ? [product.price]
+      : [];
+
+  let priceDisplay = "Liên hệ báo giá";
+  if (validPrices.length > 0) {
+    const minPrice = Math.min(...validPrices);
+    const maxPrice = Math.max(...validPrices);
+    if (minPrice === maxPrice) {
+      priceDisplay = `${minPrice.toLocaleString("vi-VN")}đ`;
+    } else {
+      priceDisplay = `${minPrice.toLocaleString("vi-VN")}đ - ${maxPrice.toLocaleString("vi-VN")}đ`;
+    }
+  }
 
   return (
     <div
@@ -100,46 +89,29 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, company }) =>
               {product.name}
             </Link>
           </h3>
-
-
-          {product.variants.length > 0 && (
-            <div className="hidden sm:block mb-2">
-              <VariantSelector
-                variants={product.variants}
-                selectedIndex={selectedVariantIndex}
-                onSelect={setSelectedVariantIndex}
-              />
-            </div>
-          )}
         </div>
 
         {/* Price & Action */}
         <div className="pt-2.5 sm:pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 sm:gap-3 mt-auto">
-          <div className="min-w-0">
-            <span className="text-[9px] text-slate-400 dark:text-slate-500 block font-bold uppercase tracking-wider">Giá bán lẻ</span>
-            <span className="text-sm sm:text-base font-black text-orange-600 dark:text-orange-400 truncate block">
-              {displayPrice > 0
-                ? `${displayPrice.toLocaleString("vi-VN")}đ`
-                : "Liên hệ báo giá"}
+          <div className="min-w-0 flex-1">
+            <span className="text-[9px] text-slate-400 dark:text-slate-500 block font-bold uppercase tracking-wider">
+              {product.variants.length > 0 ? "Giá bán lẻ (Theo quy cách)" : "Giá bán lẻ"}
             </span>
-            {product.variants.length > 0 && (
-              <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 block">
-                {product.variants.length} phân loại
-              </span>
-            )}
+            <span className="text-xs sm:text-sm font-black text-orange-600 dark:text-orange-400 truncate block">
+              {priceDisplay}
+            </span>
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center shrink-0">
             <a
-              href={`${company.zaloUrl}?text=${encodeURIComponent(`Chào Đông Kha, tôi muốn tư vấn báo giá sản phẩm: ${product.name}${selectedVariant ? ` (${selectedVariant.label})` : ""}`)}`}
+              href={`${company.zaloUrl}?text=${encodeURIComponent(`Chào Đông Kha, tôi muốn tư vấn báo giá sản phẩm: ${product.name}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               aria-label="Nhắn Zalo báo giá"
-              className="inline-flex items-center justify-center gap-1.5 bg-[#0068FF] hover:bg-blue-700 text-white font-extrabold text-xs p-2 sm:py-2 sm:px-3 rounded-lg sm:rounded-xl shadow-xs transition-colors"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-[#0068FF] hover:bg-blue-700 text-white flex items-center justify-center shadow-xs transition-all hover:scale-105 active:scale-95 shrink-0"
             >
-              <MessageSquare className="w-3.5 h-3.5 fill-current" />
-              <span className="hidden sm:inline">Nhắn Zalo</span>
+              <MessageSquare className="w-4 h-4 fill-current" />
             </a>
           </div>
         </div>
