@@ -16,10 +16,10 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
-          
+
           {/* Left Column (55% on desktop -> 7 cols) */}
           <div className="lg:col-span-7 flex flex-col text-left">
-            
+
             {/* Small Corporate Intro Line */}
             <span className="text-[11px] sm:text-sm font-extrabold text-[#075FA8] dark:text-amber-400 tracking-widest uppercase mb-2 sm:mb-4 block">
               Công ty TNHH Vật Tư Đông Kha
@@ -91,7 +91,7 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
           {/* Right Column (45% on desktop -> 5 cols) */}
           <div className="lg:col-span-5 relative mt-2 lg:mt-0">
             <div className="relative mx-auto max-w-lg lg:max-w-none">
-              
+
               {/* Outer decorative border frame */}
               <div className="absolute -inset-2 bg-gradient-to-r from-[#075FA8] to-[#F47A20] rounded-3xl opacity-25 blur-lg transform -rotate-1 group-hover:rotate-0 transition-transform" />
 

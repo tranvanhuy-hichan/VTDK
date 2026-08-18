@@ -114,14 +114,13 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
 
       {/* Main Sticky Header */}
       <header
-        className={`sticky top-0 z-40 transition-all duration-300 ${
-          isScrolled
+        className={`sticky top-0 z-40 transition-all duration-300 ${isScrolled
             ? "bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-md py-2 border-b border-slate-200 dark:border-slate-800"
             : "bg-white dark:bg-slate-900 py-2.5 sm:py-3 border-b border-slate-100 dark:border-slate-800"
-        }`}
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          
+
           {/* Logo Area - Links to Home / */}
           <Link href="/" className="flex items-center gap-2 group">
             <Image
@@ -171,17 +170,16 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                 const isActive = isHomePage
                   ? activeSectionState === sectionId
                   : (pathname === "/san-pham" && link.hash === "#san-pham") ||
-                    (pathname === "/" && link.hash === "#trang-chu");
+                  (pathname === "/" && link.hash === "#trang-chu");
 
                 return (
                   <Link
                     key={link.hash}
                     href={targetHref}
-                    className={`text-sm font-bold transition-all px-3 py-1.5 rounded-lg relative ${
-                      isActive
+                    className={`text-sm font-bold transition-all px-3 py-1.5 rounded-lg relative ${isActive
                         ? "text-[#075FA8] dark:text-[#F47A20] bg-blue-50 dark:bg-slate-800 font-extrabold shadow-2xs after:content-[''] after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-[#075FA8] dark:after:bg-[#F47A20]"
                         : "text-slate-700 dark:text-slate-300 hover:text-[#075FA8] dark:hover:text-[#F47A20] hover:bg-slate-100/70 dark:hover:bg-slate-800/50"
-                    }`}
+                      }`}
                   >
                     {link.name}
                   </Link>
@@ -207,7 +205,7 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
             >
               <Search className="w-5 h-5" />
             </button>
-            
+
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer !min-h-0"
@@ -261,18 +259,17 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                 const isActive = isHomePage
                   ? activeSectionState === sectionId
                   : (pathname === "/san-pham" && link.hash === "#san-pham") ||
-                    (pathname === "/" && link.hash === "#trang-chu");
+                  (pathname === "/" && link.hash === "#trang-chu");
 
                 return (
                   <Link
                     key={link.hash}
                     href={targetHref}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center justify-between p-3 rounded-xl font-bold text-base transition-colors ${
-                      isActive
+                    className={`flex items-center justify-between p-3 rounded-xl font-bold text-base transition-colors ${isActive
                         ? "bg-[#075FA8]/10 dark:bg-blue-900/30 text-[#075FA8] dark:text-blue-400 font-extrabold border-l-4 border-[#075FA8] dark:border-blue-400"
                         : "text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
-                    }`}
+                      }`}
                   >
                     <span>{link.name}</span>
                     <ChevronRight className={`w-5 h-5 ${isActive ? "text-[#075FA8] dark:text-blue-400" : "text-slate-400"}`} />
@@ -289,7 +286,7 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                 <Phone className="w-5 h-5 fill-current" />
                 <span>Gọi Hotline: {company.hotline}</span>
               </a>
-              
+
               <a
                 href={company.zaloUrl}
                 target="_blank"

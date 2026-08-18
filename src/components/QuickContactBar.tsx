@@ -11,7 +11,7 @@ export const QuickContactBar: React.FC<QuickContactBarProps> = ({ company }) => 
     <section className="bg-gradient-to-r from-[#0B1F33] via-[#075FA8] to-[#0B1F33] text-white py-3.5 sm:py-6 shadow-md relative z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 text-center md:text-left">
-          
+
           {/* Question Text */}
           <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-orange-500/20 border border-orange-400/40 flex items-center justify-center text-[#F47A20] shrink-0">
