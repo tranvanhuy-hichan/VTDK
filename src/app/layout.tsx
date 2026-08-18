@@ -85,11 +85,6 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [shareImage],
     },
 
-    icons: {
-      icon: "/images/logo.png",
-      apple: "/images/logo.png",
-    },
-
     verification: {
       google: "hJVVfzb5gzb7XvuRBsk_vwtEsJMMs2itfryzF6gx9rM",
     },
