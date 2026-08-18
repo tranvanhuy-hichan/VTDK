@@ -155,26 +155,20 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 text-left">
-        <div>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight">THÔNG TIN CÔNG TY</h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
-            Địa chỉ, số điện thoại, giờ mở cửa và ảnh hiển thị trên toàn bộ trang web.
-          </p>
-        </div>
-        {!isEditing && (
+      {!isEditing && (
+        <div className="flex justify-end mb-3 sm:mb-4 text-left">
           <button
             onClick={handleStartEdit}
-            className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-md shadow transition-colors w-full sm:w-auto !min-h-0"
+            className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-4 py-2 rounded-xl shadow-xs transition-colors w-full sm:w-auto !min-h-0 cursor-pointer"
           >
-            <Pencil className="w-4 h-4" />
-            <span>CHỈNH SỬA</span>
+            <Pencil className="w-3.5 h-3.5" />
+            <span>Chỉnh sửa thông tin</span>
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {savedMessage && !isEditing && (
-        <div className="bg-emerald-50 border border-emerald-100 rounded-md p-3 text-xs sm:text-sm text-emerald-700 font-bold mb-6 text-left max-w-3xl">
+        <div className="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-100 dark:border-emerald-800 rounded-xl p-3 text-xs sm:text-sm text-emerald-700 dark:text-emerald-400 font-bold mb-3 sm:mb-4 text-left">
           {savedMessage}
         </div>
       )}
@@ -182,12 +176,12 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
           {/* Images Card */}
-          <div className="lg:col-span-5 bg-white rounded-lg border border-slate-200 shadow-sm p-5 text-left">
+          <div className="lg:col-span-5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm p-5 text-left transition-colors">
             <div className="flex items-center gap-2 mb-5">
-              <div className="p-1.5 bg-blue-50 text-[#075FA8] rounded-md border border-blue-100">
+              <div className="p-1.5 bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400 rounded-md border border-blue-100 dark:border-blue-800/60">
                 <Images className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
+              <h3 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
                 Hình ảnh công ty
               </h3>
             </div>
@@ -195,10 +189,10 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
             <div className="space-y-5">
               {/* Cover image */}
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+                <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
                   Ảnh đại diện (hiển thị đầu trang chủ)
                 </label>
-                <div className="aspect-[4/3] w-full rounded-md border border-slate-200 overflow-hidden bg-slate-50">
+                <div className="aspect-[4/3] w-full rounded-md border border-slate-200 dark:border-slate-700 overflow-hidden bg-slate-50 dark:bg-slate-800">
                   <img
                     src={isEditing ? (removeImage ? PLACEHOLDER_IMAGE : imagePreview ?? saved.image) : saved.image}
                     alt="Ảnh đại diện công ty"
@@ -208,7 +202,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                 {isEditing && (
                   <>
                     <div className="mt-3 grid grid-cols-2 gap-2">
-                      <label className="inline-flex items-center justify-center gap-1.5 cursor-pointer text-slate-600 hover:text-[#075FA8] border border-slate-200 hover:border-[#075FA8] rounded-md px-2 py-2 text-xs font-bold transition-colors">
+                      <label className="inline-flex items-center justify-center gap-1.5 cursor-pointer text-slate-600 dark:text-slate-300 hover:text-[#075FA8] dark:hover:text-blue-400 border border-slate-200 dark:border-slate-700 hover:border-[#075FA8] dark:hover:border-blue-400 rounded-md px-2 py-2 text-xs font-bold transition-colors">
                         <Camera className="w-3.5 h-3.5" />
                         <span>Chụp ảnh</span>
                         <input
@@ -219,7 +213,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                           className="hidden"
                         />
                       </label>
-                      <label className="inline-flex items-center justify-center gap-1.5 cursor-pointer text-slate-600 hover:text-[#075FA8] border border-slate-200 hover:border-[#075FA8] rounded-md px-2 py-2 text-xs font-bold transition-colors">
+                      <label className="inline-flex items-center justify-center gap-1.5 cursor-pointer text-slate-600 dark:text-slate-300 hover:text-[#075FA8] dark:hover:text-blue-400 border border-slate-200 dark:border-slate-700 hover:border-[#075FA8] dark:hover:border-blue-400 rounded-md px-2 py-2 text-xs font-bold transition-colors">
                         <Upload className="w-3.5 h-3.5" />
                         <span>Tải lên</span>
                         <input
@@ -234,20 +228,20 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                       <button
                         type="button"
                         onClick={handleRemoveImage}
-                        className="mt-2 inline-flex items-center justify-center gap-1.5 w-full text-red-600 hover:text-red-700 border border-red-200 hover:border-red-300 bg-red-50 hover:bg-red-100 rounded-md px-2 py-2 text-xs font-bold transition-colors !min-h-0"
+                        className="mt-2 inline-flex items-center justify-center gap-1.5 w-full text-red-600 dark:text-red-400 hover:text-red-700 border border-red-200 dark:border-red-800/80 bg-red-50 dark:bg-red-950/60 hover:bg-red-100 dark:hover:bg-red-900/60 rounded-md px-2 py-2 text-xs font-bold transition-colors !min-h-0 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                         <span>Xóa ảnh</span>
                       </button>
                     )}
-                    <p className="text-[10px] text-slate-400 mt-1.5 text-center">JPG, PNG, WEBP tối đa 5MB</p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-1.5 text-center">JPG, PNG, WEBP tối đa 5MB</p>
                   </>
                 )}
               </div>
 
               {/* Gallery */}
-              <div className="pt-5 border-t border-slate-100">
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+              <div className="pt-5 border-t border-slate-100 dark:border-slate-800">
+                <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
                   Thư viện ảnh
                 </label>
                 {isEditing ? (
@@ -261,13 +255,13 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                 ) : saved.images.length > 0 ? (
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
                     {saved.images.map((url, i) => (
-                      <div key={i} className="aspect-square rounded-md border border-slate-200 overflow-hidden bg-slate-50">
+                      <div key={i} className="aspect-square rounded-md border border-slate-200 dark:border-slate-700 overflow-hidden bg-slate-50 dark:bg-slate-800">
                         <img src={url} alt="" className="w-full h-full object-cover" />
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-400 italic">Chưa có ảnh nào trong thư viện.</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-400 italic">Chưa có ảnh nào trong thư viện.</p>
                 )}
               </div>
             </div>
@@ -278,13 +272,13 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
             {SECTIONS.map((section) => (
               <div
                 key={section.id}
-                className="bg-white rounded-lg border border-slate-200 shadow-sm p-5 text-left"
+                className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm p-5 text-left transition-colors"
               >
                 <div className="flex items-center gap-2 mb-5">
-                  <div className="p-1.5 bg-blue-50 text-[#075FA8] rounded-md border border-blue-100">
+                  <div className="p-1.5 bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400 rounded-md border border-blue-100 dark:border-blue-800/60">
                     <section.icon className="w-4 h-4" />
                   </div>
-                  <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
+                  <h3 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
                     {section.title}
                   </h3>
                 </div>
@@ -292,7 +286,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
                   {section.fields.map(({ key, label, placeholder, multiline, wide }) => (
                     <div key={key} className={wide ? "sm:col-span-2" : ""}>
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                      <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                         {label}
                       </label>
                       {isEditing ? (
@@ -302,7 +296,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                             onChange={(e) => handleChange(key, e.target.value)}
                             placeholder={placeholder}
                             rows={3}
-                            className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-3.5 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                            className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-3.5 py-2.5 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
                           />
                         ) : (
                           <input
@@ -310,12 +304,12 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                             value={form[key]}
                             onChange={(e) => handleChange(key, e.target.value)}
                             placeholder={placeholder}
-                            className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-3.5 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                            className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-3.5 py-2.5 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
                           />
                         )
                       ) : (
-                        <p className="text-sm font-semibold text-slate-800 break-words">
-                          {saved[key] || <span className="text-slate-400 font-normal italic">Chưa có</span>}
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 break-words">
+                          {saved[key] || <span className="text-slate-400 dark:text-slate-400 font-normal italic">Chưa có</span>}
                         </p>
                       )}
                     </div>
@@ -327,12 +321,12 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
         </div>
 
         {isEditing && (
-          <div className="sticky bottom-0 bg-white/95 backdrop-blur-xs border border-slate-200 rounded-lg shadow-lg p-3.5 flex items-center gap-3">
+          <div className="sticky bottom-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xs border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg p-3.5 flex items-center gap-3">
             <button
               type="button"
               onClick={handleCancel}
               disabled={isSubmitting}
-              className="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-5 rounded-md text-center text-sm transition-colors !min-h-0 flex items-center justify-center gap-2 disabled:opacity-50"
+              className="flex-1 sm:flex-none bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-2.5 px-5 rounded-md text-center text-sm transition-colors !min-h-0 flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <X className="w-4 h-4" />
               <span>Hủy bỏ</span>

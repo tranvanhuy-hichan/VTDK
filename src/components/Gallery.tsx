@@ -40,38 +40,36 @@ export const Gallery: React.FC = () => {
   if (galleryItems.length === 0) return null;
 
   return (
-    <section id="hinh-anh" className="py-12 sm:py-16 bg-white dark:bg-slate-900 relative transition-colors duration-300">
+    <section id="hinh-anh" className="py-8 sm:py-16 bg-white dark:bg-slate-900 relative transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header with Slider Navigation Controls */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-4">
-          <div className="text-left max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/20 text-[#075FA8] dark:text-blue-400 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2.5">
-              HÌNH ẢNH THỰC TẾ
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Hình ảnh hoạt động tại Đông Kha
-            </h2>
-            <p className="mt-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal">
-              Hình ảnh thực tế cửa hàng, kho bãi và giao hàng tại Đà Nẵng. Vuốt ngang để xem thêm.
-            </p>
+        <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-10">
+          <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/20 text-[#075FA8] dark:text-blue-400 px-3 py-0.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2">
+            HÌNH ẢNH THỰC TẾ
           </div>
+          <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Hình ảnh hoạt động tại Đông Kha
+          </h2>
+          <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal">
+            Hình ảnh thực tế cửa hàng, kho bãi và giao hàng tại Đà Nẵng. Vuốt ngang để xem thêm.
+          </p>
 
           {/* Slider Arrow Buttons */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center justify-center gap-2 mt-3 sm:mt-4">
             <button
               onClick={() => scroll("left")}
               aria-label="Hình trước"
-              className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-[#075FA8] hover:text-white dark:hover:bg-blue-600 border border-slate-200 dark:border-slate-700 transition-all shadow-xs !min-h-0"
+              className="p-2 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-[#075FA8] hover:text-white dark:hover:bg-blue-600 border border-slate-200 dark:border-slate-700 transition-all shadow-xs !min-h-0 cursor-pointer"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
               onClick={() => scroll("right")}
               aria-label="Hình kế tiếp"
-              className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-[#075FA8] hover:text-white dark:hover:bg-blue-600 border border-slate-200 dark:border-slate-700 transition-all shadow-xs !min-h-0"
+              className="p-2 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-[#075FA8] hover:text-white dark:hover:bg-blue-600 border border-slate-200 dark:border-slate-700 transition-all shadow-xs !min-h-0 cursor-pointer"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
@@ -79,14 +77,14 @@ export const Gallery: React.FC = () => {
         {/* Horizontal Carousel Container */}
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-4 pt-1"
+          className="flex gap-3 sm:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-3 pt-1"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {galleryItems.map((item) => (
             <div
               key={item.id}
               onClick={() => setActiveImage(item)}
-              className="snap-start shrink-0 w-[280px] sm:w-[340px] md:w-[380px] group relative rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-950 cursor-pointer border border-slate-200 dark:border-slate-800 shadow-xs hover:shadow-xl transition-all duration-300 aspect-[4/3]"
+              className="snap-start shrink-0 w-[220px] sm:w-[340px] md:w-[380px] group relative rounded-xl sm:rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-950 cursor-pointer border border-slate-200 dark:border-slate-800 shadow-xs hover:shadow-xl transition-all duration-300 aspect-[4/3]"
             >
               <Image
                 src={item.url}

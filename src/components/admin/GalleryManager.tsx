@@ -106,20 +106,14 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
 
   return (
     <>
-      {/* Action Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 text-left">
-        <div>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight">HÌNH ẢNH TẠI ĐÔNG KHA</h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
-            Quản lý hình ảnh hiển thị trong mục "Hình ảnh tại Đông Kha" trên trang chủ.
-          </p>
-        </div>
+      {/* Top Action Bar */}
+      <div className="flex justify-end mb-3 sm:mb-4 text-left">
         <button
           onClick={handleOpenAdd}
-          className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-md shadow transition-colors w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-4 py-2 rounded-xl shadow-xs transition-all cursor-pointer w-full sm:w-auto transform hover:-translate-y-0.5"
         >
           <Plus className="w-4 h-4" />
-          <span>THÊM HÌNH ẢNH</span>
+          <span>Thêm hình ảnh mới</span>
         </button>
       </div>
 
@@ -130,20 +124,20 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
           {pagedImages.map((img) => (
             <div
               key={img.id}
-              className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden group text-left"
+              className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden group text-left transition-colors"
             >
-              <div className="relative aspect-[4/3] bg-slate-50">
+              <div className="relative aspect-[4/3] bg-slate-50 dark:bg-slate-800">
                 <img src={img.url} alt={img.title} className="w-full h-full object-cover" />
                 <button
                   onClick={() => handleDelete(img.id)}
                   aria-label="Xóa ảnh"
-                  className="absolute top-2 right-2 p-2 bg-white/90 hover:bg-red-50 text-slate-500 hover:text-red-600 border border-slate-200 rounded-lg shadow-sm transition-colors !min-h-0"
+                  className="absolute top-2 right-2 p-2 bg-white/90 dark:bg-slate-900/90 hover:bg-red-50 dark:hover:bg-red-950/80 text-slate-500 hover:text-red-600 dark:hover:text-red-400 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm transition-colors !min-h-0 cursor-pointer"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
               <div className="p-3">
-                <p className="text-sm font-bold text-slate-900 truncate">{img.title}</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{img.title}</p>
               </div>
             </div>
           ))}
@@ -151,22 +145,22 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
         <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
         </>
       ) : (
-        <div className="text-center py-16 bg-white rounded-lg border border-slate-200 shadow-sm">
-          <ImageOff className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <h3 className="font-bold text-slate-900 text-lg">Chưa có hình ảnh nào</h3>
-          <p className="text-slate-500 text-sm mt-1">Bấm "Thêm hình ảnh" để tải ảnh lên.</p>
+        <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
+          <ImageOff className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+          <h3 className="font-bold text-slate-900 dark:text-white text-lg">Chưa có hình ảnh nào</h3>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Bấm "Thêm hình ảnh" để tải ảnh lên.</p>
         </div>
       )}
 
       {/* Upload Modal Dialog */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200 text-left">
-          <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto shadow-lg border border-slate-100 flex flex-col">
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-              <h3 className="text-lg font-black text-slate-900">THÊM HÌNH ẢNH</h3>
+          <div className="bg-white dark:bg-slate-900 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto shadow-lg border border-slate-100 dark:border-slate-800 flex flex-col transition-colors">
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <h3 className="text-lg font-black text-slate-900 dark:text-white">THÊM HÌNH ẢNH</h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors !min-h-0"
+                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors !min-h-0"
               >
                 ✕
               </button>
@@ -174,7 +168,7 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
 
             <form onSubmit={handleSubmit} className="p-5 space-y-4 flex-1">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                   Tiêu đề ảnh *
                 </label>
                 <input
@@ -183,16 +177,16 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Ví dụ: Kho ống đồng"
-                  className="w-full text-sm bg-slate-50 border border-slate-200 rounded-md px-4 py-2.5 focus:bg-white focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
+                  className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-4 py-2.5 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-[#075FA8] transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                   Hình ảnh *
                 </label>
                 <div className="flex gap-4 items-center">
-                  <div className="w-20 h-20 rounded-md border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center shrink-0">
+                  <div className="w-20 h-20 rounded-md border border-slate-200 dark:border-slate-700 overflow-hidden bg-slate-50 dark:bg-slate-800 flex items-center justify-center shrink-0">
                     {imagePreview ? (
                       <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
@@ -200,7 +194,7 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
                     )}
                   </div>
                   <div className="flex-1 grid grid-cols-2 gap-2">
-                    <label className="flex flex-col items-center justify-center gap-1 border-2 border-dashed border-slate-200 hover:border-[#075FA8] rounded-md p-3 cursor-pointer text-slate-500 hover:text-[#075FA8] transition-colors">
+                    <label className="flex flex-col items-center justify-center gap-1 border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-[#075FA8] dark:hover:border-blue-400 rounded-md p-3 cursor-pointer text-slate-500 dark:text-slate-400 hover:text-[#075FA8] dark:hover:text-blue-400 transition-colors">
                       <Camera className="w-5 h-5" />
                       <span className="text-xs font-bold">Chụp ảnh</span>
                       <input
@@ -211,7 +205,7 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
                         className="hidden"
                       />
                     </label>
-                    <label className="flex flex-col items-center justify-center gap-1 border-2 border-dashed border-slate-200 hover:border-[#075FA8] rounded-md p-3 cursor-pointer text-slate-500 hover:text-[#075FA8] transition-colors">
+                    <label className="flex flex-col items-center justify-center gap-1 border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-[#075FA8] dark:hover:border-blue-400 rounded-md p-3 cursor-pointer text-slate-500 dark:text-slate-400 hover:text-[#075FA8] dark:hover:text-blue-400 transition-colors">
                       <Upload className="w-5 h-5" />
                       <span className="text-xs font-bold">Tải ảnh lên</span>
                       <input
@@ -225,11 +219,11 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 pt-4 border-t border-slate-100 mt-6">
+              <div className="flex items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800 mt-6">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-4 rounded-md text-center text-sm transition-colors !min-h-0"
+                  className="flex-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-3 px-4 rounded-md text-center text-sm transition-colors !min-h-0"
                 >
                   Hủy bỏ
                 </button>

@@ -201,11 +201,20 @@ export async function createProductAction(formData: FormData) {
 }
 
 // 4. Update Product
-export async function updateProductAction(id: string, formData: FormData) {
+export async function updateProductAction(
+  idOrFormData: string | FormData,
+  maybeFormData?: FormData
+) {
   const isAuth = await isAdminAuthenticated();
   if (!isAuth) return { error: "Chưa đăng nhập!" };
 
   try {
+    const formData = idOrFormData instanceof FormData ? idOrFormData : maybeFormData!;
+    const id = idOrFormData instanceof FormData ? (formData.get("id") as string) : (idOrFormData as string);
+
+    if (!id) {
+      return { error: "Thiếu ID sản phẩm cần cập nhật!" };
+    }
     const name = formData.get("name") as string;
     const priceStr = formData.get("price") as string;
     const shortDesc = formData.get("shortDesc") as string;
@@ -612,11 +621,20 @@ export async function createServiceAction(formData: FormData) {
 }
 
 // 11. Update Service
-export async function updateServiceAction(id: string, formData: FormData) {
+export async function updateServiceAction(
+  idOrFormData: string | FormData,
+  maybeFormData?: FormData
+) {
   const isAuth = await isAdminAuthenticated();
   if (!isAuth) return { error: "Chưa đăng nhập!" };
 
   try {
+    const formData = idOrFormData instanceof FormData ? idOrFormData : maybeFormData!;
+    const id = idOrFormData instanceof FormData ? (formData.get("id") as string) : (idOrFormData as string);
+
+    if (!id) {
+      return { error: "Thiếu ID giải pháp cần cập nhật!" };
+    }
     const title = (formData.get("title") as string)?.trim();
     const description = (formData.get("description") as string)?.trim();
     const icon = (formData.get("icon") as string) || "ThermometerSun";
@@ -709,5 +727,87 @@ export async function deleteServiceAction(id: string) {
     return { success: true };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi xóa giải pháp!" };
+  }
+}
+
+// 13. Create Category
+export async function createCategoryAction(formData: FormData) {
+  const isAuth = await isAdminAuthenticated();
+  if (!isAuth) return { error: "Chưa đăng nhập!" };
+
+  try {
+    const name = (formData.get("name") as string)?.trim();
+    if (!name) return { error: "Tên danh mục không được để trống!" };
+
+    const slug = slugify(name);
+    const existing = await prisma.category.findFirst({
+      where: { OR: [{ name }, { slug }] },
+    });
+    if (existing) return { error: "Danh mục này đã tồn tại!" };
+
+    await prisma.category.create({
+      data: { name, slug },
+    });
+
+    revalidatePath("/");
+    revalidatePath("/admin");
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message || "Lỗi hệ thống khi tạo danh mục!" };
+  }
+}
+
+// 14. Update Category
+export async function updateCategoryAction(formData: FormData) {
+  const isAuth = await isAdminAuthenticated();
+  if (!isAuth) return { error: "Chưa đăng nhập!" };
+
+  try {
+    const id = formData.get("id") as string;
+    const name = (formData.get("name") as string)?.trim();
+    if (!id || !name) return { error: "Thông tin danh mục không hợp lệ!" };
+
+    const slug = slugify(name);
+    const existing = await prisma.category.findFirst({
+      where: {
+        AND: [
+          { id: { not: id } },
+          { OR: [{ name }, { slug }] },
+        ],
+      },
+    });
+    if (existing) return { error: "Tên danh mục mới bị trùng với danh mục khác!" };
+
+    await prisma.category.update({
+      where: { id },
+      data: { name, slug },
+    });
+
+    revalidatePath("/");
+    revalidatePath("/admin");
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message || "Lỗi hệ thống khi sửa danh mục!" };
+  }
+}
+
+// 15. Delete Category
+export async function deleteCategoryAction(id: string) {
+  const isAuth = await isAdminAuthenticated();
+  if (!isAuth) return { error: "Chưa đăng nhập!" };
+
+  try {
+    const count = await prisma.product.count({ where: { categoryId: id } });
+    if (count > 0) {
+      return { error: `Không thể xóa danh mục đang có ${count} sản phẩm! Vui lòng xóa hoặc đổi danh mục sản phẩm trước.` };
+    }
+
+    await prisma.category.delete({ where: { id } });
+
+    revalidatePath("/");
+    revalidatePath("/admin");
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message || "Lỗi hệ thống khi xóa danh mục!" };
   }
 }

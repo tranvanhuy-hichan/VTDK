@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import { Phone, Menu, X, MapPin, ChevronRight, Shield, Search, Sun, Moon } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
@@ -14,6 +15,9 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ company }) => {
   const router = useRouter();
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSectionState, setActiveSectionState] = useState<string>("trang-chu");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -43,10 +47,11 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
     const q = searchQuery.trim();
     setIsMobileMenuOpen(false);
     setIsMobileSearchOpen(false);
-    router.push(q ? `/?q=${encodeURIComponent(q)}#san-pham` : "/#san-pham");
+    router.push(q ? `/san-pham?q=${encodeURIComponent(q)}` : "/san-pham");
   };
 
   useEffect(() => {
+    if (!isHomePage) return;
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
 
@@ -58,29 +63,33 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
         .filter((el): el is HTMLElement => el !== null)
         .sort((a, b) => a.offsetTop - b.offsetTop);
 
-      let currentActive = "trang-chu";
       for (let i = sections.length - 1; i >= 0; i--) {
         if (scrollPosition >= sections[i].offsetTop) {
-          currentActive = sections[i].id;
+          setActiveSectionState(sections[i].id);
           break;
         }
       }
-      setActiveSectionState(currentActive);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isHomePage]);
 
-  const navLinks = [
-    { name: "Trang chủ", href: "#trang-chu" },
-    { name: "Giới thiệu", href: "#gioi-thieu" },
-    { name: "Sản phẩm", href: "#san-pham" },
-    { name: "Dịch vụ", href: "#dich-vu" },
-    { name: "Hình ảnh", href: "#hinh-anh" },
-    { name: "Liên hệ", href: "#lien-he" },
+  const rawNavLinks = [
+    { name: "Trang chủ", hash: "#trang-chu" },
+    { name: "Giới thiệu", hash: "#gioi-thieu" },
+    { name: "Sản phẩm", hash: "#san-pham" },
+    { name: "Dịch vụ", hash: "#dich-vu" },
+    { name: "Hình ảnh", hash: "#hinh-anh" },
+    { name: "Liên hệ", hash: "#lien-he" },
   ];
+
+  const getTargetHref = (hash: string) => {
+    if (hash === "#trang-chu") return "/";
+    if (hash === "#san-pham") return "/san-pham";
+    return isHomePage ? hash : `/${hash}`;
+  };
 
   return (
     <>
@@ -113,15 +122,15 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           
-          {/* Logo Area */}
-          <a href="#trang-chu" className="flex items-center gap-2 group">
+          {/* Logo Area - Links to Home / */}
+          <Link href="/" className="flex items-center gap-2 group">
             <Image
               src={COMPANY_DATA.logoUrl}
               alt="Logo Vật Tư Điện Lạnh Đông Kha Đà Nẵng"
               width={56}
               height={56}
               priority
-              className="h-10 sm:h-12 lg:h-14 w-auto object-contain transition-transform group-hover:scale-105"
+              className="h-10 sm:h-12 lg:h-14 w-auto object-contain transition-transform group-hover:scale-105 rounded-xl"
             />
             <div className="flex flex-col">
               <div className="font-black text-slate-900 dark:text-white tracking-tight text-base sm:text-lg leading-none flex items-center gap-1">
@@ -131,7 +140,7 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                 Vật Tư Điện Lạnh Chính Hãng
               </span>
             </div>
-          </a>
+          </Link>
 
           {/* Desktop Search */}
           <div className="hidden md:flex items-center flex-1 max-w-md mx-4">
@@ -156,13 +165,18 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
           {/* Desktop Navigation Links & Theme Toggle */}
           <div className="hidden lg:flex items-center gap-4">
             <nav className="flex items-center gap-1 sm:gap-1.5">
-              {navLinks.map((link) => {
-                const sectionId = link.href.replace("#", "");
-                const isActive = activeSectionState === sectionId;
+              {rawNavLinks.map((link) => {
+                const targetHref = getTargetHref(link.hash);
+                const sectionId = link.hash.replace("#", "");
+                const isActive = isHomePage
+                  ? activeSectionState === sectionId
+                  : (pathname === "/san-pham" && link.hash === "#san-pham") ||
+                    (pathname === "/" && link.hash === "#trang-chu");
+
                 return (
-                  <a
-                    key={link.href}
-                    href={link.href}
+                  <Link
+                    key={link.hash}
+                    href={targetHref}
                     className={`text-sm font-bold transition-all px-3 py-1.5 rounded-lg relative ${
                       isActive
                         ? "text-[#075FA8] dark:text-[#F47A20] bg-blue-50 dark:bg-slate-800 font-extrabold shadow-2xs after:content-[''] after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-[#075FA8] dark:after:bg-[#F47A20]"
@@ -170,7 +184,7 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                     }`}
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 );
               })}
             </nav>
@@ -187,46 +201,51 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
           {/* Mobile Right Controls: Search + Hamburger Menu */}
           <div className="flex items-center gap-1.5 lg:hidden">
             <button
-              onClick={() => {
-                setIsMobileSearchOpen(!isMobileSearchOpen);
-                setIsMobileMenuOpen(false);
-              }}
-              aria-label="Tìm kiếm"
-              className="p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
+              onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors !min-h-0 cursor-pointer"
+              aria-label="Mở tìm kiếm"
             >
-              {isMobileSearchOpen ? <X className="w-6 h-6 text-slate-900 dark:text-white" /> : <Search className="w-6 h-6 text-slate-900 dark:text-white" />}
+              <Search className="w-5 h-5" />
             </button>
+            
             <button
-              onClick={() => {
-                setIsMobileMenuOpen(!isMobileMenuOpen);
-                setIsMobileSearchOpen(false);
-              }}
-              aria-label="Mở menu"
-              className="p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
+              onClick={toggleTheme}
+              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer !min-h-0"
+              aria-label="Đổi giao diện"
             >
-              {isMobileMenuOpen ? <X className="w-6 h-6 text-slate-900 dark:text-white" /> : <Menu className="w-6 h-6 text-slate-900 dark:text-white" />}
+              {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5 text-amber-400" />}
+            </button>
+
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-bold transition-colors !min-h-0 cursor-pointer"
+              aria-label="Mở Menu"
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6 text-[#075FA8] dark:text-blue-400" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Search Bar */}
+        {/* Mobile Search Bar Dropdown */}
         {isMobileSearchOpen && (
-          <div className="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xl px-4 py-4 animate-in slide-in-from-top-2 duration-200">
-            <form onSubmit={handleSearchSubmit} className="relative">
+          <div className="lg:hidden px-4 py-3 bg-slate-50 dark:bg-slate-850 border-t border-slate-200 dark:border-slate-700 animate-in slide-in-from-top-1 duration-150">
+            <form onSubmit={handleSearchSubmit} className="relative w-full">
               <input
                 type="text"
-                autoFocus
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm sản phẩm..."
-                className="w-full text-base bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-slate-900 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:border-[#075FA8] dark:focus:border-blue-500 focus:ring-1 focus:ring-[#075FA8] dark:focus:ring-blue-500 transition-all"
+                className="w-full text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-9 py-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#075FA8]"
               />
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 pointer-events-none">
+                <Search className="w-4 h-4" />
+              </span>
               <button
                 type="submit"
                 aria-label="Tìm kiếm"
-                className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 dark:text-slate-500 hover:text-[#075FA8] dark:hover:text-blue-400 !min-h-0"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-[#075FA8] !min-h-0"
               >
-                <Search className="w-4.5 h-4.5" />
+                <ChevronRight className="w-5 h-5" />
               </button>
             </form>
           </div>
@@ -235,38 +254,19 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
         {/* Mobile Menu Drawer */}
         {isMobileMenuOpen && (
           <div className="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xl px-4 py-5 animate-in slide-in-from-top-2 duration-200">
-            {/* Theme Toggle row inside mobile sidebar */}
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 mb-3">
-              <span className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                Giao diện: {theme === "light" ? "Chế độ Sáng" : "Chế độ Tối"}
-              </span>
-              <button
-                onClick={toggleTheme}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold text-xs shadow-xs border border-slate-200 dark:border-slate-600 transition-colors cursor-pointer !min-h-0"
-                aria-label="Đổi giao diện"
-              >
-                {theme === "light" ? (
-                  <>
-                    <Moon className="w-4 h-4 text-slate-700" />
-                    <span>Tối</span>
-                  </>
-                ) : (
-                  <>
-                    <Sun className="w-4 h-4 text-amber-400" />
-                    <span>Sáng</span>
-                  </>
-                )}
-              </button>
-            </div>
-
             <div className="flex flex-col gap-1.5">
-              {navLinks.map((link) => {
-                const sectionId = link.href.replace("#", "");
-                const isActive = activeSectionState === sectionId;
+              {rawNavLinks.map((link) => {
+                const targetHref = getTargetHref(link.hash);
+                const sectionId = link.hash.replace("#", "");
+                const isActive = isHomePage
+                  ? activeSectionState === sectionId
+                  : (pathname === "/san-pham" && link.hash === "#san-pham") ||
+                    (pathname === "/" && link.hash === "#trang-chu");
+
                 return (
-                  <a
-                    key={link.href}
-                    href={link.href}
+                  <Link
+                    key={link.hash}
+                    href={targetHref}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`flex items-center justify-between p-3 rounded-xl font-bold text-base transition-colors ${
                       isActive
@@ -276,7 +276,7 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                   >
                     <span>{link.name}</span>
                     <ChevronRight className={`w-5 h-5 ${isActive ? "text-[#075FA8] dark:text-blue-400" : "text-slate-400"}`} />
-                  </a>
+                  </Link>
                 );
               })}
             </div>

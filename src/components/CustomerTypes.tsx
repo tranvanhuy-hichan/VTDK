@@ -4,7 +4,7 @@ import { COMPANY_DATA } from "../data/company";
 
 export const CustomerTypes: React.FC = () => {
   const getCustomerIcon = (iconName: string) => {
-    const iconClass = "w-5 h-5";
+    const iconClass = "w-4 h-4 sm:w-5 sm:h-5";
     switch (iconName) {
       case "Wrench":
         return <Wrench className={`${iconClass} text-[#075FA8]`} />;
@@ -20,44 +20,44 @@ export const CustomerTypes: React.FC = () => {
   };
 
   return (
-    <section className="py-10 sm:py-12 bg-[#F6F8FA] dark:bg-[#0F172A] border-t border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-300">
+    <section className="py-6 sm:py-12 bg-[#F6F8FA] dark:bg-[#0F172A] border-t border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-8">
-          <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/20 text-[#075FA8] dark:text-blue-400 px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider mb-1.5">
+        <div className="text-center max-w-3xl mx-auto mb-5 sm:mb-8">
+          <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/20 text-[#075FA8] dark:text-blue-400 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1">
             ĐỐI TƯỢNG PHỤC VỤ
           </div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-lg sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Đông Kha đồng hành cùng
           </h2>
-          <p className="mt-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+          <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal">
             Dù bạn là thợ cá nhân, chủ nhà thầu hay khách hàng gia đình, Đông Kha luôn có giải pháp vật tư phù hợp nhất.
           </p>
         </div>
 
-        {/* Customer Types Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+        {/* Customer Types Grid (2 cols on mobile, 5 cols on lg) */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4">
           {COMPANY_DATA.customerTypes.map((cust) => (
             <div
               key={cust.id}
-              className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs hover:shadow-sm hover:border-blue-300 dark:hover:border-blue-500 transition-all flex flex-col justify-between text-left group"
+              className="bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs hover:shadow-sm hover:border-blue-300 dark:hover:border-blue-500 transition-all flex flex-col justify-between text-left group"
             >
               <div>
-                <div className="w-10 h-10 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center mb-3 group-hover:bg-blue-50 dark:group-hover:bg-slate-800 transition-colors">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center mb-2 sm:mb-3 group-hover:bg-blue-50 dark:group-hover:bg-slate-800 transition-colors">
                   {getCustomerIcon(cust.icon)}
                 </div>
-                <h3 className="font-bold text-slate-900 dark:text-white text-base mb-1 group-hover:text-[#075FA8] dark:group-hover:text-blue-400 transition-colors leading-snug">
+                <h3 className="font-bold text-slate-900 dark:text-white text-xs sm:text-base mb-1 group-hover:text-[#075FA8] dark:group-hover:text-blue-400 transition-colors leading-snug">
                   {cust.title}
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-normal font-normal">
+                <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 leading-tight sm:leading-normal font-normal line-clamp-2 sm:line-clamp-none">
                   {cust.description}
                 </p>
               </div>
 
               <a
                 href="#lien-he"
-                className="mt-3 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center gap-1 text-[11px] font-bold text-[#075FA8] dark:text-blue-400 hover:text-[#0B1F33] dark:hover:text-[#F47A20] transition-colors"
+                className="mt-2.5 pt-1.5 sm:mt-3 sm:pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-[#075FA8] dark:text-blue-400 hover:text-[#0B1F33] dark:hover:text-[#F47A20] transition-colors"
               >
                 <span>Liên hệ ngay</span>
                 <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
