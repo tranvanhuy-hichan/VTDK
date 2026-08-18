@@ -124,13 +124,13 @@ export const ProductCategories: React.FC = () => {
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 bg-blue-100/70 border border-blue-200 text-[#075FA8] px-3.5 py-1 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-2 bg-blue-100/70 border border-blue-200 text-[#075FA8] px-3 py-1 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-2.5 sm:mb-3">
             DANH MỤC VẬT TƯ CHÍNH
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
             Đầy đủ vật tư cho nhu cầu điện lạnh
           </h2>
-          <p className="mt-3 text-base sm:text-lg text-slate-600 font-normal">
+          <p className="mt-2 sm:mt-3 text-xs sm:text-base text-slate-600 font-normal">
             Từ sửa chữa dân dụng đến công trình và hệ thống lạnh chuyên nghiệp.
           </p>
         </div>

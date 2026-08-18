@@ -55,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
 
-      const sectionIds = ["trang-chu", "gioi-thieu", "san-pham", "dich-vu", "hinh-anh", "lien-he"];
+      const sectionIds = ["trang-chu", "san-pham", "dich-vu", "gioi-thieu", "hinh-anh", "lien-he"];
       const scrollPosition = window.scrollY + 160;
 
       const sections = sectionIds
@@ -78,9 +78,9 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
 
   const rawNavLinks = [
     { name: "Trang chủ", hash: "#trang-chu" },
-    { name: "Giới thiệu", hash: "#gioi-thieu" },
     { name: "Sản phẩm", hash: "#san-pham" },
     { name: "Dịch vụ", hash: "#dich-vu" },
+    { name: "Giới thiệu", hash: "#gioi-thieu" },
     { name: "Kho & cửa hàng", hash: "#hinh-anh" },
     { name: "Liên hệ", hash: "#lien-he" },
   ];

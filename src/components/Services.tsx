@@ -50,13 +50,13 @@ export const Services: React.FC<ServicesProps> = ({ company, services }) => {
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-16">
-          <div className="inline-flex items-center gap-2 bg-orange-100/80 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900 text-[#F47A20] px-3 py-0.5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-2 sm:mb-3">
+          <div className="inline-flex items-center gap-2 bg-orange-100/80 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900 text-[#F47A20] px-3 py-1 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-2.5 sm:mb-3">
             GIẢI PHÁP &amp; THI CÔNG KỸ THUẬT
           </div>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
             Không chỉ cung cấp vật tư
           </h2>
-          <p className="mt-2 sm:mt-3 text-xs sm:text-lg text-slate-500 dark:text-slate-300 font-normal">
+          <p className="mt-2 sm:mt-3 text-xs sm:text-base text-slate-600 dark:text-slate-300 font-normal">
             Đông Kha còn cung cấp các giải pháp điện lạnh toàn diện từ dân dụng đến công nghiệp.
           </p>
         </div>

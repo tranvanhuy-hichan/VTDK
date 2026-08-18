@@ -44,13 +44,13 @@ export const Testimonials: React.FC = () => {
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-16">
-          <div className="inline-flex items-center gap-2 bg-blue-100/70 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-[#075FA8] dark:text-blue-400 px-3 py-0.5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-2 sm:mb-3">
+          <div className="inline-flex items-center gap-2 bg-blue-100/70 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-[#075FA8] dark:text-blue-400 px-3 py-1 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-2.5 sm:mb-3">
             ĐỒNG HÀNH &amp; HỢP TÁC
           </div>
-          <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
             Đánh giá thực tế từ đối tác &amp; khách hàng
           </h2>
-          <p className="mt-1.5 text-xs sm:text-base text-slate-500 dark:text-slate-400 font-normal">
+          <p className="mt-2 sm:mt-3 text-xs sm:text-base text-slate-600 dark:text-slate-300 font-normal">
             Sự tin cậy của anh em thợ cơ điện lạnh và nhà thầu xây dựng tại Đà Nẵng là động lực của Đông Kha.
           </p>
         </div>

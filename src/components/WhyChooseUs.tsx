@@ -36,13 +36,13 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ company }) => {
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-10">
-          <div className="inline-flex items-center gap-2 bg-blue-900/60 border border-blue-700/80 text-blue-300 px-3 py-0.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2">
+          <div className="inline-flex items-center gap-2 bg-blue-900/60 border border-blue-700/80 text-blue-300 px-3 py-1 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-2.5 sm:mb-3">
             CAM KẾT THƯƠNG HIỆU
           </div>
-          <h2 className="text-xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
             Vì sao khách hàng chọn Đông Kha?
           </h2>
-          <p className="mt-1.5 text-xs sm:text-sm text-slate-300 font-normal">
+          <p className="mt-2 sm:mt-3 text-xs sm:text-base text-slate-300 font-normal">
             Chúng tôi tạo dựng uy tín bằng sản phẩm chuẩn kỹ thuật, báo giá minh bạch và phong cách phục vụ tận tâm.
           </p>
         </div>

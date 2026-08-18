@@ -45,13 +45,13 @@ export const Gallery: React.FC = () => {
         
         {/* Section Header with Slider Navigation Controls */}
         <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-10">
-          <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/20 text-[#075FA8] dark:text-blue-400 px-3 py-0.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2">
+          <div className="inline-flex items-center gap-2 bg-blue-100/70 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-[#075FA8] dark:text-blue-400 px-3 py-1 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-2.5 sm:mb-3">
             HÌNH ẢNH THỰC TẾ
           </div>
-          <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
             Hình ảnh hoạt động tại Đông Kha
           </h2>
-          <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal">
+          <p className="mt-2 sm:mt-3 text-xs sm:text-base text-slate-600 dark:text-slate-300 font-normal">
             Hình ảnh thực tế cửa hàng, kho bãi và giao hàng tại Đà Nẵng. Vuốt ngang để xem thêm.
           </p>
 
