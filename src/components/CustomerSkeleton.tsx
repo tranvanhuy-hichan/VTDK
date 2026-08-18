@@ -36,6 +36,54 @@ export const CustomerHeroSkeleton: React.FC = () => (
   </div>
 );
 
+export const CustomerProductDetailSkeleton: React.FC = () => (
+  <div className="w-full min-h-screen bg-[#F6F8FA] dark:bg-[#0F172A] py-3 sm:py-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
+      {/* Breadcrumb line skeleton */}
+      <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-md w-64 animate-pulse" />
+
+      {/* Main Product Card skeleton */}
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-md p-4 sm:p-8 lg:p-10 animate-pulse">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
+          {/* Left Column: Image skeleton */}
+          <div className="lg:col-span-5 w-full aspect-square sm:aspect-[4/3] lg:aspect-square bg-slate-200 dark:bg-slate-800 rounded-2xl max-h-[350px]" />
+
+          {/* Right Column: Details skeleton */}
+          <div className="lg:col-span-7 space-y-4">
+            <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded-full w-24" />
+            <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded-xl w-3/4" />
+            <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded-lg w-1/2" />
+            <div className="flex gap-2 pt-2">
+              <div className="h-7 bg-slate-200 dark:bg-slate-800 rounded-lg w-20" />
+              <div className="h-7 bg-slate-200 dark:bg-slate-800 rounded-lg w-20" />
+              <div className="h-7 bg-slate-200 dark:bg-slate-800 rounded-lg w-20" />
+            </div>
+            <div className="h-20 bg-slate-200 dark:bg-slate-800 rounded-2xl w-full" />
+            <div className="h-24 bg-slate-200 dark:bg-slate-800 rounded-2xl w-full" />
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="h-12 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
+              <div className="h-12 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
+            </div>
+          </div>
+
+          {/* Bottom Description skeleton */}
+          <div className="lg:col-span-12 h-32 bg-slate-200 dark:bg-slate-800 rounded-2xl mt-4" />
+        </div>
+      </div>
+
+      {/* Related Products skeleton */}
+      <div className="pt-4 space-y-4">
+        <div className="h-7 bg-slate-200 dark:bg-slate-800 rounded-xl w-56 animate-pulse" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <CustomerProductCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 export const CustomerCatalogSkeleton: React.FC = () => (
   <div className="w-full min-h-screen bg-[#F6F8FA] dark:bg-[#0F172A] pb-16">
     {/* Hero skeleton */}
@@ -69,8 +117,8 @@ export const CustomerCatalogSkeleton: React.FC = () => (
             </div>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {[1, 2, 3, 4].map((i) => (
               <CustomerProductCardSkeleton key={i} />
             ))}
           </div>
@@ -89,8 +137,8 @@ export const CustomerHomeSkeleton: React.FC = () => (
         <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded-xl w-64 mx-auto animate-pulse" />
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        {[1, 2, 3, 4].map((i) => (
           <CustomerProductCardSkeleton key={i} />
         ))}
       </div>
