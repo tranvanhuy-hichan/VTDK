@@ -261,7 +261,7 @@ export const AllProductsCatalog: React.FC<AllProductsCatalogProps> = ({
                 )}
               </div>
               <div className="w-full sm:w-auto shrink-0">
-                <BTUCalculatorModal />
+                <BTUCalculatorModal buttonClassName="inline-flex items-center justify-center gap-1.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-white/20 shadow-2xs transition-all cursor-pointer !min-h-0 w-full sm:w-auto" />
               </div>
             </div>
 

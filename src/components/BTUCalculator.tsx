@@ -97,7 +97,7 @@ export const BTUCalculatorBox: React.FC = () => {
   const activeTypeInfo = roomTypes.find((t) => t.id === roomType);
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs grid grid-cols-1 md:grid-cols-12 items-stretch">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs grid grid-cols-1 md:grid-cols-12 items-stretch">
 
       {/* Left Column: Inputs (7 cols) */}
       <div className="md:col-span-7 p-6 sm:p-8 flex flex-col justify-between text-left">
@@ -106,20 +106,20 @@ export const BTUCalculatorBox: React.FC = () => {
           <div className="flex items-center gap-2 mb-6">
             <button
               onClick={() => setCalcMode("area")}
-              className={`!min-h-0 px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all border flex-1 ${
+              className={`!min-h-0 px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all border flex-1 cursor-pointer ${
                 calcMode === "area"
                   ? "bg-[#075FA8] border-[#075FA8] text-white"
-                  : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                  : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
               }`}
             >
               Tính theo diện tích (m²)
             </button>
             <button
               onClick={() => setCalcMode("volume")}
-              className={`!min-h-0 px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all border flex-1 ${
+              className={`!min-h-0 px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all border flex-1 cursor-pointer ${
                 calcMode === "volume"
                   ? "bg-[#075FA8] border-[#075FA8] text-white"
-                  : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                  : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
               }`}
             >
               Tính theo thể tích (m³)
@@ -129,10 +129,10 @@ export const BTUCalculatorBox: React.FC = () => {
           {/* Slider for value */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-bold text-slate-700">
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-200">
                 {calcMode === "area" ? "Diện tích phòng" : "Thể tích phòng"}
               </span>
-              <span className="text-lg font-black text-[#075FA8] bg-blue-50 border border-blue-100 px-3 py-0.5 rounded-lg">
+              <span className="text-lg font-black text-[#075FA8] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-800 px-3 py-0.5 rounded-lg">
                 {sizeValue} {calcMode === "area" ? "m²" : "m³"}
               </span>
             </div>
@@ -143,9 +143,9 @@ export const BTUCalculatorBox: React.FC = () => {
               step={1}
               value={sizeValue}
               onChange={(e) => setSizeValue(Number(e.target.value))}
-              className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-[#075FA8]"
+              className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-[#075FA8]"
             />
-            <div className="flex justify-between text-[10px] font-bold text-slate-400 mt-1">
+            <div className="flex justify-between text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-1">
               <span>{calcMode === "area" ? "10 m²" : "30 m³"}</span>
               <span>{calcMode === "area" ? "80 m²" : "240 m³"}</span>
             </div>
@@ -153,7 +153,7 @@ export const BTUCalculatorBox: React.FC = () => {
 
           {/* Room type selection */}
           <div>
-            <span className="text-sm font-bold text-slate-700 block mb-2">
+            <span className="text-sm font-bold text-slate-700 dark:text-slate-200 block mb-2">
               Không gian sử dụng phòng
             </span>
             <div className="flex flex-wrap gap-2">
@@ -161,10 +161,10 @@ export const BTUCalculatorBox: React.FC = () => {
                 <button
                   key={type.id}
                   onClick={() => setRoomType(type.id as RoomType)}
-                  className={`!min-h-0 px-3.5 py-2 text-xs sm:text-sm font-bold rounded-lg border transition-all ${
+                  className={`!min-h-0 px-3.5 py-2 text-xs sm:text-sm font-bold rounded-lg border transition-all cursor-pointer ${
                     roomType === type.id
                       ? "bg-[#075FA8] border-[#075FA8] text-white"
-                      : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                      : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                   }`}
                 >
                   {type.label}
@@ -175,8 +175,8 @@ export const BTUCalculatorBox: React.FC = () => {
         </div>
 
         {activeTypeInfo && (
-          <div className="mt-4 p-3 bg-blue-50/60 border border-blue-100/70 rounded-lg flex items-start gap-2 text-xs text-slate-600">
-            <AlertCircle className="w-4 h-4 text-[#075FA8] shrink-0 mt-0.5" />
+          <div className="mt-4 p-3 bg-blue-50/60 dark:bg-blue-950/40 border border-blue-100/70 dark:border-blue-900/50 rounded-lg flex items-start gap-2 text-xs text-slate-600 dark:text-slate-300">
+            <AlertCircle className="w-4 h-4 text-[#075FA8] dark:text-blue-400 shrink-0 mt-0.5" />
             <span>
               {activeTypeInfo.desc} Hệ số áp dụng: <strong>{calcMode === "area" ? activeTypeInfo.factorArea : activeTypeInfo.factorVolume} BTU</strong> trên mỗi {calcMode === "area" ? "m²" : "m³"}.
             </span>

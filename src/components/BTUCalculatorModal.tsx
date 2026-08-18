@@ -71,10 +71,10 @@ export const BTUCalculatorModal: React.FC<BTUCalculatorModalProps> = ({ buttonCl
         onClick={() => setIsOpen(true)}
         className={
           buttonClassName ||
-          "inline-flex items-center justify-center gap-1.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-white/20 shadow-xs transition-all cursor-pointer !min-h-0 w-full sm:w-auto"
+          "inline-flex items-center justify-center gap-1.5 bg-amber-50 dark:bg-slate-800 hover:bg-amber-100 dark:hover:bg-slate-700 text-amber-900 dark:text-amber-300 font-bold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-amber-200/80 dark:border-slate-700 shadow-2xs transition-all cursor-pointer !min-h-0 w-full sm:w-auto"
         }
       >
-        <Calculator className="w-4 h-4 text-amber-300 shrink-0" />
+        <Calculator className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
         <span>Tính công suất máy &amp; ống đồng</span>
       </button>
 

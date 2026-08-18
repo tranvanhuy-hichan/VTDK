@@ -352,13 +352,13 @@ export const ProductList: React.FC<ProductListProps> = ({
             Bảng giá tham khảo vật tư điện lạnh chất lượng cao của Đông Kha.
           </p>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center mt-3">
             <Link
               href="/san-pham"
-              className="inline-flex items-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-md transition-all transform hover:-translate-y-0.5"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#075FA8] dark:text-blue-400 hover:text-[#0B1F33] dark:hover:text-blue-300 transition-colors group"
             >
-              <Grid className="w-4 h-4" />
-              <span>Xem Trang Catalog Tất Cả Sản Phẩm ➔</span>
+              <Grid className="w-4 h-4 transition-transform group-hover:scale-110 shrink-0" />
+              <span className="group-hover:underline">Xem Trang Catalog Tất Cả Sản Phẩm ➔</span>
             </Link>
           </div>
         </div>
@@ -479,14 +479,14 @@ export const ProductList: React.FC<ProductListProps> = ({
         )}
 
         {/* Bottom Callout to Full Catalog Page */}
-        <div className="mt-10 text-center">
+        <div className="mt-8 text-center">
           <Link
             href="/san-pham"
-            className="inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-black text-xs sm:text-sm px-6 py-3.5 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+            className="inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-extrabold text-[#075FA8] dark:text-blue-400 hover:text-[#0B1F33] dark:hover:text-blue-300 transition-colors group"
           >
-            <Grid className="w-4.5 h-4.5" />
-            <span>Mở Catalog Tất Cả Sản Phẩm Theo Danh Mục</span>
-            <ArrowRight className="w-4 h-4" />
+            <Grid className="w-4 h-4 transition-transform group-hover:scale-110 shrink-0" />
+            <span className="group-hover:underline">Mở Catalog Tất Cả Sản Phẩm Theo Danh Mục</span>
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 shrink-0" />
           </Link>
         </div>
 
