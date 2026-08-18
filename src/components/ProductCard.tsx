@@ -37,6 +37,21 @@ interface ProductCardProps {
   company: CompanyContact;
 }
 
+// Helper function to format large prices into compact notation (e.g. 50k, 1.2M, 1.95M)
+function formatPriceCompact(num: number): string {
+  if (num >= 1_000_000) {
+    const val = num / 1_000_000;
+    const formatted = Number.isInteger(val) ? val.toString() : val.toFixed(2).replace(/\.?0+$/, "");
+    return `${formatted}M`;
+  }
+  if (num >= 1_000) {
+    const val = num / 1_000;
+    const formatted = Number.isInteger(val) ? val.toString() : val.toFixed(1).replace(/\.?0+$/, "");
+    return `${formatted}k`;
+  }
+  return `${num.toLocaleString("vi-VN")}đ`;
+}
+
 export const ProductCard: React.FC<ProductCardProps> = ({ product, company }) => {
   const router = useRouter();
 
@@ -55,7 +70,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, company }) =>
     if (minPrice === maxPrice) {
       priceDisplay = `${minPrice.toLocaleString("vi-VN")}đ`;
     } else {
-      priceDisplay = `${minPrice.toLocaleString("vi-VN")}đ - ${maxPrice.toLocaleString("vi-VN")}đ`;
+      const fullRangeStr = `${minPrice.toLocaleString("vi-VN")}đ - ${maxPrice.toLocaleString("vi-VN")}đ`;
+      // If the full price range text is long, switch to compact abbreviated notation (e.g. 180k - 1.95M)
+      if (fullRangeStr.length > 17) {
+        priceDisplay = `${formatPriceCompact(minPrice)} - ${formatPriceCompact(maxPrice)}`;
+      } else {
+        priceDisplay = fullRangeStr;
+      }
     }
   }
 
@@ -80,7 +101,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, company }) =>
       {/* Card Body */}
       <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
         <div>
-          <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug mb-1 sm:mb-1.5 line-clamp-2">
+          <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug mb-2 sm:mb-2.5 line-clamp-2">
             <Link
               href={`/san-pham/${product.slug}`}
               onClick={(e) => e.stopPropagation()}
@@ -91,29 +112,30 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, company }) =>
           </h3>
         </div>
 
-        {/* Price & Action */}
-        <div className="pt-2.5 sm:pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 sm:gap-3 mt-auto">
-          <div className="min-w-0 flex-1">
-            <span className="text-[9px] text-slate-400 dark:text-slate-500 block font-bold uppercase tracking-wider">
+        {/* Price & Action Section */}
+        <div className="pt-2.5 sm:pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2.5 mt-auto">
+          {/* Row 1: Full-width Large Price */}
+          <div>
+            <span className="text-[9px] text-slate-400 dark:text-slate-500 block font-bold uppercase tracking-wider mb-0.5">
               {product.variants.length > 0 ? "Giá bán lẻ (Theo quy cách)" : "Giá bán lẻ"}
             </span>
-            <span className="text-xs sm:text-sm font-black text-orange-600 dark:text-orange-400 truncate block">
+            <span className="text-base sm:text-lg font-black text-orange-600 dark:text-orange-400 tracking-tight block truncate">
               {priceDisplay}
             </span>
           </div>
 
-          <div className="flex items-center shrink-0">
-            <a
-              href={`${company.zaloUrl}?text=${encodeURIComponent(`Chào Đông Kha, tôi muốn tư vấn báo giá sản phẩm: ${product.name}`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              aria-label="Nhắn Zalo báo giá"
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-[#0068FF] hover:bg-blue-700 text-white flex items-center justify-center shadow-xs transition-all hover:scale-105 active:scale-95 shrink-0"
-            >
-              <MessageSquare className="w-4 h-4 fill-current" />
-            </a>
-          </div>
+          {/* Row 2: Full-width Zalo Contact Button */}
+          <a
+            href={`${company.zaloUrl}?text=${encodeURIComponent(`Chào Đông Kha, tôi muốn tư vấn báo giá sản phẩm: ${product.name}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            aria-label="Liên hệ Zalo báo giá"
+            className="w-full bg-[#0068FF] hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-98 shadow-xs cursor-pointer"
+          >
+            <MessageSquare className="w-4 h-4 fill-current shrink-0" />
+            <span>Liên hệ ngay</span>
+          </a>
         </div>
       </div>
     </div>
