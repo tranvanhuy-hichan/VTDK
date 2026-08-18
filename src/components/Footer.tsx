@@ -162,10 +162,10 @@ export const Footer: React.FC<FooterProps> = ({ company }) => {
             <button
               type="button"
               onClick={scrollToTop}
-              className="inline-flex items-center gap-1 hover:text-white transition-colors bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 rounded-lg border border-slate-700 cursor-pointer !min-h-0 text-[11px]"
+              aria-label="Cuộn về đầu trang"
+              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center border border-slate-700 cursor-pointer transition-all hover:scale-105 active:scale-95 shadow-2xs !min-h-0"
             >
-              <span>Về đầu trang</span>
-              <ArrowUp className="w-3 h-3" />
+              <ArrowUp className="w-4 h-4" />
             </button>
           </div>
         </div>
