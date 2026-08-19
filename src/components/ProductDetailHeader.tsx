@@ -21,7 +21,7 @@ export const ProductDetailHeader: React.FC<ProductDetailHeaderProps> = ({
 
   return (
     <div className="flex items-center gap-2 text-xs sm:text-sm font-medium whitespace-nowrap overflow-x-auto no-scrollbar py-0.5 my-0 leading-none max-w-full">
-      {/* Back button */}
+      {/* Back button - icon only on mobile */}
       <button
         type="button"
         onClick={() => router.back()}
@@ -29,7 +29,7 @@ export const ProductDetailHeader: React.FC<ProductDetailHeaderProps> = ({
         className="inline-flex items-center gap-1 font-bold text-slate-700 dark:text-slate-200 hover:text-[#075FA8] dark:hover:text-blue-400 transition-colors shrink-0 cursor-pointer !min-h-0"
       >
         <ArrowLeft className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400 shrink-0" />
-        <span>Quay lại</span>
+        <span className="hidden sm:inline">Quay lại</span>
       </button>
 
       <span className="text-slate-300 dark:text-slate-700 font-normal shrink-0">|</span>
