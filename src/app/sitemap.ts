@@ -8,6 +8,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     select: { slug: true, updatedAt: true },
   });
 
+  const categories = await prisma.category.findMany({
+    select: { slug: true },
+  });
+
+  const categoryRoutes = [
+    "/vat-tu-dien-lanh-da-nang",
+    ...categories.map((c) => `/${c.slug}`),
+    ...categories.map((c) => `/${c.slug}-da-nang`),
+  ];
+
+  const uniqueCategoryRoutes = Array.from(new Set(categoryRoutes));
+
   return [
     {
       url: SITE_URL,
@@ -15,6 +27,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 1,
     },
+    ...uniqueCategoryRoutes.map((route) => ({
+      url: `${SITE_URL}${route}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    })),
     ...products.map((product) => ({
       url: `${SITE_URL}/san-pham/${product.slug}`,
       lastModified: product.updatedAt,

@@ -147,16 +147,101 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, c
         </div>
       </div>
 
-      {/* Product Description Section */}
+      {/* Product Description & Rich Technical Specs Section */}
       {product.shortDesc && (
-        <div className="lg:col-span-12 p-4 sm:p-5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-2 mt-2">
-          <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-xs sm:text-sm border-b border-slate-200 dark:border-slate-700 pb-2">
-            <FileText className="w-4 h-4 text-[#075FA8] dark:text-blue-400 shrink-0" />
-            <span>Mô tả &amp; Thông số sản phẩm</span>
+        <div className="lg:col-span-12 p-4 sm:p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-4 mt-2">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
+            <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm sm:text-base">
+              <FileText className="w-5 h-5 text-[#075FA8] dark:text-blue-400 shrink-0" />
+              <span>Thông Tin Chi Tiết &amp; Thông Số Kỹ Thuật</span>
+            </div>
+            <span className="text-xs text-[#075FA8] dark:text-blue-400 font-bold bg-blue-50 dark:bg-blue-950/80 px-2.5 py-1 rounded-full border border-blue-100 dark:border-blue-900">
+              Chính Hãng • Có Sẵn Tại Đà Nẵng
+            </span>
           </div>
-          <p className="text-xs sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-normal whitespace-pre-line pt-1">
-            {product.shortDesc}
-          </p>
+
+          <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal pt-1">
+            {(() => {
+              const lines = product.shortDesc.split("\n");
+              const elements: React.ReactNode[] = [];
+              let currentList: string[] = [];
+
+              const flushList = (key: string) => {
+                if (currentList.length > 0) {
+                  elements.push(
+                    <ul key={key} className="space-y-2 my-3 pl-2 list-none text-slate-700 dark:text-slate-300 text-xs sm:text-sm">
+                      {currentList.map((item, idx) => (
+                        <li key={idx} className="flex items-start gap-2 leading-relaxed">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  );
+                  currentList = [];
+                }
+              };
+
+              lines.forEach((line, i) => {
+                const trimmed = line.trim();
+                if (!trimmed) {
+                  flushList(`list-${i}`);
+                  return;
+                }
+
+                if (trimmed.startsWith("### ") || trimmed.startsWith("## ")) {
+                  flushList(`list-${i}`);
+                  const text = trimmed.replace(/^#+\s*/, "");
+                  elements.push(
+                    <h3 key={`h3-${i}`} className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white mt-5 mb-2.5 flex items-center gap-2 border-l-4 border-[#075FA8] pl-2.5">
+                      {text}
+                    </h3>
+                  );
+                } else if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
+                  currentList.push(trimmed.replace(/^[-*]\s*/, ""));
+                } else if (trimmed.includes(":") && !trimmed.startsWith("http") && !trimmed.startsWith("Note")) {
+                  flushList(`list-${i}`);
+                  const [key, ...valParts] = trimmed.split(":");
+                  const val = valParts.join(":").trim();
+                  elements.push(
+                    <div key={`kv-${i}`} className="grid grid-cols-1 sm:grid-cols-3 gap-1 py-2 border-b border-slate-200/70 dark:border-slate-800 text-xs sm:text-sm">
+                      <span className="font-bold text-slate-900 dark:text-slate-200">{key.replace(/^[#-]\s*/, "").trim()}</span>
+                      <span className="sm:col-span-2 text-slate-700 dark:text-slate-300">{val}</span>
+                    </div>
+                  );
+                } else {
+                  flushList(`list-${i}`);
+                  elements.push(
+                    <p key={`p-${i}`} className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed my-2">
+                      {trimmed}
+                    </p>
+                  );
+                }
+              });
+
+              flushList("list-end");
+              return elements;
+            })()}
+          </div>
+
+          {/* Da Nang Local Commitment Box */}
+          <div className="mt-6 p-4 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="space-y-0.5">
+              <h4 className="text-xs sm:text-sm font-extrabold text-[#075FA8] dark:text-blue-300 uppercase tracking-wide">
+                Giao Hàng Tận Nơi Tại Đà Nẵng &amp; Các Tỉnh Lân Cận
+              </h4>
+              <p className="text-xs text-slate-600 dark:text-slate-300">
+                Hỗ trợ giao siêu tốc trong 30-60 phút tại Đà Nẵng và gửi chành xe đi Quảng Nam, Huế, Quảng Ngãi...
+              </p>
+            </div>
+            <a
+              href={`tel:${company.hotlineRaw}`}
+              className="inline-flex items-center gap-1.5 bg-[#075FA8] text-white px-4 py-2 rounded-lg text-xs font-bold shrink-0 hover:bg-[#0B1F33] transition-colors"
+            >
+              <Phone className="w-3.5 h-3.5 fill-current" />
+              <span>Gọi Báo Giá Sỉ: {company.hotline}</span>
+            </a>
+          </div>
         </div>
       )}
     </div>

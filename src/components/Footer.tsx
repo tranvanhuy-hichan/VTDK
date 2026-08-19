@@ -140,6 +140,28 @@ export const Footer: React.FC<FooterProps> = ({ company }) => {
 
         </div>
 
+        {/* Commercial Keyword SEO Links Row */}
+        <div className="py-4 my-2 border-t border-b border-slate-800/80 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-left">
+          <Link href="/vat-tu-dien-lanh-da-nang" className="text-xs text-slate-300 hover:text-white transition-colors">
+            • Vật Tư Điện Lạnh Đà Nẵng
+          </Link>
+          <Link href="/ong-dong-may-lanh-da-nang" className="text-xs text-slate-300 hover:text-white transition-colors">
+            • Ống Đồng Máy Lạnh Đà Nẵng
+          </Link>
+          <Link href="/gas-lanh-da-nang" className="text-xs text-slate-300 hover:text-white transition-colors">
+            • Gas Lạnh Đà Nẵng (R32/R410A)
+          </Link>
+          <Link href="/linh-kien-dieu-hoa-da-nang" className="text-xs text-slate-300 hover:text-white transition-colors">
+            • Linh Kiện Điều Hòa Đà Nẵng
+          </Link>
+          <Link href="/linh-kien-tu-lanh-da-nang" className="text-xs text-slate-300 hover:text-white transition-colors">
+            • Linh Kiện Tủ Lạnh Đà Nẵng
+          </Link>
+          <Link href="/linh-kien-may-giat-da-nang" className="text-xs text-slate-300 hover:text-white transition-colors">
+            • Linh Kiện Máy Giặt Đà Nẵng
+          </Link>
+        </div>
+
         {/* Footer Bottom Bar */}
         <div className="pt-3 sm:pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-4 text-xs text-slate-400 text-center sm:text-left">
           {/* Copyright Text */}

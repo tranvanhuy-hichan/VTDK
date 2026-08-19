@@ -9,10 +9,15 @@ datasource db {
 }
 
 model Category {
-  id        String    @id @default(uuid())
-  name      String
-  slug      String    @unique
-  products  Product[]
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  seoH1       String?
+  seoTitle    String?
+  seoDesc     String?
+  seoContent  String?
+  features    String[]  @default([])
+  products    Product[]
 }
 
 model Product {

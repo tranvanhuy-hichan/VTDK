@@ -1,0 +1,200 @@
+import React from "react";
+import Link from "next/link";
+import { Phone, MessageSquare, ShieldCheck, MapPin, CheckCircle2, Truck, ChevronRight, HelpCircle } from "lucide-react";
+import type { CompanyContact } from "@/lib/company";
+import { ProductCard } from "@/components/ProductCard";
+
+export interface SeoLandingConfig {
+  slug: string;
+  title: string;
+  h1: string;
+  subtitle: string;
+  description: string;
+  categoryFilterSlugs?: string[];
+  features: string[];
+  richContent: {
+    heading: string;
+    body: string;
+  }[];
+  faqs: {
+    q: string;
+    a: string;
+  }[];
+}
+
+interface SeoLandingPageProps {
+  config: SeoLandingConfig;
+  company: CompanyContact;
+  products: any[];
+}
+
+export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({
+  config,
+  company,
+  products,
+}) => {
+  return (
+    <div className="bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 pb-12">
+      {/* Top Breadcrumb Navigation */}
+      <div className="bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 py-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex items-center text-xs font-semibold text-slate-500 dark:text-slate-400 gap-1.5 overflow-x-auto">
+            <Link href="/" className="hover:text-[#075FA8] dark:hover:text-blue-400 whitespace-nowrap">
+              Trang chủ
+            </Link>
+            <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+            <Link href="/san-pham" className="hover:text-[#075FA8] dark:hover:text-blue-400 whitespace-nowrap">
+              Vật tư &amp; Linh kiện
+            </Link>
+            <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+            <span className="text-slate-900 dark:text-white font-bold whitespace-nowrap">
+              {config.h1}
+            </span>
+          </nav>
+        </div>
+      </div>
+
+      {/* Hero Header Section */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-blue-900 via-[#075FA8] to-[#0B1F33] text-white pt-8 pb-10 sm:pt-12 sm:pb-14">
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-96 h-96 rounded-full bg-blue-400/10 blur-3xl pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-left">
+          
+          <div className="inline-flex items-center gap-1.5 bg-orange-500/20 border border-orange-400/40 text-orange-200 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider mb-3">
+            <MapPin className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+            <span>Kho Hàng Đông Kha • 400 Phạm Hùng, Đà Nẵng</span>
+          </div>
+
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight mb-3 text-white max-w-4xl">
+            {config.h1}
+          </h1>
+
+          <p className="text-sm sm:text-lg text-blue-100 max-w-3xl leading-relaxed mb-6 font-normal">
+            {config.subtitle}
+          </p>
+
+          {/* Quick Feature Badges */}
+          <div className="flex flex-wrap gap-2.5 sm:gap-4 mb-7">
+            {config.features.map((feat, idx) => (
+              <div key={idx} className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/15 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold text-white">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{feat}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Contact Action Buttons */}
+          <div className="flex flex-wrap items-center gap-3">
+            <a
+              href={`tel:${company.hotlineRaw}`}
+              className="inline-flex items-center gap-2 bg-[#F47A20] hover:bg-orange-600 text-white text-sm sm:text-base font-black px-6 py-3 rounded-2xl shadow-lg transition-all active:scale-98"
+            >
+              <Phone className="w-4 h-4 fill-current shrink-0" />
+              <span>Báo Giá Sỉ: {company.hotline}</span>
+            </a>
+            <a
+              href={company.zaloUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-white/95 hover:bg-white text-[#075FA8] text-sm sm:text-base font-black px-6 py-3 rounded-2xl shadow-md transition-all active:scale-98"
+            >
+              <MessageSquare className="w-4 h-4 shrink-0" />
+              <span>Nhắn Zalo Ngay</span>
+            </a>
+          </div>
+
+        </div>
+      </section>
+
+      {/* Main Content Area */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-10">
+
+        {/* Product Grid Catalog */}
+        <div>
+          <div className="flex items-center justify-between mb-4 border-b border-slate-200 dark:border-slate-800 pb-3">
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+              Danh Mục Sản Phẩm Có Sẵn Tại Kho ({products.length})
+            </h2>
+            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-900">
+              Cập nhật mới nhất 2026
+            </span>
+          </div>
+
+          {products.length > 0 ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
+              {products.map((prod) => (
+                <ProductCard key={prod.id} product={prod} company={company} />
+              ))}
+            </div>
+          ) : (
+            <div className="p-8 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+              <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+                Vui lòng liên hệ trực tiếp Hotline {company.hotline} để kiểm tra tồn kho mới nhất.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Rich SEO Article Section */}
+        <section className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-5 sm:p-8 lg:p-10 shadow-sm space-y-6 text-left">
+          {config.richContent.map((sec, idx) => (
+            <div key={idx} className="space-y-3">
+              <h2 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight border-l-4 border-[#075FA8] pl-3">
+                {sec.heading}
+              </h2>
+              <div className="text-xs sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-normal whitespace-pre-line">
+                {sec.body}
+              </div>
+            </div>
+          ))}
+
+          {/* Local Service Guarantee Box */}
+          <div className="mt-8 p-5 rounded-2xl bg-gradient-to-r from-blue-50 to-orange-50 dark:from-slate-800 dark:to-slate-800/80 border border-blue-100 dark:border-slate-700 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-[#075FA8] dark:text-amber-400 font-extrabold text-sm sm:text-base">
+                <Truck className="w-5 h-5 shrink-0" />
+                <span>Giao Vật Tư Siêu Tốc Tại Tất Cả Các Quận Đà Nẵng</span>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                Nhận giao hàng trong 30-60 phút tại Cẩm Lệ, Hải Châu, Thanh Khê, Sơn Trà, Ngũ Hành Sơn, Liên Chiểu và gửi chành xe đi Quảng Nam, Huế.
+              </p>
+            </div>
+            <a
+              href={`tel:${company.hotlineRaw}`}
+              className="inline-flex items-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition-colors"
+            >
+              <Phone className="w-4 h-4 fill-current" />
+              <span>Gọi Ngay: {company.hotline}</span>
+            </a>
+          </div>
+        </section>
+
+        {/* FAQs Section */}
+        {config.faqs.length > 0 && (
+          <section className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-5 sm:p-8 shadow-sm space-y-4 text-left">
+            <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-3">
+              <HelpCircle className="w-5 h-5 text-[#075FA8] dark:text-blue-400 shrink-0" />
+              <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
+                Câu Hỏi Thường Gặp (FAQ)
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              {config.faqs.map((faq, idx) => (
+                <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 space-y-1.5">
+                  <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white flex items-start gap-2">
+                    <span className="text-[#075FA8] dark:text-blue-400 font-black">Q:</span>
+                    <span>{faq.q}</span>
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed pl-5">
+                    {faq.a}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+      </div>
+    </div>
+  );
+};
