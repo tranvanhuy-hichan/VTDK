@@ -8,13 +8,16 @@ import { ArrowLeft, ChevronRight, Home } from "lucide-react";
 interface ProductDetailHeaderProps {
   productName: string;
   categoryName?: string;
+  categorySlug?: string;
 }
 
 export const ProductDetailHeader: React.FC<ProductDetailHeaderProps> = ({
   productName,
   categoryName,
+  categorySlug,
 }) => {
   const router = useRouter();
+  const catHref = categorySlug ? `/${categorySlug}` : "/san-pham";
 
   return (
     <div className="flex items-center gap-2 text-xs sm:text-sm font-medium whitespace-nowrap overflow-x-auto no-scrollbar py-0.5 my-0 leading-none max-w-full">
@@ -31,7 +34,7 @@ export const ProductDetailHeader: React.FC<ProductDetailHeaderProps> = ({
 
       <span className="text-slate-300 dark:text-slate-700 font-normal shrink-0">|</span>
 
-      {/* Breadcrumb line: Rút gọn thông minh trên di động */}
+      {/* Breadcrumb line: Trang chủ > [Category Landing Page] > [Product Name] */}
       <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 leading-none shrink-0 min-w-0">
         <Link
           href="/"
@@ -41,21 +44,15 @@ export const ProductDetailHeader: React.FC<ProductDetailHeaderProps> = ({
           <span>Trang chủ</span>
         </Link>
 
-        <ChevronRight className="hidden sm:inline-block w-3.5 h-3.5 text-slate-400 shrink-0" />
-
-        <Link
-          href="/san-pham"
-          className="hidden sm:inline-flex items-center text-slate-500 dark:text-slate-400 hover:text-[#075FA8] dark:hover:text-blue-400 transition-colors"
-        >
-          <span>Sản phẩm</span>
-        </Link>
-
         {categoryName && (
           <>
             <ChevronRight className="hidden sm:inline-block w-3.5 h-3.5 text-slate-400 shrink-0" />
-            <span className="inline-flex items-center text-slate-600 dark:text-slate-400 font-medium shrink-0">
-              {categoryName}
-            </span>
+            <Link
+              href={catHref}
+              className="inline-flex items-center text-slate-600 dark:text-slate-400 hover:text-[#075FA8] dark:hover:text-blue-400 font-medium transition-colors shrink-0"
+            >
+              <span>{categoryName}</span>
+            </Link>
           </>
         )}
 

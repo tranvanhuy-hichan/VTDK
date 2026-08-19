@@ -56,7 +56,7 @@ export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({
 
           <span className="text-slate-300 dark:text-slate-700 font-normal shrink-0">|</span>
 
-          {/* Breadcrumb line: Hidden items on mobile to match Product Detail Page */}
+          {/* Breadcrumb line: Trang chủ > [Category Landing Page] */}
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 leading-none shrink-0 min-w-0">
             <Link
               href="/"
@@ -64,15 +64,6 @@ export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({
             >
               <Home className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <span>Trang chủ</span>
-            </Link>
-
-            <ChevronRight className="hidden sm:inline-block w-3.5 h-3.5 text-slate-400 shrink-0" />
-
-            <Link
-              href="/san-pham"
-              className="hidden sm:inline-flex items-center text-slate-500 dark:text-slate-400 hover:text-[#075FA8] dark:hover:text-blue-400 transition-colors"
-            >
-              <span>Vật tư &amp; Linh kiện</span>
             </Link>
 
             <ChevronRight className="hidden sm:inline-block w-3.5 h-3.5 text-slate-400 shrink-0" />

@@ -119,6 +119,7 @@ export default async function ProductDetailPage({ params }: ProductPageParams) {
         <ProductDetailHeader
           productName={product.name}
           categoryName={product.category.name}
+          categorySlug={product.category.slug}
         />
 
         {/* Main Product Showcase Card */}
