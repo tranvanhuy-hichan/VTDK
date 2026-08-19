@@ -3,8 +3,8 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 export const size = {
-  width: 64,
-  height: 64,
+  width: 96,
+  height: 96,
 };
 
 export const contentType = "image/png";
@@ -20,12 +20,15 @@ export default async function Icon() {
           width: "100%",
           height: "100%",
           display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#FFFFFF",
           borderRadius: "18%",
           overflow: "hidden",
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={logoSrc} width="64" height="64" alt="" />
+        <img src={logoSrc} width="96" height="96" alt="Favicon" />
       </div>
     ),
     size,
