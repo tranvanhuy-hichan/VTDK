@@ -35,71 +35,72 @@ export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({
 }) => {
   return (
     <div className="bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 pb-12">
-      {/* Top Breadcrumb Navigation */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 py-3">
+      {/* Top Breadcrumb Navigation - Strictly Single Line */}
+      <div className="bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 py-2.5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex items-center text-xs font-semibold text-slate-500 dark:text-slate-400 gap-1.5 overflow-x-auto">
-            <Link href="/" className="hover:text-[#075FA8] dark:hover:text-blue-400 whitespace-nowrap">
+          <nav className="flex items-center flex-nowrap text-xs font-semibold text-slate-500 dark:text-slate-400 gap-1.5 overflow-x-auto whitespace-nowrap">
+            <Link href="/" className="hover:text-[#075FA8] dark:hover:text-blue-400 shrink-0">
               Trang chủ
             </Link>
             <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-400" />
-            <Link href="/san-pham" className="hover:text-[#075FA8] dark:hover:text-blue-400 whitespace-nowrap">
+            <Link href="/san-pham" className="hover:text-[#075FA8] dark:hover:text-blue-400 shrink-0">
               Vật tư &amp; Linh kiện
             </Link>
             <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-400" />
-            <span className="text-slate-900 dark:text-white font-bold whitespace-nowrap">
-              {config.h1}
+            <span className="text-slate-900 dark:text-white font-bold shrink-0">
+              {config.title}
             </span>
           </nav>
         </div>
       </div>
 
-      {/* Hero Header Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-blue-900 via-[#075FA8] to-[#0B1F33] text-white pt-8 pb-10 sm:pt-12 sm:pb-14">
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-96 h-96 rounded-full bg-blue-400/10 blur-3xl pointer-events-none" />
+      {/* Hero Header Section - Compact Height */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-blue-900 via-[#075FA8] to-[#0B1F33] text-white py-4 sm:py-6">
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 rounded-full bg-blue-400/10 blur-3xl pointer-events-none" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-left">
           
-          <div className="inline-flex items-center gap-1.5 bg-orange-500/20 border border-orange-400/40 text-orange-200 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider mb-3">
-            <MapPin className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+          <div className="inline-flex items-center gap-1.5 bg-orange-500/20 border border-orange-400/40 text-orange-200 text-[10px] sm:text-xs font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-2">
+            <MapPin className="w-3 h-3 text-orange-400 shrink-0" />
             <span>Kho Hàng Đông Kha • 400 Phạm Hùng, Đà Nẵng</span>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight mb-3 text-white max-w-4xl">
+          <h1 className="text-xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight mb-2 text-white max-w-4xl">
             {config.h1}
           </h1>
 
-          <p className="text-sm sm:text-lg text-blue-100 max-w-3xl leading-relaxed mb-6 font-normal">
+          <p className="text-xs sm:text-sm text-blue-100 max-w-3xl leading-relaxed mb-3 font-normal">
             {config.subtitle}
           </p>
 
-          {/* Quick Feature Badges */}
-          <div className="flex flex-wrap gap-2.5 sm:gap-4 mb-7">
-            {config.features.map((feat, idx) => (
-              <div key={idx} className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/15 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold text-white">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>{feat}</span>
-              </div>
-            ))}
-          </div>
+          {/* Quick Feature Badges & Action Buttons in a Single Responsive Row */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
+              {config.features.map((feat, idx) => (
+                <div key={idx} className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/15 px-2.5 py-1 rounded-lg text-xs font-bold text-white">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>{feat}</span>
+                </div>
+              ))}
+            </div>
 
-          {/* Contact Action Buttons */}
-          <div className="flex flex-wrap items-center gap-3">
-            <a
-              href={`tel:${company.hotlineRaw}`}
-              className="inline-flex items-center gap-2 bg-[#F47A20] hover:bg-orange-600 text-white text-sm sm:text-base font-black px-6 py-3 rounded-2xl shadow-lg transition-all active:scale-98"
-            >
-              <Phone className="w-4 h-4 fill-current shrink-0" />
-              <span>Báo Giá Sỉ: {company.hotline}</span>
-            </a>
-            <a
-              href={company.zaloUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-white/95 hover:bg-white text-[#075FA8] text-sm sm:text-base font-black px-6 py-3 rounded-2xl shadow-md transition-all active:scale-98"
-            >
-              <MessageSquare className="w-4 h-4 shrink-0" />
-              <span>Nhắn Zalo Ngay</span>
-            </a>
+            <div className="flex items-center gap-2 shrink-0">
+              <a
+                href={`tel:${company.hotlineRaw}`}
+                className="inline-flex items-center gap-1.5 bg-[#F47A20] hover:bg-orange-600 text-white text-xs sm:text-sm font-black px-4 py-2 rounded-xl shadow-md transition-all active:scale-98"
+              >
+                <Phone className="w-3.5 h-3.5 fill-current shrink-0" />
+                <span>Báo Giá Sỉ: {company.hotline}</span>
+              </a>
+              <a
+                href={company.zaloUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 bg-white/95 hover:bg-white text-[#075FA8] text-xs sm:text-sm font-black px-4 py-2 rounded-xl shadow-xs transition-all active:scale-98"
+              >
+                <MessageSquare className="w-3.5 h-3.5 shrink-0" />
+                <span>Nhắn Zalo</span>
+              </a>
+            </div>
           </div>
 
         </div>

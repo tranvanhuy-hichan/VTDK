@@ -5,11 +5,18 @@ import Link from "next/link";
 import { Phone, MapPin, MessageSquare, Globe, ArrowUp, Lock } from "lucide-react";
 import type { CompanyContact } from "../lib/company";
 
-interface FooterProps {
-  company: CompanyContact;
+export interface CategoryLink {
+  id: string;
+  name: string;
+  slug: string;
 }
 
-export const Footer: React.FC<FooterProps> = ({ company }) => {
+interface FooterProps {
+  company: CompanyContact;
+  categories?: CategoryLink[];
+}
+
+export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -140,26 +147,24 @@ export const Footer: React.FC<FooterProps> = ({ company }) => {
 
         </div>
 
-        {/* Commercial Keyword SEO Links Row */}
-        <div className="py-4 my-2 border-t border-b border-slate-800/80 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-left">
-          <Link href="/vat-tu-dien-lanh-da-nang" className="text-xs text-slate-300 hover:text-white transition-colors">
+        {/* Dynamic Category SEO Links Row */}
+        <div className="py-4 my-2 border-t border-b border-slate-800/80 flex flex-wrap items-center gap-x-4 gap-y-2 text-left">
+          <Link href="/vat-tu-dien-lanh-da-nang" className="text-xs text-slate-300 hover:text-white transition-colors font-medium">
             • Vật Tư Điện Lạnh Đà Nẵng
           </Link>
-          <Link href="/ong-dong-may-lanh-da-nang" className="text-xs text-slate-300 hover:text-white transition-colors">
-            • Ống Đồng Máy Lạnh Đà Nẵng
-          </Link>
-          <Link href="/gas-lanh-da-nang" className="text-xs text-slate-300 hover:text-white transition-colors">
-            • Gas Lạnh Đà Nẵng (R32/R410A)
-          </Link>
-          <Link href="/linh-kien-dieu-hoa-da-nang" className="text-xs text-slate-300 hover:text-white transition-colors">
-            • Linh Kiện Điều Hòa Đà Nẵng
-          </Link>
-          <Link href="/linh-kien-tu-lanh-da-nang" className="text-xs text-slate-300 hover:text-white transition-colors">
-            • Linh Kiện Tủ Lạnh Đà Nẵng
-          </Link>
-          <Link href="/linh-kien-may-giat-da-nang" className="text-xs text-slate-300 hover:text-white transition-colors">
-            • Linh Kiện Máy Giặt Đà Nẵng
-          </Link>
+          {categories.map((cat) => {
+            const seoSlug = cat.slug.endsWith("-da-nang") ? cat.slug : `${cat.slug}-da-nang`;
+            const displayName = cat.name.includes("Đà Nẵng") ? cat.name : `${cat.name} Đà Nẵng`;
+            return (
+              <Link
+                key={cat.id}
+                href={`/${seoSlug}`}
+                className="text-xs text-slate-300 hover:text-white transition-colors font-medium"
+              >
+                • {displayName}
+              </Link>
+            );
+          })}
         </div>
 
         {/* Footer Bottom Bar */}
