@@ -151,7 +151,7 @@ export default async function DynamicCategorySEOPage({ params }: DynamicCategory
       richContent: [
         {
           heading: "Đại Lý Vật Tư & Linh Kiện Điện Lạnh Uy Tín Hàng Đầu Tại Đà Nẵng",
-          body: `Công ty TNHH Vật Tư Đông Kha tự hào là trung tâm phân phối sỉ & lẻ vật tư, linh kiện điện lạnh hàng đầu tại khu vực Đà Nẵng và miền Trung. Với địa điểm kho nằm tại mặt tiền số 400 Phạm Hùng (Hòa Xuân, Cẩm Lệ), chúng tôi chuyên cung cấp phụ tùng linh kiện thay thế cho thợ sửa chữa, đại lý và tổ đội thi công công trình.`,
+          body: `Công ty TNHH Vật Tư Đông Kha tự hào là trung tâm phân phối sỉ & lẻ vật tư, linh kiện điện lạnh hàng đầu tại khu vực Đà Nẵng và miền Trung. Với địa điểm kho nằm tại mặt tiền số 400 Phạm Hùng (Hòa Xuân, Đà Nẵng), chúng tôi chuyên cung cấp phụ tùng linh kiện thay thế cho thợ sửa chữa, đại lý và tổ đội thi công công trình.`,
         },
         {
           heading: "Danh Mục Phụ Tùng Linh Kiện Chủ Lực Tại Kho Đông Kha",
@@ -164,7 +164,7 @@ export default async function DynamicCategorySEOPage({ params }: DynamicCategory
       faqs: [
         {
           q: "Cửa hàng có cho xem & thử linh kiện trực tiếp không?",
-          a: "Có! Bạn có thể ghé trực tiếp kho cửa hàng Đông Kha tại 400 Phạm Hùng, Cẩm Lệ, Đà Nẵng để kiểm tra, đối chiếu mã zin và thử bo mạch.",
+          a: "Có! Bạn có thể ghé trực tiếp kho cửa hàng Đông Kha tại 400 Phạm Hùng, Hòa Xuân, Đà Nẵng để kiểm tra, đối chiếu mã zin và thử bo mạch.",
         },
         {
           q: "Thợ sửa chữa mua linh kiện nhiều có được giá sỉ không?",
@@ -205,13 +205,13 @@ export default async function DynamicCategorySEOPage({ params }: DynamicCategory
     richContent: [
       {
         heading: `Địa Chỉ Kho Phụ Tùng Linh Kiện ${cat.name} Uy Tín Tại Đà Nẵng`,
-        body: cat.seoContent || `Cửa hàng Vật Tư Điện Lạnh Đông Kha tại số 400 Phạm Hùng (Cẩm Lệ, Đà Nẵng) chuyên cung cấp sỉ & lẻ phụ tùng linh kiện ${cat.name.toLowerCase()} chuẩn chất lượng nhà máy, đáp ứng nhu cầu sửa chữa và thay thế của thợ kỹ thuật.`,
+        body: cat.seoContent || `Cửa hàng Vật Tư Điện Lạnh Đông Kha tại số 400 Phạm Hùng (Hòa Xuân, Đà Nẵng) chuyên cung cấp sỉ & lẻ phụ tùng linh kiện ${cat.name.toLowerCase()} chuẩn chất lượng nhà máy, đáp ứng nhu cầu sửa chữa và thay thế của thợ kỹ thuật.`,
       },
     ],
     faqs: [
       {
         q: `Địa chỉ mua linh kiện ${cat.name} ở đâu tại Đà Nẵng?`,
-        a: `Bạn có thể ghé trực tiếp kho cửa hàng Đông Kha tại 400 Phạm Hùng, Cẩm Lệ, Đà Nẵng hoặc liên hệ Hotline/Zalo ${company.hotline} để được tư vấn báo giá.`,
+        a: `Bạn có thể ghé trực tiếp kho cửa hàng Đông Kha tại 400 Phạm Hùng, Hòa Xuân, Đà Nẵng hoặc liên hệ Hotline/Zalo ${company.hotline} để được tư vấn báo giá.`,
       },
       {
         q: `Anh em thợ mua linh kiện ${cat.name} có được chiết khấu giá sỉ không?`,

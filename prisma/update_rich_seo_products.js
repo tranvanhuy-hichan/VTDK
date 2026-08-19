@@ -35,7 +35,7 @@ Gas R410A (Chemours Dupont / Honeywell / Taikang) là loại môi chất lạnh 
 - Cung cấp giải pháp nạp gas cho nhà ở, văn phòng, khách sạn, nhà hàng tại Đà Nẵng và các tỉnh miền Trung.
 
 ### Kho Hàng &amp; Bán Sỉ Tại Đà Nẵng
-- Cửa hàng Vật Tư Điện Lạnh Đông Kha tại 400 Phạm Hùng, Cẩm Lệ, Đà Nẵng luôn sẵn kho số lượng lớn.
+- Cửa hàng Vật Tư Điện Lạnh Đông Kha tại 400 Phạm Hùng, Hòa Xuân, Đà Nẵng luôn sẵn kho số lượng lớn.
 - Khách hàng &amp; thợ kỹ thuật có thể ghé xem sản phẩm, thử thiết bị trực tiếp tại kho.
 - Giá sỉ cực tốt cho thợ và đại lý mua số lượng nhiều.`,
     },
