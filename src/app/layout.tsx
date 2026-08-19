@@ -22,8 +22,8 @@ const inter = Inter({
 export async function generateMetadata(): Promise<Metadata> {
   const company = await getCompanyInfo();
 
-  const title = `${company.name} | Hotline: ${company.hotline}`;
-  const description = `Nhà Phân Phối Vật Tư Điện Lạnh Chính Hãng Đà Nẵng - Chuyên sỉ & lẻ ống đồng, gas lạnh R32/R410A, linh kiện điều hòa, tủ lạnh, máy giặt tại ${company.address}. Hotline: ${company.hotline}.`;
+  const title = "Vật Tư Điện Lạnh Đông Kha Đà Nẵng | Sỉ & Lẻ Chính Hãng Giá Tốt";
+  const description = `Công ty TNHH Vật Tư Đông Kha - Chuyên phân phối sỉ & lẻ ống đồng, gas lạnh R32/R410A, linh kiện điều hòa, tủ lạnh, máy giặt uy tín tại Đà Nẵng. Hàng sẵn kho, chuẩn kỹ thuật. Hotline: ${company.hotline}.`;
   
   const rawImage = company.image || "/images/storefront.png";
   const shareImage = rawImage.startsWith("http")
@@ -130,51 +130,65 @@ export default async function RootLayout({
 
   const schemaData = {
     "@context": "https://schema.org",
-    "@type": ["HVACBusiness", "Store", "LocalBusiness"],
-    name: company.name,
-    description: `Chuyên sỉ & lẻ vật tư điện lạnh, ống đồng, gas lạnh, linh kiện điều hòa, tủ lạnh, máy giặt uy tín tại Đà Nẵng.`,
-    image: company.image || "/images/storefront.png",
-    logo: `${SITE_URL}/images/logo.png`,
-    "@id": SITE_URL,
-    url: SITE_URL,
-    telephone: company.hotlineRaw,
-    priceRange: "$$",
-    currenciesAccepted: "VND",
-    paymentAccepted: "Cash, Bank Transfer",
-    areaServed: {
-      "@type": "AdministrativeArea",
-      name: "Đà Nẵng",
-    },
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: company.address,
-      addressLocality: "TP Đà Nẵng",
-      addressRegion: "Đà Nẵng",
-      postalCode: "550000",
-      addressCountry: "VN",
-    },
-    geo: {
-      "@type": "GeoCoordinates",
-      latitude: 16.024567,
-      longitude: 108.204561,
-    },
-    openingHoursSpecification: {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday",
-      ],
-      opens: "07:00",
-      closes: "18:30",
-    },
-    sameAs: [
-      company.zaloUrl,
-      company.facebookUrl,
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        url: SITE_URL,
+        name: company.name,
+        alternateName: ["Vật Tư Đông Kha", "Đông Kha", "Vật Tư Điện Lạnh Đông Kha"],
+        publisher: {
+          "@id": `${SITE_URL}/#organization`,
+        },
+      },
+      {
+        "@type": ["HVACBusiness", "Store", "LocalBusiness"],
+        "@id": `${SITE_URL}/#organization`,
+        name: company.name,
+        description: `Chuyên sỉ & lẻ vật tư điện lạnh, ống đồng, gas lạnh, linh kiện điều hòa, tủ lạnh, máy giặt uy tín tại Đà Nẵng.`,
+        image: company.image || "/images/storefront.png",
+        logo: `${SITE_URL}/images/logo.png`,
+        url: SITE_URL,
+        telephone: company.hotlineRaw,
+        priceRange: "$$",
+        currenciesAccepted: "VND",
+        paymentAccepted: "Cash, Bank Transfer",
+        areaServed: {
+          "@type": "AdministrativeArea",
+          name: "Đà Nẵng",
+        },
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: company.address,
+          addressLocality: "TP Đà Nẵng",
+          addressRegion: "Đà Nẵng",
+          postalCode: "550000",
+          addressCountry: "VN",
+        },
+        geo: {
+          "@type": "GeoCoordinates",
+          latitude: 16.024567,
+          longitude: 108.204561,
+        },
+        openingHoursSpecification: {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+          ],
+          opens: "07:00",
+          closes: "18:30",
+        },
+        sameAs: [
+          company.zaloUrl,
+          company.facebookUrl,
+        ],
+      },
     ],
   };
 
