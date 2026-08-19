@@ -2,12 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   Search,
   X,
   Phone,
-  MessageSquare,
   ChevronRight,
   ChevronDown,
   Sparkles,
@@ -17,7 +15,6 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import type { CompanyContact } from "../lib/company";
-import { ImageCarousel } from "./ImageCarousel";
 import { BTUCalculatorModal } from "./BTUCalculatorModal";
 
 interface Category {

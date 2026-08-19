@@ -50,7 +50,19 @@ export async function generateMetadata(): Promise<Metadata> {
       "linh kiện máy giặt Đà Nẵng",
       "cửa hàng vật tư điện lạnh Đà Nẵng",
       "Đông Kha",
+      "đại lý vật tư điện lạnh",
     ],
+
+    authors: [{ name: company.name, url: SITE_URL }],
+    creator: company.name,
+    publisher: company.name,
+    category: "Vật tư điện lạnh",
+
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
 
     alternates: {
       canonical: "/",
@@ -59,7 +71,21 @@ export async function generateMetadata(): Promise<Metadata> {
     robots: {
       index: true,
       follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
+
+    icons: {
+      icon: [{ url: "/icon", sizes: "64x64", type: "image/png" }],
+      apple: [{ url: "/apple-icon", sizes: "180x180", type: "image/png" }],
+    },
+
+    manifest: "/manifest.webmanifest",
 
     openGraph: {
       title,
@@ -100,14 +126,21 @@ export default async function RootLayout({
 
   const schemaData = {
     "@context": "https://schema.org",
-    "@type": "HVACBusiness",
+    "@type": ["HVACBusiness", "Store", "LocalBusiness"],
     name: company.name,
+    description: `Chuyên sỉ & lẻ vật tư điện lạnh, ống đồng, gas lạnh, linh kiện điều hòa, tủ lạnh, máy giặt uy tín tại Đà Nẵng.`,
     image: company.image || "/images/storefront.png",
-    logo: "/images/logo.png",
+    logo: `${SITE_URL}/images/logo.png`,
     "@id": SITE_URL,
     url: SITE_URL,
     telephone: company.hotlineRaw,
     priceRange: "$$",
+    currenciesAccepted: "VND",
+    paymentAccepted: "Cash, Bank Transfer",
+    areaServed: {
+      "@type": "AdministrativeArea",
+      name: "Đà Nẵng",
+    },
     address: {
       "@type": "PostalAddress",
       streetAddress: company.address,

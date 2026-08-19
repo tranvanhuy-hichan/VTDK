@@ -1,7 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ChevronRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCompanyInfo } from "@/lib/company";
 import { ProductDetailView } from "@/components/ProductDetailView";
@@ -28,21 +27,44 @@ export async function generateMetadata({ params }: ProductPageParams): Promise<M
     return {};
   }
 
+  const company = await getCompanyInfo();
   const description =
-    product.shortDesc ?? `Xem thông tin và giá ${product.name} tại Vật Tư Điện Lạnh Đông Kha.`;
+    product.shortDesc ?? `Xem thông tin chi tiết và giá sỉ & lẻ ${product.name} tại Vật Tư Điện Lạnh ${company.name} (${company.address}). Hotline: ${company.hotline}.`;
 
   return {
-    title: product.name,
+    title: `${product.name} | Giá Sỉ & Lẻ`,
     description,
+    keywords: [
+      product.name,
+      `${product.name} Đà Nẵng`,
+      product.category.name,
+      `giá ${product.name}`,
+      "vật tư điện lạnh Đà Nẵng",
+    ],
     alternates: {
       canonical: `/san-pham/${product.slug}`,
     },
     openGraph: {
-      title: product.name,
+      title: `${product.name} - ${company.name}`,
       description,
       url: `${SITE_URL}/san-pham/${product.slug}`,
-      images: [product.image],
+      images: [
+        {
+          url: product.image,
+          width: 800,
+          height: 800,
+          alt: product.name,
+        },
+      ],
+      siteName: company.name,
+      locale: "vi_VN",
       type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${product.name} - ${company.name}`,
+      description,
+      images: [product.image],
     },
   };
 }
@@ -68,15 +90,24 @@ export default async function ProductDetailPage({ params }: ProductPageParams) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    description: product.shortDesc ?? undefined,
+    description: product.shortDesc ?? `Sản phẩm ${product.name} chính hãng tại ${company.name}`,
     image: [product.image, ...product.images],
     category: product.category.name,
+    brand: {
+      "@type": "Brand",
+      name: company.name,
+    },
     offers: {
       "@type": "Offer",
       price: product.price > 0 ? product.price : undefined,
       priceCurrency: "VND",
       availability: "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition",
       url: `${SITE_URL}/san-pham/${product.slug}`,
+      seller: {
+        "@type": "Organization",
+        name: company.name,
+      },
     },
   };
 

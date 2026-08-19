@@ -2,11 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { PackageOpen, X, MessageSquare, Search, ChevronDown, Grid, ArrowRight } from "lucide-react";
+import { PackageOpen, X, Search, ChevronDown, Grid, ArrowRight } from "lucide-react";
 import type { CompanyContact } from "../lib/company";
 import { Pagination } from "./Pagination";
-import { ImageCarousel } from "./ImageCarousel";
 import { BTUCalculatorModal } from "./BTUCalculatorModal";
 
 interface Category {
