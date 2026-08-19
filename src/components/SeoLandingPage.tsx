@@ -1,6 +1,9 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import { Phone, MessageSquare, ShieldCheck, MapPin, CheckCircle2, Truck, ChevronRight, HelpCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Phone, MessageSquare, ShieldCheck, MapPin, CheckCircle2, Truck, ChevronRight, HelpCircle, ArrowLeft, Home } from "lucide-react";
 import type { CompanyContact } from "@/lib/company";
 import { ProductCard } from "@/components/ProductCard";
 
@@ -33,24 +36,53 @@ export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({
   company,
   products,
 }) => {
+  const router = useRouter();
+
   return (
     <div className="bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 pb-12">
-      {/* Top Breadcrumb Navigation - Strictly Single Line */}
+      {/* Top Breadcrumb Navigation - Perfectly Aligned & With Back Button */}
       <div className="bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 py-2.5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex items-center flex-nowrap text-xs font-semibold text-slate-500 dark:text-slate-400 gap-1.5 overflow-x-auto whitespace-nowrap">
-            <Link href="/" className="hover:text-[#075FA8] dark:hover:text-blue-400 shrink-0">
-              Trang chủ
-            </Link>
-            <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-400" />
-            <Link href="/san-pham" className="hover:text-[#075FA8] dark:hover:text-blue-400 shrink-0">
-              Vật tư &amp; Linh kiện
-            </Link>
-            <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-400" />
-            <span className="text-slate-900 dark:text-white font-bold shrink-0">
-              {config.title}
-            </span>
-          </nav>
+          <div className="flex items-center gap-2 text-xs font-semibold whitespace-nowrap overflow-x-auto no-scrollbar leading-none">
+            {/* Back button */}
+            <button
+              type="button"
+              onClick={() => router.back()}
+              aria-label="Quay lại trang trước"
+              className="inline-flex items-center gap-1 font-bold text-slate-700 dark:text-slate-200 hover:text-[#075FA8] dark:hover:text-blue-400 transition-colors shrink-0 cursor-pointer !min-h-0"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400 shrink-0" />
+              <span>Quay lại</span>
+            </button>
+
+            <span className="text-slate-300 dark:text-slate-700 font-normal shrink-0">|</span>
+
+            {/* Breadcrumb line */}
+            <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 leading-none shrink-0 min-w-0 text-slate-500 dark:text-slate-400">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-1 hover:text-[#075FA8] dark:hover:text-blue-400 transition-colors shrink-0"
+              >
+                <Home className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span>Trang chủ</span>
+              </Link>
+
+              <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+
+              <Link
+                href="/san-pham"
+                className="inline-flex items-center hover:text-[#075FA8] dark:hover:text-blue-400 transition-colors shrink-0"
+              >
+                <span>Vật tư &amp; Linh kiện</span>
+              </Link>
+
+              <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+
+              <span className="inline-flex items-center font-extrabold text-slate-900 dark:text-white shrink-0">
+                {config.title}
+              </span>
+            </nav>
+          </div>
         </div>
       </div>
 
@@ -148,15 +180,15 @@ export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({
             </div>
           ))}
 
-          {/* Local Service Guarantee Box */}
+          {/* Local Store Guarantee Box */}
           <div className="mt-8 p-5 rounded-2xl bg-gradient-to-r from-blue-50 to-orange-50 dark:from-slate-800 dark:to-slate-800/80 border border-blue-100 dark:border-slate-700 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-[#075FA8] dark:text-amber-400 font-extrabold text-sm sm:text-base">
-                <Truck className="w-5 h-5 shrink-0" />
-                <span>Giao Vật Tư Siêu Tốc Tại Tất Cả Các Quận Đà Nẵng</span>
+                <MapPin className="w-5 h-5 shrink-0" />
+                <span>Xem Hàng Trực Tiếp Tại Kho 400 Phạm Hùng, Đà Nẵng</span>
               </div>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-                Nhận giao hàng trong 30-60 phút tại Cẩm Lệ, Hải Châu, Thanh Khê, Sơn Trà, Ngũ Hành Sơn, Liên Chiểu và gửi chành xe đi Quảng Nam, Huế.
+                Đông Kha luôn sẵn kho số lượng lớn linh kiện &amp; vật tư điện lạnh. Anh em thợ có thể ghé cửa hàng đối chiếu mã zin và nhận báo giá sỉ tốt nhất.
               </p>
             </div>
             <a
@@ -164,7 +196,7 @@ export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({
               className="inline-flex items-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition-colors"
             >
               <Phone className="w-4 h-4 fill-current" />
-              <span>Gọi Ngay: {company.hotline}</span>
+              <span>Gọi Báo Giá Sỉ: {company.hotline}</span>
             </a>
           </div>
         </section>

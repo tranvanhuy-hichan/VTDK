@@ -34,9 +34,9 @@ Gas R410A (Chemours Dupont / Honeywell / Taikang) là loại môi chất lạnh 
 - Thích hợp cho thợ thi công lắp đặt máy lạnh, trung tâm bảo hành điện lạnh, nhà máy công nghiệp.
 - Cung cấp giải pháp nạp gas cho nhà ở, văn phòng, khách sạn, nhà hàng tại Đà Nẵng và các tỉnh miền Trung.
 
-### Giao Hàng &amp; Bán Sỉ Tại Đà Nẵng
+### Kho Hàng &amp; Bán Sỉ Tại Đà Nẵng
 - Cửa hàng Vật Tư Điện Lạnh Đông Kha tại 400 Phạm Hùng, Cẩm Lệ, Đà Nẵng luôn sẵn kho số lượng lớn.
-- Hỗ trợ giao tận công trình/nhà khách trong 30 - 60 phút tại các quận Đà Nẵng.
+- Khách hàng &amp; thợ kỹ thuật có thể ghé xem sản phẩm, thử thiết bị trực tiếp tại kho.
 - Giá sỉ cực tốt cho thợ và đại lý mua số lượng nhiều.`,
     },
     {
@@ -62,8 +62,8 @@ Gas R32 (Chemours Freon / Taikang) là môi chất lạnh đơn chất thế h�
 - Tem màng co niêm phong nắp van nguyên vẹn, mã QR tra cứu nguồn gốc.
 - Đầy đủ giấy chứng nhận xuất xứ CO/CQ cho công trình.
 
-### Ưu Đãi Giao Hàng Đà Nẵng
-- Giao gas tận nhà/công trình trong 30-60 phút tại Hải Châu, Cẩm Lệ, Thanh Khê, Sơn Trà, Ngũ Hành Sơn, Liên Chiểu.
+### Ưu Đãi Bán Sỉ Đà Nẵng
+- Hàng sẵn kho 400 Phạm Hùng, Cẩm Lệ, Đà Nẵng.
 - Báo giá sỉ ưu đãi cho thợ điện lạnh Đà Nẵng &amp; Quảng Nam.`,
     },
     {
@@ -85,9 +85,9 @@ Gas R134a (Tetrafluoroethane) là dòng môi chất lạnh tiêu chuẩn không 
 - Hệ thống điều hòa không khí xe hơi, xe tải lạnh.
 - Máy làm lạnh nước Chiller công nghiệp.
 
-### Giao Hàng &amp; Bán Sỉ Tại Đà Nẵng
+### Kho Hàng &amp; Bán Sỉ Tại Đà Nẵng
 - Đông Kha phân phối sỉ lẻ gas R134a bình lớn và lon nhỏ tiện dụng cho thợ sửa tủ lạnh, máy lạnh ô tô tại Đà Nẵng.
-- Hỗ trợ giao tận nơi nhanh chóng, xuất hóa đơn VAT đầy đủ.`,
+- Hàng sẵn tại kho 400 Phạm Hùng, hỗ trợ xuất hóa đơn VAT đầy đủ.`,
     },
     {
       slug: "bo-mach-dieu-hoa-inverter-da-nang",

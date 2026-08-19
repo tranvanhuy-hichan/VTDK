@@ -103,7 +103,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, c
             </div>
             <span className="inline-flex items-center gap-1 bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-[10px] sm:text-xs font-extrabold px-2.5 py-1 rounded-xl border border-emerald-200 dark:border-emerald-800 shrink-0">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span>Sẵn kho ĐN</span>
+              <span>Hàng Sẵn Kho</span>
             </span>
           </div>
 
@@ -114,8 +114,8 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, c
               <span>Sản phẩm chính hãng, đầy đủ chứng chỉ CO/CQ</span>
             </div>
             <div className="flex items-center gap-2">
-              <Truck className="w-4 h-4 text-amber-500 shrink-0" />
-              <span>Giao nhanh nội thành Đà Nẵng &amp; chành xe toàn miền Trung</span>
+              <CheckCircle2 className="w-4 h-4 text-amber-500 shrink-0" />
+              <span>Giá sỉ ưu đãi thợ kỹ thuật &amp; công ty điện lạnh</span>
             </div>
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-[#075FA8] dark:text-blue-400 shrink-0" />
@@ -224,14 +224,14 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, c
             })()}
           </div>
 
-          {/* Da Nang Local Commitment Box */}
+          {/* Da Nang Store Visit & Consultation Box */}
           <div className="mt-6 p-4 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="space-y-0.5">
               <h4 className="text-xs sm:text-sm font-extrabold text-[#075FA8] dark:text-blue-300 uppercase tracking-wide">
-                Giao Hàng Tận Nơi Tại Đà Nẵng &amp; Các Tỉnh Lân Cận
+                Xem Hàng &amp; Thử Linh Kiện Trực Tiếp Tại Cửa Hàng
               </h4>
               <p className="text-xs text-slate-600 dark:text-slate-300">
-                Hỗ trợ giao siêu tốc trong 30-60 phút tại Đà Nẵng và gửi chành xe đi Quảng Nam, Huế, Quảng Ngãi...
+                Ghé kho 400 Phạm Hùng, Đà Nẵng để kiểm tra, đối chiếu mã linh kiện và nhận tư vấn kỹ thuật trực tiếp.
               </p>
             </div>
             <a

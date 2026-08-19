@@ -64,7 +64,7 @@ export const COMPANY_DATA = {
   trustPoints: [
     { label: "Sỉ & Lẻ Giá Tốt", icon: "ShieldCheck" },
     { label: "Tư Vấn Kỹ Thuật Nhanh", icon: "Zap" },
-    { label: "Giao Hàng Thuận Tiện", icon: "Truck" },
+    { label: "Sẵn Kho 400 Phạm Hùng", icon: "Store" },
     { label: "Hàng Chính Hãng 100%", icon: "CheckCircle2" }
   ],
 

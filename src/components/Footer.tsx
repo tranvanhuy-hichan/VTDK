@@ -147,24 +147,20 @@ export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
 
         </div>
 
-        {/* Dynamic Category SEO Links Row */}
+        {/* Dynamic Category Links Row */}
         <div className="py-4 my-2 border-t border-b border-slate-800/80 flex flex-wrap items-center gap-x-4 gap-y-2 text-left">
-          <Link href="/vat-tu-dien-lanh-da-nang" className="text-xs text-slate-300 hover:text-white transition-colors font-medium">
-            • Vật Tư Điện Lạnh Đà Nẵng
+          <Link href="/vat-tu-dien-lanh" className="text-xs text-slate-300 hover:text-white transition-colors font-medium">
+            • Vật Tư Điện Lạnh
           </Link>
-          {categories.map((cat) => {
-            const seoSlug = cat.slug.endsWith("-da-nang") ? cat.slug : `${cat.slug}-da-nang`;
-            const displayName = cat.name.includes("Đà Nẵng") ? cat.name : `${cat.name} Đà Nẵng`;
-            return (
-              <Link
-                key={cat.id}
-                href={`/${seoSlug}`}
-                className="text-xs text-slate-300 hover:text-white transition-colors font-medium"
-              >
-                • {displayName}
-              </Link>
-            );
-          })}
+          {categories.map((cat) => (
+            <Link
+              key={cat.id}
+              href={`/${cat.slug}`}
+              className="text-xs text-slate-300 hover:text-white transition-colors font-medium"
+            >
+              • {cat.name}
+            </Link>
+          ))}
         </div>
 
         {/* Footer Bottom Bar */}

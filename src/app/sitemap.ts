@@ -13,9 +13,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   });
 
   const categoryRoutes = [
-    "/vat-tu-dien-lanh-da-nang",
+    "/vat-tu-dien-lanh",
     ...categories.map((c) => `/${c.slug}`),
-    ...categories.map((c) => `/${c.slug}-da-nang`),
   ];
 
   const uniqueCategoryRoutes = Array.from(new Set(categoryRoutes));

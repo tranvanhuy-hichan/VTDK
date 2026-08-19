@@ -91,7 +91,7 @@ export async function generateMetadata({ params }: DynamicCategoryPageProps): Pr
 
   const cat = resolved.category!;
   const title = cat.seoTitle || `${cat.name} Đà Nẵng | Đại Lý Sỉ & Lẻ Chính Hãng Giá Kho`;
-  const description = cat.seoDesc || `Kho sỉ & lẻ ${cat.name.toLowerCase()} chính hãng tại Đà Nẵng (400 Phạm Hùng). Đầy đủ mẫu mã, giá sỉ ưu đãi thợ, giao nhanh 30 phút. Hotline: ${company.hotline}.`;
+  const description = cat.seoDesc || `Kho sỉ & lẻ ${cat.name.toLowerCase()} chính hãng tại Đà Nẵng (400 Phạm Hùng). Đầy đủ mẫu mã, giá sỉ ưu đãi thợ, hàng sẵn tại kho. Hotline: ${company.hotline}.`;
 
   return {
     title,
@@ -141,11 +141,11 @@ export default async function DynamicCategorySEOPage({ params }: DynamicCategory
       title: "Vật Tư & Linh Kiện Điện Lạnh Đà Nẵng",
       h1: "Vật Tư & Linh Kiện Điện Lạnh Đà Nẵng – Phân Phối Sỉ & Lẻ Cho Thợ",
       subtitle: "Chuyên sỉ & lẻ ống đồng, gas lạnh R32/R410A, bo mạch, block nén, phụ tùng linh kiện điều hòa, tủ lạnh, máy giặt sẵn kho 400 Phạm Hùng, Đà Nẵng.",
-      description: "Đại lý phân phối vật tư & linh kiện điện lạnh giá sỉ tại Đà Nẵng. Hàng sẵn kho 400 Phạm Hùng, giao nhanh 30-60 phút.",
+      description: "Đại lý phân phối vật tư & linh kiện điện lạnh giá sỉ tại Đà Nẵng. Hàng sẵn kho 400 Phạm Hùng, tư vấn kỹ thuật nhanh.",
       features: [
         "100% Hàng linh kiện chính hãng",
         "Giá sỉ trực tiếp cho thợ",
-        "Giao siêu tốc 30-60 phút tại ĐN",
+        "Hàng sẵn kho 400 Phạm Hùng",
         "Đầy đủ chứng chỉ CO/CQ",
       ],
       richContent: [
@@ -163,8 +163,8 @@ export default async function DynamicCategorySEOPage({ params }: DynamicCategory
       ],
       faqs: [
         {
-          q: "Cửa hàng có giao linh kiện tận nhà / công trình tại Đà Nẵng không?",
-          a: "Có! Đông Kha hỗ trợ giao linh kiện siêu tốc trong 30-60 phút tới tất cả các quận Cẩm Lệ, Hải Châu, Thanh Khê, Sơn Trà, Ngũ Hành Sơn, Liên Chiểu.",
+          q: "Cửa hàng có cho xem & thử linh kiện trực tiếp không?",
+          a: "Có! Bạn có thể ghé trực tiếp kho cửa hàng Đông Kha tại 400 Phạm Hùng, Cẩm Lệ, Đà Nẵng để kiểm tra, đối chiếu mã zin và thử bo mạch.",
         },
         {
           q: "Thợ sửa chữa mua linh kiện nhiều có được giá sỉ không?",
@@ -194,12 +194,12 @@ export default async function DynamicCategorySEOPage({ params }: DynamicCategory
     slug,
     title: isComponentCat ? cat.name : `Linh Kiện ${cat.name}`,
     h1: cat.seoH1 || defaultH1,
-    subtitle: cat.seoDesc || `Kho sỉ & lẻ phụ tùng ${cat.name.toLowerCase()} chính hãng cho thợ & công trình tại Đà Nẵng. Hàng sẵn kho 400 Phạm Hùng, giao nhanh 30-60 phút.`,
+    subtitle: cat.seoDesc || `Kho sỉ & lẻ phụ tùng ${cat.name.toLowerCase()} chính hãng cho thợ & công trình tại Đà Nẵng. Hàng sẵn kho 400 Phạm Hùng, tư vấn kỹ thuật tận tâm.`,
     description: cat.seoDesc || `Mua linh kiện phụ tùng ${cat.name.toLowerCase()} giá rẻ uy tín tại Đà Nẵng.`,
     features: cat.features.length > 0 ? cat.features : [
       "100% Linh kiện chính hãng",
       "Giá sỉ ưu đãi thợ điện lạnh",
-      "Giao siêu tốc 30-60 phút tại ĐN",
+      "Thử bo mạch trực tiếp tại kho",
       "Đầy đủ chứng chỉ CO/CQ",
     ],
     richContent: [
@@ -211,7 +211,7 @@ export default async function DynamicCategorySEOPage({ params }: DynamicCategory
     faqs: [
       {
         q: `Địa chỉ mua linh kiện ${cat.name} ở đâu tại Đà Nẵng?`,
-        a: `Bạn có thể ghé trực tiếp kho cửa hàng Đông Kha tại 400 Phạm Hùng, Cẩm Lệ, Đà Nẵng hoặc liên hệ Hotline/Zalo ${company.hotline} để được giao hàng tận nơi.`,
+        a: `Bạn có thể ghé trực tiếp kho cửa hàng Đông Kha tại 400 Phạm Hùng, Cẩm Lệ, Đà Nẵng hoặc liên hệ Hotline/Zalo ${company.hotline} để được tư vấn báo giá.`,
       },
       {
         q: `Anh em thợ mua linh kiện ${cat.name} có được chiết khấu giá sỉ không?`,
