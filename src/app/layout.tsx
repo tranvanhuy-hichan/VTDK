@@ -83,11 +83,11 @@ export async function generateMetadata(): Promise<Metadata> {
     icons: {
       icon: [
         { url: "/favicon.ico", sizes: "any" },
-        { url: "/icon", sizes: "96x96", type: "image/png" },
+        { url: "/icon.png", sizes: "192x192", type: "image/png" },
         { url: "/images/logo.png", sizes: "192x192", type: "image/png" },
       ],
       shortcut: "/favicon.ico",
-      apple: [{ url: "/apple-icon", sizes: "180x180", type: "image/png" }],
+      apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
     },
 
     manifest: "/manifest.webmanifest",
