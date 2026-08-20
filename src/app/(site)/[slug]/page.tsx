@@ -79,7 +79,7 @@ export async function generateMetadata({ params }: DynamicCategoryPageProps): Pr
 
   if (resolved.isGeneralStore) {
     const title = "Vật Tư Điện Lạnh Đà Nẵng | Đại Lý Sỉ & Lẻ Chính Hãng Giá Kho";
-    const description = `Kho tổng Vật Tư Điện Lạnh Đông Kha tại Đà Nẵng (400 Phạm Hùng). Phân phối sỉ & lẻ ống đồng, gas lạnh R32/R410A, linh kiện điều hòa, tủ lạnh, máy giặt. Gọi báo giá: ${company.hotline}.`;
+    const description = "Kho vật tư điện lạnh Đông Kha tại Đà Nẵng: sỉ & lẻ ống đồng, gas lạnh, linh kiện điều hòa, tủ lạnh, máy giặt chính hãng. Hàng sẵn kho, giá tốt.";
     return {
       title,
       description,

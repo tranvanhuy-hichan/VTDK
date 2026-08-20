@@ -7,7 +7,7 @@ import { AllProductsCatalog } from "../../../components/AllProductsCatalog";
 export async function generateMetadata(): Promise<Metadata> {
   const company = await getCompanyInfo();
   const title = "Tất Cả Sản Phẩm Vật Tư Điện Lạnh Chính Hãng Đà Nẵng";
-  const description = `Danh mục sỉ & lẻ ống đồng, gas lạnh R32/R410A, linh kiện điều hòa, tủ lạnh, máy giặt giá sỉ tốt nhất tại ${company.name} (${company.address}). Hotline/Zalo: ${company.hotline}.`;
+  const description = `Danh mục sỉ & lẻ ống đồng, gas lạnh, linh kiện điều hòa, tủ lạnh, máy giặt chính hãng giá tốt tại ${company.name}. Hotline/Zalo: ${company.hotline}.`;
 
   return {
     title,

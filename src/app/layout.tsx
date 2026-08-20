@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const company = await getCompanyInfo();
 
   const title = "Vật Tư Điện Lạnh Đông Kha Đà Nẵng | Sỉ & Lẻ Chính Hãng Giá Tốt";
-  const description = `Đại lý vật tư điện lạnh hàng đầu Đà Nẵng - Công ty TNHH Vật Tư Đông Kha cung cấp sỉ & lẻ ống đồng, gas lạnh R32/R410A chính hãng, linh kiện điều hòa, tủ lạnh, máy giặt. Hàng sẵn kho, bảo đảm ghé xem trực tiếp tại cửa hàng. Hotline: ${company.hotline}.`;
+  const description = "Đại lý vật tư điện lạnh Đà Nẵng - Đông Kha: sỉ & lẻ ống đồng, gas lạnh R32/R410A, linh kiện điều hòa, tủ lạnh, máy giặt chính hãng. Hàng sẵn kho, giá tốt.";
   
   const rawImage = company.image || "/images/storefront.png";
   const shareImage = rawImage.startsWith("http")

@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: ProductPageParams): Promise<M
 
   const company = await getCompanyInfo();
   const description =
-    product.shortDesc ?? `Xem thông tin chi tiết và giá sỉ & lẻ ${product.name} tại Vật Tư Điện Lạnh ${company.name} (${company.address}). Hotline: ${company.hotline}.`;
+    product.shortDesc ?? `Giá sỉ & lẻ ${product.name} chính hãng tại ${company.name}. Hàng sẵn kho, hotline ${company.hotline}.`.slice(0, 160);
 
   return {
     title: `${product.name} | Giá Sỉ & Lẻ`,
