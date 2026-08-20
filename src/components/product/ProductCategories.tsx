@@ -14,8 +14,8 @@ import {
   ChevronRight,
   Images
 } from "lucide-react";
-import { COMPANY_DATA, type ProductCategory } from "../data/company";
-import { getCategoryImages } from "../utils/imageLoader";
+import { COMPANY_DATA, type ProductCategory } from "../../data/company";
+import { getCategoryImages } from "../../utils/imageLoader";
 
 interface CategoryImageSliderProps {
   cat: ProductCategory;

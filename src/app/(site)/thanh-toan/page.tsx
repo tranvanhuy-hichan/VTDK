@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import { getCompanyInfo } from "@/lib/company";
-import { CheckoutPageView } from "@/components/CheckoutPageView";
+import { CheckoutPageView } from "@/components/checkout/CheckoutPageView";
 
 export const metadata: Metadata = {
   title: "Thanh Toán",

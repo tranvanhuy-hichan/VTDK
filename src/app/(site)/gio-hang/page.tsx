@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import { getCompanyInfo } from "@/lib/company";
-import { CartPageView } from "@/components/CartPageView";
+import { CartPageView } from "@/components/cart/CartPageView";
 
 export const metadata: Metadata = {
   title: "Giỏ Hàng",

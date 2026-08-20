@@ -9,8 +9,8 @@ import {
   MessageSquare,
   ShieldAlert
 } from "lucide-react";
-import type { CompanyContact } from "../lib/company";
-import { ImageCarousel } from "./ImageCarousel";
+import type { CompanyContact } from "../../lib/company";
+import { ImageCarousel } from "../product/ImageCarousel";
 
 interface ServiceItem {
   id: string;

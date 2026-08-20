@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import { ShoppingCart, Check, X, Minus, Plus } from "lucide-react";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../../context/CartContext";
 
 interface VariantOption {
   id: string;

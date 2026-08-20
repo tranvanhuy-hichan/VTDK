@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCompanyInfo } from "@/lib/company";
 import { SITE_URL } from "@/lib/site";
-import { SeoLandingPage, SeoLandingConfig } from "@/components/SeoLandingPage";
+import { SeoLandingPage, SeoLandingConfig } from "@/components/product/SeoLandingPage";
 
 interface DynamicCategoryPageProps {
   params: Promise<{ slug: string }>;

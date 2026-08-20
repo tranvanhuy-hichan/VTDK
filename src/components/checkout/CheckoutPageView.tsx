@@ -3,12 +3,12 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
-import { useCart } from "../context/CartContext";
-import { buildCartZaloMessage, type BuyerInfo } from "../lib/zaloMessage";
-import { ZaloMessageConfirm } from "./ZaloMessageConfirm";
+import { useCart } from "../../context/CartContext";
+import { buildCartZaloMessage, type BuyerInfo } from "../../lib/zaloMessage";
+import { ZaloMessageConfirm } from "../zalo/ZaloMessageConfirm";
 import { BuyerInfoForm } from "./BuyerInfoForm";
-import { ProductDetailHeader } from "./ProductDetailHeader";
-import { OrderItemsCard, OrderTotalCard, OrderRowSkeleton, OrderTotalSkeleton } from "./OrderSummary";
+import { ProductDetailHeader } from "../product/ProductDetailHeader";
+import { OrderItemsCard, OrderTotalCard, OrderRowSkeleton, OrderTotalSkeleton } from "../cart/OrderSummary";
 
 interface CheckoutPageViewProps {
   zaloUrl: string;

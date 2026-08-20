@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCompanyInfo } from "@/lib/company";
-import { ProductDetailView } from "@/components/ProductDetailView";
-import { ProductDetailHeader } from "@/components/ProductDetailHeader";
-import { ProductCard } from "@/components/ProductCard";
+import { ProductDetailView } from "@/components/product/ProductDetailView";
+import { ProductDetailHeader } from "@/components/product/ProductDetailHeader";
+import { ProductCard } from "@/components/product/ProductCard";
 import { SITE_URL } from "@/lib/site";
 
 interface ProductPageParams {

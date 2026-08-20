@@ -1,6 +1,6 @@
 import React from "react";
 import { Wrench, Users, ShoppingBag, Briefcase, Home, ArrowRight } from "lucide-react";
-import { COMPANY_DATA } from "../data/company";
+import { COMPANY_DATA } from "../../data/company";
 
 export const CustomerTypes: React.FC = () => {
   const getCustomerIcon = (iconName: string) => {

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Phone, MessageSquare, MapPin, CheckCircle2, ChevronRight, HelpCircle, ArrowLeft, Home } from "lucide-react";
 import type { CompanyContact } from "@/lib/company";
-import { ProductCard } from "@/components/ProductCard";
+import { ProductCard } from "@/components/product/ProductCard";
 
 export interface SeoLandingConfig {
   slug: string;

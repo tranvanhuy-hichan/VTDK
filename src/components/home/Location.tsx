@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigation, ExternalLink } from "lucide-react";
-import type { CompanyContact } from "../lib/company";
+import type { CompanyContact } from "../../lib/company";
 
 interface LocationProps {
     company: CompanyContact;

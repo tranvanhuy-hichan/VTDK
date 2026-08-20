@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../../context/CartContext";
 
 interface CartButtonProps {
   variant?: "icon" | "row";

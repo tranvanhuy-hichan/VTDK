@@ -6,7 +6,7 @@ import Image from "next/image";
 import { createPortal } from "react-dom";
 import { MessageSquare, X, Check, Minus, Plus } from "lucide-react";
 import { ZaloMessageConfirm } from "./ZaloMessageConfirm";
-import { useCart, type AddableCartItem } from "../context/CartContext";
+import { useCart, type AddableCartItem } from "../../context/CartContext";
 
 interface VariantOption {
   id: string;

@@ -1,14 +1,14 @@
 import React from "react";
 import { prisma } from "../../lib/prisma";
 import { getCompanyInfo } from "../../lib/company";
-import { Hero } from "../../components/Hero";
-import { BrandSlider } from "../../components/BrandSlider";
-import { ProductList } from "../../components/ProductList";
-import { Services } from "../../components/Services";
-import { WhyChooseUs } from "../../components/WhyChooseUs";
-import { CustomerTypes } from "../../components/CustomerTypes";
-import { Gallery } from "../../components/Gallery";
-import { Location } from "../../components/Location";
+import { Hero } from "../../components/home/Hero";
+import { BrandSlider } from "../../components/home/BrandSlider";
+import { ProductList } from "../../components/product/ProductList";
+import { Services } from "../../components/home/Services";
+import { WhyChooseUs } from "../../components/home/WhyChooseUs";
+import { CustomerTypes } from "../../components/home/CustomerTypes";
+import { Gallery } from "../../components/home/Gallery";
+import { Location } from "../../components/home/Location";
 
 // Statically cached and refreshed on-demand via revalidatePath("/") in
 // admin/actions.ts whenever a product/service/gallery/company edit is saved.

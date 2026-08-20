@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ShoppingCart, Check } from "lucide-react";
-import { useCart, type AddableCartItem } from "../context/CartContext";
+import { useCart, type AddableCartItem } from "../../context/CartContext";
 
 interface AddToCartButtonProps {
   item: AddableCartItem;

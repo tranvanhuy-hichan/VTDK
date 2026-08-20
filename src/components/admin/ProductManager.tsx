@@ -22,7 +22,7 @@ import {
   updateCategoryAction,
   deleteCategoryAction,
 } from "../../app/admin/actions";
-import { Pagination } from "../Pagination";
+import { Pagination } from "../product/Pagination";
 
 const PAGE_SIZE = 10;
 

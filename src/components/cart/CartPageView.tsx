@@ -5,10 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { ShoppingCart, Trash2, X } from "lucide-react";
-import { useCart } from "../context/CartContext";
-import { buildCartZaloMessage } from "../lib/zaloMessage";
-import { ZaloMessageConfirm } from "./ZaloMessageConfirm";
-import { ProductDetailHeader } from "./ProductDetailHeader";
+import { useCart } from "../../context/CartContext";
+import { buildCartZaloMessage } from "../../lib/zaloMessage";
+import { ZaloMessageConfirm } from "../zalo/ZaloMessageConfirm";
+import { ProductDetailHeader } from "../product/ProductDetailHeader";
 import { OrderItemsCard, OrderTotalCard, OrderRowSkeleton, OrderTotalSkeleton } from "./OrderSummary";
 
 interface CartPageViewProps {

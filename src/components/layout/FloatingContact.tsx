@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Phone, MessageCircle, ChevronUp } from "lucide-react";
-import type { CompanyContact } from "../lib/company";
+import type { CompanyContact } from "../../lib/company";
 
 interface FloatingContactProps {
   company: CompanyContact;

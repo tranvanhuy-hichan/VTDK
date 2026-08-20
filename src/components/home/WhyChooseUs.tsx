@@ -1,7 +1,7 @@
 import React from "react";
 import { Layers, Headphones, BadgePercent, Store, Phone, MessageSquare, MapPin } from "lucide-react";
-import { COMPANY_DATA } from "../data/company";
-import type { CompanyContact } from "../lib/company";
+import { COMPANY_DATA } from "../../data/company";
+import type { CompanyContact } from "../../lib/company";
 
 interface WhyChooseUsProps {
   company?: CompanyContact;

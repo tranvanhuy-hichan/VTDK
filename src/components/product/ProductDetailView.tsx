@@ -2,11 +2,11 @@
 
 import React, { useState } from "react";
 import { Phone, ShieldCheck, MapPin, CheckCircle2, Check, FileText } from "lucide-react";
-import type { CompanyContact } from "../lib/company";
+import type { CompanyContact } from "../../lib/company";
 import { ImageCarousel } from "./ImageCarousel";
-import { ZaloInquiryButton } from "./ZaloInquiryButton";
-import { AddToCartButton } from "./AddToCartButton";
-import { buildProductZaloMessage } from "../lib/zaloMessage";
+import { ZaloInquiryButton } from "../zalo/ZaloInquiryButton";
+import { AddToCartButton } from "../cart/AddToCartButton";
+import { buildProductZaloMessage } from "../../lib/zaloMessage";
 
 interface ProductVariant {
   id: string;

@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { Minus, Plus, Trash2 } from "lucide-react";
-import type { CartItem } from "../context/CartContext";
+import type { CartItem } from "../../context/CartContext";
 
 export const OrderRowSkeleton: React.FC = () => (
   <div className="flex items-center gap-3 p-3 sm:p-4 animate-pulse">

@@ -12,7 +12,7 @@ import {
   Wind,
   ThermometerSun,
 } from "lucide-react";
-import { Pagination } from "../Pagination";
+import { Pagination } from "../product/Pagination";
 
 const PAGE_SIZE = 9; // 3x3 grid for Services
 

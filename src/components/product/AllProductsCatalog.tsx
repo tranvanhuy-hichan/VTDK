@@ -14,7 +14,7 @@ import {
   Grid,
   ArrowLeft,
 } from "lucide-react";
-import type { CompanyContact } from "../lib/company";
+import type { CompanyContact } from "../../lib/company";
 import { BTUCalculatorModal } from "./BTUCalculatorModal";
 
 interface Category {

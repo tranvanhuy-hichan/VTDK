@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import type { BuyerInfo } from "../lib/zaloMessage";
+import type { BuyerInfo } from "../../lib/zaloMessage";
 
 interface BuyerInfoFormProps {
   onSubmit: (buyer: BuyerInfo) => void;

@@ -1,6 +1,6 @@
 import React from "react";
 import { Phone, MessageSquare, MapPin } from "lucide-react";
-import type { CompanyContact } from "../lib/company";
+import type { CompanyContact } from "../../lib/company";
 
 interface QuickContactBarProps {
   company: CompanyContact;

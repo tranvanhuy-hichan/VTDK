@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import { Phone, Menu, X, MapPin, ChevronRight, Shield, Search, Sun, Moon } from "lucide-react";
-import { COMPANY_DATA } from "../data/company";
-import type { CompanyContact } from "../lib/company";
-import { CartButton } from "./CartButton";
+import { COMPANY_DATA } from "../../data/company";
+import type { CompanyContact } from "../../lib/company";
+import { CartButton } from "../cart/CartButton";
 
 interface HeaderProps {
   activeSection?: string;

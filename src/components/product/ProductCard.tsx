@@ -3,11 +3,11 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { CompanyContact } from "../lib/company";
+import type { CompanyContact } from "../../lib/company";
 import { ImageCarousel } from "./ImageCarousel";
-import { ZaloInquiryButton } from "./ZaloInquiryButton";
-import { AddToCartOptionsButton } from "./AddToCartOptionsButton";
-import { buildProductZaloMessage } from "../lib/zaloMessage";
+import { ZaloInquiryButton } from "../zalo/ZaloInquiryButton";
+import { AddToCartOptionsButton } from "../cart/AddToCartOptionsButton";
+import { buildProductZaloMessage } from "../../lib/zaloMessage";
 
 interface Category {
   id: string;

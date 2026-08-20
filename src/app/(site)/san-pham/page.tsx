@@ -2,7 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 import { prisma } from "../../../lib/prisma";
 import { getCompanyInfo } from "../../../lib/company";
-import { AllProductsCatalog } from "../../../components/AllProductsCatalog";
+import { AllProductsCatalog } from "../../../components/product/AllProductsCatalog";
 
 export async function generateMetadata(): Promise<Metadata> {
   const company = await getCompanyInfo();

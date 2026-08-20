@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Phone, MapPin, MessageSquare, Globe, Lock } from "lucide-react";
-import type { CompanyContact } from "../lib/company";
+import type { CompanyContact } from "../../lib/company";
 
 export interface CategoryLink {
   id: string;

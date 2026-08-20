@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { PackageOpen, X, Search, ChevronDown, Grid, ArrowRight } from "lucide-react";
-import type { CompanyContact } from "../lib/company";
+import type { CompanyContact } from "../../lib/company";
 import { Pagination } from "./Pagination";
 import { BTUCalculatorModal } from "./BTUCalculatorModal";
 

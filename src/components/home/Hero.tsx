@@ -1,7 +1,7 @@
 import React from "react";
 import { Phone, MapPin, CheckCircle2, MessageSquare, ShieldCheck } from "lucide-react";
-import type { CompanyContact } from "../lib/company";
-import { ImageCarousel } from "./ImageCarousel";
+import type { CompanyContact } from "../../lib/company";
+import { ImageCarousel } from "../product/ImageCarousel";
 
 interface HeroProps {
   company: CompanyContact;
