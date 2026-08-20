@@ -105,7 +105,7 @@ export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
                   <Phone className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <p className="font-bold text-white">Hotline &amp; Zalo hỗ trợ 24/7:</p>
+                  <p className="font-bold text-white">Hotline &amp; Zalo tư vấn:</p>
                   <a href={`tel:${company.hotlineRaw}`} className="text-base sm:text-lg font-black text-[#F47A20] hover:underline">
                     {company.hotline}
                   </a>

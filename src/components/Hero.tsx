@@ -20,11 +20,11 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
             Công ty TNHH Vật tư Đông Kha
           </div>
 
-          <h2 className="max-w-sm text-[1.7rem] font-extrabold leading-[1.12] tracking-[-0.04em] text-slate-950 dark:text-white min-[390px]:text-[1.95rem]">
-            Giải pháp vật tư điện lạnh <span className="text-[#075FA8] dark:text-blue-400">đáng tin cậy.</span>
-          </h2>
+          <h1 className="max-w-sm text-[1.7rem] font-black leading-[1.15] tracking-[-0.04em] text-slate-950 dark:text-white min-[390px]:text-[1.9rem]">
+            Vật Tư Điện Lạnh Đông Kha <span className="text-[#075FA8] dark:text-blue-400">Đà Nẵng – Sỉ &amp; Lẻ Chính Hãng</span>
+          </h1>
           <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-300">
-            Chuyên sỉ &amp; lẻ ống đồng, gas lạnh, linh kiện điện lạnh chính hãng tại Đà Nẵng — tư vấn đúng nhu cầu, báo giá nhanh.
+            Chuyên sỉ &amp; lẻ ống đồng, gas lạnh, linh kiện điều hòa – tủ lạnh – máy giặt chính hãng tại Đà Nẵng — tư vấn đúng nhu cầu, báo giá nhanh.
           </p>
 
           <div className="mt-5 grid grid-cols-2 gap-2.5">
@@ -82,18 +82,18 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
               </span>
             </div>
 
-            {/* Main Headline */}
-            <h1 className="max-w-[620px] text-[clamp(2.3rem,3vw,3.1rem)] font-black leading-[1.1] tracking-[-0.04em] text-slate-950 dark:text-white">
+            {/* Main Headline (h1 lives in the mobile block above; this is the large-screen presentation of the same message) */}
+            <h2 className="max-w-[620px] text-[clamp(2.3rem,3vw,3.1rem)] font-black leading-[1.1] tracking-[-0.04em] text-slate-950 dark:text-white">
               Vật Tư Điện Lạnh
               <span className="mt-1 block text-[#075FA8] dark:text-blue-400">
                 Đông Kha Đà Nẵng <span className="underline decoration-[#F47A20] underline-offset-8">– Sỉ &amp; Lẻ</span>
               </span>
               <span className="mt-1 block text-slate-900 dark:text-slate-100">Chính Hãng Giá Tốt</span>
-            </h1>
+            </h2>
 
             {/* Secondary Description */}
             <p className="mt-5 max-w-2xl text-base font-normal leading-7 text-slate-600 dark:text-slate-300 sm:mt-6 sm:text-lg sm:leading-8 xl:text-xl">
-              Chuyên sỉ &amp; lẻ ống đồng, linh kiện điều hòa – tủ lạnh – máy giặt cùng giải pháp thi công điện lạnh dân dụng &amp; công nghiệp giá tốt nhất.
+              Chuyên sỉ &amp; lẻ ống đồng, linh kiện điều hòa – tủ lạnh – máy giặt cùng vật tư phục vụ điện lạnh dân dụng &amp; công nghiệp giá tốt nhất.
             </p>
 
             {/* CTAs Group: Contact & Zalo in 1 row on mobile */}
