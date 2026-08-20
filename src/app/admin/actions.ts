@@ -472,6 +472,7 @@ export async function updateCompanyInfoAction(formData: FormData) {
     const googleMapsUrl = (formData.get("googleMapsUrl") as string)?.trim();
     const googleMapsEmbed = (formData.get("googleMapsEmbed") as string)?.trim();
     const workingHours = (formData.get("workingHours") as string)?.trim();
+    const hasDelivery = formData.get("hasDelivery") === "true";
     const imageFile = formData.get("image") as File | null;
 
     if (
@@ -537,6 +538,7 @@ export async function updateCompanyInfoAction(formData: FormData) {
       googleMapsUrl,
       googleMapsEmbed,
       workingHours,
+      hasDelivery,
       image: imagePath,
       images: galleryResult.images,
     };

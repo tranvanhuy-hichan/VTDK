@@ -220,9 +220,7 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
               {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5 text-amber-400" />}
             </button>
 
-            <div className="hidden sm:block">
-              <CartButton />
-            </div>
+            <CartButton />
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -305,9 +303,6 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                 </span>
                 <span className="text-xs font-semibold text-slate-400">Chuyển</span>
               </button>
-              <div className="sm:hidden">
-                <CartButton variant="row" />
-              </div>
               <a
                 href={`tel:${company.hotlineRaw}`}
                 className="w-full flex items-center justify-center gap-3 bg-[#075FA8] text-white font-bold py-3.5 px-4 rounded-xl shadow text-lg"

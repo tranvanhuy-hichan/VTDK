@@ -12,6 +12,7 @@ export interface CompanyContact {
   googleMapsUrl: string;
   googleMapsEmbed: string;
   workingHours: string;
+  hasDelivery: boolean;
   image: string;
   images: string[];
 }
@@ -27,6 +28,7 @@ const FALLBACK: CompanyContact = {
   googleMapsUrl: COMPANY_DATA.googleMapsUrl,
   googleMapsEmbed: COMPANY_DATA.googleMapsEmbed,
   workingHours: COMPANY_DATA.workingHours,
+  hasDelivery: false,
   image: COMPANY_DATA.storefrontUrl,
   images: [],
 };

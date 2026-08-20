@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import type { CompanyContact } from "../lib/company";
 import { ImageCarousel } from "./ImageCarousel";
 import { ZaloInquiryButton } from "./ZaloInquiryButton";
-import { AddToCartButton } from "./AddToCartButton";
+import { AddToCartOptionsButton } from "./AddToCartOptionsButton";
 import { buildProductZaloMessage } from "../lib/zaloMessage";
 
 interface Category {
@@ -129,18 +129,45 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, company }) =>
           {/* Row 2: Zalo Contact Button + Add to Cart */}
           <div className="flex gap-2">
             <ZaloInquiryButton
-              message={buildProductZaloMessage({ name: product.name, slug: product.slug, hasPrice: validPrices.length > 0 })}
+              buildMessage={(picked) =>
+                buildProductZaloMessage({
+                  name: product.name,
+                  slug: product.slug,
+                  variantLabel: picked?.variantLabel,
+                  price: picked ? picked.price : validPrices.length > 0 ? Math.min(...validPrices) : 0,
+                  qty: picked?.qty,
+                  mode: company.hasDelivery ? "buy" : "inquire",
+                })
+              }
+              picker={{
+                product: {
+                  slug: product.slug,
+                  name: product.name,
+                  price: product.price,
+                  image: product.image,
+                },
+                variants: product.variants,
+              }}
               zaloUrl={company.zaloUrl}
-              className="flex-1 min-w-0 bg-[#0068FF] hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-98 shadow-xs cursor-pointer"
+              label={company.hasDelivery ? "Mua ngay" : "Liên hệ ngay"}
+              mobileLabel={company.hasDelivery ? "Mua" : undefined}
+              iconOnly={!company.hasDelivery}
+              requireBuyerInfo={company.hasDelivery}
+              className={
+                company.hasDelivery
+                  ? "flex-1 min-w-0 bg-[#0068FF] hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-98 shadow-xs cursor-pointer"
+                  : "flex-1 min-w-0 bg-[#0068FF] hover:bg-blue-700 text-white py-2 rounded-xl flex items-center justify-center transition-all active:scale-98 shadow-xs cursor-pointer"
+              }
             />
-            <AddToCartButton
-              item={{
-                key: product.slug,
+            <AddToCartOptionsButton
+              product={{
                 slug: product.slug,
                 name: product.name,
-                price: validPrices.length > 0 ? Math.min(...validPrices) : 0,
+                price: product.price,
                 image: product.image,
               }}
+              variants={product.variants}
+              sizeClassName={company.hasDelivery ? "w-10 h-10" : "flex-1 h-9"}
             />
           </div>
         </div>

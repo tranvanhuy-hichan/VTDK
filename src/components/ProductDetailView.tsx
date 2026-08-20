@@ -134,14 +134,27 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, c
                 <span>Gọi tư vấn</span>
               </a>
               <ZaloInquiryButton
-                message={buildProductZaloMessage({
-                  name: product.name,
+                buildMessage={() =>
+                  buildProductZaloMessage({
+                    name: product.name,
+                    slug: product.slug,
+                    variantLabel: selectedVariant?.label,
+                    price: displayPrice,
+                    mode: company.hasDelivery ? "buy" : "inquire",
+                  })
+                }
+                checkoutItem={{
+                  key: selectedVariant ? `${product.slug}::${selectedVariant.label}` : product.slug,
                   slug: product.slug,
+                  name: product.name,
                   variantLabel: selectedVariant?.label,
-                  hasPrice: displayPrice > 0,
-                })}
+                  price: displayPrice,
+                  image: product.image,
+                }}
                 zaloUrl={company.zaloUrl}
-                label="Nhắn Zalo"
+                label={company.hasDelivery ? "Mua ngay" : "Nhắn Zalo"}
+                mobileLabel={company.hasDelivery ? "Mua" : undefined}
+                requireBuyerInfo={company.hasDelivery}
                 className="inline-flex items-center justify-center gap-1.5 bg-[#0068FF] hover:bg-blue-700 text-white font-black text-xs sm:text-base py-3 px-3 rounded-xl shadow-md transition-all text-center active:scale-98 w-full"
               />
             </div>

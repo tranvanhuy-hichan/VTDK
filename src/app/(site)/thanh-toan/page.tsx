@@ -1,14 +1,14 @@
 import React from "react";
 import type { Metadata } from "next";
 import { getCompanyInfo } from "@/lib/company";
-import { CartPageView } from "@/components/CartPageView";
+import { CheckoutPageView } from "@/components/CheckoutPageView";
 
 export const metadata: Metadata = {
-  title: "Giỏ Hàng",
+  title: "Thanh Toán",
   robots: { index: false, follow: true },
 };
 
-export default async function CartPage() {
+export default async function CheckoutPage() {
   const company = await getCompanyInfo();
-  return <CartPageView zaloUrl={company.zaloUrl} hasDelivery={company.hasDelivery} />;
+  return <CheckoutPageView zaloUrl={company.zaloUrl} />;
 }

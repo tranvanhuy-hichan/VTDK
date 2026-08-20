@@ -90,6 +90,7 @@ model CompanyInfo {
   googleMapsUrl   String
   googleMapsEmbed String
   workingHours    String
+  hasDelivery     Boolean  @default(false)
   image           String   @default("/images/storefront.png") // cover image
   images          String[] @default([]) // additional gallery images
   updatedAt       DateTime @updatedAt

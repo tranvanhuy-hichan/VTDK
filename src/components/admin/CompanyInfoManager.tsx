@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Loader2, Save, X, Pencil, Building2, Phone, MapPinned, Upload, Camera, Images, Trash2 } from "lucide-react";
+import { Loader2, Save, X, Pencil, Building2, Phone, MapPinned, Upload, Camera, Images, Trash2, Truck } from "lucide-react";
 import { updateCompanyInfoAction } from "../../app/admin/actions";
 import type { CompanyContact } from "../../lib/company";
 import { MultiImageUpload } from "./MultiImageUpload";
@@ -12,8 +12,10 @@ interface CompanyInfoManagerProps {
   initialCompany: CompanyContact;
 }
 
+type TextFieldKey = Exclude<keyof CompanyContact, "hasDelivery" | "images">;
+
 interface FieldDef {
-  key: keyof CompanyContact;
+  key: TextFieldKey;
   label: string;
   placeholder: string;
   multiline?: boolean;
@@ -126,6 +128,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
     const formData = new FormData();
     ALL_FIELD_KEYS.forEach((key) => formData.append(key, form[key] as string));
     formData.set("hotlineRaw", hotlineRaw);
+    formData.set("hasDelivery", String(form.hasDelivery));
     if (imageFile) {
       formData.append("image", imageFile);
     }
@@ -317,6 +320,50 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                 </div>
               </div>
             ))}
+
+            {/* Delivery Toggle */}
+            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm p-5 text-left transition-colors">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-1.5 bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400 rounded-md border border-blue-100 dark:border-blue-800/60">
+                  <Truck className="w-4 h-4" />
+                </div>
+                <h3 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
+                  Vận chuyển
+                </h3>
+              </div>
+
+              <label className="flex items-start justify-between gap-4 cursor-pointer">
+                <span>
+                  <span className="block text-sm font-bold text-slate-800 dark:text-slate-100">Có giao hàng</span>
+                  <span className="block text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    Bật nếu công ty có giao hàng tận nơi — các nút liên hệ trên site sẽ đổi thành &quot;Mua ngay&quot;
+                    và thu thập thông tin người nhận (họ tên, SĐT, địa chỉ) trước khi gửi Zalo.
+                  </span>
+                </span>
+                <span className="shrink-0 pt-0.5">
+                  <input
+                    type="checkbox"
+                    checked={isEditing ? form.hasDelivery : saved.hasDelivery}
+                    disabled={!isEditing}
+                    onChange={(e) => setForm((prev) => ({ ...prev, hasDelivery: e.target.checked }))}
+                    className="sr-only peer"
+                  />
+                  <span
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      (isEditing ? form.hasDelivery : saved.hasDelivery)
+                        ? "bg-[#075FA8]"
+                        : "bg-slate-300 dark:bg-slate-700"
+                    } ${isEditing ? "cursor-pointer" : "opacity-70 cursor-not-allowed"}`}
+                  >
+                    <span
+                      className={`inline-block h-4.5 w-4.5 transform rounded-full bg-white transition-transform ${
+                        (isEditing ? form.hasDelivery : saved.hasDelivery) ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </span>
+                </span>
+              </label>
+            </div>
           </div>
         </div>
 
