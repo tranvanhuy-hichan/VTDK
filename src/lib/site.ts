@@ -1,1 +1,1 @@
-export const SITE_URL = "https://vattudongkha.tranvanhuy.io.vn";
+export const SITE_URL = "https://vattudongkha.io.vn";

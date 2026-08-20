@@ -23,6 +23,21 @@ const nextConfig = {
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "vattudongkha.tranvanhuy.io.vn",
+          },
+        ],
+        destination: "https://vattudongkha.io.vn/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
