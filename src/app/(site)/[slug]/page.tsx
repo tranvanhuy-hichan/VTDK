@@ -173,7 +173,18 @@ export default async function DynamicCategorySEOPage({ params }: DynamicCategory
       ],
     };
 
-    return <SeoLandingPage config={config} company={company} products={products} />;
+    const breadcrumbSchema = buildBreadcrumbSchema(config.title, slug);
+    const faqSchema = buildFaqSchema(config.faqs);
+
+    return (
+      <>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+        {faqSchema && (
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+        )}
+        <SeoLandingPage config={config} company={company} products={products} />
+      </>
+    );
   }
 
   // Category specific landing page
@@ -220,5 +231,44 @@ export default async function DynamicCategorySEOPage({ params }: DynamicCategory
     ],
   };
 
-  return <SeoLandingPage config={config} company={company} products={products} />;
+  const breadcrumbSchema = buildBreadcrumbSchema(config.title, slug);
+  const faqSchema = buildFaqSchema(config.faqs);
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      {faqSchema && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      )}
+      <SeoLandingPage config={config} company={company} products={products} />
+    </>
+  );
+}
+
+function buildBreadcrumbSchema(title: string, slug: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Trang chủ", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: title, item: `${SITE_URL}/${slug}` },
+    ],
+  };
+}
+
+function buildFaqSchema(faqs: SeoLandingConfig["faqs"]) {
+  if (faqs.length === 0) return null;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.a,
+      },
+    })),
+  };
 }

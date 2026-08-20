@@ -97,18 +97,40 @@ export default async function ProductDetailPage({ params }: ProductPageParams) {
       "@type": "Brand",
       name: company.name,
     },
-    offers: {
-      "@type": "Offer",
-      price: product.price > 0 ? product.price : undefined,
-      priceCurrency: "VND",
-      availability: "https://schema.org/InStock",
-      itemCondition: "https://schema.org/NewCondition",
-      url: `${SITE_URL}/san-pham/${product.slug}`,
-      seller: {
-        "@type": "Organization",
-        name: company.name,
+    ...(product.price > 0 && {
+      offers: {
+        "@type": "Offer",
+        price: product.price,
+        priceCurrency: "VND",
+        availability: "https://schema.org/InStock",
+        itemCondition: "https://schema.org/NewCondition",
+        url: `${SITE_URL}/san-pham/${product.slug}`,
+        seller: {
+          "@type": "Organization",
+          name: company.name,
+        },
       },
-    },
+    }),
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Trang chủ", item: SITE_URL },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: product.category.name,
+        item: `${SITE_URL}/${product.category.slug}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: product.name,
+        item: `${SITE_URL}/san-pham/${product.slug}`,
+      },
+    ],
   };
 
   return (
@@ -149,6 +171,10 @@ export default async function ProductDetailPage({ params }: ProductPageParams) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
     </section>
   );
