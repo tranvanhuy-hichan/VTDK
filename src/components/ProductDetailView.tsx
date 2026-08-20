@@ -1,9 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Phone, MessageSquare, ShieldCheck, MapPin, CheckCircle2, Check, FileText } from "lucide-react";
+import { Phone, ShieldCheck, MapPin, CheckCircle2, Check, FileText } from "lucide-react";
 import type { CompanyContact } from "../lib/company";
 import { ImageCarousel } from "./ImageCarousel";
+import { ZaloInquiryButton } from "./ZaloInquiryButton";
+import { AddToCartButton } from "./AddToCartButton";
+import { buildProductZaloMessage } from "../lib/zaloMessage";
 
 interface ProductVariant {
   id: string;
@@ -13,6 +16,7 @@ interface ProductVariant {
 
 interface ProductDetailData {
   name: string;
+  slug: string;
   shortDesc: string | null;
   image: string;
   images: string[];
@@ -120,23 +124,38 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, c
 
         {/* Contact Action Buttons */}
         <div className="mt-auto pt-4 border-t border-slate-200 dark:border-slate-800">
-          <div className="grid grid-cols-2 gap-2.5 w-full">
-            <a
-              href={`tel:${company.hotlineRaw}`}
-              className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-black text-xs sm:text-base py-3 px-3 rounded-xl shadow-md transition-all text-center active:scale-98"
-            >
-              <Phone className="w-4 h-4 fill-current shrink-0 animate-pulse-subtle" />
-              <span>Gọi tư vấn</span>
-            </a>
-            <a
-              href={`${company.zaloUrl}?text=${encodeURIComponent(`Chào Đông Kha, tôi muốn tư vấn báo giá sản phẩm: ${product.name}${selectedVariant ? ` (${selectedVariant.label})` : ""}`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 bg-[#0068FF] hover:bg-blue-700 text-white font-black text-xs sm:text-base py-3 px-3 rounded-xl shadow-md transition-all text-center active:scale-98"
-            >
-              <MessageSquare className="w-4 h-4 fill-current shrink-0" />
-              <span>Nhắn Zalo</span>
-            </a>
+          <div className="flex gap-2.5 w-full">
+            <div className="grid grid-cols-2 gap-2.5 flex-1 min-w-0">
+              <a
+                href={`tel:${company.hotlineRaw}`}
+                className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-black text-xs sm:text-base py-3 px-3 rounded-xl shadow-md transition-all text-center active:scale-98"
+              >
+                <Phone className="w-4 h-4 fill-current shrink-0 animate-pulse-subtle" />
+                <span>Gọi tư vấn</span>
+              </a>
+              <ZaloInquiryButton
+                message={buildProductZaloMessage({
+                  name: product.name,
+                  slug: product.slug,
+                  variantLabel: selectedVariant?.label,
+                  hasPrice: displayPrice > 0,
+                })}
+                zaloUrl={company.zaloUrl}
+                label="Nhắn Zalo"
+                className="inline-flex items-center justify-center gap-1.5 bg-[#0068FF] hover:bg-blue-700 text-white font-black text-xs sm:text-base py-3 px-3 rounded-xl shadow-md transition-all text-center active:scale-98 w-full"
+              />
+            </div>
+            <AddToCartButton
+              item={{
+                key: selectedVariant ? `${product.slug}::${selectedVariant.label}` : product.slug,
+                slug: product.slug,
+                name: product.name,
+                variantLabel: selectedVariant?.label,
+                price: displayPrice,
+                image: product.image,
+              }}
+              sizeClassName="w-14 h-auto"
+            />
           </div>
         </div>
       </div>

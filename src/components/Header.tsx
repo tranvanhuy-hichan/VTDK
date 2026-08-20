@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import { Phone, Menu, X, MapPin, ChevronRight, Shield, Search, Sun, Moon } from "lucide-react";
 import { COMPANY_DATA } from "../data/company";
 import type { CompanyContact } from "../lib/company";
+import { CartButton } from "./CartButton";
 
 interface HeaderProps {
   activeSection?: string;
@@ -24,6 +25,20 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const searchDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isMobileSearchOpen) return;
+    const onClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest("[data-search-toggle]")) return;
+      if (searchDropdownRef.current && !searchDropdownRef.current.contains(target)) {
+        setIsMobileSearchOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [isMobileSearchOpen]);
 
   useEffect(() => {
     const isDark = document.documentElement.classList.contains("dark");
@@ -142,28 +157,8 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
             </div>
           </Link>
 
-          {/* Desktop Search */}
-          <div className="hidden md:flex items-center flex-1 max-w-md mx-4">
-            <form onSubmit={handleSearchSubmit} className="relative w-full">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Tìm sản phẩm..."
-                className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3 py-2.5 text-slate-900 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:border-[#075FA8] dark:focus:border-blue-500 focus:ring-1 focus:ring-[#075FA8] dark:focus:ring-blue-500 transition-all"
-              />
-              <button
-                type="submit"
-                aria-label="Tìm kiếm"
-                className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-slate-500 hover:text-[#075FA8] dark:hover:text-blue-400 !min-h-0"
-              >
-                <Search className="w-4 h-4" />
-              </button>
-            </form>
-          </div>
-
           {/* Desktop Navigation Links & Theme Toggle */}
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-4 flex-1 justify-end">
             <nav className="flex items-center gap-1 sm:gap-1.5">
               {rawNavLinks.map((link) => {
                 const targetHref = getTargetHref(link.hash);
@@ -189,6 +184,15 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
             </nav>
             <div className="h-6 w-px bg-slate-200 dark:bg-slate-800" />
             <button
+              onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+              data-search-toggle="true"
+              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer !min-h-0"
+              aria-label="Mở tìm kiếm"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+            <CartButton />
+            <button
               onClick={toggleTheme}
               className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer !min-h-0"
               aria-label="Đổi giao diện"
@@ -201,6 +205,7 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
           <div className="flex items-center gap-1.5 lg:hidden">
             <button
               onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+              data-search-toggle="true"
               className="hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors !min-h-0 cursor-pointer sm:block"
               aria-label="Mở tìm kiếm"
             >
@@ -215,6 +220,10 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
               {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5 text-amber-400" />}
             </button>
 
+            <div className="hidden sm:block">
+              <CartButton />
+            </div>
+
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-bold transition-colors !min-h-0 cursor-pointer"
@@ -225,16 +234,20 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
           </div>
         </div>
 
-        {/* Mobile Search Bar Dropdown */}
+        {/* Search Dropdown Popover — floats near the search icon, doesn't push the page down */}
         {isMobileSearchOpen && (
-          <div className="lg:hidden px-4 py-3 bg-slate-50 dark:bg-slate-850 border-t border-slate-200 dark:border-slate-700 animate-in slide-in-from-top-1 duration-150">
+          <div
+            ref={searchDropdownRef}
+            className="absolute top-full right-3 sm:right-6 z-30 mt-2 w-[min(92vw,380px)] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 animate-in fade-in slide-in-from-top-2 duration-150"
+          >
             <form onSubmit={handleSearchSubmit} className="relative w-full">
               <input
+                autoFocus
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm sản phẩm..."
-                className="w-full text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-9 py-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#075FA8]"
+                className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-9 py-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#075FA8]"
               />
               <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 pointer-events-none">
                 <Search className="w-4 h-4" />
@@ -292,6 +305,9 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                 </span>
                 <span className="text-xs font-semibold text-slate-400">Chuyển</span>
               </button>
+              <div className="sm:hidden">
+                <CartButton variant="row" />
+              </div>
               <a
                 href={`tel:${company.hotlineRaw}`}
                 className="w-full flex items-center justify-center gap-3 bg-[#075FA8] text-white font-bold py-3.5 px-4 rounded-xl shadow text-lg"

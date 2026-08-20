@@ -3,9 +3,11 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MessageSquare } from "lucide-react";
 import type { CompanyContact } from "../lib/company";
 import { ImageCarousel } from "./ImageCarousel";
+import { ZaloInquiryButton } from "./ZaloInquiryButton";
+import { AddToCartButton } from "./AddToCartButton";
+import { buildProductZaloMessage } from "../lib/zaloMessage";
 
 interface Category {
   id: string;
@@ -124,18 +126,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, company }) =>
             </span>
           </div>
 
-          {/* Row 2: Full-width Zalo Contact Button */}
-          <a
-            href={`${company.zaloUrl}?text=${encodeURIComponent(`Chào Đông Kha, tôi muốn tư vấn báo giá sản phẩm: ${product.name}`)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            aria-label="Liên hệ Zalo báo giá"
-            className="w-full bg-[#0068FF] hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-98 shadow-xs cursor-pointer"
-          >
-            <MessageSquare className="w-4 h-4 fill-current shrink-0" />
-            <span>Liên hệ ngay</span>
-          </a>
+          {/* Row 2: Zalo Contact Button + Add to Cart */}
+          <div className="flex gap-2">
+            <ZaloInquiryButton
+              message={buildProductZaloMessage({ name: product.name, slug: product.slug, hasPrice: validPrices.length > 0 })}
+              zaloUrl={company.zaloUrl}
+              className="flex-1 min-w-0 bg-[#0068FF] hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-98 shadow-xs cursor-pointer"
+            />
+            <AddToCartButton
+              item={{
+                key: product.slug,
+                slug: product.slug,
+                name: product.name,
+                price: validPrices.length > 0 ? Math.min(...validPrices) : 0,
+                image: product.image,
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>
