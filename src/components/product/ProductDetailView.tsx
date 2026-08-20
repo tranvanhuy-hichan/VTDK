@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { Phone, ShieldCheck, MapPin, CheckCircle2, Check, FileText } from "lucide-react";
+import { Phone, ShieldCheck, MapPin, Wrench, Check, FileText } from "lucide-react";
 import type { CompanyContact } from "../../lib/company";
 import { ImageCarousel } from "./ImageCarousel";
+import { ProductDescription } from "./ProductDescription";
 import { ZaloInquiryButton } from "../zalo/ZaloInquiryButton";
 import { AddToCartButton } from "../cart/AddToCartButton";
 import { buildProductZaloMessage } from "../../lib/zaloMessage";
@@ -30,6 +31,12 @@ interface ProductDetailViewProps {
   company: CompanyContact;
 }
 
+const TRUST_BADGES = [
+  { icon: ShieldCheck, label: "Chính hãng, đủ CO/CQ" },
+  { icon: Wrench, label: "Giá sỉ ưu đãi thợ" },
+  { icon: MapPin, label: "Xem & thử tại kho" },
+];
+
 export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, company }) => {
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const selectedVariant =
@@ -38,7 +45,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, c
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start text-left">
-      {/* Product Image Carousel - Compact sizing on PC */}
+      {/* Product Image */}
       <div className="lg:col-span-5 w-full aspect-square sm:aspect-[4/3] lg:aspect-square rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-950 border border-slate-200/90 dark:border-slate-800 shadow-xs max-h-[350px] sm:max-h-[380px] mx-auto">
         <ImageCarousel
           images={[product.image, ...product.images]}
@@ -48,28 +55,48 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, c
         />
       </div>
 
-      {/* Product Main Info (Title, Category, Variants, Price & Action CTAs) */}
+      {/* Product Main Info */}
       <div className="lg:col-span-7 flex flex-col justify-between text-left h-full">
-        <div>
-          {product.category?.name && (
-            <span className="inline-block text-xs font-black text-[#075FA8] dark:text-blue-400 uppercase tracking-wider bg-blue-50 dark:bg-blue-950/60 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-900 mb-2 sm:mb-3">
-              {product.category.name}
+        <div className="space-y-4">
+          <div>
+            {product.category?.name && (
+              <span className="inline-block text-xs font-black text-[#075FA8] dark:text-blue-400 uppercase tracking-wider bg-blue-50 dark:bg-blue-950/60 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-900 mb-2 sm:mb-3">
+                {product.category.name}
+              </span>
+            )}
+
+            <h1 className="text-xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
+              {product.name}
+            </h1>
+          </div>
+
+          {/* Price Block */}
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <span className="text-2xl sm:text-4xl font-black text-orange-600 dark:text-orange-400 tracking-tight">
+              {displayPrice > 0 ? `${displayPrice.toLocaleString("vi-VN")}đ` : "Liên hệ báo giá"}
             </span>
-          )}
+            <span className="text-xs text-slate-400 dark:text-slate-500 font-semibold">Giá bán lẻ tham khảo</span>
+          </div>
 
-          <h1 className="text-xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-3 sm:mb-5 leading-snug">
-            {product.name}
-          </h1>
-
-          {/* Compact Variant Selector Chips */}
-          {product.variants.length > 0 && (
-            <div className="mb-4 space-y-1.5">
-              <div className="flex items-center text-xs">
-                <span className="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                  Quy cách / Phân loại:
-                </span>
+          {/* Trust Badges Row */}
+          <div className="flex flex-wrap gap-2">
+            {TRUST_BADGES.map(({ icon: Icon, label }) => (
+              <div
+                key={label}
+                className="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-slate-850/60 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-[11px] sm:text-xs font-bold px-2.5 py-1.5 rounded-lg"
+              >
+                <Icon className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span>{label}</span>
               </div>
+            ))}
+          </div>
 
+          {/* Variant Selector */}
+          {product.variants.length > 0 && (
+            <div className="space-y-1.5">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                Quy cách / Phân loại
+              </span>
               <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {product.variants.map((variant, index) => {
                   const isSelected = index === selectedVariantIndex;
@@ -84,9 +111,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, c
                           : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-750"
                       }`}
                     >
-                      {isSelected && (
-                        <Check className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400 shrink-0" />
-                      )}
+                      {isSelected && <Check className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400 shrink-0" />}
                       <span>{variant.label}</span>
                     </button>
                   );
@@ -94,36 +119,10 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, c
               </div>
             </div>
           )}
-
-          {/* Price Callout Banner Box */}
-          <div className="p-3.5 sm:p-5 bg-gradient-to-r from-orange-50/80 to-amber-50/80 dark:from-slate-800 dark:to-slate-800/80 rounded-2xl border border-orange-200/80 dark:border-slate-700/80 mb-4 shadow-2xs">
-            <span className="text-[10px] sm:text-xs text-orange-800/80 dark:text-slate-400 block font-bold uppercase tracking-wider mb-0.5">
-              Giá bán lẻ tham khảo
-            </span>
-            <span className="text-xl sm:text-3xl lg:text-4xl font-black text-orange-600 dark:text-orange-400 tracking-tight block">
-              {displayPrice > 0 ? `${displayPrice.toLocaleString("vi-VN")}đ` : "Liên hệ báo giá"}
-            </span>
-          </div>
-
-          {/* Trust Badges Box */}
-          <div className="p-3.5 bg-slate-50 dark:bg-slate-850/60 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-2 mb-4 text-xs font-semibold text-slate-700 dark:text-slate-300">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span>Sản phẩm chính hãng, đầy đủ chứng chỉ CO/CQ</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-amber-500 shrink-0" />
-              <span>Giá sỉ ưu đãi thợ kỹ thuật &amp; công ty điện lạnh</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-[#075FA8] dark:text-blue-400 shrink-0" />
-              <span>Xem trực tiếp &amp; thử bo mạch tại 400 Phạm Hùng</span>
-            </div>
-          </div>
         </div>
 
         {/* Contact Action Buttons */}
-        <div className="mt-auto pt-4 border-t border-slate-200 dark:border-slate-800">
+        <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
           <div className="flex gap-2.5 w-full">
             <div className="grid grid-cols-2 gap-2.5 flex-1 min-w-0">
               <a
@@ -173,7 +172,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, c
         </div>
       </div>
 
-      {/* Product Description & Rich Technical Specs Section */}
+      {/* Product Description & Technical Specs */}
       {product.shortDesc && (
         <div className="lg:col-span-12 p-4 sm:p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-4 mt-2">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
@@ -186,69 +185,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, c
             </span>
           </div>
 
-          <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal pt-1">
-            {(() => {
-              const lines = product.shortDesc.split("\n");
-              const elements: React.ReactNode[] = [];
-              let currentList: string[] = [];
-
-              const flushList = (key: string) => {
-                if (currentList.length > 0) {
-                  elements.push(
-                    <ul key={key} className="space-y-2 my-3 pl-2 list-none text-slate-700 dark:text-slate-300 text-xs sm:text-sm">
-                      {currentList.map((item, idx) => (
-                        <li key={idx} className="flex items-start gap-2 leading-relaxed">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  );
-                  currentList = [];
-                }
-              };
-
-              lines.forEach((line, i) => {
-                const trimmed = line.trim();
-                if (!trimmed) {
-                  flushList(`list-${i}`);
-                  return;
-                }
-
-                if (trimmed.startsWith("### ") || trimmed.startsWith("## ")) {
-                  flushList(`list-${i}`);
-                  const text = trimmed.replace(/^#+\s*/, "");
-                  elements.push(
-                    <h3 key={`h3-${i}`} className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white mt-5 mb-2.5 flex items-center gap-2 border-l-4 border-[#075FA8] pl-2.5">
-                      {text}
-                    </h3>
-                  );
-                } else if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
-                  currentList.push(trimmed.replace(/^[-*]\s*/, ""));
-                } else if (trimmed.includes(":") && !trimmed.startsWith("http") && !trimmed.startsWith("Note")) {
-                  flushList(`list-${i}`);
-                  const [key, ...valParts] = trimmed.split(":");
-                  const val = valParts.join(":").trim();
-                  elements.push(
-                    <div key={`kv-${i}`} className="grid grid-cols-1 sm:grid-cols-3 gap-1 py-2 border-b border-slate-200/70 dark:border-slate-800 text-xs sm:text-sm">
-                      <span className="font-bold text-slate-900 dark:text-slate-200">{key.replace(/^[#-]\s*/, "").trim()}</span>
-                      <span className="sm:col-span-2 text-slate-700 dark:text-slate-300">{val}</span>
-                    </div>
-                  );
-                } else {
-                  flushList(`list-${i}`);
-                  elements.push(
-                    <p key={`p-${i}`} className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed my-2">
-                      {trimmed}
-                    </p>
-                  );
-                }
-              });
-
-              flushList("list-end");
-              return elements;
-            })()}
-          </div>
+          <ProductDescription shortDesc={product.shortDesc} />
 
           {/* Da Nang Store Visit & Consultation Box */}
           <div className="mt-6 p-4 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
