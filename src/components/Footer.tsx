@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Phone, MapPin, MessageSquare, Globe, ArrowUp, Lock } from "lucide-react";
+import { Phone, MapPin, MessageSquare, Globe, Lock } from "lucide-react";
 import type { CompanyContact } from "../lib/company";
 
 export interface CategoryLink {
@@ -17,12 +17,8 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   return (
-    <footer className="bg-[#0B1F33] text-slate-200 pt-6 sm:pt-8 pb-24 md:pb-8 border-t border-slate-800 transition-colors duration-300">
+    <footer className="bg-[#0B1F33] text-slate-200 pt-6 sm:pt-8 pb-14 md:pb-8 border-t border-slate-800 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Main Footer Content Grid */}
@@ -170,27 +166,14 @@ export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
             © 2026 | Designed by Tran Van Huy
           </p>
 
-          {/* Admin Link & Scroll to Top Button */}
-          <div className="flex items-center gap-3">
-            <Link
-              href="/admin/login"
-              className="inline-flex items-center gap-1 hover:text-white transition-colors py-0.5"
-            >
-              <Lock className="w-3 h-3" />
-              <span>Quản trị</span>
-            </Link>
-
-            <span className="text-slate-600">•</span>
-
-            <button
-              type="button"
-              onClick={scrollToTop}
-              aria-label="Cuộn về đầu trang"
-              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center border border-slate-700 cursor-pointer transition-all hover:scale-105 active:scale-95 shadow-2xs !min-h-0"
-            >
-              <ArrowUp className="w-4 h-4" />
-            </button>
-          </div>
+          {/* Admin Link (scroll-to-top is handled by the floating action button) */}
+          <Link
+            href="/admin/login"
+            className="inline-flex items-center gap-1 hover:text-white transition-colors py-0.5"
+          >
+            <Lock className="w-3 h-3" />
+            <span>Quản trị</span>
+          </Link>
         </div>
 
       </div>
