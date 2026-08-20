@@ -10,7 +10,7 @@ import {
   ChevronDown,
   Sparkles,
   ShieldCheck,
-  Truck,
+  Store,
   Grid,
   ArrowLeft,
 } from "lucide-react";
@@ -153,8 +153,8 @@ export const AllProductsCatalog: React.FC<AllProductsCatalogProps> = ({
                 <span>100% Chính hãng CO/CQ</span>
               </div>
               <div className="flex items-center gap-1">
-                <Truck className="w-3.5 h-3.5 text-amber-300" />
-                <span>Giao ngay Đà Nẵng</span>
+                <Store className="w-3.5 h-3.5 text-amber-300" />
+                <span>Nhận hàng trực tiếp tại cửa hàng</span>
               </div>
               <div className="flex items-center gap-1">
                 <Phone className="w-3.5 h-3.5 text-blue-300" />

@@ -52,7 +52,7 @@ export const Gallery: React.FC = () => {
             Hình ảnh hoạt động tại Đông Kha
           </h2>
           <p className="mt-2 sm:mt-3 text-xs sm:text-base text-slate-600 dark:text-slate-300 font-normal">
-            Hình ảnh thực tế cửa hàng, kho bãi và giao hàng tại Đà Nẵng. Vuốt ngang để xem thêm.
+            Hình ảnh thực tế cửa hàng, kho vật tư và hoạt động tại Đà Nẵng. Vuốt ngang để xem thêm.
           </p>
 
           {/* Slider Arrow Buttons */}

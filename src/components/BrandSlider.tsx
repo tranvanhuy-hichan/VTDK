@@ -25,7 +25,7 @@ export const BrandSlider: React.FC = () => {
   const duplicatedBrands = [...brands, ...brands];
 
   return (
-    <section className="py-4 bg-[#F6F8FA] dark:bg-[#0F172A] border-y border-slate-200/80 dark:border-slate-800 relative overflow-hidden select-none transition-colors duration-300">
+    <section id="thuong-hieu" className="py-4 bg-[#F6F8FA] dark:bg-[#0F172A] border-y border-slate-200/80 dark:border-slate-800 relative overflow-hidden select-none transition-colors duration-300">
       {/* Absolute Gradient Overlays on Sides to create a fading edge effect */}
       <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-r from-[#F6F8FA] dark:from-[#0F172A] to-transparent z-10 pointer-events-none" />
       <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-l from-[#F6F8FA] dark:from-[#0F172A] to-transparent z-10 pointer-events-none" />

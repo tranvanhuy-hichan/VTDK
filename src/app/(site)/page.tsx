@@ -7,7 +7,6 @@ import { ProductList } from "../../components/ProductList";
 import { Services } from "../../components/Services";
 import { WhyChooseUs } from "../../components/WhyChooseUs";
 import { CustomerTypes } from "../../components/CustomerTypes";
-import { Testimonials } from "../../components/Testimonials";
 import { Gallery } from "../../components/Gallery";
 import { Location } from "../../components/Location";
 
@@ -41,7 +40,6 @@ export default async function HomePage() {
       <Services company={company} services={services} />
       <WhyChooseUs company={company} />
       <CustomerTypes />
-      <Testimonials />
       <Gallery />
       <Location company={company} />
     </>

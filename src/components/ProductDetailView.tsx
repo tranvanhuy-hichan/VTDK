@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Phone, MessageSquare, ShieldCheck, Truck, MapPin, CheckCircle2, Check, FileText } from "lucide-react";
+import { Phone, MessageSquare, ShieldCheck, MapPin, CheckCircle2, Check, FileText } from "lucide-react";
 import type { CompanyContact } from "../lib/company";
 import { ImageCarousel } from "./ImageCarousel";
 
@@ -92,18 +92,12 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, c
           )}
 
           {/* Price Callout Banner Box */}
-          <div className="p-3.5 sm:p-5 bg-gradient-to-r from-orange-50/80 to-amber-50/80 dark:from-slate-800 dark:to-slate-800/80 rounded-2xl border border-orange-200/80 dark:border-slate-700/80 mb-4 flex flex-row items-center justify-between gap-2 shadow-2xs">
-            <div>
-              <span className="text-[10px] sm:text-xs text-orange-800/80 dark:text-slate-400 block font-bold uppercase tracking-wider mb-0.5">
-                Giá bán lẻ tham khảo
-              </span>
-              <span className="text-xl sm:text-3xl lg:text-4xl font-black text-orange-600 dark:text-orange-400 tracking-tight block">
-                {displayPrice > 0 ? `${displayPrice.toLocaleString("vi-VN")}đ` : "Liên hệ báo giá"}
-              </span>
-            </div>
-            <span className="inline-flex items-center gap-1 bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-[10px] sm:text-xs font-extrabold px-2.5 py-1 rounded-xl border border-emerald-200 dark:border-emerald-800 shrink-0">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span>Hàng Sẵn Kho</span>
+          <div className="p-3.5 sm:p-5 bg-gradient-to-r from-orange-50/80 to-amber-50/80 dark:from-slate-800 dark:to-slate-800/80 rounded-2xl border border-orange-200/80 dark:border-slate-700/80 mb-4 shadow-2xs">
+            <span className="text-[10px] sm:text-xs text-orange-800/80 dark:text-slate-400 block font-bold uppercase tracking-wider mb-0.5">
+              Giá bán lẻ tham khảo
+            </span>
+            <span className="text-xl sm:text-3xl lg:text-4xl font-black text-orange-600 dark:text-orange-400 tracking-tight block">
+              {displayPrice > 0 ? `${displayPrice.toLocaleString("vi-VN")}đ` : "Liên hệ báo giá"}
             </span>
           </div>
 

@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Phone, MessageSquare, ShieldCheck, MapPin, CheckCircle2, Truck, ChevronRight, HelpCircle, ArrowLeft, Home } from "lucide-react";
+import { Phone, MessageSquare, MapPin, CheckCircle2, ChevronRight, HelpCircle, ArrowLeft, Home } from "lucide-react";
 import type { CompanyContact } from "@/lib/company";
 import { ProductCard } from "@/components/ProductCard";
 
