@@ -210,11 +210,11 @@ export const COMPANY_DATA = {
   ] as WhyChooseUsItem[],
 
   customerTypes: [
-    { id: "tho", title: "Kỹ Thuật Viên Sửa Chữa", description: "Cung cấp đầy đủ linh kiện, phụ tùng và công cụ cầm tay chuyên dụng phục vụ việc sửa chữa hàng ngày.", icon: "Wrench" },
-    { id: "doi-thi-cong", title: "Tổ Đội Thi Công Cơ Điện", description: "Đáp ứng nhanh số lượng lớn ống đồng, bảo ôn, gen cách nhiệt phục vụ tiến độ lắp đặt của dự án.", icon: "Users" },
-    { id: "dai-ly", title: "Đại Lý & Cửa Hàng Bán Lẻ", description: "Cung cấp nguồn sỉ ổn định, chiết khấu cao cho các cửa hàng bán lẻ vật tư điện lạnh khu vực miền Trung.", icon: "ShoppingBag" },
-    { id: "nhan-thau", title: "Nhà Thầu Cơ Điện (M&E)", description: "Đối tác cung ứng vật tư điều hòa & thông gió trọn gói cho công trình xây dựng, xuất hóa đơn tài chính VAT đầy đủ.", icon: "Briefcase" },
-    { id: "gia-dinh", title: "Hộ Gia Đình & Người Sử Dụng", description: "Tư vấn, cung cấp linh kiện chính hãng thay thế cho các thiết bị điều hòa, tủ lạnh tại nhà.", icon: "Home" }
+    { id: "tho", title: "Kỹ Thuật Viên Sửa Chữa", description: "Đầy đủ linh kiện, phụ tùng chính hãng và dụng cụ chuyên dụng có sẵn tại kho, tra mã nhanh cho công việc sửa chữa hàng ngày.", icon: "Wrench" },
+    { id: "doi-thi-cong", title: "Tổ Đội Thi Công Cơ Điện", description: "Nguồn hàng số lượng lớn ống đồng, bảo ôn, gen cách nhiệt luôn sẵn kho, đảm bảo tiến độ lắp đặt công trình.", icon: "Users" },
+    { id: "dai-ly", title: "Đại Lý & Cửa Hàng Bán Lẻ", description: "Nguồn hàng sỉ ổn định, giá cạnh tranh cho các cửa hàng bán lẻ vật tư điện lạnh tại Đà Nẵng & miền Trung.", icon: "ShoppingBag" },
+    { id: "nhan-thau", title: "Nhà Thầu Cơ Điện (M&E)", description: "Cung ứng vật tư điều hòa & thông gió cho công trình xây dựng, xuất hóa đơn tài chính VAT đầy đủ theo yêu cầu.", icon: "Briefcase" },
+    { id: "gia-dinh", title: "Hộ Gia Đình & Người Sử Dụng", description: "Tư vấn tận tình, cung cấp đúng linh kiện chính hãng thay thế cho điều hòa, tủ lạnh, máy giặt tại nhà.", icon: "Home" }
   ] as CustomerTypeItem[],
 
   gallery: [

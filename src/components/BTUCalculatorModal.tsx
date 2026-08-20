@@ -75,7 +75,8 @@ export const BTUCalculatorModal: React.FC<BTUCalculatorModalProps> = ({ buttonCl
         }
       >
         <Calculator className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-        <span>Tính công suất máy &amp; ống đồng</span>
+        <span className="sm:hidden">Tính công suất</span>
+        <span className="hidden sm:inline">Tính công suất máy &amp; ống đồng</span>
       </button>
 
       {mounted && modalContent && createPortal(modalContent, document.body)}

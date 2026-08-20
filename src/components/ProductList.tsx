@@ -88,94 +88,87 @@ export const ProductList: React.FC<ProductListProps> = ({
   }, [selectedCategory, searchTerm, pageSize]);
 
   return (
-    <section id="san-pham" className="py-8 sm:py-16 bg-[#F6F8FA] dark:bg-[#0F172A] relative transition-colors duration-300">
+    <section id="san-pham" className="py-6 sm:py-10 bg-[#F6F8FA] dark:bg-[#0F172A] relative transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-5 sm:mb-8">
-          <div className="inline-flex items-center gap-2 bg-blue-100/70 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-[#075FA8] dark:text-blue-400 px-3 py-1 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-2.5 sm:mb-3">
+        <div className="text-center max-w-3xl mx-auto mb-4 sm:mb-6">
+          <div className="inline-flex items-center gap-2 bg-blue-100/70 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-[#075FA8] dark:text-blue-400 px-3 py-1 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-2 sm:mb-2.5">
             DANH SÁCH SẢN PHẨM VẬT TƯ
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
             Sản phẩm phân phối chính hãng
           </h2>
-          <p className="mt-2 sm:mt-3 text-xs sm:text-base text-slate-600 dark:text-slate-300 font-normal mb-4">
+          <p className="mt-1.5 sm:mt-2 text-xs sm:text-base text-slate-600 dark:text-slate-300 font-normal mb-2.5">
             Bảng giá tham khảo vật tư điện lạnh chất lượng cao của Đông Kha.
           </p>
 
-          <div className="flex justify-center mt-3">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 mt-1.5">
             <Link
               href="/san-pham"
               className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#075FA8] dark:text-blue-400 hover:text-[#0B1F33] dark:hover:text-blue-300 transition-colors group"
             >
               <Grid className="w-4 h-4 transition-transform group-hover:scale-110 shrink-0" />
-              <span className="group-hover:underline">Xem Trang Catalog Tất Cả Sản Phẩm ➔</span>
+              <span className="group-hover:underline sm:hidden">Xem tất cả ➔</span>
+              <span className="group-hover:underline hidden sm:inline">Xem Trang Catalog Tất Cả Sản Phẩm ➔</span>
             </Link>
+            <span className="hidden sm:inline text-slate-300 dark:text-slate-700">|</span>
+            <BTUCalculatorModal buttonClassName="inline-flex items-center justify-center gap-1.5 bg-amber-50 dark:bg-slate-800 hover:bg-amber-100 dark:hover:bg-slate-700 text-amber-900 dark:text-amber-300 font-bold text-xs sm:text-sm px-3 py-1.5 rounded-full border border-amber-200/80 dark:border-slate-700 shadow-2xs transition-all cursor-pointer !min-h-0" />
           </div>
         </div>
 
         {/* Unified Search & Category Control Toolbar */}
-        <div className="max-w-4xl mx-auto mb-4 sm:mb-10">
-          
-          {/* Top Row: Search Input */}
-          <div className="relative w-full mb-3 sm:mb-4">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Tìm kiếm sản phẩm theo tên..."
-              className="w-full text-xs sm:text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-9 pr-8 py-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#075FA8] dark:focus:border-blue-500 focus:ring-1 focus:ring-[#075FA8] shadow-2xs transition-all"
-            />
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 pointer-events-none">
-              <Search className="w-4 h-4" />
-            </span>
-            {searchTerm && (
-              <button
-                type="button"
-                onClick={() => setSearchTerm("")}
-                aria-label="Xóa tìm kiếm"
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 !min-h-0"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </div>
+        <div className="max-w-4xl mx-auto mb-4 sm:mb-6">
 
-          {/* Category Filter & Calculator Row: 1 Row on Mobile (< sm) */}
-          <div>
-            {/* Mobile Row (< sm): Filter Select + Calculator Button in 1 Row */}
-            <div className="grid grid-cols-2 gap-2 sm:hidden">
-              {/* Category Select Dropdown */}
-              <div className="relative w-full">
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full appearance-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-3 pr-7 py-2.5 font-bold text-xs text-slate-900 dark:text-slate-100 shadow-2xs focus:outline-none focus:border-[#075FA8] dark:focus:border-blue-500 focus:ring-1 focus:ring-[#075FA8] truncate cursor-pointer"
+          {/* Top Row: Search Input (+ Category Select side-by-side on mobile) */}
+          <div className="flex gap-2 mb-2.5 sm:block sm:mb-3">
+            <div className="relative flex-1 sm:w-full">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Tìm kiếm sản phẩm theo tên..."
+                className="w-full text-xs sm:text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-9 pr-8 py-2.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#075FA8] dark:focus:border-blue-500 focus:ring-1 focus:ring-[#075FA8] shadow-2xs transition-all"
+              />
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 pointer-events-none">
+                <Search className="w-4 h-4" />
+              </span>
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm("")}
+                  aria-label="Xóa tìm kiếm"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 !min-h-0"
                 >
-                  <option value="all">Tất cả danh mục sản phẩm</option>
-                  {initialCategories.map((cat) => (
-                    <option key={cat.id} value={cat.slug}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-slate-500">
-                  <ChevronDown className="w-4 h-4" />
-                </div>
-              </div>
-
-              {/* Calculator Button */}
-              <div className="w-full">
-                <BTUCalculatorModal buttonClassName="inline-flex items-center justify-center gap-1 bg-amber-50 dark:bg-slate-800 hover:bg-amber-100 dark:hover:bg-slate-700 text-amber-900 dark:text-amber-300 font-bold text-xs px-2 py-2.5 rounded-xl border border-amber-200/80 dark:border-slate-700 shadow-2xs transition-all cursor-pointer !min-h-0 w-full truncate" />
-              </div>
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
 
-            {/* Desktop View (>= sm): BTU Calculator Button + Full Category Pills */}
-            <div className="hidden sm:flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
-              <div className="shrink-0">
-                <BTUCalculatorModal />
+            {/* Mobile (< sm): Category Select Dropdown, next to search */}
+            <div className="relative w-28 shrink-0 sm:hidden">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full appearance-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-2.5 pr-6 py-2.5 font-bold text-xs text-slate-900 dark:text-slate-100 shadow-2xs focus:outline-none focus:border-[#075FA8] dark:focus:border-blue-500 focus:ring-1 focus:ring-[#075FA8] truncate cursor-pointer"
+              >
+                <option value="all">Danh mục</option>
+                {initialCategories.map((cat) => (
+                  <option key={cat.id} value={cat.slug}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-1.5 pointer-events-none text-slate-500">
+                <ChevronDown className="w-4 h-4" />
               </div>
+            </div>
+          </div>
 
+          {/* Category Filter Row */}
+          <div>
+            {/* Desktop View (>= sm): Full Category Pills */}
+            <div className="hidden sm:flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
               <button
                 onClick={() => setSelectedCategory("all")}
                 className={`!min-h-0 px-4 py-2 text-sm font-bold rounded-xl border transition-all cursor-pointer ${

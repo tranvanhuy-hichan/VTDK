@@ -20,8 +20,10 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
             Công ty TNHH Vật tư Đông Kha
           </div>
 
-          <h1 className="max-w-sm text-[1.7rem] font-black leading-[1.15] tracking-[-0.04em] text-slate-950 dark:text-white min-[390px]:text-[1.9rem]">
-            Vật Tư Điện Lạnh Đông Kha <span className="text-[#075FA8] dark:text-blue-400">Đà Nẵng – Sỉ &amp; Lẻ Chính Hãng</span>
+          <h1 className="text-[1.65rem] font-black leading-[1.2] tracking-[-0.03em] text-slate-950 dark:text-white min-[390px]:text-[1.85rem]">
+            Vật Tư Điện Lạnh
+            <span className="block text-[#075FA8] dark:text-blue-400">Đông Kha Đà Nẵng</span>
+            <span className="block">Sỉ &amp; Lẻ Chính Hãng</span>
           </h1>
           <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-300">
             Chuyên sỉ &amp; lẻ ống đồng, gas lạnh, linh kiện điều hòa – tủ lạnh – máy giặt chính hãng tại Đà Nẵng — tư vấn đúng nhu cầu, báo giá nhanh.
