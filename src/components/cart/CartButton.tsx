@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { useCart } from "../../context/CartContext";
@@ -13,6 +13,16 @@ interface CartButtonProps {
 export const CartButton: React.FC<CartButtonProps> = ({ variant = "icon", className }) => {
   const { items } = useCart();
   const totalQty = items.reduce((sum, i) => sum + i.qty, 0);
+  const [bump, setBump] = useState(false);
+
+  useEffect(() => {
+    const onLanded = () => {
+      setBump(true);
+      window.setTimeout(() => setBump(false), 500);
+    };
+    window.addEventListener("cart-fly-landed", onLanded);
+    return () => window.removeEventListener("cart-fly-landed", onLanded);
+  }, []);
 
   if (variant === "row") {
     return (
@@ -36,14 +46,19 @@ export const CartButton: React.FC<CartButtonProps> = ({ variant = "icon", classN
     <Link
       href="/gio-hang"
       aria-label="Giỏ hàng"
+      data-cart-icon="true"
       className={
         className ||
         "relative p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer !min-h-0"
       }
     >
-      <ShoppingCart className="w-5 h-5" />
+      <ShoppingCart className={`w-5 h-5 ${bump ? "animate-cart-pop" : ""}`} />
       {totalQty > 0 && (
-        <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-[#F47A20] text-white text-[10px] font-extrabold flex items-center justify-center leading-none">
+        <span
+          className={`absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-[#F47A20] text-white text-[10px] font-extrabold flex items-center justify-center leading-none ${
+            bump ? "animate-cart-badge-bump" : ""
+          }`}
+        >
           {totalQty}
         </span>
       )}

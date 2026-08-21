@@ -5,6 +5,7 @@ import Image from "next/image";
 import { createPortal } from "react-dom";
 import { ShoppingCart, Check, X, Minus, Plus } from "lucide-react";
 import { useCart } from "../../context/CartContext";
+import { flyToCart } from "../../lib/flyToCart";
 
 interface VariantOption {
   id: string;
@@ -34,6 +35,7 @@ export const AddToCartOptionsButton: React.FC<AddToCartOptionsButtonProps> = ({
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(variants[0]?.id ?? null);
   const [qty, setQty] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -78,6 +80,10 @@ export const AddToCartOptionsButton: React.FC<AddToCartOptionsButtonProps> = ({
       },
       qty
     );
+
+    if (triggerRef.current) {
+      flyToCart(product.image, triggerRef.current);
+    }
 
     setIsOpen(false);
     setJustAdded(true);
@@ -200,13 +206,14 @@ export const AddToCartOptionsButton: React.FC<AddToCartOptionsButtonProps> = ({
   return (
     <>
       <button
+        ref={triggerRef}
         type="button"
         onClick={handleOpen}
         aria-label="Thêm vào giỏ"
         title="Thêm vào giỏ"
         className={`${sizeClassName} shrink-0 rounded-xl border flex items-center justify-center transition-all cursor-pointer !min-h-0 ${
           justAdded
-            ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400"
+            ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 animate-cart-pop"
             : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-[#075FA8] hover:text-[#075FA8] dark:hover:text-blue-400"
         }`}
       >
