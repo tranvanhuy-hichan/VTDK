@@ -31,6 +31,10 @@ export default async function HomePage() {
     orderBy: { sortOrder: "asc" },
   });
 
+  const galleryImages = await prisma.galleryImage.findMany({
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+  });
+
   return (
     <>
       <Hero company={company} />
@@ -40,7 +44,7 @@ export default async function HomePage() {
       <CustomerTypes />
       <Services company={company} services={services} />
       <WhyChooseUs company={company} />
-      <Gallery />
+      <Gallery items={galleryImages} />
       <Location company={company} />
     </>
   );

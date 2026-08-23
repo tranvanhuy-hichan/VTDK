@@ -1,31 +1,22 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { ZoomIn, X, Camera, Image as ImageIcon, ChevronLeft, ChevronRight } from "lucide-react";
 
-interface DynamicGalleryItem {
+interface GalleryItem {
   id: string;
   url: string;
   title: string;
-  filename: string;
 }
 
-export const Gallery: React.FC = () => {
-  const [galleryItems, setGalleryItems] = useState<DynamicGalleryItem[]>([]);
-  const [activeImage, setActiveImage] = useState<DynamicGalleryItem | null>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+interface GalleryProps {
+  items: GalleryItem[];
+}
 
-  useEffect(() => {
-    fetch("/api/gallery")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setGalleryItems(data);
-        }
-      })
-      .catch(() => {});
-  }, []);
+export const Gallery: React.FC<GalleryProps> = ({ items: galleryItems }) => {
+  const [activeImage, setActiveImage] = useState<GalleryItem | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
