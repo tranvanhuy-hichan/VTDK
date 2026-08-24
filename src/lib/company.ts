@@ -3,7 +3,6 @@ import { COMPANY_DATA } from "../data/company";
 
 export { COMPANY_DATA };
 
-
 export interface CompanyContact {
   name: string;
   address: string;
@@ -37,6 +36,11 @@ const FALLBACK: CompanyContact = {
 };
 
 export async function getCompanyInfo(): Promise<CompanyContact> {
-  const info = await prisma.companyInfo.findFirst();
-  return info ?? FALLBACK;
+  try {
+    const info = await prisma.companyInfo.findFirst();
+    return info ?? FALLBACK;
+  } catch (e) {
+    console.warn("getCompanyInfo database query failed, using fallback:", e);
+    return FALLBACK;
+  }
 }

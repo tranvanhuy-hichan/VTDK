@@ -20,9 +20,13 @@ import {
   ExternalLink,
   ShieldCheck,
   ChevronRight,
+  Bell,
+  Volume2,
+  VolumeX,
+  Sparkles,
 } from "lucide-react";
 import { logoutAction } from "../../app/admin/actions";
-import { AdminOrderNotifier } from "./AdminOrderNotifier";
+import { AdminNotificationCenter, playAdminChimeSound } from "./AdminNotificationCenter";
 import type { UserProfile } from "../../types/auth";
 
 interface AdminShellProps {
@@ -73,6 +77,8 @@ export const AdminShell: React.FC<AdminShellProps> = ({
   const pathname = usePathname();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
+  const [permission, setPermission] = useState<NotificationPermission>("default");
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -87,6 +93,13 @@ export const AdminShell: React.FC<AdminShellProps> = ({
 
   useEffect(() => {
     setIsDarkMode(document.documentElement.classList.contains("dark"));
+    const soundPref = localStorage.getItem("admin_order_sound");
+    if (soundPref === "false") {
+      setIsSoundEnabled(false);
+    }
+    if (typeof window !== "undefined" && "Notification" in window) {
+      setPermission(Notification.permission);
+    }
   }, []);
 
   // Close dropdown on click outside
@@ -112,6 +125,28 @@ export const AdminShell: React.FC<AdminShellProps> = ({
     }
   };
 
+  const toggleSound = () => {
+    const next = !isSoundEnabled;
+    setIsSoundEnabled(next);
+    localStorage.setItem("admin_order_sound", next ? "true" : "false");
+    if (next) {
+      playAdminChimeSound();
+    }
+  };
+
+  const handleRequestPermission = async () => {
+    if (typeof window === "undefined" || !("Notification" in window)) return;
+    try {
+      const perm = await Notification.requestPermission();
+      setPermission(perm);
+      if (perm === "granted") {
+        playAdminChimeSound();
+      }
+    } catch (e) {
+      console.log("Permission error:", e);
+    }
+  };
+
   const handleLogout = async () => {
     await logoutAction();
     window.location.href = "/";
@@ -120,7 +155,6 @@ export const AdminShell: React.FC<AdminShellProps> = ({
   const isActive = (href: string) =>
     href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
 
-  // Find active label for breadcrumb
   const allItems = NAV_SECTIONS.flatMap((s) => s.items);
   const currentActiveItem = allItems.find((item) => isActive(item.href));
 
@@ -170,7 +204,6 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                         : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
                     }`}
                   >
-                    {/* Active Cyan Left Indicator */}
                     {active && (
                       <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-cyan-400 rounded-r-full shadow-sm shadow-cyan-400" />
                     )}
@@ -197,9 +230,8 @@ export const AdminShell: React.FC<AdminShellProps> = ({
         ))}
       </div>
 
-      {/* Sidebar Footer: Database Status & Logout */}
+      {/* Sidebar Footer */}
       <div className="p-2.5 border-t border-slate-800/80 bg-[#06101c]/60 space-y-1.5">
-        {/* Supabase PostgreSQL Status Indicator */}
         <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-[10px] font-bold text-slate-300">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -252,7 +284,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({
         {/* Modern Compact Topbar Header */}
         <header className="sticky top-0 z-20 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
           <div className="flex items-center justify-between gap-3 px-3 sm:px-5 py-2">
-            {/* Left: Mobile Toggle & Perfectly Centered Breadcrumbs */}
+            {/* Left: Mobile Toggle & Centered Breadcrumbs */}
             <div className="flex items-center gap-2.5 min-w-0">
               <button
                 onClick={() => setIsMobileNavOpen(true)}
@@ -262,7 +294,6 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                 <Menu className="w-4.5 h-4.5" />
               </button>
 
-              {/* Breadcrumbs Navigation */}
               <nav className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 min-w-0 leading-none">
                 <Link
                   href="/admin"
@@ -281,10 +312,10 @@ export const AdminShell: React.FC<AdminShellProps> = ({
               </nav>
             </div>
 
-            {/* Right: Store link, notification alert & user dropdown */}
+            {/* Right: Notifications, Store Link & User Profile Dropdown */}
             <div className="flex items-center gap-2 shrink-0">
-              {/* Order Notification Bell / Sound Status */}
-              <AdminOrderNotifier />
+              {/* Notification Center Bell */}
+              <AdminNotificationCenter />
 
               {/* External Client Store Link */}
               <a
@@ -297,7 +328,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                 <ExternalLink className="w-3 h-3 text-slate-400" />
               </a>
 
-              {/* Admin Profile Dropdown with Dark Mode Inside */}
+              {/* Admin Profile Dropdown (With Config Inside) */}
               <div className="relative shrink-0" ref={userMenuRef}>
                 <button
                   type="button"
@@ -320,8 +351,8 @@ export const AdminShell: React.FC<AdminShellProps> = ({
 
                 {/* Dropdown Popover */}
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-2 z-50 animate-in fade-in zoom-in-95 text-left">
-                    <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-800">
+                  <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-2.5 z-50 animate-in fade-in zoom-in-95 text-left space-y-1">
+                    <div className="px-2.5 py-1.5 border-b border-slate-100 dark:border-slate-800">
                       <p className="text-xs font-black text-slate-900 dark:text-white truncate">
                         {adminName}
                       </p>
@@ -334,14 +365,50 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                       </div>
                     </div>
 
-                    <div className="py-1 space-y-0.5">
-                      {/* Dark/Light Mode Toggle directly inside Dropdown */}
+                    <div className="py-1 space-y-1">
+                      {/* Sound & Notification Config Inside User Dropdown */}
+                      <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1.5">
+                        <div className="flex items-center justify-between text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                          <span className="flex items-center gap-1.5">
+                            {isSoundEnabled ? (
+                              <Volume2 className="w-3.5 h-3.5 text-emerald-500" />
+                            ) : (
+                              <VolumeX className="w-3.5 h-3.5 text-slate-400" />
+                            )}
+                            <span>Chuông báo đơn:</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={toggleSound}
+                            className={`text-[10px] font-black px-2 py-0.5 rounded-md cursor-pointer !min-h-0 transition-colors ${
+                              isSoundEnabled
+                                ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+                                : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                            }`}
+                          >
+                            {isSoundEnabled ? "Đang bật" : "Tắt"}
+                          </button>
+                        </div>
+
+                        {permission !== "granted" && (
+                          <button
+                            type="button"
+                            onClick={handleRequestPermission}
+                            className="w-full py-1 px-2 rounded-lg bg-[#075FA8] hover:bg-[#0B3D66] text-white text-[10px] font-extrabold flex items-center justify-center gap-1 cursor-pointer !min-h-0"
+                          >
+                            <Bell className="w-3 h-3" />
+                            <span>Cấp quyền Push Notification</span>
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Dark/Light Mode Toggle */}
                       <button
                         type="button"
                         onClick={toggleDarkMode}
-                        className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer !min-h-0 text-left"
+                        className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer !min-h-0 text-left"
                       >
-                        <div className="flex items-center gap-2.5">
+                        <div className="flex items-center gap-2">
                           {isDarkMode ? (
                             <Sun className="w-3.5 h-3.5 text-amber-400" />
                           ) : (
@@ -349,7 +416,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                           )}
                           <span>{isDarkMode ? "Giao diện sáng" : "Giao diện tối"}</span>
                         </div>
-                        <span className="text-[10px] text-slate-400 font-bold px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded-md">
+                        <span className="text-[10px] text-slate-400 font-bold px-1.5 py-0.2 bg-slate-100 dark:bg-slate-800 rounded">
                           {isDarkMode ? "Bật" : "Tắt"}
                         </span>
                       </button>
@@ -357,7 +424,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                       <Link
                         href="/tai-khoan/ho-so"
                         onClick={() => setIsUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                       >
                         <User className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
                         <span>Hồ sơ &amp; Đổi mật khẩu</span>
@@ -366,7 +433,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                       <Link
                         href="/admin/company"
                         onClick={() => setIsUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                       >
                         <Building2 className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
                         <span>Thông tin doanh nghiệp</span>
@@ -377,7 +444,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                       <button
                         type="button"
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer !min-h-0 text-left"
+                        className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer !min-h-0 text-left"
                       >
                         <LogOut className="w-3.5 h-3.5" />
                         <span>Đăng xuất</span>

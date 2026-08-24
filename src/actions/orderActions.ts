@@ -48,34 +48,45 @@ export async function createOrderAction(dto: CreateOrderDTO): Promise<{
     }
 
     // Auto save/update address and phone to user profile if logged in and shipping is DELIVERY
-
-    if (currentUser) {
+    if (currentUser && currentUser.role === "CUSTOMER") {
       try {
-        await prisma.user.update({
-          where: { id: currentUser.id },
-          data: {
-            phone: customerPhone,
-            ...(shippingMethod === "DELIVERY" && address ? { address } : {}),
-          },
-        });
-      } catch {}
+        const updateData: { phone?: string; address?: string } = {};
+        if (!currentUser.phone && customerPhone) {
+          updateData.phone = customerPhone;
+        }
+        if (!currentUser.address && address && shippingMethod === "DELIVERY") {
+          updateData.address = address;
+        }
+        if (Object.keys(updateData).length > 0) {
+          await prisma.user.update({
+            where: { id: currentUser.id },
+            data: updateData,
+          });
+        }
+      } catch (err) {
+        console.warn("Could not auto-update user profile info:", err);
+      }
     }
 
-    const totalAmount = dto.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    // Calculate total
+    const totalAmount = dto.items.reduce(
+      (sum, item) => sum + (item.price || 0) * item.quantity,
+      0
+    );
+
     const orderCode = generateOrderCode();
 
     const order = await prisma.order.create({
       data: {
         orderCode,
-        userId: currentUser?.id || null,
         customerName,
         customerPhone,
-        customerEmail: dto.customerEmail?.trim() || currentUser?.email || null,
         shippingMethod,
         address: shippingMethod === "DELIVERY" ? address : null,
         note: note || null,
         totalAmount,
         status: "PENDING",
+        userId: currentUser?.id || null,
         items: {
           create: dto.items.map((item) => ({
             productId: item.productId || null,
@@ -88,32 +99,34 @@ export async function createOrderAction(dto: CreateOrderDTO): Promise<{
           })),
         },
       },
-      include: {
-        items: true,
-      },
     });
 
     revalidatePath("/admin");
-    revalidatePath("/tai-khoan/don-hang");
+    revalidatePath("/admin/orders");
+    if (currentUser) {
+      revalidatePath("/tai-khoan/don-hang");
+    }
 
     return {
       success: true,
       orderCode: order.orderCode,
       orderId: order.id,
     };
-  } catch (err: unknown) {
+  } catch (err) {
     console.error("createOrderAction error:", err);
-    return { success: false, error: "Không thể tạo đơn hàng. Vui lòng thử lại." };
+    return {
+      success: false,
+      error: "Đã xảy ra lỗi khi tạo đơn hàng. Vui lòng thử lại.",
+    };
   }
 }
 
+// User / Guest: Get order by code
 export async function getOrderByCodeAction(orderCode: string): Promise<OrderDetail | null> {
   try {
     const order = await prisma.order.findUnique({
       where: { orderCode },
-      include: {
-        items: true,
-      },
+      include: { items: true },
     });
 
     if (!order) return null;
@@ -129,6 +142,7 @@ export async function getOrderByCodeAction(orderCode: string): Promise<OrderDeta
   }
 }
 
+// Customer: Get my orders
 export async function getMyOrdersAction(): Promise<OrderDetail[]> {
   try {
     const user = await getCurrentUser();
@@ -151,31 +165,15 @@ export async function getMyOrdersAction(): Promise<OrderDetail[]> {
   }
 }
 
-// Admin: Get all orders with filtering
-export async function adminGetOrdersAction(params?: {
-  status?: string;
-  query?: string;
-}): Promise<OrderDetail[]> {
+// Admin: Get all orders with filter
+export async function adminGetOrdersAction(statusFilter?: string): Promise<OrderDetail[]> {
   try {
     const admin = await getCurrentAdmin();
-    if (!admin) {
-      throw new Error("Unauthorized");
-    }
+    if (!admin) return [];
 
-    const whereClause: Record<string, unknown> = {};
-
-    if (params?.status && params.status !== "ALL") {
-      whereClause.status = params.status as OrderStatus;
-    }
-
-    if (params?.query?.trim()) {
-      const q = params.query.trim();
-      whereClause.OR = [
-        { orderCode: { contains: q, mode: "insensitive" } },
-        { customerName: { contains: q, mode: "insensitive" } },
-        { customerPhone: { contains: q, mode: "insensitive" } },
-        { customerEmail: { contains: q, mode: "insensitive" } },
-      ];
+    const whereClause: { status?: OrderStatus } = {};
+    if (statusFilter && statusFilter !== "ALL") {
+      whereClause.status = statusFilter as OrderStatus;
     }
 
     const orders = await prisma.order.findMany({
@@ -221,7 +219,7 @@ export async function adminUpdateOrderStatusAction(
   }
 }
 
-// Admin: Check new orders & pending count for real-time notification
+// Admin: Check new orders & pending count for real-time notification center
 export async function adminCheckNewOrdersAction(): Promise<{
   success: boolean;
   pendingCount: number;
@@ -234,17 +232,27 @@ export async function adminCheckNewOrdersAction(): Promise<{
     totalAmount: number;
     createdAt: string;
   } | null;
+  recentOrders?: Array<{
+    id: string;
+    orderCode: string;
+    customerName: string;
+    customerPhone: string;
+    totalAmount: number;
+    status: OrderStatus;
+    createdAt: string;
+  }>;
 }> {
   try {
     const admin = await getCurrentAdmin();
     if (!admin) {
-      return { success: false, pendingCount: 0, totalCount: 0 };
+      return { success: false, pendingCount: 0, totalCount: 0, recentOrders: [] };
     }
 
-    const [pendingCount, totalCount, latest] = await Promise.all([
+    const [pendingCount, totalCount, recentList] = await Promise.all([
       prisma.order.count({ where: { status: "PENDING" } }),
       prisma.order.count(),
-      prisma.order.findFirst({
+      prisma.order.findMany({
+        take: 6,
         orderBy: { createdAt: "desc" },
         select: {
           id: true,
@@ -252,25 +260,26 @@ export async function adminCheckNewOrdersAction(): Promise<{
           customerName: true,
           customerPhone: true,
           totalAmount: true,
+          status: true,
           createdAt: true,
         },
       }),
     ]);
 
+    const formattedRecent = recentList.map((o) => ({
+      ...o,
+      createdAt: o.createdAt.toISOString(),
+    }));
+
     return {
       success: true,
       pendingCount,
       totalCount,
-      latestOrder: latest
-        ? {
-            ...latest,
-            createdAt: latest.createdAt.toISOString(),
-          }
-        : null,
+      latestOrder: formattedRecent[0] || null,
+      recentOrders: formattedRecent,
     };
   } catch (err) {
     console.error("adminCheckNewOrdersAction error:", err);
-    return { success: false, pendingCount: 0, totalCount: 0 };
+    return { success: false, pendingCount: 0, totalCount: 0, recentOrders: [] };
   }
 }
-
