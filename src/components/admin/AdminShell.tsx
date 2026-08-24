@@ -19,8 +19,10 @@ import {
   ChevronDown,
   ExternalLink,
   ShieldCheck,
+  ChevronRight,
 } from "lucide-react";
 import { logoutAction } from "../../app/admin/actions";
+import { AdminOrderNotifier } from "./AdminOrderNotifier";
 import type { UserProfile } from "../../types/auth";
 
 interface AdminShellProps {
@@ -29,13 +31,38 @@ interface AdminShellProps {
   adminUser?: UserProfile | null;
 }
 
-const NAV_ITEMS = [
-  { href: "/admin", label: "Trang chủ Admin", icon: LayoutDashboard },
-  { href: "/admin/orders", label: "Đơn hàng", icon: ShoppingBag },
-  { href: "/admin/products", label: "Sản phẩm", icon: Package },
-  { href: "/admin/services", label: "Giải pháp", icon: Wrench },
-  { href: "/admin/gallery", label: "Hình ảnh", icon: ImageIcon },
-  { href: "/admin/company", label: "Thông tin công ty", icon: Building2 },
+interface NavSection {
+  title: string;
+  items: {
+    href: string;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    badge?: string;
+  }[];
+}
+
+const NAV_SECTIONS: NavSection[] = [
+  {
+    title: "TỔNG QUAN",
+    items: [
+      { href: "/admin", label: "Bảng điều khiển", icon: LayoutDashboard },
+    ],
+  },
+  {
+    title: "BÁN HÀNG & KHO VẬT TƯ",
+    items: [
+      { href: "/admin/orders", label: "Đơn hàng", icon: ShoppingBag, badge: "Mới" },
+      { href: "/admin/products", label: "Sản phẩm & Giá sỉ", icon: Package },
+      { href: "/admin/services", label: "Giải pháp kỹ thuật", icon: Wrench },
+    ],
+  },
+  {
+    title: "NỘI DUNG & THƯƠNG HIỆU",
+    items: [
+      { href: "/admin/gallery", label: "Thư viện hình ảnh", icon: ImageIcon },
+      { href: "/admin/company", label: "Thông tin công ty", icon: Building2 },
+    ],
+  },
 ];
 
 export const AdminShell: React.FC<AdminShellProps> = ({
@@ -49,7 +76,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
-  const adminName = adminUser?.name || "Quản trị viên";
+  const adminName = adminUser?.name || "Đông Kha";
   const adminEmail = adminUser?.email || "vattudongkha@gmail.com";
   const initials = adminName
     .split(" ")
@@ -93,81 +120,125 @@ export const AdminShell: React.FC<AdminShellProps> = ({
   const isActive = (href: string) =>
     href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
 
-  const activeItem = NAV_ITEMS.find((item) => isActive(item.href));
+  // Find active label for breadcrumb
+  const allItems = NAV_SECTIONS.flatMap((s) => s.items);
+  const currentActiveItem = allItems.find((item) => isActive(item.href));
 
   const sidebarContent = (
-    <>
-      <div className="flex items-center gap-3 px-3.5 py-4 border-b border-slate-800/80 bg-slate-900/60">
-        <div className="w-10 h-10 rounded-2xl bg-white p-1 shadow-sm border border-slate-700/60 flex items-center justify-center shrink-0 overflow-hidden">
-          <img src="/images/logo.png" alt="Logo" className="w-full h-full object-contain rounded-xl" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <h1 className="text-sm font-black tracking-tight text-white truncate">
-              ĐÔNG KHA
-            </h1>
-            <span className="text-[9px] font-extrabold uppercase tracking-wider text-blue-400 bg-blue-950/80 px-1.5 py-0.5 rounded border border-blue-800/60 shrink-0">
-              ADMIN
-            </span>
+    <div className="flex flex-col h-full bg-[#081524] text-slate-300 select-none">
+      {/* Brand Header */}
+      <div className="p-3.5 border-b border-slate-800/90 bg-[#06101c]/80 flex items-center justify-between">
+        <Link href="/admin" className="flex items-center gap-2.5 group min-w-0">
+          <div className="w-9 h-9 rounded-xl bg-white p-1 shadow-sm border border-slate-700/60 flex items-center justify-center shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
+            <img src="/images/logo.png" alt="Logo" className="w-full h-full object-contain rounded-lg" />
           </div>
-          <p className="text-[11px] text-slate-400 font-medium truncate mt-0.5">
-            Bảng quản trị hệ thống
-          </p>
-        </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 leading-none">
+              <span className="text-xs font-black tracking-tight text-white uppercase truncate">
+                ĐÔNG KHA
+              </span>
+              <span className="text-[8px] font-black uppercase text-cyan-400 bg-cyan-950/80 px-1 py-0.2 rounded border border-cyan-800/60 shrink-0">
+                PRO
+              </span>
+            </div>
+            <p className="text-[10px] text-slate-400 font-medium truncate mt-1 leading-none">
+              Quản trị Doanh nghiệp
+            </p>
+          </div>
+        </Link>
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-1">
-        {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-          const active = isActive(href);
-          return (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => setIsMobileNavOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-bold transition-colors ${
-                active
-                  ? "bg-[#075FA8] text-white shadow-sm"
-                  : "text-slate-300 hover:bg-slate-800 hover:text-white"
-              }`}
-            >
-              <Icon className="w-4.5 h-4.5 shrink-0" />
-              <span>{label}</span>
-            </Link>
-          );
-        })}
-      </nav>
+      {/* Navigation Sections */}
+      <div className="flex-1 px-2.5 py-3 space-y-5 overflow-y-auto custom-scrollbar">
+        {NAV_SECTIONS.map((section, sIdx) => (
+          <div key={sIdx} className="space-y-1">
+            <div className="px-2.5 text-[9px] font-black tracking-wider uppercase text-slate-400">
+              {section.title}
+            </div>
 
-      <div className="px-3 py-4 border-t border-slate-800 space-y-2">
+            <div className="space-y-0.5">
+              {section.items.map(({ href, label, icon: Icon, badge }) => {
+                const active = isActive(href);
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setIsMobileNavOpen(false)}
+                    className={`relative flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all duration-150 group ${
+                      active
+                        ? "bg-gradient-to-r from-[#075FA8] to-[#0B3D66] text-white shadow-md shadow-blue-900/30 font-extrabold"
+                        : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
+                    }`}
+                  >
+                    {/* Active Cyan Left Indicator */}
+                    {active && (
+                      <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-cyan-400 rounded-r-full shadow-sm shadow-cyan-400" />
+                    )}
+
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <Icon
+                        className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${
+                          active ? "text-cyan-300" : "text-slate-400 group-hover:text-slate-200"
+                        }`}
+                      />
+                      <span className="truncate">{label}</span>
+                    </div>
+
+                    {badge && (
+                      <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                        {badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Sidebar Footer: Database Status & Logout */}
+      <div className="p-2.5 border-t border-slate-800/80 bg-[#06101c]/60 space-y-1.5">
+        {/* Supabase PostgreSQL Status Indicator */}
+        <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-[10px] font-bold text-slate-300">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Database Supabase</span>
+          </div>
+          <span className="text-emerald-400 font-extrabold text-[10px]">Online</span>
+        </div>
+
         <button
+          type="button"
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-bold text-slate-300 hover:bg-red-700 hover:text-white transition-colors !min-h-0 cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-bold text-red-400 hover:text-white hover:bg-red-950/50 border border-red-900/30 transition-colors !min-h-0 cursor-pointer"
         >
-          <LogOut className="w-4.5 h-4.5 shrink-0" />
+          <LogOut className="w-3.5 h-3.5" />
           <span>Đăng xuất</span>
         </button>
       </div>
-    </>
+    </div>
   );
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-56 bg-slate-900 border-r border-slate-800 z-30">
+      <aside className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-56 border-r border-slate-800/80 z-30 shadow-xl">
         {sidebarContent}
       </aside>
 
       {/* Mobile Sidebar Drawer */}
       {isMobileNavOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 flex">
+        <div className="lg:hidden fixed inset-0 z-50 flex animate-in fade-in duration-200">
           <div
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
+            className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs"
             onClick={() => setIsMobileNavOpen(false)}
           />
-          <aside className="relative flex flex-col w-56 bg-slate-900 h-full shadow-lg animate-in slide-in-from-left duration-200">
+          <aside className="relative flex flex-col w-56 h-full shadow-2xl animate-in slide-in-from-left duration-200 z-10">
             <button
               onClick={() => setIsMobileNavOpen(false)}
               aria-label="Đóng menu"
-              className="absolute top-4 right-3 p-1.5 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors !min-h-0"
+              className="absolute top-3.5 right-3 p-1.5 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors !min-h-0 z-20 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -176,126 +247,153 @@ export const AdminShell: React.FC<AdminShellProps> = ({
         </div>
       )}
 
-      {/* Content Area */}
+      {/* Main Content Layout */}
       <div className="lg:pl-56 flex flex-col min-h-screen">
-        {/* Top Bar */}
-        <header className="sticky top-0 z-20 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
-          <div className="flex items-center justify-between gap-3 px-3 sm:px-5 py-2.5">
-            <div className="flex items-center gap-3">
+        {/* Modern Compact Topbar Header */}
+        <header className="sticky top-0 z-20 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
+          <div className="flex items-center justify-between gap-3 px-3 sm:px-5 py-2">
+            {/* Left: Mobile Toggle & Perfectly Centered Breadcrumbs */}
+            <div className="flex items-center gap-2.5 min-w-0">
               <button
                 onClick={() => setIsMobileNavOpen(true)}
                 aria-label="Mở menu"
-                className="lg:hidden p-1.5 -ml-1 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors !min-h-0"
+                className="lg:hidden p-1.5 -ml-1 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors !min-h-0 cursor-pointer"
               >
-                <Menu className="w-5 h-5" />
+                <Menu className="w-4.5 h-4.5" />
               </button>
-              <h2 className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">
-                {activeItem?.label ?? "Bảng quản trị"}
-              </h2>
+
+              {/* Breadcrumbs Navigation */}
+              <nav className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 min-w-0 leading-none">
+                <Link
+                  href="/admin"
+                  className="font-bold hover:text-slate-900 dark:hover:text-white transition-colors shrink-0 leading-none flex items-center"
+                >
+                  Admin
+                </Link>
+                {currentActiveItem && currentActiveItem.href !== "/admin" && (
+                  <div className="flex items-center gap-1.5 leading-none min-w-0">
+                    <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+                    <span className="font-extrabold text-slate-900 dark:text-white truncate leading-none">
+                      {currentActiveItem.label}
+                    </span>
+                  </div>
+                )}
+              </nav>
             </div>
 
-            {/* Right: Admin User Profile Dropdown Menu */}
-            <div className="relative shrink-0" ref={userMenuRef}>
-              <button
-                type="button"
-                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="inline-flex items-center gap-2 p-1 sm:px-3 sm:py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/90 hover:bg-slate-200 dark:hover:bg-slate-700/80 text-slate-800 dark:text-slate-200 font-bold text-xs transition-all cursor-pointer !min-h-0 border border-slate-200 dark:border-slate-700 shadow-2xs"
+            {/* Right: Store link, notification alert & user dropdown */}
+            <div className="flex items-center gap-2 shrink-0">
+              {/* Order Notification Bell / Sound Status */}
+              <AdminOrderNotifier />
+
+              {/* External Client Store Link */}
+              <a
+                href="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all !min-h-0 cursor-pointer"
               >
-                <div className="w-7 h-7 rounded-lg bg-[#075FA8] text-white flex items-center justify-center text-xs font-black shrink-0 shadow-xs">
-                  {initials || <User className="w-4 h-4" />}
-                </div>
-                <div className="text-left hidden sm:block">
-                  <div className="text-xs font-bold leading-tight truncate max-w-[100px]">
-                    {adminName.trim().split(/\s+/).pop() || adminName}
-                  </div>
-                  <div className="text-[10px] text-blue-600 dark:text-blue-400 font-extrabold leading-none mt-0.5">
-                    Quản trị viên
-                  </div>
-                </div>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-0.5" />
-              </button>
+                <span>Xem Website</span>
+                <ExternalLink className="w-3 h-3 text-slate-400" />
+              </a>
 
-
-              {/* Admin Dropdown Popover */}
-              {isUserMenuOpen && (
-                <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-2 z-50 animate-in fade-in zoom-in-95 text-left">
-                  <div className="px-3 py-2.5 border-b border-slate-100 dark:border-slate-800">
-                    <p className="text-xs font-black text-slate-900 dark:text-white truncate">
+              {/* Admin Profile Dropdown with Dark Mode Inside */}
+              <div className="relative shrink-0" ref={userMenuRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="inline-flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs transition-all cursor-pointer !min-h-0 border border-slate-200/80 dark:border-slate-700 shadow-2xs"
+                >
+                  <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-[#075FA8] to-cyan-500 text-white flex items-center justify-center text-[10px] font-black shrink-0 shadow-xs">
+                    {initials || <User className="w-3.5 h-3.5" />}
+                  </div>
+                  <div className="text-left hidden sm:block">
+                    <div className="text-xs font-extrabold leading-tight text-slate-900 dark:text-white max-w-[130px] truncate">
                       {adminName}
-                    </p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                      {adminEmail}
-                    </p>
-                    <div className="mt-1.5 flex items-center gap-1 text-[10px] font-black text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded-md border border-amber-200 dark:border-amber-900/60 w-fit">
-                      <ShieldCheck className="w-3 h-3" />
-                      <span>Quản trị viên hệ thống</span>
+                    </div>
+                    <div className="text-[9px] text-blue-600 dark:text-blue-400 font-extrabold leading-none mt-0.5">
+                      Quản trị viên
                     </div>
                   </div>
+                  <ChevronDown className="w-3 h-3 text-slate-400 shrink-0" />
+                </button>
 
-                  <div className="py-1 space-y-0.5">
-                    {/* View Profile & Change Password */}
-                    <Link
-                      href="/tai-khoan/ho-so"
-                      onClick={() => setIsUserMenuOpen(false)}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                    >
-                      <User className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
-                      <span>Thông tin tài khoản</span>
-                    </Link>
-
-                    {/* View Customer Website Link */}
-                    <Link
-                      href="/"
-                      target="_blank"
-                      onClick={() => setIsUserMenuOpen(false)}
-                      className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <ExternalLink className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
-                        <span>Xem trang chủ website</span>
+                {/* Dropdown Popover */}
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-2 z-50 animate-in fade-in zoom-in-95 text-left">
+                    <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-800">
+                      <p className="text-xs font-black text-slate-900 dark:text-white truncate">
+                        {adminName}
+                      </p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                        {adminEmail}
+                      </p>
+                      <div className="mt-1.5 flex items-center gap-1 text-[9px] font-black text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded-md border border-amber-200 dark:border-amber-900/60 w-fit">
+                        <ShieldCheck className="w-3 h-3" />
+                        <span>Quản trị viên toàn quyền</span>
                       </div>
-                      <span className="text-[10px] text-slate-400 font-medium">Mở tab</span>
-                    </Link>
+                    </div>
 
+                    <div className="py-1 space-y-0.5">
+                      {/* Dark/Light Mode Toggle directly inside Dropdown */}
+                      <button
+                        type="button"
+                        onClick={toggleDarkMode}
+                        className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer !min-h-0 text-left"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          {isDarkMode ? (
+                            <Sun className="w-3.5 h-3.5 text-amber-400" />
+                          ) : (
+                            <Moon className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" />
+                          )}
+                          <span>{isDarkMode ? "Giao diện sáng" : "Giao diện tối"}</span>
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-bold px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded-md">
+                          {isDarkMode ? "Bật" : "Tắt"}
+                        </span>
+                      </button>
 
-                    {/* Dark/Light Mode Switcher */}
-                    <button
-                      type="button"
-                      onClick={toggleDarkMode}
-                      className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer !min-h-0 text-left"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        {isDarkMode ? (
-                          <Sun className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                        ) : (
-                          <Moon className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" />
-                        )}
-                        <span>{isDarkMode ? "Giao diện Sáng" : "Giao diện Tối"}</span>
-                      </div>
-                      <span className="text-[10px] text-slate-400 font-bold px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded-md">
-                        {isDarkMode ? "Bật" : "Tắt"}
-                      </span>
-                    </button>
+                      <Link
+                        href="/tai-khoan/ho-so"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                      >
+                        <User className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
+                        <span>Hồ sơ &amp; Đổi mật khẩu</span>
+                      </Link>
 
-                    <div className="border-t border-slate-100 dark:border-slate-800 my-1" />
+                      <Link
+                        href="/admin/company"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                      >
+                        <Building2 className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
+                        <span>Thông tin doanh nghiệp</span>
+                      </Link>
 
-                    {/* Logout Button */}
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer !min-h-0 text-left"
-                    >
-                      <LogOut className="w-3.5 h-3.5" />
-                      <span>Đăng xuất quản trị</span>
-                    </button>
+                      <div className="h-px bg-slate-100 dark:bg-slate-800 my-1" />
+
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer !min-h-0 text-left"
+                      >
+                        <LogOut className="w-3.5 h-3.5" />
+                        <span>Đăng xuất</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </header>
 
-        <main className="flex-1 w-full p-2.5 sm:p-3.5 lg:p-4">{children}</main>
+        {/* Main Dashboard Workspace Content - Compact & Clean */}
+        <main className="flex-1 p-3 sm:p-4 lg:p-5 max-w-7xl w-full mx-auto animate-in fade-in duration-200">
+          {children}
+        </main>
       </div>
     </div>
   );

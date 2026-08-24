@@ -220,3 +220,57 @@ export async function adminUpdateOrderStatusAction(
     return { success: false, error: "Không thể cập nhật trạng thái đơn hàng." };
   }
 }
+
+// Admin: Check new orders & pending count for real-time notification
+export async function adminCheckNewOrdersAction(): Promise<{
+  success: boolean;
+  pendingCount: number;
+  totalCount: number;
+  latestOrder?: {
+    id: string;
+    orderCode: string;
+    customerName: string;
+    customerPhone: string;
+    totalAmount: number;
+    createdAt: string;
+  } | null;
+}> {
+  try {
+    const admin = await getCurrentAdmin();
+    if (!admin) {
+      return { success: false, pendingCount: 0, totalCount: 0 };
+    }
+
+    const [pendingCount, totalCount, latest] = await Promise.all([
+      prisma.order.count({ where: { status: "PENDING" } }),
+      prisma.order.count(),
+      prisma.order.findFirst({
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          orderCode: true,
+          customerName: true,
+          customerPhone: true,
+          totalAmount: true,
+          createdAt: true,
+        },
+      }),
+    ]);
+
+    return {
+      success: true,
+      pendingCount,
+      totalCount,
+      latestOrder: latest
+        ? {
+            ...latest,
+            createdAt: latest.createdAt.toISOString(),
+          }
+        : null,
+    };
+  } catch (err) {
+    console.error("adminCheckNewOrdersAction error:", err);
+    return { success: false, pendingCount: 0, totalCount: 0 };
+  }
+}
+

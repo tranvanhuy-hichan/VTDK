@@ -61,7 +61,7 @@ export const UserMenu: React.FC = () => {
     .slice(0, 2)
     .toUpperCase();
 
-  const shortName = user.name.trim().split(/\s+/).pop() || user.name;
+  const displayName = user.role === "ADMIN" ? user.name : (user.name.trim().split(/\s+/).slice(-2).join(" ") || user.name);
 
   return (
     <div className="relative shrink-0" ref={dropdownRef}>
@@ -73,7 +73,7 @@ export const UserMenu: React.FC = () => {
         <div className="w-6 h-6 rounded-full bg-[#075FA8] text-white flex items-center justify-center text-[10px] font-black shrink-0">
           {initials || <User className="w-3.5 h-3.5" />}
         </div>
-        <span className="max-w-[80px] sm:max-w-[100px] truncate hidden sm:inline">{shortName}</span>
+        <span className="max-w-[120px] sm:max-w-[160px] truncate hidden sm:inline">{displayName}</span>
         <ChevronDown className="w-3 h-3 text-slate-400" />
       </button>
 

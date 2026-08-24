@@ -12,7 +12,9 @@ export default async function AdminDashboardPage() {
     inactiveProducts,
     totalCategories,
     totalServices,
-    totalGalleryImages,
+    totalOrders,
+    pendingOrders,
+    revenueResult,
     company,
     recentProducts,
   ] = await Promise.all([
@@ -21,14 +23,20 @@ export default async function AdminDashboardPage() {
     prisma.product.count({ where: { active: false } }),
     prisma.category.count(),
     prisma.service.count(),
-    prisma.galleryImage.count(),
+    prisma.order.count(),
+    prisma.order.count({ where: { status: "PENDING" } }),
+    prisma.order.aggregate({
+      _sum: { totalAmount: true },
+    }),
     getCompanyInfo(),
     prisma.product.findMany({
-      take: 4,
+      take: 6,
       orderBy: { createdAt: "desc" },
       include: { category: true },
     }),
   ]);
+
+  const totalRevenue = revenueResult._sum.totalAmount || 0;
 
   const stats = {
     totalProducts,
@@ -36,7 +44,9 @@ export default async function AdminDashboardPage() {
     inactiveProducts,
     totalCategories,
     totalServices,
-    totalGalleryImages,
+    totalOrders,
+    pendingOrders,
+    totalRevenue,
   };
 
   return (
