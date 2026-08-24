@@ -351,7 +351,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({
 
                 {/* Dropdown Popover */}
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-2.5 z-50 animate-in fade-in zoom-in-95 text-left space-y-1">
+                  <div className="fixed inset-x-2.5 top-13 sm:absolute sm:inset-auto sm:right-0 sm:mt-2 sm:w-64 w-auto bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-2.5 z-50 animate-in fade-in zoom-in-95 text-left space-y-1">
                     <div className="px-2.5 py-1.5 border-b border-slate-100 dark:border-slate-800">
                       <p className="text-xs font-black text-slate-900 dark:text-white truncate">
                         {adminName}

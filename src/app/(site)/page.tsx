@@ -1,6 +1,8 @@
 import React from "react";
+import { redirect } from "next/navigation";
 import { prisma } from "../../lib/prisma";
 import { getCompanyInfo } from "../../lib/company";
+import { getCurrentUser } from "../../lib/auth";
 import { Hero } from "../../components/home/Hero";
 import { BrandSlider } from "../../components/home/BrandSlider";
 import { ProductList } from "../../components/product/ProductList";
@@ -14,6 +16,12 @@ import { Location } from "../../components/home/Location";
 // admin/actions.ts whenever a product/service/gallery/company edit is saved.
 
 export default async function HomePage() {
+  // If admin is logged in, redirect straight to admin dashboard
+  const currentUser = await getCurrentUser();
+  if (currentUser?.role === "ADMIN") {
+    redirect("/admin");
+  }
+
   // Fetch categories and active products
   const categories = await prisma.category.findMany({
     orderBy: { name: "asc" },

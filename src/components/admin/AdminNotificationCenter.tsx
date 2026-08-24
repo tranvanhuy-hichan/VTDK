@@ -8,9 +8,6 @@ import {
   X,
   ArrowRight,
   Clock,
-  CheckCircle2,
-  AlertCircle,
-  ExternalLink,
 } from "lucide-react";
 import { adminCheckNewOrdersAction } from "../../actions/orderActions";
 import type { OrderStatus } from "../../types/order";
@@ -98,6 +95,15 @@ export const AdminNotificationCenter: React.FC = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Auto-dismiss in-app toast after 10s
+  useEffect(() => {
+    if (!activeAlert) return;
+    const t = setTimeout(() => {
+      setActiveAlert(null);
+    }, 10000);
+    return () => clearTimeout(t);
+  }, [activeAlert]);
 
   const triggerSystemNotification = useCallback((order: OrderNotification) => {
     const title = `📦 Đơn hàng mới: #${order.orderCode}`;
@@ -193,9 +199,9 @@ export const AdminNotificationCenter: React.FC = () => {
         )}
       </button>
 
-      {/* Notifications Dropdown Drawer */}
+      {/* Notifications Dropdown Drawer - Full Width on Mobile, Anchored on Desktop */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 animate-in fade-in zoom-in-95 overflow-hidden text-left">
+        <div className="fixed inset-x-2.5 top-13 sm:absolute sm:inset-auto sm:right-0 sm:mt-2 sm:w-96 w-auto bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 animate-in fade-in zoom-in-95 overflow-hidden text-left">
           {/* Header */}
           <div className="p-3.5 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -204,11 +210,20 @@ export const AdminNotificationCenter: React.FC = () => {
                 Thông Báo Đơn Hàng
               </h3>
             </div>
-            {pendingCount > 0 && (
-              <span className="text-[10px] font-black uppercase text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800">
-                {pendingCount} Đơn mới
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {pendingCount > 0 && (
+                <span className="text-[10px] font-black uppercase text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800">
+                  {pendingCount} Đơn mới
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white sm:hidden !min-h-0 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Notifications List */}
@@ -283,36 +298,36 @@ export const AdminNotificationCenter: React.FC = () => {
 
       {/* Floating In-App Toast When New Order Arrives */}
       {activeAlert && (
-        <div className="fixed bottom-4 right-4 z-50 max-w-sm w-full bg-white dark:bg-slate-900 rounded-3xl border-2 border-[#075FA8] shadow-2xl p-4 animate-in slide-in-from-bottom-5 duration-300 text-left">
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[99999] w-[calc(100vw-2rem)] sm:w-96 max-w-sm bg-white dark:bg-slate-900 rounded-2xl border-2 border-[#075FA8] shadow-2xl p-3.5 sm:p-4 animate-in slide-in-from-bottom-5 duration-300 text-left">
           <div className="flex items-start justify-between gap-3">
-            <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-[#075FA8] to-cyan-500 text-white shadow-md animate-bounce shrink-0">
-              <ShoppingBag className="w-5 h-5" />
+            <div className="p-2.5 rounded-xl bg-gradient-to-tr from-[#075FA8] to-cyan-500 text-white shadow-md animate-bounce shrink-0">
+              <ShoppingBag className="w-4.5 h-4.5" />
             </div>
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded-md border border-amber-200 dark:border-amber-800">
+                <span className="text-[10px] font-black uppercase text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded-md border border-amber-200 dark:border-amber-800">
                   Vừa đặt hàng!
                 </span>
                 <span className="text-xs font-bold text-slate-400">#{activeAlert.orderCode}</span>
               </div>
 
-              <h4 className="text-sm font-black text-slate-900 dark:text-white mt-1 truncate">
+              <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white mt-1 truncate">
                 {activeAlert.customerName}
               </h4>
 
-              <p className="text-xs font-bold text-[#075FA8] dark:text-blue-400 mt-0.5">
+              <p className="text-xs font-bold text-[#075FA8] dark:text-blue-400 mt-0.5 truncate">
                 {activeAlert.totalAmount.toLocaleString("vi-VN")} ₫ • SĐT: {activeAlert.customerPhone}
               </p>
 
-              <div className="mt-3 flex items-center gap-2">
+              <div className="mt-2.5 flex items-center gap-2">
                 <Link
                   href="/admin/orders"
                   onClick={() => {
                     setActiveAlert(null);
-                    document.title = "Bảng Quản Trị Đông Kha";
+                    document.title = "Quản Trị Đông Kha";
                   }}
-                  className="inline-flex items-center gap-1.5 bg-[#075FA8] hover:bg-[#0B3D66] text-white text-xs font-extrabold py-1.5 px-3 rounded-xl transition-all shadow-sm active:scale-98 !min-h-0"
+                  className="inline-flex items-center gap-1.5 bg-[#075FA8] hover:bg-[#0B3D66] text-white text-xs font-extrabold py-1.5 px-3 rounded-xl transition-all shadow-xs active:scale-98 !min-h-0"
                 >
                   <span>Xem đơn ngay</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -322,7 +337,7 @@ export const AdminNotificationCenter: React.FC = () => {
                   type="button"
                   onClick={() => {
                     setActiveAlert(null);
-                    document.title = "Bảng Quản Trị Đông Kha";
+                    document.title = "Quản Trị Đông Kha";
                   }}
                   className="text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 py-1.5 px-2 rounded-xl transition-colors cursor-pointer !min-h-0"
                 >
@@ -335,7 +350,7 @@ export const AdminNotificationCenter: React.FC = () => {
               type="button"
               onClick={() => {
                 setActiveAlert(null);
-                document.title = "Bảng Quản Trị Đông Kha";
+                document.title = "Quản Trị Đông Kha";
               }}
               className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 -mr-1 -mt-1 !min-h-0 cursor-pointer"
             >

@@ -7,11 +7,11 @@ import {
   Clock,
   Truck,
   CheckCircle,
-  XCircle,
   Eye,
   Store,
   DollarSign,
-  Loader2,
+  ChevronRight,
+  Phone,
 } from "lucide-react";
 import type { OrderDetail, OrderStatus } from "../../../types/order";
 import { OrderStatusBadge } from "../../order/OrderStatusBadge";
@@ -69,65 +69,65 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
   };
 
   return (
-    <div className="space-y-6 text-left">
-      {/* Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-xs font-bold mb-1">
-            <ShoppingBag className="w-4 h-4 text-blue-500" />
-            <span>Tổng đơn hàng</span>
+    <div className="space-y-3 text-left">
+      {/* 1. Ultra-Compact Micro-Stats (1 Single Horizontal Scroll Row on Mobile, Grid on Desktop) */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none sm:grid sm:grid-cols-5 sm:gap-2.5">
+        <div className="bg-white dark:bg-slate-900 rounded-xl px-3 py-1.5 sm:p-2.5 border border-slate-200/90 dark:border-slate-800 shadow-2xs shrink-0 flex sm:block items-center gap-2 sm:gap-0">
+          <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-[10px] sm:text-[11px] font-bold">
+            <ShoppingBag className="w-3 h-3 text-[#075FA8] dark:text-blue-400" />
+            <span className="whitespace-nowrap">Tổng đơn:</span>
           </div>
-          <p className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+          <p className="text-xs sm:text-lg font-black text-slate-900 dark:text-white sm:mt-0.5">
             {stats.totalOrders}
           </p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 text-xs font-bold mb-1">
-            <Clock className="w-4 h-4" />
-            <span>Chờ duyệt mới</span>
+        <div className="bg-white dark:bg-slate-900 rounded-xl px-3 py-1.5 sm:p-2.5 border border-slate-200/90 dark:border-slate-800 shadow-2xs shrink-0 flex sm:block items-center gap-2 sm:gap-0">
+          <div className="flex items-center gap-1 text-amber-600 dark:text-amber-400 text-[10px] sm:text-[11px] font-bold">
+            <Clock className="w-3 h-3" />
+            <span className="whitespace-nowrap">Chờ duyệt:</span>
           </div>
-          <p className="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400">
+          <p className="text-xs sm:text-lg font-black text-amber-600 dark:text-amber-400 sm:mt-0.5">
             {stats.pendingCount}
           </p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 text-xs font-bold mb-1">
-            <Truck className="w-4 h-4" />
-            <span>Đang giao</span>
+        <div className="bg-white dark:bg-slate-900 rounded-xl px-3 py-1.5 sm:p-2.5 border border-slate-200/90 dark:border-slate-800 shadow-2xs shrink-0 flex sm:block items-center gap-2 sm:gap-0">
+          <div className="flex items-center gap-1 text-purple-600 dark:text-purple-400 text-[10px] sm:text-[11px] font-bold">
+            <Truck className="w-3 h-3" />
+            <span className="whitespace-nowrap">Đang giao:</span>
           </div>
-          <p className="text-xl sm:text-2xl font-black text-purple-600 dark:text-purple-400">
+          <p className="text-xs sm:text-lg font-black text-purple-600 dark:text-purple-400 sm:mt-0.5">
             {stats.shippingCount}
           </p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-xs font-bold mb-1">
-            <CheckCircle className="w-4 h-4" />
-            <span>Đã hoàn thành</span>
+        <div className="bg-white dark:bg-slate-900 rounded-xl px-3 py-1.5 sm:p-2.5 border border-slate-200/90 dark:border-slate-800 shadow-2xs shrink-0 flex sm:block items-center gap-2 sm:gap-0">
+          <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-[10px] sm:text-[11px] font-bold">
+            <CheckCircle className="w-3 h-3" />
+            <span className="whitespace-nowrap">Hoàn thành:</span>
           </div>
-          <p className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400">
+          <p className="text-xs sm:text-lg font-black text-emerald-600 dark:text-emerald-400 sm:mt-0.5">
             {stats.completedCount}
           </p>
         </div>
 
-        <div className="col-span-2 lg:col-span-1 bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400 text-xs font-bold mb-1">
-            <DollarSign className="w-4 h-4" />
-            <span>Doanh thu thực tế</span>
+        <div className="bg-white dark:bg-slate-900 rounded-xl px-3 py-1.5 sm:p-2.5 border border-slate-200/90 dark:border-slate-800 shadow-2xs shrink-0 flex sm:block items-center gap-2 sm:gap-0">
+          <div className="flex items-center gap-1 text-orange-600 dark:text-orange-400 text-[10px] sm:text-[11px] font-bold">
+            <DollarSign className="w-3 h-3" />
+            <span className="whitespace-nowrap">Doanh thu:</span>
           </div>
-          <p className="text-lg sm:text-xl font-black text-orange-600 dark:text-orange-400 truncate">
-            {formatCurrency(stats.totalRevenue)}
+          <p className="text-xs sm:text-base font-black text-orange-600 dark:text-orange-400 sm:mt-0.5 truncate">
+            {stats.totalRevenue > 0 ? formatCurrency(stats.totalRevenue) : "0 ₫"}
           </p>
         </div>
       </div>
 
-      {/* Filter and Search Controls */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      {/* 2. Compact Filter & Search Controls */}
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-2.5 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
           {/* Status Tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+          <div className="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none">
             {[
               { key: "ALL", label: "Tất cả" },
               { key: "PENDING", label: "Chờ xử lý" },
@@ -140,10 +140,10 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
                 key={tab.key}
                 type="button"
                 onClick={() => setSelectedStatus(tab.key)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition-all cursor-pointer !min-h-0 ${
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 transition-all cursor-pointer !min-h-0 ${
                   selectedStatus === tab.key
-                    ? "bg-[#075FA8] text-white shadow-xs"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200"
+                    ? "bg-[#075FA8] text-white shadow-2xs font-extrabold"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                 }`}
               >
                 {tab.label}
@@ -152,32 +152,82 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
           </div>
 
           {/* Search bar */}
-          <div className="relative w-full sm:w-72">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <div className="relative w-full sm:w-64">
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Tìm mã đơn, tên, SĐT..."
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#075FA8]"
+              className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#075FA8]"
             />
           </div>
         </div>
       </div>
 
-      {/* Orders Table */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
-        <div className="overflow-x-auto">
+      {/* 3. Mobile Cards View (< md) & Desktop Table (>= md) */}
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 overflow-hidden shadow-2xs">
+        {/* Mobile View: Clean Card List */}
+        <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+          {filteredOrders.length === 0 ? (
+            <div className="p-8 text-center text-slate-400 text-xs">
+              Không có đơn hàng nào phù hợp.
+            </div>
+          ) : (
+            filteredOrders.map((order) => (
+              <div
+                key={order.id}
+                onClick={() => setSelectedOrder(order)}
+                className="p-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer space-y-2"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="font-mono text-xs font-black text-[#075FA8] dark:text-blue-400">
+                      #{order.orderCode}
+                    </span>
+                    <span className="text-[10px] text-slate-400">• {formatDate(order.createdAt)}</span>
+                  </div>
+                  <OrderStatusBadge status={order.status} />
+                </div>
+
+                <div className="flex items-center justify-between gap-2 text-xs">
+                  <div className="min-w-0">
+                    <p className="font-extrabold text-slate-900 dark:text-white truncate">
+                      {order.customerName}
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                      <Phone className="w-3 h-3 text-slate-400" />
+                      <span>{order.customerPhone}</span>
+                    </p>
+                  </div>
+
+                  <div className="text-right shrink-0">
+                    <p className="font-black text-sm text-slate-900 dark:text-white">
+                      {formatCurrency(order.totalAmount)}
+                    </p>
+                    <span className="text-[10px] text-[#075FA8] dark:text-blue-400 font-bold flex items-center gap-0.5 justify-end">
+                      <span>Chi tiết</span>
+                      <ChevronRight className="w-3 h-3" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop View: Full Table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
+            <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
               <tr>
-                <th className="px-4 py-3.5">Mã đơn</th>
-                <th className="px-4 py-3.5">Khách hàng</th>
-                <th className="px-4 py-3.5">Giao nhận</th>
-                <th className="px-4 py-3.5">Ngày đặt</th>
-                <th className="px-4 py-3.5">Tổng tiền</th>
-                <th className="px-4 py-3.5">Trạng thái</th>
-                <th className="px-4 py-3.5 text-right">Thao tác</th>
+                <th className="px-4 py-3">Mã đơn</th>
+                <th className="px-4 py-3">Khách hàng</th>
+                <th className="px-4 py-3">Giao nhận</th>
+                <th className="px-4 py-3">Ngày đặt</th>
+                <th className="px-4 py-3">Tổng tiền</th>
+                <th className="px-4 py-3">Trạng thái</th>
+                <th className="px-4 py-3 text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-200 font-medium">
@@ -194,16 +244,16 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
                     className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
                     onClick={() => setSelectedOrder(order)}
                   >
-                    <td className="px-4 py-3 font-mono font-bold text-[#075FA8] dark:text-blue-400">
+                    <td className="px-4 py-2.5 font-mono font-bold text-[#075FA8] dark:text-blue-400">
                       {order.orderCode}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2.5">
                       <div className="font-bold text-slate-900 dark:text-white truncate max-w-[150px]">
                         {order.customerName}
                       </div>
                       <div className="text-[11px] text-slate-400">{order.customerPhone}</div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2.5">
                       {order.shippingMethod === "DELIVERY" ? (
                         <span className="inline-flex items-center gap-1 text-slate-600 dark:text-slate-300">
                           <Truck className="w-3.5 h-3.5 text-blue-500" /> Giao tận nơi
@@ -214,20 +264,20 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
+                    <td className="px-4 py-2.5 text-slate-500 whitespace-nowrap">
                       {formatDate(order.createdAt)}
                     </td>
-                    <td className="px-4 py-3 font-black text-slate-900 dark:text-white whitespace-nowrap">
+                    <td className="px-4 py-2.5 font-black text-slate-900 dark:text-white whitespace-nowrap">
                       {formatCurrency(order.totalAmount)}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       <OrderStatusBadge status={order.status} />
                     </td>
-                    <td className="px-4 py-3 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                    <td className="px-4 py-2.5 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                       <button
                         type="button"
                         onClick={() => setSelectedOrder(order)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-colors cursor-pointer !min-h-0"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-bold transition-colors cursor-pointer !min-h-0"
                       >
                         <Eye className="w-3.5 h-3.5" />
                         <span>Xem</span>
