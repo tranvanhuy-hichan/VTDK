@@ -1,22 +1,16 @@
 import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import { AuthPageWrapper } from "../../../components/auth/AuthPageWrapper";
-import { Loader2 } from "lucide-react";
+import { AuthLoadingSkeleton } from "../../../components/auth/AuthLoadingSkeleton";
 
 export const metadata: Metadata = {
-  title: "Đăng Ký Tài Khoản | Vật Tư Điện Lạnh Đông Kha",
-  description: "Tạo tài khoản thành viên Vật Tư Điện Lạnh Đông Kha để lưu địa chỉ và mua hàng thuận tiện.",
+  title: "Đăng Ký Tài Khoản | CÔNG TY TNHH VẬT TƯ ĐÔNG KHA",
+  description: "Tạo tài khoản thành viên Vật Tư Đông Kha để lưu địa chỉ và mua hàng nhanh chóng.",
 };
 
 export default function DangKyPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#071626]">
-          <Loader2 className="w-8 h-8 text-[#075FA8] animate-spin" />
-        </div>
-      }
-    >
+    <Suspense fallback={<AuthLoadingSkeleton />}>
       <AuthPageWrapper defaultTab="register" />
     </Suspense>
   );

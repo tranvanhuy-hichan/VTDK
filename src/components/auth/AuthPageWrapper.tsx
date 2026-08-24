@@ -19,6 +19,7 @@ import { LoginForm } from "./LoginForm";
 import { RegisterForm } from "./RegisterForm";
 import { CompleteProfileForm } from "./CompleteProfileForm";
 import { GoogleLoginButton } from "./GoogleLoginButton";
+import { AuthLoadingSkeleton } from "./AuthLoadingSkeleton";
 import { useAuth } from "../../context/AuthContext";
 import type { UserProfile } from "../../types/auth";
 
@@ -37,7 +38,7 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/";
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const [tab, setTab] = useState<"login" | "register">(defaultTab);
   const [prefilledEmail, setPrefilledEmail] = useState("");
   const [completeProfileUser, setCompleteProfileUser] = useState<UserProfile | null>(null);
@@ -55,6 +56,10 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
       }
     }
   }, [user, completeProfileUser, redirectUrl, router]);
+
+  if (isLoading) {
+    return <AuthLoadingSkeleton />;
+  }
 
   const handleSuccess = (loggedUser?: UserProfile | null) => {
     const active = loggedUser || user;
@@ -77,7 +82,7 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
   };
 
   return (
-    <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300">
+    <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 animate-in fade-in duration-300">
       {/* 1. Left Showcase Column (Clean, Corporate, Uncluttered) */}
       <div className="hidden lg:flex lg:w-5/12 xl:w-5/12 bg-gradient-to-br from-[#064B85] via-[#073863] to-[#0A1F33] p-8 xl:p-10 flex-col justify-between relative overflow-hidden text-white shrink-0 shadow-2xl border-r border-blue-900/50">
         {/* Ambient Glowing Blobs */}
