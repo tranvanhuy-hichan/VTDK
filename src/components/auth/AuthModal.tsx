@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { X, LogIn, UserPlus } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
@@ -10,6 +10,7 @@ import { GoogleLoginButton } from "./GoogleLoginButton";
 
 export const AuthModal: React.FC = () => {
   const { isAuthModalOpen, closeAuthModal, authModalTab, openAuthModal } = useAuth();
+  const [prefilledEmail, setPrefilledEmail] = useState("");
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -31,11 +32,11 @@ export const AuthModal: React.FC = () => {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 text-left overflow-y-auto"
+      className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 text-left overflow-y-auto animate-in fade-in duration-200"
       onClick={closeAuthModal}
     >
       <div
-        className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800 text-left relative overflow-hidden my-8"
+        className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800 text-left relative overflow-hidden my-8 animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -66,7 +67,7 @@ export const AuthModal: React.FC = () => {
               onClick={() => openAuthModal("login")}
               className={`py-2 text-xs font-bold rounded-lg transition-all cursor-pointer !min-h-0 ${
                 authModalTab === "login"
-                  ? "bg-white dark:bg-slate-700 text-[#075FA8] dark:text-white shadow-xs"
+                  ? "bg-white dark:bg-slate-700 text-[#075FA8] dark:text-white shadow-xs font-black"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >
@@ -77,7 +78,7 @@ export const AuthModal: React.FC = () => {
               onClick={() => openAuthModal("register")}
               className={`py-2 text-xs font-bold rounded-lg transition-all cursor-pointer !min-h-0 ${
                 authModalTab === "register"
-                  ? "bg-white dark:bg-slate-700 text-[#075FA8] dark:text-white shadow-xs"
+                  ? "bg-white dark:bg-slate-700 text-[#075FA8] dark:text-white shadow-xs font-black"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >
@@ -88,16 +89,27 @@ export const AuthModal: React.FC = () => {
 
         {/* Body */}
         <div className="p-5 space-y-4">
-          <GoogleLoginButton />
+          <GoogleLoginButton onSuccess={closeAuthModal} />
 
           <div className="relative flex items-center justify-center">
             <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
-            <span className="bg-white dark:bg-slate-900 px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider absolute">
+            <span className="bg-white dark:bg-slate-900 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider absolute">
               hoặc
             </span>
           </div>
 
-          {authModalTab === "login" ? <LoginForm /> : <RegisterForm />}
+          {authModalTab === "login" ? (
+            <LoginForm
+              onSuccess={closeAuthModal}
+              onSwitchToRegister={(email) => {
+                if (email) setPrefilledEmail(email);
+                openAuthModal("register");
+              }}
+              initialEmail={prefilledEmail}
+            />
+          ) : (
+            <RegisterForm onSuccess={closeAuthModal} initialEmail={prefilledEmail} />
+          )}
         </div>
       </div>
     </div>,

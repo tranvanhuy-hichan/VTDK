@@ -71,7 +71,7 @@ export async function registerAction(dto: RegisterDTO): Promise<{ success: boole
   }
 }
 
-export async function loginAction(dto: LoginDTO): Promise<{ success: boolean; user?: UserProfile; error?: string }> {
+export async function loginAction(dto: LoginDTO): Promise<{ success: boolean; user?: UserProfile; error?: string; isNotRegistered?: boolean }> {
   try {
     const email = dto.email.trim().toLowerCase();
     const password = dto.password;
@@ -90,7 +90,11 @@ export async function loginAction(dto: LoginDTO): Promise<{ success: boolean; us
     });
 
     if (!user) {
-      return { success: false, error: "Tài khoản hoặc mật khẩu không chính xác." };
+      return {
+        success: false,
+        isNotRegistered: true,
+        error: "Email này chưa có tài khoản trong hệ thống.",
+      };
     }
 
     if (!user.passwordHash) {

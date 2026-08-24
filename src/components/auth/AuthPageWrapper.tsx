@@ -10,8 +10,7 @@ import {
   Truck,
   Store,
   Wrench,
-  Sparkles,
-  CheckCircle2,
+  Star,
   LogIn,
   UserPlus,
 } from "lucide-react";
@@ -26,10 +25,10 @@ interface AuthPageWrapperProps {
 }
 
 const BRAND_FEATURES = [
-  { icon: Truck, title: "Giao hỏa tốc nội thành", desc: "Nhận hàng nhanh trong 1 - 2h tại Đà Nẵng" },
-  { icon: ShieldCheck, title: "100% Hàng chính hãng", desc: "Đầy đủ CO/CQ, bảo hành uy tín" },
-  { icon: Wrench, title: "Giá sỉ ưu đãi cho thợ", desc: "Chiết khấu tốt nhất cho thợ & nhà thầu" },
-  { icon: Store, title: "Kho hàng sẵn sàng", desc: "400 Phạm Hùng, Hoà Xuân, Cẩm Lệ" },
+  { icon: Truck, text: "Giao hỏa tốc 1 - 2h" },
+  { icon: ShieldCheck, text: "100% CO / CQ chính hãng" },
+  { icon: Wrench, text: "Giá sỉ độc quyền cho thợ" },
+  { icon: Store, text: "Kho sẵn: 400 Phạm Hùng" },
 ];
 
 export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "login" }) => {
@@ -38,6 +37,7 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
   const redirectUrl = searchParams.get("redirect") || "/";
   const { user } = useAuth();
   const [tab, setTab] = useState<"login" | "register">(defaultTab);
+  const [prefilledEmail, setPrefilledEmail] = useState("");
 
   // If already logged in, redirect away
   useEffect(() => {
@@ -58,116 +58,120 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
     }
   };
 
-  return (
-    <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden w-full flex flex-col lg:flex-row bg-[#071626] text-white">
-      {/* 1. Left Showcase Column (Brand Identity & Key Highlights) */}
-      <div className="hidden lg:flex lg:w-5/12 xl:w-5/12 bg-gradient-to-br from-[#0B1F33] via-[#072444] to-[#075FA8] p-6 xl:p-8 flex-col justify-between relative overflow-hidden border-r border-slate-800 h-full shrink-0">
-        {/* Background decorative glows */}
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+  const handleSwitchToRegister = (email?: string) => {
+    if (email) setPrefilledEmail(email);
+    setTab("register");
+  };
 
-        {/* Top Header Logo */}
+  return (
+    <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300">
+      {/* 1. Left Showcase Column (Clean, Corporate, Uncluttered) */}
+      <div className="hidden lg:flex lg:w-5/12 xl:w-5/12 bg-gradient-to-br from-[#064B85] via-[#073863] to-[#0A1F33] p-8 xl:p-10 flex-col justify-between relative overflow-hidden text-white shrink-0 shadow-2xl border-r border-blue-900/50">
+        {/* Ambient Glowing Blobs */}
+        <div className="absolute -top-24 -left-24 w-88 h-88 bg-cyan-400/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 -right-24 w-88 h-88 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-88 h-88 bg-amber-400/15 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Top Corporate Brand */}
         <div className="relative z-10">
-          <Link href="/" className="inline-flex items-center gap-3 group">
-            <Image
-              src={COMPANY_DATA.logoUrl}
-              alt="Đông Kha Logo"
-              width={48}
-              height={48}
-              priority
-              className="h-10 w-auto object-contain rounded-xl bg-white/10 p-1 backdrop-blur-xs border border-white/20 transition-transform group-hover:scale-105"
-            />
+          <Link href="/" className="inline-flex items-center gap-3.5 group">
+            <div className="p-2 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 shadow-md group-hover:scale-105 transition-transform shrink-0">
+              <Image
+                src={COMPANY_DATA.logoUrl}
+                alt="Đông Kha Logo"
+                width={44}
+                height={44}
+                priority
+                className="h-10 w-auto object-contain"
+              />
+            </div>
             <div>
-              <div className="font-black text-lg tracking-tight text-white flex items-center gap-1.5 leading-none">
-                <span>ĐÔNG KHA</span>
-                <span className="text-[9px] bg-amber-400 text-slate-950 font-black px-1.5 py-0.5 rounded-md uppercase">
+              <div className="text-[11px] text-amber-300 font-extrabold uppercase tracking-widest leading-none">
+                CÔNG TY TNHH VẬT TƯ ĐÔNG KHA
+              </div>
+              <div className="font-black text-xl tracking-tight text-white flex items-center gap-2 leading-none mt-1.5">
+                <span>VẬT TƯ ĐÔNG KHA</span>
+                <span className="text-[9px] bg-amber-400 text-slate-950 font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider">
                   Chính Hãng
                 </span>
               </div>
-              <p className="text-[11px] text-blue-200 font-bold uppercase tracking-wider mt-0.5">
-                Vật Tư &amp; Thiết Bị Điện Lạnh
-              </p>
             </div>
           </Link>
         </div>
 
-        {/* Middle Brand Intro */}
-        <div className="relative z-10 space-y-4 my-auto py-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-bold text-blue-200">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span>Tổng kho phân phối vật tư điện lạnh miền Trung</span>
-          </div>
-
-          <h2 className="text-xl xl:text-2xl font-black text-white leading-snug tracking-tight">
-            Kho vật tư điện lạnh &amp; giải pháp HVAC chuyên nghiệp tại Đà Nẵng
+        {/* Middle Clean Intro */}
+        <div className="relative z-10 space-y-3.5 my-auto py-2">
+          <h2 className="text-2xl xl:text-3xl font-black text-white leading-snug tracking-tight">
+            Phân phối vật tư điện lạnh &amp; linh kiện chính hãng tại Đà Nẵng
           </h2>
 
-          <p className="text-xs xl:text-sm text-slate-300 leading-relaxed font-normal">
-            Đăng nhập tài khoản để đặt hàng nhanh, ghi nhớ địa chỉ giao hàng, lưu lại lịch sử đơn hàng và nhận chính sách giá sỉ ưu đãi độc quyền.
+          <p className="text-xs xl:text-sm text-blue-100/80 leading-relaxed">
+            Đăng nhập để nhận chính sách giá sỉ ưu đãi cho thợ, quản lý lịch sử đơn hàng và đặt mua linh kiện nhanh chóng.
           </p>
 
-          {/* 4 Brand Pillars in 2x2 grid */}
-          <div className="grid grid-cols-2 gap-2.5 pt-1">
+          {/* 4 Clean Minimal Chips */}
+          <div className="grid grid-cols-2 gap-2.5 pt-2">
             {BRAND_FEATURES.map((item, idx) => (
               <div
                 key={idx}
-                className="p-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xs space-y-0.5 hover:bg-white/10 transition-colors"
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 backdrop-blur-md text-xs font-bold text-white shadow-2xs transition-colors"
               >
-                <div className="flex items-center gap-1.5 text-white">
-                  <div className="p-1 rounded-md bg-blue-500/20 text-blue-300 shrink-0">
-                    <item.icon className="w-3.5 h-3.5" />
-                  </div>
-                  <h4 className="text-xs font-bold truncate">{item.title}</h4>
-                </div>
-                <p className="text-[10px] text-slate-300 leading-tight pl-5">{item.desc}</p>
+                <item.icon className="w-4 h-4 text-cyan-300 shrink-0" />
+                <span className="truncate">{item.text}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Bottom Trust Badge */}
-        <div className="relative z-10 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-blue-200">
+        {/* Bottom Social Proof & Hotline */}
+        <div className="relative z-10 pt-4 border-t border-white/15 flex items-center justify-between text-xs text-blue-200">
           <div className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span>Hơn 5.000+ thợ &amp; đối tác tin cậy</span>
+            <Star className="w-3.5 h-3.5 fill-current text-amber-400" />
+            <span className="text-white text-[11px] font-bold">5.000+ Thợ &amp; Đối tác tin cậy</span>
           </div>
-          <span className="font-mono text-[11px]">Hotline: {COMPANY_DATA.hotline}</span>
+
+          <a
+            href={`tel:${COMPANY_DATA.hotline}`}
+            className="text-[11px] font-bold text-blue-200 hover:text-white transition-colors cursor-pointer"
+          >
+            Hotline: <span className="text-emerald-300 font-mono">{COMPANY_DATA.hotline}</span>
+          </a>
         </div>
       </div>
 
-      {/* 2. Right Form Column (Login / Register Card) */}
-      <div className="flex-1 flex flex-col justify-center items-center p-3.5 sm:p-6 lg:p-8 h-full overflow-y-auto lg:overflow-hidden">
-        <div className="w-full max-w-md transition-all duration-300 space-y-3.5 my-auto">
+      {/* 2. Right Form Column (Clean, Modern, Universal Theme) */}
+      <div className="flex-1 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 h-full overflow-y-auto lg:overflow-hidden">
+        <div className="w-full max-w-md transition-all duration-300 space-y-4 my-auto">
           {/* Top navigation bar */}
           <div className="flex items-center justify-between">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white transition-colors cursor-pointer !min-h-0"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer !min-h-0"
             >
-              <ArrowLeft className="w-3.5 h-3.5 text-[#38BDF8]" />
+              <ArrowLeft className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
               <span>Quay lại trang chủ</span>
             </Link>
 
-            {/* Mobile-only logo */}
-            <div className="lg:hidden flex items-center gap-1.5">
-              <span className="text-xs font-black text-white">ĐÔNG KHA</span>
-              <span className="text-[9px] bg-blue-500/30 text-blue-300 font-bold px-1.5 py-0.2 rounded">
-                HVAC
+            {/* Mobile-only logo with full company name */}
+            <div className="lg:hidden flex flex-col items-end">
+              <span className="text-xs font-black text-slate-900 dark:text-white">VẬT TƯ ĐÔNG KHA</span>
+              <span className="text-[9px] text-slate-500 dark:text-slate-400 font-bold">
+                CÔNG TY TNHH VẬT TƯ ĐÔNG KHA
               </span>
             </div>
           </div>
 
-          {/* Form Card */}
-          <div className="bg-slate-900/90 rounded-3xl border border-slate-800 p-4 sm:p-7 shadow-2xl backdrop-blur-xl text-left space-y-4">
+          {/* Form Card (White in light mode, Dark in dark mode) */}
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-5 sm:p-7 shadow-xl shadow-slate-200/60 dark:shadow-none text-left space-y-4">
             {/* Segmented Tab Switcher (Đăng nhập / Đăng ký) */}
-            <div className="grid grid-cols-2 bg-slate-950/70 p-1 rounded-2xl border border-slate-800/80">
+            <div className="grid grid-cols-2 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
               <button
                 type="button"
                 onClick={() => setTab("login")}
                 className={`py-2 px-3 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
                   tab === "login"
                     ? "bg-[#075FA8] text-white shadow-md"
-                    : "text-slate-400 hover:text-slate-200"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 <LogIn className="w-3.5 h-3.5" />
@@ -180,7 +184,7 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
                 className={`py-2 px-3 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
                   tab === "register"
                     ? "bg-[#075FA8] text-white shadow-md"
-                    : "text-slate-400 hover:text-slate-200"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 <UserPlus className="w-3.5 h-3.5" />
@@ -190,30 +194,36 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
 
             {/* Sleek Header Title & Subtitle */}
             <div className="text-center space-y-1 pt-1 pb-0.5">
-              <h1 className="text-lg sm:text-xl font-black text-white tracking-tight leading-tight">
+              <h1 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
                 {tab === "login" ? "Chào mừng trở lại!" : "Tạo tài khoản thành viên"}
               </h1>
-              <p className="text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
                 {tab === "login"
                   ? "Đăng nhập để tra cứu đơn hàng & nhận chiết khấu thợ."
                   : "Đăng ký để đặt hàng nhanh & lưu sẵn địa chỉ giao nhận."}
               </p>
             </div>
 
-            {/* Form component */}
-            {tab === "login" ? (
-              <LoginForm onSuccess={handleSuccess} />
-            ) : (
-              <RegisterForm onSuccess={handleSuccess} />
-            )}
+            {/* Form component with smooth animated transition */}
+            <div className="transition-all duration-300">
+              {tab === "login" ? (
+                <LoginForm
+                  onSuccess={handleSuccess}
+                  onSwitchToRegister={handleSwitchToRegister}
+                  initialEmail={prefilledEmail}
+                />
+              ) : (
+                <RegisterForm onSuccess={handleSuccess} initialEmail={prefilledEmail} />
+              )}
+            </div>
 
             {/* Clean Horizontal Divider */}
             <div className="flex items-center gap-3 my-2 w-full">
-              <div className="h-px bg-slate-800 flex-1" />
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap shrink-0">
+              <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
+              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider whitespace-nowrap shrink-0">
                 Hoặc tiếp tục với
               </span>
-              <div className="h-px bg-slate-800 flex-1" />
+              <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
             </div>
 
             {/* Google Login Button */}
@@ -221,8 +231,8 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
           </div>
 
           {/* Footer note */}
-          <p className="text-[10px] text-center text-slate-500">
-            Bảo mật thông tin khách hàng tuyệt đối • Vật Tư Điện Lạnh Đông Kha
+          <p className="text-[10px] text-center text-slate-400 dark:text-slate-500">
+            Bảo mật thông tin khách hàng tuyệt đối • CÔNG TY TNHH VẬT TƯ ĐÔNG KHA
           </p>
         </div>
       </div>

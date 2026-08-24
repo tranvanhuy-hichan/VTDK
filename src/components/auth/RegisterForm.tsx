@@ -20,21 +20,28 @@ import { VietnamAddressSelector } from "../address/VietnamAddressSelector";
 
 interface RegisterFormProps {
   onSuccess?: () => void;
+  initialEmail?: string;
 }
 
-export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
+export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, initialEmail = "" }) => {
   const { register } = useAuth();
   const [step, setStep] = useState<1 | 2>(1);
 
   // Form State
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (initialEmail) {
+      setEmail(initialEmail);
+    }
+  }, [initialEmail]);
 
   const handleNextStep = (e?: React.FormEvent) => {
     if (e) e.preventDefault();

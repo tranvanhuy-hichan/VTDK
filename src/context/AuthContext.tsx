@@ -17,7 +17,7 @@ interface AuthContextValue {
   authModalTab: "login" | "register";
   openAuthModal: (tab?: "login" | "register", onSuccess?: () => void) => void;
   closeAuthModal: () => void;
-  login: (dto: LoginDTO) => Promise<{ success: boolean; error?: string; user?: UserProfile | null }>;
+  login: (dto: LoginDTO) => Promise<{ success: boolean; error?: string; user?: UserProfile | null; isNotRegistered?: boolean }>;
   register: (dto: RegisterDTO) => Promise<{ success: boolean; error?: string; user?: UserProfile | null }>;
   loginWithGoogle: (credential: string) => Promise<{ success: boolean; error?: string; user?: UserProfile | null }>;
   logout: () => Promise<void>;
@@ -76,7 +76,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         triggerSuccessCallback();
         return { success: true, user: res.user };
       }
-      return { success: false, error: res.error || "Đăng nhập thất bại." };
+      return {
+        success: false,
+        error: res.error || "Đăng nhập thất bại.",
+        isNotRegistered: res.isNotRegistered,
+      };
     },
     [triggerSuccessCallback]
   );
