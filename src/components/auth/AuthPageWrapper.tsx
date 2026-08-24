@@ -17,8 +17,10 @@ import {
 import { COMPANY_DATA } from "../../data/company";
 import { LoginForm } from "./LoginForm";
 import { RegisterForm } from "./RegisterForm";
+import { CompleteProfileForm } from "./CompleteProfileForm";
 import { GoogleLoginButton } from "./GoogleLoginButton";
 import { useAuth } from "../../context/AuthContext";
+import type { UserProfile } from "../../types/auth";
 
 interface AuthPageWrapperProps {
   defaultTab?: "login" | "register";
@@ -38,24 +40,35 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
   const { user } = useAuth();
   const [tab, setTab] = useState<"login" | "register">(defaultTab);
   const [prefilledEmail, setPrefilledEmail] = useState("");
+  const [completeProfileUser, setCompleteProfileUser] = useState<UserProfile | null>(null);
 
-  // If already logged in, redirect away
+  // If already logged in and has profile completed, redirect away
   useEffect(() => {
-    if (user) {
+    if (user && !completeProfileUser) {
       if (user.role === "ADMIN") {
         window.location.href = "/admin";
+      } else if (!user.phone || !user.address) {
+        // If missing phone or address, allow completing profile
+        setCompleteProfileUser(user);
       } else {
         router.push(redirectUrl);
       }
     }
-  }, [user, redirectUrl, router]);
+  }, [user, completeProfileUser, redirectUrl, router]);
 
-  const handleSuccess = () => {
-    if (user?.role === "ADMIN") {
+  const handleSuccess = (loggedUser?: UserProfile | null) => {
+    const active = loggedUser || user;
+    if (active?.role === "ADMIN") {
       window.location.href = "/admin";
-    } else {
-      router.push(redirectUrl);
+      return;
     }
+
+    if (active && (!active.phone || !active.address)) {
+      setCompleteProfileUser(active);
+      return;
+    }
+
+    router.push(redirectUrl);
   };
 
   const handleSwitchToRegister = (email?: string) => {
@@ -161,74 +174,94 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
             </div>
           </div>
 
-          {/* Form Card (White in light mode, Dark in dark mode) */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-5 sm:p-7 shadow-xl shadow-slate-200/60 dark:shadow-none text-left space-y-4">
-            {/* Segmented Tab Switcher (Đăng nhập / Đăng ký) */}
-            <div className="grid grid-cols-2 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
-              <button
-                type="button"
-                onClick={() => setTab("login")}
-                className={`py-2 px-3 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
-                  tab === "login"
-                    ? "bg-[#075FA8] text-white shadow-md"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                }`}
-              >
-                <LogIn className="w-3.5 h-3.5" />
-                <span>Đăng nhập</span>
-              </button>
+          {/* If user needs to complete profile (e.g. from Google login) */}
+          {completeProfileUser ? (
+            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-5 sm:p-7 shadow-xl shadow-slate-200/60 dark:shadow-none text-left space-y-4 animate-in fade-in zoom-in-95 duration-200">
+              <div className="space-y-1">
+                <h1 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+                  Hoàn thiện thông tin nhận hàng
+                </h1>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  Cung cấp số điện thoại &amp; địa chỉ nhận hàng để tiện lợi cho các đơn hàng tiếp theo.
+                </p>
+              </div>
 
-              <button
-                type="button"
-                onClick={() => setTab("register")}
-                className={`py-2 px-3 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
-                  tab === "register"
-                    ? "bg-[#075FA8] text-white shadow-md"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                }`}
-              >
-                <UserPlus className="w-3.5 h-3.5" />
-                <span>Đăng ký</span>
-              </button>
+              <CompleteProfileForm
+                user={completeProfileUser}
+                onComplete={() => router.push(redirectUrl)}
+                onSkip={() => router.push(redirectUrl)}
+              />
             </div>
+          ) : (
+            /* Form Card (White in light mode, Dark in dark mode) */
+            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-5 sm:p-7 shadow-xl shadow-slate-200/60 dark:shadow-none text-left space-y-4">
+              {/* Segmented Tab Switcher (Đăng nhập / Đăng ký) */}
+              <div className="grid grid-cols-2 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
+                <button
+                  type="button"
+                  onClick={() => setTab("login")}
+                  className={`py-2 px-3 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
+                    tab === "login"
+                      ? "bg-[#075FA8] text-white shadow-md"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Đăng nhập</span>
+                </button>
 
-            {/* Sleek Header Title & Subtitle */}
-            <div className="text-center space-y-1 pt-1 pb-0.5">
-              <h1 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
-                {tab === "login" ? "Chào mừng trở lại!" : "Tạo tài khoản thành viên"}
-              </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
-                {tab === "login"
-                  ? "Đăng nhập để tra cứu đơn hàng & nhận chiết khấu thợ."
-                  : "Đăng ký để đặt hàng nhanh & lưu sẵn địa chỉ giao nhận."}
-              </p>
+                <button
+                  type="button"
+                  onClick={() => setTab("register")}
+                  className={`py-2 px-3 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
+                    tab === "register"
+                      ? "bg-[#075FA8] text-white shadow-md"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span>Đăng ký</span>
+                </button>
+              </div>
+
+              {/* Sleek Header Title & Subtitle */}
+              <div className="text-center space-y-1 pt-1 pb-0.5">
+                <h1 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+                  {tab === "login" ? "Chào mừng trở lại!" : "Tạo tài khoản thành viên"}
+                </h1>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
+                  {tab === "login"
+                    ? "Đăng nhập để tra cứu đơn hàng & nhận chiết khấu thợ."
+                    : "Đăng ký để đặt hàng nhanh & lưu sẵn địa chỉ giao nhận."}
+                </p>
+              </div>
+
+              {/* Form component with smooth animated transition */}
+              <div className="transition-all duration-300">
+                {tab === "login" ? (
+                  <LoginForm
+                    onSuccess={handleSuccess}
+                    onSwitchToRegister={handleSwitchToRegister}
+                    initialEmail={prefilledEmail}
+                  />
+                ) : (
+                  <RegisterForm onSuccess={handleSuccess} initialEmail={prefilledEmail} />
+                )}
+              </div>
+
+              {/* Clean Horizontal Divider */}
+              <div className="flex items-center gap-3 my-2 w-full">
+                <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider whitespace-nowrap shrink-0">
+                  Hoặc tiếp tục với
+                </span>
+                <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
+              </div>
+
+              {/* Google Login Button */}
+              <GoogleLoginButton onSuccess={handleSuccess} />
             </div>
-
-            {/* Form component with smooth animated transition */}
-            <div className="transition-all duration-300">
-              {tab === "login" ? (
-                <LoginForm
-                  onSuccess={handleSuccess}
-                  onSwitchToRegister={handleSwitchToRegister}
-                  initialEmail={prefilledEmail}
-                />
-              ) : (
-                <RegisterForm onSuccess={handleSuccess} initialEmail={prefilledEmail} />
-              )}
-            </div>
-
-            {/* Clean Horizontal Divider */}
-            <div className="flex items-center gap-3 my-2 w-full">
-              <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
-              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider whitespace-nowrap shrink-0">
-                Hoặc tiếp tục với
-              </span>
-              <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
-            </div>
-
-            {/* Google Login Button */}
-            <GoogleLoginButton onSuccess={handleSuccess} />
-          </div>
+          )}
 
           {/* Footer note */}
           <p className="text-[10px] text-center text-slate-400 dark:text-slate-500">
