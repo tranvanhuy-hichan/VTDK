@@ -4,7 +4,17 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ShieldCheck, Truck, Store, Wrench, Sparkles, CheckCircle2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ShieldCheck,
+  Truck,
+  Store,
+  Wrench,
+  Sparkles,
+  CheckCircle2,
+  LogIn,
+  UserPlus,
+} from "lucide-react";
 import { COMPANY_DATA } from "../../data/company";
 import { LoginForm } from "./LoginForm";
 import { RegisterForm } from "./RegisterForm";
@@ -48,7 +58,6 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
     }
   };
 
-
   return (
     <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden w-full flex flex-col lg:flex-row bg-[#071626] text-white">
       {/* 1. Left Showcase Column (Brand Identity & Key Highlights) */}
@@ -76,7 +85,7 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
                 </span>
               </div>
               <p className="text-[11px] text-blue-200 font-bold uppercase tracking-wider mt-0.5">
-                Vật Tư & Thiết Bị Điện Lạnh
+                Vật Tư &amp; Thiết Bị Điện Lạnh
               </p>
             </div>
           </Link>
@@ -90,7 +99,7 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
           </div>
 
           <h2 className="text-xl xl:text-2xl font-black text-white leading-snug tracking-tight">
-            Kho vật tư điện lạnh & giải pháp HVAC chuyên nghiệp tại Đà Nẵng
+            Kho vật tư điện lạnh &amp; giải pháp HVAC chuyên nghiệp tại Đà Nẵng
           </h2>
 
           <p className="text-xs xl:text-sm text-slate-300 leading-relaxed font-normal">
@@ -120,47 +129,74 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
         <div className="relative z-10 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-blue-200">
           <div className="flex items-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span>Hơn 5.000+ thợ & đối tác tin cậy</span>
+            <span>Hơn 5.000+ thợ &amp; đối tác tin cậy</span>
           </div>
           <span className="font-mono text-[11px]">Hotline: {COMPANY_DATA.hotline}</span>
         </div>
       </div>
 
-      {/* 2. Right Form Column (Login / Register Card) - Dynamic Width */}
-      <div className="flex-1 flex flex-col justify-center items-center p-3 sm:p-6 lg:p-8 h-full overflow-y-auto lg:overflow-hidden">
-        <div
-          className={`w-full transition-all duration-300 space-y-3.5 my-auto ${
-            tab === "login" ? "max-w-md" : "max-w-xl xl:max-w-2xl"
-          }`}
-        >
-
-          {/* Top navigation */}
+      {/* 2. Right Form Column (Login / Register Card) */}
+      <div className="flex-1 flex flex-col justify-center items-center p-3.5 sm:p-6 lg:p-8 h-full overflow-y-auto lg:overflow-hidden">
+        <div className="w-full max-w-md transition-all duration-300 space-y-3.5 my-auto">
+          {/* Top navigation bar */}
           <div className="flex items-center justify-between">
             <Link
               href="/"
               className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white transition-colors cursor-pointer !min-h-0"
             >
-              <ArrowLeft className="w-3.5 h-3.5 text-[#075FA8]" />
+              <ArrowLeft className="w-3.5 h-3.5 text-[#38BDF8]" />
               <span>Quay lại trang chủ</span>
             </Link>
 
             {/* Mobile-only logo */}
-            <div className="lg:hidden flex items-center gap-2">
+            <div className="lg:hidden flex items-center gap-1.5">
               <span className="text-xs font-black text-white">ĐÔNG KHA</span>
+              <span className="text-[9px] bg-blue-500/30 text-blue-300 font-bold px-1.5 py-0.2 rounded">
+                HVAC
+              </span>
             </div>
           </div>
 
           {/* Form Card */}
-          <div className="bg-slate-900/95 rounded-3xl border border-slate-800 p-5 sm:p-7 shadow-2xl backdrop-blur-md text-left space-y-4">
-            {/* Title & Description */}
-            <div className="space-y-1">
-              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
-                {tab === "login" ? "Đăng nhập tài khoản" : "Đăng ký thành viên mới"}
+          <div className="bg-slate-900/90 rounded-3xl border border-slate-800 p-4 sm:p-7 shadow-2xl backdrop-blur-xl text-left space-y-4">
+            {/* Segmented Tab Switcher (Đăng nhập / Đăng ký) */}
+            <div className="grid grid-cols-2 bg-slate-950/70 p-1 rounded-2xl border border-slate-800/80">
+              <button
+                type="button"
+                onClick={() => setTab("login")}
+                className={`py-2 px-3 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
+                  tab === "login"
+                    ? "bg-[#075FA8] text-white shadow-md"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Đăng nhập</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setTab("register")}
+                className={`py-2 px-3 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
+                  tab === "register"
+                    ? "bg-[#075FA8] text-white shadow-md"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                <span>Đăng ký</span>
+              </button>
+            </div>
+
+            {/* Sleek Header Title & Subtitle */}
+            <div className="text-center space-y-1 pt-1 pb-0.5">
+              <h1 className="text-lg sm:text-xl font-black text-white tracking-tight leading-tight">
+                {tab === "login" ? "Chào mừng trở lại!" : "Tạo tài khoản thành viên"}
               </h1>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
                 {tab === "login"
-                  ? "Nhập email và mật khẩu của bạn để tiếp tục mua sắm."
-                  : "Điền thông tin bên dưới để tạo tài khoản thành viên và lưu địa chỉ nhận hàng."}
+                  ? "Đăng nhập để tra cứu đơn hàng & nhận chiết khấu thợ."
+                  : "Đăng ký để đặt hàng nhanh & lưu sẵn địa chỉ giao nhận."}
               </p>
             </div>
 
@@ -171,10 +207,10 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
               <RegisterForm onSuccess={handleSuccess} />
             )}
 
-            {/* Clean Horizontal Divider without text wrapping bugs */}
+            {/* Clean Horizontal Divider */}
             <div className="flex items-center gap-3 my-2 w-full">
               <div className="h-px bg-slate-800 flex-1" />
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap shrink-0">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap shrink-0">
                 Hoặc tiếp tục với
               </span>
               <div className="h-px bg-slate-800 flex-1" />
@@ -182,33 +218,6 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
 
             {/* Google Login Button */}
             <GoogleLoginButton onSuccess={handleSuccess} />
-
-            {/* Switch between Login and Register prompt at bottom */}
-            <div className="text-center pt-2 text-xs text-slate-400 border-t border-slate-800/80">
-              {tab === "login" ? (
-                <>
-                  <span>Chưa có tài khoản?</span>
-                  <button
-                    type="button"
-                    onClick={() => setTab("register")}
-                    className="font-bold text-[#38BDF8] hover:text-white transition-colors underline underline-offset-4 cursor-pointer ml-1.5 !min-h-0"
-                  >
-                    Đăng ký ngay
-                  </button>
-                </>
-              ) : (
-                <>
-                  <span>Đã có tài khoản?</span>
-                  <button
-                    type="button"
-                    onClick={() => setTab("login")}
-                    className="font-bold text-[#38BDF8] hover:text-white transition-colors underline underline-offset-4 cursor-pointer ml-1.5 !min-h-0"
-                  >
-                    Đăng nhập ngay
-                  </button>
-                </>
-              )}
-            </div>
           </div>
 
           {/* Footer note */}
