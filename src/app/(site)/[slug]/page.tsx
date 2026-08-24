@@ -76,6 +76,10 @@ export async function generateMetadata({ params }: DynamicCategoryPageProps): Pr
   }
 
   const company = await getCompanyInfo();
+  const rawImage = company.image || "/images/storefront.png";
+  const shareImage = rawImage.startsWith("http")
+    ? rawImage
+    : `${SITE_URL}${rawImage.startsWith("/") ? "" : "/"}${rawImage}`;
 
   if (resolved.isGeneralStore) {
     const title = "Vật Tư Điện Lạnh Đà Nẵng | Đại Lý Sỉ & Lẻ Chính Hãng Giá Kho";
@@ -84,8 +88,22 @@ export async function generateMetadata({ params }: DynamicCategoryPageProps): Pr
       title,
       description,
       keywords: ["vật tư điện lạnh Đà Nẵng", "đại lý vật tư điện lạnh Đà Nẵng", "Đông Kha Đà Nẵng"],
-      alternates: { canonical: `/${slug}` },
-      openGraph: { title, description, url: `${SITE_URL}/${slug}`, siteName: company.name, locale: "vi_VN", type: "website" },
+      alternates: { canonical: `${SITE_URL}/${slug}` },
+      openGraph: {
+        title,
+        description,
+        url: `${SITE_URL}/${slug}`,
+        siteName: company.name,
+        locale: "vi_VN",
+        type: "website",
+        images: [{ url: shareImage, width: 1200, height: 630, alt: title }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [shareImage],
+      },
     };
   }
 
@@ -104,7 +122,7 @@ export async function generateMetadata({ params }: DynamicCategoryPageProps): Pr
       "vật tư điện lạnh Đà Nẵng",
     ],
     alternates: {
-      canonical: `/${slug}`,
+      canonical: `${SITE_URL}/${slug}`,
     },
     openGraph: {
       title,
@@ -113,6 +131,13 @@ export async function generateMetadata({ params }: DynamicCategoryPageProps): Pr
       siteName: company.name,
       locale: "vi_VN",
       type: "website",
+      images: [{ url: shareImage, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [shareImage],
     },
   };
 }

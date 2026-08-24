@@ -80,9 +80,9 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ company }) => {
               <Phone className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
             </div>
             <div className="text-left">
-              <h3 className="text-xs sm:text-base font-extrabold text-white leading-snug">
+              <p className="text-xs sm:text-base font-extrabold text-white leading-snug">
                 Bạn cần tìm vật tư hoặc tư vấn kỹ thuật điện lạnh?
-              </h3>
+              </p>
               <p className="text-[11px] sm:text-xs text-slate-300 font-normal mt-0.5">
                 Đông Kha sẵn sàng báo giá sỉ &amp; lẻ và hỗ trợ bạn nhanh chóng nhất.
               </p>

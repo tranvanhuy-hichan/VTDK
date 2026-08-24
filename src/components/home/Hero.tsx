@@ -84,14 +84,14 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
               </span>
             </div>
 
-            {/* Main Headline (h1 lives in the mobile block above; this is the large-screen presentation of the same message) */}
-            <h2 className="max-w-[620px] text-[clamp(2.3rem,3vw,3.1rem)] font-black leading-[1.1] tracking-[-0.04em] text-slate-950 dark:text-white">
+            {/* Main Headline */}
+            <h1 className="max-w-[620px] text-[clamp(2.3rem,3vw,3.1rem)] font-black leading-[1.1] tracking-[-0.04em] text-slate-950 dark:text-white">
               Vật Tư Điện Lạnh
               <span className="mt-1 block text-[#075FA8] dark:text-blue-400">
                 Đông Kha Đà Nẵng <span className="underline decoration-[#F47A20] underline-offset-8">– Sỉ &amp; Lẻ</span>
               </span>
               <span className="mt-1 block text-slate-900 dark:text-slate-100">Chính Hãng Giá Tốt</span>
-            </h2>
+            </h1>
 
             {/* Secondary Description */}
             <p className="mt-5 max-w-2xl text-base font-normal leading-7 text-slate-600 dark:text-slate-300 sm:mt-6 sm:text-lg sm:leading-8 xl:text-xl">

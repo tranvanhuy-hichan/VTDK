@@ -5,7 +5,7 @@ import { CheckoutPageView } from "@/components/checkout/CheckoutPageView";
 
 export const metadata: Metadata = {
   title: "Thanh Toán",
-  robots: { index: false, follow: true },
+  robots: { index: false, follow: false },
 };
 
 export default async function CheckoutPage() {

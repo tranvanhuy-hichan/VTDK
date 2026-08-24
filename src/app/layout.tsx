@@ -118,6 +118,13 @@ export async function generateMetadata(): Promise<Metadata> {
     verification: {
       google: "VuUoxkscuwFqN-g7nu1LiMRrDT7St2nw8x1VBbylh3E",
     },
+
+    other: {
+      "geo.region": "VN-DN",
+      "geo.placename": "Đà Nẵng",
+      "geo.position": "16.024567;108.204561",
+      "ICBM": "16.024567, 108.204561",
+    },
   };
 }
 
@@ -140,6 +147,11 @@ export default async function RootLayout({
         publisher: {
           "@id": `${SITE_URL}/#organization`,
         },
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${SITE_URL}/san-pham?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
       },
       {
         "@type": ["HVACBusiness", "Store", "LocalBusiness"],
@@ -150,9 +162,17 @@ export default async function RootLayout({
         logo: `${SITE_URL}/images/logo.png`,
         url: SITE_URL,
         telephone: company.hotlineRaw,
+        hasMap: company.googleMapsUrl,
         priceRange: "$$",
         currenciesAccepted: "VND",
         paymentAccepted: "Cash, Bank Transfer",
+        contactPoint: {
+          "@type": "ContactPoint",
+          telephone: company.hotlineRaw,
+          contactType: "sales & technical support",
+          areaServed: "VN",
+          availableLanguage: ["Vietnamese"],
+        },
         areaServed: {
           "@type": "AdministrativeArea",
           name: "Đà Nẵng",

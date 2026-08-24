@@ -86,6 +86,45 @@ export default async function ProductDetailPage({ params }: ProductPageParams) {
     take: 4,
   });
 
+  // Calculate variant prices for schema
+  const variantPrices = product.variants.map((v) => v.price).filter((p) => p > 0);
+  const allPrices = variantPrices.length > 0 ? variantPrices : (product.price > 0 ? [product.price] : []);
+  const minPrice = allPrices.length > 0 ? Math.min(...allPrices) : 0;
+  const maxPrice = allPrices.length > 0 ? Math.max(...allPrices) : 0;
+
+  const offersSchema =
+    allPrices.length > 1
+      ? {
+          "@type": "AggregateOffer",
+          lowPrice: minPrice,
+          highPrice: maxPrice,
+          priceCurrency: "VND",
+          offerCount: allPrices.length,
+          availability: "https://schema.org/InStock",
+          itemCondition: "https://schema.org/NewCondition",
+          priceValidUntil: "2027-12-31",
+          url: `${SITE_URL}/san-pham/${product.slug}`,
+          seller: {
+            "@type": "Organization",
+            name: company.name,
+          },
+        }
+      : minPrice > 0
+      ? {
+          "@type": "Offer",
+          price: minPrice,
+          priceCurrency: "VND",
+          availability: "https://schema.org/InStock",
+          itemCondition: "https://schema.org/NewCondition",
+          priceValidUntil: "2027-12-31",
+          url: `${SITE_URL}/san-pham/${product.slug}`,
+          seller: {
+            "@type": "Organization",
+            name: company.name,
+          },
+        }
+      : undefined;
+
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -93,24 +132,13 @@ export default async function ProductDetailPage({ params }: ProductPageParams) {
     description: product.shortDesc ?? `Sản phẩm ${product.name} chính hãng tại ${company.name}`,
     image: [product.image, ...product.images],
     category: product.category.name,
+    sku: product.id,
+    mpn: product.slug,
     brand: {
       "@type": "Brand",
-      name: company.name,
+      name: "Đông Kha",
     },
-    ...(product.price > 0 && {
-      offers: {
-        "@type": "Offer",
-        price: product.price,
-        priceCurrency: "VND",
-        availability: "https://schema.org/InStock",
-        itemCondition: "https://schema.org/NewCondition",
-        url: `${SITE_URL}/san-pham/${product.slug}`,
-        seller: {
-          "@type": "Organization",
-          name: company.name,
-        },
-      },
-    }),
+    ...(offersSchema && { offers: offersSchema }),
   };
 
   const breadcrumbSchema = {

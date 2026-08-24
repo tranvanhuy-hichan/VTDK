@@ -23,8 +23,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     {
       url: SITE_URL,
       lastModified: new Date(),
-      changeFrequency: "weekly",
+      changeFrequency: "daily",
       priority: 1,
+    },
+    {
+      url: `${SITE_URL}/san-pham`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.9,
     },
     ...uniqueCategoryRoutes.map((route) => ({
       url: `${SITE_URL}${route}`,
