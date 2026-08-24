@@ -137,27 +137,38 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
             : "bg-white dark:bg-slate-900 py-2.5 sm:py-3 border-b border-slate-100 dark:border-slate-800"
           }`}
       >
-        <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+        <div className="w-full max-w-[1700px] mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-2 sm:gap-4">
 
-          {/* Logo Area - Links to Home / */}
-          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-            <Image
-              src={COMPANY_DATA.logoUrl}
-              alt="Logo Vật Tư Điện Lạnh Đông Kha Đà Nẵng"
-              width={56}
-              height={56}
-              priority
-              className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105 rounded-xl"
-            />
-            <div className="flex flex-col">
-              <div className="font-black text-slate-900 dark:text-white tracking-tight text-base sm:text-lg leading-none flex items-center gap-1">
-                <span>ĐÔNG KHA</span>
+          {/* Left: Mobile Hamburger Button + Logo Area */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-bold transition-colors !min-h-0 cursor-pointer xl:hidden shrink-0"
+              aria-label="Mở Menu"
+            >
+              {isMobileMenuOpen ? <X className="w-5 h-5 text-[#075FA8] dark:text-blue-400" /> : <Menu className="w-5 h-5" />}
+            </button>
+
+            {/* Logo Area - Links to Home / */}
+            <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group shrink-0">
+              <Image
+                src={COMPANY_DATA.logoUrl}
+                alt="Logo Vật Tư Điện Lạnh Đông Kha Đà Nẵng"
+                width={56}
+                height={56}
+                priority
+                className="h-9 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105 rounded-xl"
+              />
+              <div className="flex flex-col">
+                <div className="font-black text-slate-900 dark:text-white tracking-tight text-sm sm:text-lg leading-none flex items-center gap-1">
+                  <span>ĐÔNG KHA</span>
+                </div>
+                <span className="text-[9px] sm:text-xs text-slate-400 dark:text-slate-500 font-bold tracking-wider mt-0.5 sm:mt-1 uppercase whitespace-nowrap">
+                  Vật Tư Điện Lạnh
+                </span>
               </div>
-              <span className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-555 font-bold tracking-wider mt-1 uppercase whitespace-nowrap">
-                Vật Tư Điện Lạnh
-              </span>
-            </div>
-          </Link>
+            </Link>
+          </div>
 
           {/* Middle Search Bar on Desktop & Tablet */}
           <form
@@ -224,9 +235,8 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
           </div>
 
 
-          {/* Mobile & Tablet Right Controls: Search + User + Cart + Hamburger Menu */}
-          <div className="flex items-center gap-1.5 xl:hidden shrink-0">
-
+          {/* Mobile & Tablet Right Controls: Search + Cart + User (User on the FAR RIGHT) */}
+          <div className="flex items-center gap-1 sm:gap-1.5 xl:hidden shrink-0">
             <button
               onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
               data-search-toggle="true"
@@ -236,16 +246,9 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
               <Search className="w-5 h-5" />
             </button>
 
-            <UserMenu />
             <CartButton />
 
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-bold transition-colors !min-h-0 cursor-pointer"
-              aria-label="Mở Menu"
-            >
-              {isMobileMenuOpen ? <X className="w-6 h-6 text-[#075FA8] dark:text-blue-400" /> : <Menu className="w-6 h-6" />}
-            </button>
+            <UserMenu />
           </div>
         </div>
 
