@@ -123,8 +123,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </span>
           </div>
 
-          {/* Row 2: Buy Now + Add to Cart */}
-          <div className="flex gap-2">
+          {/* Row 2: Buy Now + Add to Cart (Hidden on mobile for clean card layout, shown on tablet/desktop) */}
+          <div className="hidden sm:flex gap-2">
             <AddToCartOptionsButton
               product={{
                 slug: product.slug,
