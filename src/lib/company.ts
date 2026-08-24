@@ -1,6 +1,9 @@
 import { prisma } from "./prisma";
 import { COMPANY_DATA } from "../data/company";
 
+export { COMPANY_DATA };
+
+
 export interface CompanyContact {
   name: string;
   address: string;

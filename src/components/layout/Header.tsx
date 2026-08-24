@@ -8,6 +8,8 @@ import { Phone, Menu, X, MapPin, ChevronRight, Shield, Search, Sun, Moon } from 
 import { COMPANY_DATA } from "../../data/company";
 import type { CompanyContact } from "../../lib/company";
 import { CartButton } from "../cart/CartButton";
+import { UserMenu } from "../auth/UserMenu";
+import { useAuth } from "../../context/AuthContext";
 
 interface HeaderProps {
   activeSection?: string;
@@ -17,7 +19,9 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ company }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const { user } = useAuth();
   const isHomePage = pathname === "/";
+
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSectionState, setActiveSectionState] = useState<string>("trang-chu");
@@ -110,20 +114,18 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
   return (
     <>
       {/* Top Banner Notice for Local Customers */}
-      <div className="bg-[#0B1F33] text-slate-200 text-[11px] sm:text-xs py-1 px-4 border-b border-slate-800">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      {/* Top Banner Notice for Local Customers */}
+      <div className="bg-[#0B1F33] text-slate-200 text-[11px] sm:text-xs py-1 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
+        <div className="w-full max-w-[1700px] mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-1.5 text-slate-300 truncate">
             <MapPin className="w-3.5 h-3.5 text-[#F47A20] shrink-0" />
             <span className="truncate">
               <strong>Cửa hàng:</strong> {company.address}
             </span>
           </div>
-          <div className="hidden lg:flex items-center gap-3.5 text-[11px]">
-            <span className="flex items-center gap-1 text-slate-300">
-              <Shield className="w-3 h-3 text-emerald-400" /> Sỉ &amp; Lẻ Vật Tư Điện Lạnh Chuẩn Kỹ Thuật
-            </span>
-            <span className="text-slate-650">|</span>
-            <span className="text-slate-300">Mở cửa: {company.workingHours}</span>
+          <div className="hidden sm:flex items-center gap-4 text-slate-300 shrink-0">
+            <span>⚡ Giao hàng hỏa tốc nội thành</span>
+            <span>📞 Hotline: {company.hotline}</span>
           </div>
         </div>
       </div>
@@ -135,31 +137,55 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
             : "bg-white dark:bg-slate-900 py-2.5 sm:py-3 border-b border-slate-100 dark:border-slate-800"
           }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
 
           {/* Logo Area - Links to Home / */}
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
             <Image
               src={COMPANY_DATA.logoUrl}
               alt="Logo Vật Tư Điện Lạnh Đông Kha Đà Nẵng"
               width={56}
               height={56}
               priority
-              className="h-10 sm:h-12 lg:h-14 w-auto object-contain transition-transform group-hover:scale-105 rounded-xl"
+              className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105 rounded-xl"
             />
             <div className="flex flex-col">
               <div className="font-black text-slate-900 dark:text-white tracking-tight text-base sm:text-lg leading-none flex items-center gap-1">
                 <span>ĐÔNG KHA</span>
               </div>
-              <span className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-555 font-bold tracking-wider mt-1.5 uppercase">
-                Vật Tư Điện Lạnh Chính Hãng
+              <span className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-555 font-bold tracking-wider mt-1 uppercase whitespace-nowrap">
+                Vật Tư Điện Lạnh
               </span>
             </div>
           </Link>
 
-          {/* Desktop Navigation Links & Theme Toggle */}
-          <div className="hidden lg:flex items-center gap-4 flex-1 justify-end">
-            <nav className="flex items-center gap-1 sm:gap-1.5">
+          {/* Middle Search Bar on Desktop & Tablet */}
+          <form
+            onSubmit={handleSearchSubmit}
+            className="hidden lg:flex items-center flex-1 max-w-xs xl:max-w-sm 2xl:max-w-md mx-2 2xl:mx-4 relative"
+          >
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Tìm ống đồng, gas lạnh, linh kiện..."
+              className="w-full bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white pl-9 pr-8 py-2 text-xs 2xl:text-sm rounded-xl border border-slate-200/80 dark:border-slate-700/80 focus:border-[#075FA8] dark:focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none transition-all placeholder:text-slate-400"
+            />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer !min-h-0"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </form>
+
+          {/* Desktop Navigation Links, Cart & User Menu */}
+          <div className="hidden xl:flex items-center gap-2.5 2xl:gap-3 shrink-0 justify-end">
+            <nav className="flex items-center gap-1 2xl:gap-1.5">
               {rawNavLinks.map((link) => {
                 const targetHref = getTargetHref(link.hash);
                 const sectionId = link.hash.replace("#", "");
@@ -172,8 +198,8 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                   <Link
                     key={link.hash}
                     href={targetHref}
-                    className={`text-sm font-bold transition-all px-3 py-1.5 rounded-lg relative ${isActive
-                        ? "text-[#075FA8] dark:text-[#F47A20] bg-blue-50 dark:bg-slate-800 font-extrabold shadow-2xs after:content-[''] after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-[#075FA8] dark:after:bg-[#F47A20]"
+                    className={`text-xs 2xl:text-sm font-bold transition-all px-2.5 2xl:px-3 py-1.5 rounded-lg relative whitespace-nowrap shrink-0 ${isActive
+                        ? "text-[#075FA8] dark:text-[#F47A20] bg-blue-50 dark:bg-slate-800 font-extrabold shadow-2xs after:content-[''] after:absolute after:bottom-0 after:left-2.5 after:right-2.5 after:h-0.5 after:bg-[#075FA8] dark:after:bg-[#F47A20]"
                         : "text-slate-700 dark:text-slate-300 hover:text-[#075FA8] dark:hover:text-[#F47A20] hover:bg-slate-100/70 dark:hover:bg-slate-800/50"
                       }`}
                   >
@@ -182,44 +208,35 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                 );
               })}
             </nav>
-            <div className="h-6 w-px bg-slate-200 dark:bg-slate-800" />
-            <button
-              onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-              data-search-toggle="true"
-              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer !min-h-0"
-              aria-label="Mở tìm kiếm"
-            >
-              <Search className="w-5 h-5" />
-            </button>
+            <div className="h-5 w-px bg-slate-200 dark:bg-slate-800 shrink-0" />
             <CartButton />
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer !min-h-0"
-              aria-label="Đổi giao diện"
-            >
-              {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5 text-amber-400" />}
-            </button>
+            <UserMenu />
+            {/* Show standalone theme toggle ONLY when user is NOT logged in */}
+            {!user && (
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer !min-h-0 shrink-0"
+                aria-label="Đổi giao diện"
+              >
+                {theme === "light" ? <Moon className="w-4.5 h-4.5" /> : <Sun className="w-4.5 h-4.5 text-amber-400" />}
+              </button>
+            )}
           </div>
 
-          {/* Mobile Right Controls: Search + Hamburger Menu */}
-          <div className="flex items-center gap-1.5 lg:hidden">
+
+          {/* Mobile & Tablet Right Controls: Search + User + Cart + Hamburger Menu */}
+          <div className="flex items-center gap-1.5 xl:hidden shrink-0">
+
             <button
               onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
               data-search-toggle="true"
-              className="hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors !min-h-0 cursor-pointer sm:block"
+              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors !min-h-0 cursor-pointer"
               aria-label="Mở tìm kiếm"
             >
               <Search className="w-5 h-5" />
             </button>
 
-            <button
-              onClick={toggleTheme}
-              className="hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer !min-h-0 sm:block"
-              aria-label="Đổi giao diện"
-            >
-              {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5 text-amber-400" />}
-            </button>
-
+            <UserMenu />
             <CartButton />
 
             <button

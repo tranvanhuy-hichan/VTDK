@@ -2,10 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
-import { ShoppingCart, Check, X, Minus, Plus } from "lucide-react";
+import { ShoppingCart, Check, X, Minus, Plus, Zap } from "lucide-react";
 import { useCart } from "../../context/CartContext";
+import { useAuth } from "../../context/AuthContext";
 import { flyToCart } from "../../lib/flyToCart";
+import { formatCurrency } from "../../lib/format";
 
 interface VariantOption {
   id: string;
@@ -22,14 +25,20 @@ interface AddToCartOptionsButtonProps {
   };
   variants: VariantOption[];
   sizeClassName?: string;
+  mode?: "icon" | "full" | "buy_now";
+  label?: string;
 }
 
 export const AddToCartOptionsButton: React.FC<AddToCartOptionsButtonProps> = ({
   product,
   variants,
   sizeClassName = "w-10 h-10",
+  mode = "icon",
+  label = "Mua ngay",
 }) => {
-  const { addItem } = useCart();
+  const router = useRouter();
+  const { addItem, setCheckoutItems } = useCart();
+  const { user, openAuthModal } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(variants[0]?.id ?? null);
@@ -54,17 +63,52 @@ export const AddToCartOptionsButton: React.FC<AddToCartOptionsButtonProps> = ({
     };
   }, [isOpen]);
 
+  const selectedVariant = variants.find((v) => v.id === selectedVariantId);
+  const unitPrice = selectedVariant ? selectedVariant.price : product.price;
+
+  const triggerBuyNowAction = (chosenQty: number = qty, chosenVariant = selectedVariant) => {
+    const price = chosenVariant ? chosenVariant.price : product.price;
+    const variantLabel = chosenVariant?.label;
+    const key = variantLabel ? `${product.slug}::${variantLabel}` : product.slug;
+
+    const item = {
+      key,
+      slug: product.slug,
+      name: product.name,
+      variantLabel,
+      price,
+      image: product.image,
+      qty: chosenQty,
+    };
+
+    setCheckoutItems([item]);
+    setIsOpen(false);
+
+    if (!user) {
+      router.push("/dang-nhap?redirect=/thanh-toan");
+    } else {
+      router.push("/thanh-toan");
+    }
+
+  };
+
   const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (user?.role === "ADMIN") {
+      alert("Tài khoản Quản trị viên chỉ có quyền xem và quản lý, không thể đặt hàng.");
+      return;
+    }
+    if (mode === "buy_now" && variants.length === 0) {
+      triggerBuyNowAction(1, undefined);
+      return;
+    }
     setSelectedVariantId(variants[0]?.id ?? null);
     setQty(1);
     setIsOpen(true);
   };
 
-  const selectedVariant = variants.find((v) => v.id === selectedVariantId);
-  const unitPrice = selectedVariant ? selectedVariant.price : product.price;
 
-  const handleConfirm = () => {
+  const handleAddToCart = () => {
     const price = unitPrice;
     const variantLabel = selectedVariant?.label;
     const key = variantLabel ? `${product.slug}::${variantLabel}` : product.slug;
@@ -90,27 +134,31 @@ export const AddToCartOptionsButton: React.FC<AddToCartOptionsButtonProps> = ({
     window.setTimeout(() => setJustAdded(false), 2000);
   };
 
+  const handleBuyNow = () => {
+    triggerBuyNowAction(qty, selectedVariant);
+  };
+
   const modalContent = isOpen ? (
     <div
       className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 text-left"
       onClick={() => setIsOpen(false)}
     >
       <div
-        className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full shadow-2xl border border-slate-200 dark:border-slate-800 text-left relative"
+        className="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full shadow-2xl border border-slate-200 dark:border-slate-800 text-left relative overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-3 p-4 border-b border-slate-200 dark:border-slate-800">
-          <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+        <div className="flex items-center gap-3 p-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="relative w-14 h-14 shrink-0 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
             <Image src={product.image} alt={product.name} fill sizes="56px" className="object-cover" />
           </div>
-          <h3 className="flex-1 min-w-0 text-sm sm:text-base font-black text-slate-900 dark:text-white leading-snug line-clamp-2">
+          <h3 className="flex-1 min-w-0 text-sm font-black text-slate-900 dark:text-white leading-snug line-clamp-2">
             {product.name}
           </h3>
           <button
             type="button"
             onClick={() => setIsOpen(false)}
             aria-label="Đóng"
-            className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors !min-h-0 cursor-pointer shrink-0"
+            className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors !min-h-0 cursor-pointer shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -119,7 +167,7 @@ export const AddToCartOptionsButton: React.FC<AddToCartOptionsButtonProps> = ({
         <div className="p-4 space-y-4">
           {variants.length > 0 && (
             <div className="space-y-1.5">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <span className="text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Quy cách / Phân loại
               </span>
               <div className="flex flex-wrap gap-1.5">
@@ -130,7 +178,7 @@ export const AddToCartOptionsButton: React.FC<AddToCartOptionsButtonProps> = ({
                       key={variant.id}
                       type="button"
                       onClick={() => setSelectedVariantId(variant.id)}
-                      className={`!min-h-0 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer inline-flex items-center gap-1.5 ${
+                      className={`!min-h-0 px-3 py-1.5 text-xs font-bold rounded-xl border transition-all cursor-pointer inline-flex items-center gap-1.5 ${
                         isSelected
                           ? "bg-blue-50 dark:bg-blue-950/80 border-2 border-[#075FA8] dark:border-blue-500 text-[#075FA8] dark:text-blue-300 shadow-2xs"
                           : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600"
@@ -146,16 +194,16 @@ export const AddToCartOptionsButton: React.FC<AddToCartOptionsButtonProps> = ({
           )}
 
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <span className="text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Số lượng
             </span>
-            <div className="inline-flex items-center border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+            <div className="inline-flex items-center border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-800">
               <button
                 type="button"
                 onClick={() => setQty((q) => Math.max(1, q - 1))}
                 disabled={qty <= 1}
                 aria-label="Giảm số lượng"
-                className="w-8 h-8 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer !min-h-0"
+                className="w-8 h-8 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer !min-h-0"
               >
                 <Minus className="w-3.5 h-3.5" />
               </button>
@@ -164,7 +212,7 @@ export const AddToCartOptionsButton: React.FC<AddToCartOptionsButtonProps> = ({
                 type="button"
                 onClick={() => setQty((q) => q + 1)}
                 aria-label="Tăng số lượng"
-                className="w-8 h-8 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer !min-h-0"
+                className="w-8 h-8 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer !min-h-0"
               >
                 <Plus className="w-3.5 h-3.5" />
               </button>
@@ -177,31 +225,58 @@ export const AddToCartOptionsButton: React.FC<AddToCartOptionsButtonProps> = ({
                 Đơn giá
               </span>
               <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                {unitPrice > 0 ? `${unitPrice.toLocaleString("vi-VN")}đ` : "Liên hệ báo giá"}
+                {formatCurrency(unitPrice)}
               </span>
             </div>
             <div className="text-right">
               <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-bold uppercase tracking-wider">
-                Thành tiền
+                Tổng cộng
               </span>
-              <span className="text-lg font-black text-orange-600 dark:text-orange-400">
-                {unitPrice > 0 ? `${(unitPrice * qty).toLocaleString("vi-VN")}đ` : "Liên hệ báo giá"}
+              <span className="text-base font-black text-orange-600 dark:text-orange-400">
+                {unitPrice > 0 ? formatCurrency(unitPrice * qty) : "Liên hệ báo giá"}
               </span>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleConfirm}
-            className="w-full inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-sm py-3 px-4 rounded-xl shadow-md transition-all active:scale-98"
-          >
-            <ShoppingCart className="w-4 h-4" />
-            <span>Thêm vào giỏ</span>
-          </button>
+          <div className="grid grid-cols-2 gap-2 pt-1">
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="w-full inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-xs sm:text-sm py-3 px-3 rounded-xl border border-slate-200 dark:border-slate-700 transition-all cursor-pointer !min-h-0"
+            >
+              <ShoppingCart className="w-4 h-4 text-[#075FA8] dark:text-blue-400" />
+              <span>Thêm giỏ</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleBuyNow}
+              className="w-full inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-black text-xs sm:text-sm py-3 px-3 rounded-xl shadow-md transition-all active:scale-98 cursor-pointer !min-h-0"
+            >
+              <Zap className="w-4 h-4 fill-current text-amber-300" />
+              <span>Mua ngay</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   ) : null;
+
+  if (mode === "buy_now") {
+    return (
+      <>
+        <button
+          ref={triggerRef}
+          type="button"
+          onClick={handleOpen}
+          className="flex-1 min-w-0 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm py-2 sm:py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-98 shadow-xs cursor-pointer !min-h-0"
+        >
+          <Zap className="w-3.5 h-3.5 fill-current text-amber-300 shrink-0" />
+          <span>{label}</span>
+        </button>
+        {mounted && modalContent && createPortal(modalContent, document.body)}
+      </>
+    );
+  }
 
   return (
     <>
@@ -214,7 +289,7 @@ export const AddToCartOptionsButton: React.FC<AddToCartOptionsButtonProps> = ({
         className={`${sizeClassName} shrink-0 rounded-xl border flex items-center justify-center transition-all cursor-pointer !min-h-0 ${
           justAdded
             ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 animate-cart-pop"
-            : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-[#075FA8] hover:text-[#075FA8] dark:hover:text-blue-400"
+            : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-[#075FA8] hover:text-[#075FA8] dark:hover:text-blue-400"
         }`}
       >
         {justAdded ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}

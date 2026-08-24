@@ -95,3 +95,76 @@ model CompanyInfo {
   images          String[] @default([]) // additional gallery images
   updatedAt       DateTime @updatedAt
 }
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING     // Chờ xử lý / Đơn mới
+  CONFIRMED   // Đã xác nhận
+  SHIPPING    // Đang giao hàng
+  COMPLETED   // Đã hoàn thành
+  CANCELLED   // Đã hủy
+}
+
+enum ShippingMethod {
+  STORE_PICKUP // Đến lấy tại cửa hàng (không cần nhập địa chỉ)
+  DELIVERY     // Giao hàng tận nơi (bắt buộc nhập địa chỉ)
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String?   // Null nếu chỉ đăng nhập qua Google
+  name         String
+  phone        String?
+  address      String?   // Địa chỉ giao hàng được ghi nhớ cho các lần mua sau
+  role         Role      @default(CUSTOMER)
+  googleId     String?   @unique
+  avatar       String?
+  orders       Order[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([email])
+}
+
+model Order {
+  id             String         @id @default(uuid())
+  orderCode      String         @unique // Ví dụ: DK-260824-A89F
+  userId         String?
+  user           User?          @relation(fields: [userId], references: [id])
+  customerName   String
+  customerPhone  String
+  customerEmail  String?
+  shippingMethod ShippingMethod @default(DELIVERY)
+  address        String?        // Bắt buộc nếu là DELIVERY, null nếu là STORE_PICKUP
+  note           String?
+  totalAmount    Int
+  status         OrderStatus    @default(PENDING)
+  items          OrderItem[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([userId])
+  @@index([status, createdAt])
+  @@index([orderCode])
+}
+
+model OrderItem {
+  id           String   @id @default(uuid())
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId    String?
+  productSlug  String
+  productName  String
+  variantLabel String?
+  price        Int
+  quantity     Int
+  image        String
+
+  @@index([orderId])
+}
+

@@ -166,14 +166,15 @@ export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
             © 2026 | Designed by Tran Van Huy
           </p>
 
-          {/* Admin Link (scroll-to-top is handled by the floating action button) */}
+          {/* Admin Link */}
           <Link
-            href="/admin/login"
+            href="/admin"
             className="inline-flex items-center gap-1 hover:text-white transition-colors py-0.5"
           >
             <Lock className="w-3 h-3" />
             <span>Quản trị</span>
           </Link>
+
         </div>
 
       </div>

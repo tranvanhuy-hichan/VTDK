@@ -5,6 +5,8 @@ import { FloatingContact } from "../../components/layout/FloatingContact";
 import { getCompanyInfo } from "../../lib/company";
 import { prisma } from "../../lib/prisma";
 import { CartProvider } from "../../context/CartContext";
+import { AuthProvider } from "../../context/AuthContext";
+import { AuthModal } from "../../components/auth/AuthModal";
 
 export default async function SiteLayout({
   children,
@@ -18,13 +20,17 @@ export default async function SiteLayout({
   });
 
   return (
-    <CartProvider>
-      <div className="min-h-screen flex flex-col bg-[#F6F8FA] dark:bg-[#0F172A] text-slate-800 dark:text-slate-100 antialiased font-sans transition-colors duration-300">
-        <Header company={company} />
-        <main className="flex-1">{children}</main>
-        <FloatingContact company={company} />
-        <Footer company={company} categories={categories} />
-      </div>
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <div className="min-h-screen flex flex-col bg-[#F6F8FA] dark:bg-[#0F172A] text-slate-800 dark:text-slate-100 antialiased font-sans transition-colors duration-300">
+          <Header company={company} />
+          <main className="flex-1">{children}</main>
+          <FloatingContact company={company} />
+          <Footer company={company} categories={categories} />
+          <AuthModal />
+        </div>
+      </CartProvider>
+    </AuthProvider>
   );
 }
+

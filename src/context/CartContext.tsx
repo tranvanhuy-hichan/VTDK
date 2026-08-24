@@ -1,18 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-
-export interface CartItem {
-  key: string;
-  slug: string;
-  name: string;
-  variantLabel?: string;
-  price: number;
-  image: string;
-  qty: number;
-}
-
-export type AddableCartItem = Omit<CartItem, "qty">;
+import type { CartItem, AddableCartItem } from "../types/cart";
+export type { CartItem, AddableCartItem };
 
 interface CartContextValue {
   items: CartItem[];
@@ -29,8 +19,9 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-const STORAGE_KEY = "dongkha_zalo_cart";
+const STORAGE_KEY = "dongkha_cart_items";
 const CHECKOUT_STORAGE_KEY = "dongkha_checkout_items";
+
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);

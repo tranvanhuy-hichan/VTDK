@@ -10,5 +10,6 @@ export const metadata: Metadata = {
 
 export default async function CheckoutPage() {
   const company = await getCompanyInfo();
-  return <CheckoutPageView zaloUrl={company.zaloUrl} />;
+  return <CheckoutPageView company={company} />;
 }
+

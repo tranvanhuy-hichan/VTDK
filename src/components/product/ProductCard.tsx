@@ -5,9 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { CompanyContact } from "../../lib/company";
 import { ImageCarousel } from "./ImageCarousel";
-import { ZaloInquiryButton } from "../zalo/ZaloInquiryButton";
 import { AddToCartOptionsButton } from "../cart/AddToCartOptionsButton";
-import { buildProductZaloMessage } from "../../lib/zaloMessage";
 
 interface Category {
   id: string;
@@ -54,7 +52,7 @@ function formatPriceCompact(num: number): string {
   return `${num.toLocaleString("vi-VN")}đ`;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, company }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const router = useRouter();
 
   // Calculate price display (Min price - Max price range if variants have different prices)
@@ -73,7 +71,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, company }) =>
       priceDisplay = `${minPrice.toLocaleString("vi-VN")}đ`;
     } else {
       const fullRangeStr = `${minPrice.toLocaleString("vi-VN")}đ - ${maxPrice.toLocaleString("vi-VN")}đ`;
-      // If the full price range text is long, switch to compact abbreviated notation (e.g. 180k - 1.95M)
       if (fullRangeStr.length > 17) {
         priceDisplay = `${formatPriceCompact(minPrice)} - ${formatPriceCompact(maxPrice)}`;
       } else {
@@ -85,7 +82,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, company }) =>
   return (
     <div
       onClick={() => router.push(`/san-pham/${product.slug}`)}
-      className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-500 transition-all duration-300 flex flex-col overflow-hidden group text-left cursor-pointer"
+      className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-500 transition-all duration-300 flex flex-col overflow-hidden group text-left cursor-pointer"
     >
       {/* Product Image */}
       <div className="relative aspect-[16/10] overflow-hidden bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800">
@@ -126,38 +123,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, company }) =>
             </span>
           </div>
 
-          {/* Row 2: Zalo Contact Button + Add to Cart */}
+          {/* Row 2: Buy Now + Add to Cart */}
           <div className="flex gap-2">
-            <ZaloInquiryButton
-              buildMessage={(picked) =>
-                buildProductZaloMessage({
-                  name: product.name,
-                  slug: product.slug,
-                  variantLabel: picked?.variantLabel,
-                  price: picked ? picked.price : validPrices.length > 0 ? Math.min(...validPrices) : 0,
-                  qty: picked?.qty,
-                  mode: company.hasDelivery ? "buy" : "inquire",
-                })
-              }
-              picker={{
-                product: {
-                  slug: product.slug,
-                  name: product.name,
-                  price: product.price,
-                  image: product.image,
-                },
-                variants: product.variants,
+            <AddToCartOptionsButton
+              product={{
+                slug: product.slug,
+                name: product.name,
+                price: product.price,
+                image: product.image,
               }}
-              zaloUrl={company.zaloUrl}
-              label={company.hasDelivery ? "Mua ngay" : "Liên hệ ngay"}
-              mobileLabel={company.hasDelivery ? "Mua" : undefined}
-              iconOnly={!company.hasDelivery}
-              requireBuyerInfo={company.hasDelivery}
-              className={
-                company.hasDelivery
-                  ? "flex-1 min-w-0 bg-[#0068FF] hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-98 shadow-xs cursor-pointer"
-                  : "flex-1 min-w-0 bg-[#0068FF] hover:bg-blue-700 text-white py-2 rounded-xl flex items-center justify-center transition-all active:scale-98 shadow-xs cursor-pointer"
-              }
+              variants={product.variants}
+              mode="buy_now"
+              label="Mua ngay"
             />
             <AddToCartOptionsButton
               product={{
@@ -167,7 +144,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, company }) =>
                 image: product.image,
               }}
               variants={product.variants}
-              sizeClassName={company.hasDelivery ? "w-10 h-10" : "flex-1 h-9"}
+              mode="icon"
+              sizeClassName="w-10 h-10"
             />
           </div>
         </div>

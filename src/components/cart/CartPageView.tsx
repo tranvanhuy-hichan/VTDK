@@ -1,25 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createPortal } from "react-dom";
-import { ShoppingCart, Trash2, X } from "lucide-react";
+import { ShoppingCart, Trash2, ArrowRight, ShieldCheck } from "lucide-react";
 import { useCart } from "../../context/CartContext";
-import { buildCartZaloMessage } from "../../lib/zaloMessage";
-import { ZaloMessageConfirm } from "../zalo/ZaloMessageConfirm";
+import { useAuth } from "../../context/AuthContext";
 import { ProductDetailHeader } from "../product/ProductDetailHeader";
 import { OrderItemsCard, OrderTotalCard, OrderRowSkeleton, OrderTotalSkeleton } from "./OrderSummary";
 
-interface CartPageViewProps {
-  zaloUrl: string;
-  hasDelivery: boolean;
-}
-
-export const CartPageView: React.FC<CartPageViewProps> = ({ zaloUrl, hasDelivery }) => {
+export const CartPageView: React.FC = () => {
   const router = useRouter();
   const { items, hydrated, removeItem, updateQty, setCheckoutItems, clear } = useCart();
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const { user, openAuthModal } = useAuth();
 
   const handleClearAll = () => {
     if (window.confirm("Xoá toàn bộ sản phẩm trong giỏ hàng?")) {
@@ -27,23 +20,28 @@ export const CartPageView: React.FC<CartPageViewProps> = ({ zaloUrl, hasDelivery
     }
   };
 
-  const handleCtaClick = () => {
-    if (hasDelivery) {
-      setCheckoutItems(items);
-      router.push("/thanh-toan");
+  const handleProceedToCheckout = () => {
+    if (user?.role === "ADMIN") {
+      alert("Tài khoản Quản trị viên chỉ có quyền xem và quản lý hệ thống, không thể đặt hàng.");
+      return;
+    }
+    setCheckoutItems(items);
+    if (!user) {
+      router.push("/dang-nhap?redirect=/thanh-toan");
     } else {
-      setIsConfirmOpen(true);
+      router.push("/thanh-toan");
     }
   };
 
   return (
     <section className="pt-1.5 sm:pt-2.5 pb-10 bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+      <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
             <ProductDetailHeader productName={`Giỏ hàng${hydrated ? ` (${items.length})` : ""}`} />
           </div>
-          {hydrated && items.length > 0 && (
+          {hydrated && items.length > 0 && user?.role !== "ADMIN" && (
             <button
               type="button"
               onClick={handleClearAll}
@@ -55,7 +53,26 @@ export const CartPageView: React.FC<CartPageViewProps> = ({ zaloUrl, hasDelivery
           )}
         </div>
 
-        {!hydrated ? (
+        {user?.role === "ADMIN" ? (
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-amber-200 dark:border-amber-900/60 p-10 text-center space-y-4 shadow-xs max-w-2xl mx-auto my-6">
+            <div className="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto">
+              <ShieldCheck className="w-8 h-8" />
+            </div>
+            <h3 className="text-lg font-black text-slate-900 dark:text-white">Tài khoản Quản trị viên (Admin)</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+              Tài khoản Admin chỉ có quyền xem thông tin và quản trị hệ thống, không thể thực hiện đặt hàng.
+            </p>
+            <div className="pt-2 flex justify-center gap-3">
+              <Link
+                href="/admin"
+                className="inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold text-sm py-3 px-6 rounded-xl shadow-md transition-all cursor-pointer"
+              >
+                Vào trang quản trị (Admin)
+              </Link>
+            </div>
+          </div>
+        ) : !hydrated ? (
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 lg:h-[calc(100vh-11rem)]">
             <div className="lg:col-span-2 lg:h-full lg:overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
               <OrderRowSkeleton />
@@ -67,16 +84,20 @@ export const CartPageView: React.FC<CartPageViewProps> = ({ zaloUrl, hasDelivery
             </div>
           </div>
         ) : items.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-10 text-center space-y-4">
-            <ShoppingCart className="w-10 h-10 text-slate-300 dark:text-slate-700 mx-auto" />
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Chưa có sản phẩm nào trong giỏ. Bấm biểu tượng giỏ hàng trên từng sản phẩm để thêm vào đây.
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-10 text-center space-y-4 shadow-xs">
+            <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400 flex items-center justify-center mx-auto">
+              <ShoppingCart className="w-8 h-8" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Giỏ hàng của bạn đang trống</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+              Khám phá danh mục ống đồng, gas lạnh, linh kiện điều hòa chính hãng và thêm vào giỏ hàng ngay.
             </p>
             <Link
               href="/san-pham"
-              className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold text-sm py-2.5 px-5 rounded-xl transition-all"
+              className="inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold text-sm py-3 px-6 rounded-xl shadow-md transition-all active:scale-98"
             >
-              Xem sản phẩm
+              <span>Xem danh mục sản phẩm</span>
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         ) : (
@@ -93,63 +114,23 @@ export const CartPageView: React.FC<CartPageViewProps> = ({ zaloUrl, hasDelivery
               <OrderTotalCard items={items}>
                 <button
                   type="button"
-                  onClick={handleCtaClick}
-                  className="w-full inline-flex items-center justify-center gap-1.5 bg-[#0068FF] hover:bg-blue-700 text-white font-extrabold text-sm py-3 px-4 rounded-xl shadow-md transition-all active:scale-98"
+                  onClick={handleProceedToCheckout}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-black text-sm sm:text-base py-3.5 px-4 rounded-xl shadow-md transition-all active:scale-98 cursor-pointer"
                 >
-                  {hasDelivery ? (
-                    <>
-                      <span className="sm:hidden">Mua</span>
-                      <span className="hidden sm:inline">Mua ngay</span>
-                    </>
-                  ) : (
-                    <span>Liên hệ ngay</span>
-                  )}
+                  <span>Tiến hành đặt hàng</span>
+                  <ArrowRight className="w-4 h-4" />
                 </button>
                 <Link
                   href="/san-pham"
                   className="w-full inline-flex items-center justify-center gap-1.5 text-xs font-bold text-[#075FA8] dark:text-blue-400 hover:underline py-1"
                 >
-                  Tiếp tục xem sản phẩm
+                  ← Tiếp tục mua sắm
                 </Link>
               </OrderTotalCard>
             </div>
           </div>
         )}
       </div>
-
-      {!hasDelivery &&
-        isConfirmOpen &&
-        createPortal(
-          <div
-            className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 text-left"
-            onClick={() => setIsConfirmOpen(false)}
-          >
-            <div
-              className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800 text-left relative"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800">
-                <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">Hỏi giá qua Zalo</h3>
-                <button
-                  type="button"
-                  onClick={() => setIsConfirmOpen(false)}
-                  aria-label="Đóng"
-                  className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors !min-h-0 cursor-pointer"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <div className="p-4">
-                <ZaloMessageConfirm
-                  message={buildCartZaloMessage(items)}
-                  zaloUrl={zaloUrl}
-                  onOpened={() => setIsConfirmOpen(false)}
-                />
-              </div>
-            </div>
-          </div>,
-          document.body
-        )}
     </section>
   );
 };
