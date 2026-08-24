@@ -15,30 +15,49 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
       <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-80 h-80 rounded-full bg-orange-100/40 dark:bg-orange-900/5 blur-3xl pointer-events-none" />
 
       <div className="relative z-10 mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
-        <div className="lg:hidden">
-          <div className="mb-3 inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.1em] text-[#075FA8] dark:border-blue-900 dark:bg-blue-950/60 dark:text-blue-300">
-            Công ty TNHH Vật tư Đông Kha
+        {/* Mobile Hero (Modern, Sleek, High-end) */}
+        <div className="lg:hidden text-center flex flex-col items-center space-y-2">
+          {/* Branded Badge */}
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/80 border border-blue-100 dark:border-blue-900 text-[#075FA8] dark:text-blue-300 text-[11px] font-bold shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Tổng Kho Vật Tư Điện Lạnh Đà Nẵng</span>
           </div>
 
-          <h1 className="text-[1.65rem] font-black leading-[1.2] tracking-[-0.03em] text-slate-950 dark:text-white min-[390px]:text-[1.85rem]">
-            Vật Tư Điện Lạnh
-            <span className="block text-[#075FA8] dark:text-blue-400">Đông Kha Đà Nẵng</span>
-            <span className="block">Sỉ &amp; Lẻ Chính Hãng</span>
+          {/* Main Clean Headline */}
+          <h1 className="text-2xl min-[380px]:text-[1.65rem] font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+            Vật Tư Điện Lạnh <span className="text-[#075FA8] dark:text-blue-400">Đông Kha</span>
+            <span className="block text-xs sm:text-sm font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-1">
+              Phân Phối Sỉ &amp; Lẻ • Giá Tốt Cho Thợ
+            </span>
           </h1>
-          <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-300">
-            Chuyên sỉ &amp; lẻ ống đồng, gas lạnh, linh kiện điều hòa – tủ lạnh – máy giặt chính hãng tại Đà Nẵng — tư vấn đúng nhu cầu, báo giá nhanh.
+
+          {/* Clean Subtitle */}
+          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed max-w-xs mx-auto">
+            Ống đồng, gas lạnh, linh kiện điều hòa, tủ lạnh &amp; máy giặt chính hãng. Báo giá nhanh, giao hàng hỏa tốc.
           </p>
 
-          <div className="mt-5 grid grid-cols-2 gap-2.5">
-            <a href={`tel:${company.hotlineRaw}`} className="inline-flex min-h-13 items-center justify-center gap-2 rounded-2xl bg-[#075FA8] px-3 py-3 text-xs font-extrabold text-white min-[390px]:text-sm shadow-lg shadow-blue-800/20 active:scale-[0.98]">
-              <Phone className="h-4 w-4 fill-current" /> Gọi báo giá
+          {/* 2 Quick CTA Buttons */}
+          <div className="grid grid-cols-2 gap-2 w-full max-w-xs pt-1">
+            <a
+              href={`tel:${company.hotlineRaw}`}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#075FA8] hover:bg-[#0B1F33] text-white px-3 py-2.5 text-xs font-bold shadow-sm active:scale-98 !min-h-0 transition-colors"
+            >
+              <Phone className="w-3.5 h-3.5 fill-current" />
+              <span>Gọi báo giá</span>
             </a>
-            <a href={company.zaloUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-13 items-center justify-center gap-2 rounded-2xl border border-blue-200 bg-white px-3 py-3 text-xs font-extrabold text-[#075FA8] min-[390px]:text-sm shadow-sm active:scale-[0.98] dark:border-slate-700 dark:bg-slate-900 dark:text-blue-300">
-              <MessageSquare className="h-4 w-4" /> Nhắn Zalo
+            <a
+              href={company.zaloUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-blue-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-[#075FA8] dark:text-blue-300 hover:bg-slate-50 px-3 py-2.5 text-xs font-bold shadow-2xs active:scale-98 !min-h-0 transition-colors"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>Nhắn Zalo</span>
             </a>
           </div>
 
-          <div className="relative mt-4 overflow-hidden rounded-[1.5rem] bg-slate-900 shadow-[0_18px_45px_-18px_rgba(7,95,168,0.55)] ring-1 ring-slate-200 dark:ring-slate-800">
+          {/* Carousel image banner */}
+          <div className="relative mt-2 overflow-hidden rounded-2xl bg-slate-900 shadow-md ring-1 ring-slate-200 dark:ring-slate-800 w-full text-left">
             <div className="aspect-[16/10]">
               <ImageCarousel
                 images={[company.image, ...company.images]}
@@ -49,32 +68,35 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
               />
             </div>
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent" />
-            <div className="absolute inset-x-3 bottom-3 flex items-center gap-2.5 rounded-xl border border-white/20 bg-slate-950/70 px-3 py-2.5 text-white shadow-lg backdrop-blur-md">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F47A20]">
+            <div className="absolute inset-x-3 bottom-3 flex items-center gap-2.5 rounded-xl border border-white/20 bg-slate-950/70 px-3 py-2 text-white shadow-lg backdrop-blur-md">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#F47A20]">
                 <MapPin className="h-4 w-4 fill-white" />
               </div>
               <div className="min-w-0">
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-orange-200">Cửa hàng Đông Kha</span>
-                <span className="block text-xs font-extrabold">400 Phạm Hùng, Đà Nẵng</span>
+                <span className="block text-[9px] font-bold uppercase tracking-wider text-orange-200">Kho Hàng Đông Kha</span>
+                <span className="block text-xs font-bold truncate">{company.address}</span>
               </div>
             </div>
-            <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1.5 text-[10px] font-extrabold text-[#075FA8] shadow-md">
+            <div className="absolute right-2.5 top-2.5 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-extrabold text-[#075FA8] shadow-md">
               <ShieldCheck className="h-3.5 w-3.5 text-[#F47A20]" /> Có sẵn tại kho
             </div>
           </div>
 
-          <div className="mt-5 grid grid-cols-2 gap-x-3 gap-y-2.5 rounded-2xl [&>div:last-child]:col-span-2 [&>div:last-child]:justify-center bg-white/75 p-3.5 ring-1 ring-slate-200/80 dark:bg-slate-900/70 dark:ring-slate-800">
-            {["Nguồn gốc rõ ràng", "Giá sỉ cho thợ", "Tư vấn đúng mã"].map((item) => (
-              <div key={item} className="flex items-center gap-1.5 text-xs font-bold leading-4 text-slate-700 dark:text-slate-200">
-                <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" /> {item}
+          {/* 3 Quick USPs */}
+          <div className="mt-3 grid grid-cols-3 gap-1.5 rounded-xl bg-white/80 dark:bg-slate-900/80 p-2.5 ring-1 ring-slate-200/80 dark:ring-slate-800 w-full text-center">
+            {["Chính hãng 100%", "Giá sỉ cho thợ", "Tư vấn đúng mã"].map((item) => (
+              <div key={item} className="flex flex-col sm:flex-row items-center justify-center gap-1 text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-200">
+                <CheckCircle2 className="h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <span className="truncate">{item}</span>
               </div>
             ))}
           </div>
         </div>
 
+        {/* Desktop Hero Layout */}
         <div className="hidden items-center gap-8 lg:grid lg:grid-cols-12 lg:gap-10 xl:gap-12">
 
-          {/* Left Column (55% on desktop -> 7 cols) */}
+          {/* Left Column (55% on desktop -> 6 cols) */}
           <div className="order-2 flex flex-col text-left lg:order-1 lg:col-span-6">
 
             {/* Small Corporate Intro Line */}
@@ -98,91 +120,66 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
               Chuyên sỉ &amp; lẻ ống đồng, linh kiện điều hòa – tủ lạnh – máy giặt cùng vật tư phục vụ điện lạnh dân dụng &amp; công nghiệp giá tốt nhất.
             </p>
 
-            {/* CTAs Group: Contact & Zalo in 1 row on mobile */}
-            <div className="mt-7 grid gap-3 sm:flex sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
-              {/* Primary CTA: Call */}
+            {/* Trust Badges Minimal */}
+            <div className="mt-6 flex flex-wrap gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
+              <span className="flex items-center gap-1.5 rounded-xl bg-white dark:bg-slate-900 px-3 py-2 border border-slate-200 dark:border-slate-800 shadow-2xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Nguồn gốc rõ ràng</span>
+              </span>
+              <span className="flex items-center gap-1.5 rounded-xl bg-white dark:bg-slate-900 px-3 py-2 border border-slate-200 dark:border-slate-800 shadow-2xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Giá sỉ thợ &amp; công trình</span>
+              </span>
+              <span className="flex items-center gap-1.5 rounded-xl bg-white dark:bg-slate-900 px-3 py-2 border border-slate-200 dark:border-slate-800 shadow-2xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Tư vấn đúng linh kiện</span>
+              </span>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="mt-8 flex flex-wrap gap-3">
               <a
                 href={`tel:${company.hotlineRaw}`}
-                className="inline-flex min-h-14 items-center justify-center gap-2.5 rounded-2xl bg-[#075FA8] px-6 py-3.5 text-center text-base font-extrabold text-white shadow-lg shadow-blue-700/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#0B1F33] hover:shadow-xl dark:hover:bg-[#075FA8]/80 sm:text-lg"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#075FA8] hover:bg-[#0B1F33] text-white px-6 py-3.5 text-sm font-extrabold shadow-lg shadow-blue-800/20 transition-all active:scale-[0.98] cursor-pointer !min-h-0"
               >
-                <Phone className="w-4 h-4 sm:w-5 sm:h-5 fill-current text-white shrink-0" />
-                <span className="truncate">Gọi: {company.hotline}</span>
+                <Phone className="w-4 h-4 fill-current" />
+                <span>Gọi Báo Giá: {company.hotline}</span>
               </a>
-
-              {/* Secondary CTA: Zalo */}
               <a
                 href={company.zaloUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-14 items-center justify-center gap-2.5 rounded-2xl border border-blue-200 bg-white px-6 py-3.5 text-center text-base font-extrabold text-[#075FA8] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#0068FF] hover:text-[#0068FF] hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:text-blue-300 sm:text-lg"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-850 text-[#075FA8] dark:text-blue-300 border border-blue-200 dark:border-slate-700 px-6 py-3.5 text-sm font-extrabold shadow-sm transition-all active:scale-[0.98] cursor-pointer !min-h-0"
               >
-                <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
-                <span className="truncate">Nhắn Zalo ngay</span>
+                <MessageSquare className="w-4 h-4" />
+                <span>Nhắn Zalo Ngay</span>
               </a>
             </div>
-
-            {/* Trust Points (4 items grid on mobile) */}
-            <div className="pt-3.5 sm:pt-6 border-t border-slate-200/80 dark:border-slate-850 grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
-              <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-bold text-[11px] sm:text-sm">
-                <CheckCircle2 className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <span>100% Chính hãng</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-bold text-[11px] sm:text-sm">
-                <CheckCircle2 className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <span>Sỉ &amp; lẻ giá kho</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-bold text-[11px] sm:text-sm">
-                <CheckCircle2 className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <span>Tư vấn kỹ thuật</span>
-              </div>
-            </div>
-
           </div>
 
-          {/* Right Column (45% on desktop -> 5 cols) */}
-          <div className="relative order-1 mx-auto w-full max-w-2xl lg:order-2 lg:col-span-6 lg:mt-0 lg:max-w-none">
-            <div className="relative mx-auto max-w-lg lg:max-w-none">
-
-              {/* Outer decorative border frame */}
-              <div className="absolute -inset-1.5 sm:-inset-2 bg-gradient-to-r from-[#075FA8] to-[#F47A20] rounded-2xl sm:rounded-3xl opacity-25 blur-md sm:blur-lg transform -rotate-1 group-hover:rotate-0 transition-transform" />
-
-              {/* Main Image Container */}
-              <div className="relative aspect-[16/10] overflow-hidden rounded-[1.4rem] border-[5px] border-white bg-slate-900 shadow-[0_24px_70px_-24px_rgba(15,23,42,0.55)] dark:border-slate-800 sm:aspect-[16/11] sm:rounded-[1.75rem] lg:aspect-[16/11] xl:aspect-[16/10]">
+          {/* Right Column Carousel Showcase (6 cols) */}
+          <div className="order-1 lg:order-2 lg:col-span-6 w-full">
+            <div className="relative overflow-hidden rounded-3xl bg-slate-900 shadow-2xl ring-1 ring-slate-200 dark:ring-slate-800">
+              <div className="aspect-[4/3] w-full">
                 <ImageCarousel
                   images={[company.image, ...company.images]}
-                  alt="Mặt tiền cửa hàng Vật Tư Điện Lạnh Đông Kha tại 400 Phạm Hùng Đà Nẵng"
-                  className="w-full h-full"
-                  imgClassName="hover:scale-105 transition-transform duration-700"
+                  alt="Cửa hàng Vật tư Điện lạnh Đông Kha tại Đà Nẵng"
+                  className="h-full w-full"
                   priority
                 />
-
-                {/* Gradient overlay for text contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
-
-                {/* Floating Badge Bottom Left: Address */}
-                <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-2 sm:p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-lg flex items-center gap-2 sm:gap-3">
-                  <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-orange-100 dark:bg-orange-950 text-[#F47A20] flex items-center justify-center shrink-0">
-                    <MapPin className="w-4 h-4 sm:w-5 sm:h-5 fill-orange-500 text-orange-600" />
-                  </div>
-                  <div className="flex flex-col text-left overflow-hidden">
-                    <span className="text-[9px] sm:text-[10px] font-bold text-[#075FA8] dark:text-amber-400 uppercase tracking-wide">Địa chỉ cửa hàng</span>
-                    <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">
-                      {company.address}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Floating Badge Top Right: Support Hotline */}
-                <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-[#075FA8] text-white px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg shadow-md text-[10px] sm:text-xs font-bold flex items-center gap-1 sm:gap-1.5 border border-blue-400/30">
-                  <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-400" />
-                  <span>Sỉ &amp; Lẻ Sẵn Kho</span>
-                </div>
-
               </div>
-
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent" />
+              <div className="absolute inset-x-4 bottom-4 flex items-center gap-3 rounded-2xl border border-white/20 bg-slate-950/70 p-3 text-white shadow-lg backdrop-blur-md">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F47A20]">
+                  <MapPin className="h-5 w-5 fill-white" />
+                </div>
+                <div className="min-w-0">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-orange-200">Kho Hàng Trực Tiếp</span>
+                  <span className="block text-xs sm:text-sm font-extrabold truncate">{company.address}</span>
+                </div>
+              </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>
