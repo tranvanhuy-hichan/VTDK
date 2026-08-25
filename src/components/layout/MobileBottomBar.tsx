@@ -36,15 +36,15 @@ export const MobileBottomBar: React.FC = () => {
     },
     {
       label: "Giải pháp",
-      href: isHomePage ? "#dich-vu" : "/#dich-vu",
+      href: "/giai-phap",
       icon: Wrench,
-      isActive: false,
+      isActive: pathname.startsWith("/giai-phap"),
     },
     {
       label: "Liên hệ",
-      href: isHomePage ? "#lien-he" : "/#lien-he",
+      href: "/lien-he",
       icon: Phone,
-      isActive: false,
+      isActive: pathname.startsWith("/lien-he"),
     },
   ];
 

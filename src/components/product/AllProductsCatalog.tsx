@@ -89,84 +89,46 @@ export const AllProductsCatalog: React.FC<AllProductsCatalogProps> = ({
   return (
     <div className="w-full bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 pb-16">
       
-      {/* 1. Professional Compact Hero Header Banner */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-[#075FA8] to-slate-900 text-white py-5 sm:py-7 px-4 sm:px-6 lg:px-8 shadow-sm">
-        <div className="max-w-5xl mx-auto relative z-10 space-y-2.5">
-          {/* Breadcrumb back button */}
-          <div className="flex items-center justify-between gap-2 mb-1">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-200 hover:text-white bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-1 rounded-xl transition-colors backdrop-blur-xs !min-h-0"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Trở về Trang chủ</span>
-            </Link>
-          </div>
+      {/* 1. Basic, Sleek, Compact Hero Header */}
+      <section className="bg-gradient-to-r from-[#075FA8] via-[#08457A] to-[#0B2540] text-white py-4 sm:py-6 px-4 sm:px-6 shadow-xs">
+        <div className="max-w-4xl mx-auto space-y-2.5 text-center">
+          <h1 className="text-lg sm:text-2xl font-black tracking-tight text-white">
+            Danh Mục Vật Tư Điện Lạnh Chính Hãng
+          </h1>
+          <p className="text-xs text-blue-100/90 max-w-xl mx-auto font-medium">
+            Bảng giá sỉ &amp; lẻ ống đồng, gas lạnh R32/R410A, linh kiện điều hòa, tủ lạnh, máy giặt.
+          </p>
 
-          <div className="text-center space-y-2.5">
-            <div className="inline-flex items-center gap-1.5 bg-white/10 text-blue-200 border border-white/15 px-3 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider backdrop-blur-xs">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              <span>TỔNG KHO VẬT TƯ & THIẾT BỊ ĐIỆN LẠNH ĐÀ NẴNG</span>
+          {/* Search Bar & BTU Tool */}
+          <div className="max-w-lg mx-auto pt-1 flex items-center gap-2">
+            <div className="relative flex-1 w-full">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Tìm tên vật tư, linh kiện, gas lạnh..."
+                className="w-full text-xs sm:text-sm bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white border border-white/20 rounded-xl pl-8 pr-7 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm"
+              />
+              <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400 pointer-events-none">
+                <Search className="w-3.5 h-3.5" />
+              </span>
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm("")}
+                  aria-label="Xóa tìm kiếm"
+                  className="absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 !min-h-0 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
 
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight leading-snug text-white max-w-3xl mx-auto">
-              Tất Cả Sản Phẩm &amp; Vật Tư Điện Lạnh Chính Hãng
-            </h1>
-
-            <p className="text-xs text-slate-200 max-w-xl mx-auto font-medium leading-normal">
-              Bảng giá sỉ &amp; lẻ ống đồng, gas lạnh R32/R410A, linh kiện điều hòa, tủ lạnh, máy giặt Đà Nẵng.
-            </p>
-
-            {/* Search & Tool Bar inside Hero */}
-            <div className="max-w-xl mx-auto pt-2 flex flex-row items-center gap-2">
-              <div className="relative flex-1 w-full">
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Tìm sản phẩm (vd: Ống đồng)..."
-                  className="w-full text-xs sm:text-sm bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white border border-white/20 rounded-xl pl-8 pr-7 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md backdrop-blur-md"
-                />
-                <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400 pointer-events-none">
-                  <Search className="w-3.5 h-3.5" />
-                </span>
-                {searchTerm && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchTerm("")}
-                    aria-label="Xóa tìm kiếm"
-                    className="absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 !min-h-0 cursor-pointer"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-              <div className="shrink-0">
-                <BTUCalculatorModal buttonClassName="inline-flex items-center justify-center gap-1 bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl border border-white/20 shadow-2xs transition-all cursor-pointer !min-h-0 w-auto truncate" />
-              </div>
-            </div>
-
-            {/* Trust Badges */}
-            <div className="pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-[11px] font-bold text-slate-200">
-              <div className="flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span>100% Chính hãng CO/CQ</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Store className="w-3.5 h-3.5 text-amber-300" />
-                <span>Nhận hàng trực tiếp tại cửa hàng</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Phone className="w-3.5 h-3.5 text-blue-300" />
-                <span>Hotline/Zalo: {company.hotline}</span>
-              </div>
+            <div className="shrink-0">
+              <BTUCalculatorModal buttonClassName="inline-flex items-center justify-center gap-1 bg-white/15 hover:bg-white/25 text-white font-bold text-xs px-3 py-2 rounded-xl border border-white/20 shadow-2xs transition-all cursor-pointer !min-h-0" />
             </div>
           </div>
         </div>
-
-        {/* Ambient background glow */}
-        <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -right-20 -top-20 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
       </section>
 
       {/* 2. Fast Navigation Category Pills Bar */}

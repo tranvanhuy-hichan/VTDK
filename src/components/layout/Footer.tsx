@@ -143,10 +143,16 @@ export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
 
         </div>
 
-        {/* Dynamic Category Links Row */}
+        {/* Dynamic Category & Quick Pages Links Row */}
         <div className="py-4 my-2 border-t border-b border-slate-800/80 flex flex-wrap items-center gap-x-4 gap-y-2 text-left">
-          <Link href="/vat-tu-dien-lanh" className="text-xs text-slate-300 hover:text-white transition-colors font-medium">
-            • Vật Tư Điện Lạnh
+          <Link href="/san-pham" className="text-xs text-slate-300 hover:text-white transition-colors font-medium">
+            • Tất Cả Sản Phẩm
+          </Link>
+          <Link href="/giai-phap" className="text-xs text-slate-300 hover:text-white transition-colors font-medium">
+            • Giải Pháp Kỹ Thuật
+          </Link>
+          <Link href="/lien-he" className="text-xs text-slate-300 hover:text-white transition-colors font-medium">
+            • Liên Hệ Kho Hàng
           </Link>
           {categories.map((cat) => (
             <Link
