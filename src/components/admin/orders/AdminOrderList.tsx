@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ShoppingBag,
   Search,
@@ -12,21 +14,21 @@ import {
   DollarSign,
   ChevronRight,
   Phone,
+  ArrowRight,
 } from "lucide-react";
-import type { OrderDetail, OrderStatus } from "../../../types/order";
-import { OrderStatusBadge } from "../../order/OrderStatusBadge";
-import { AdminOrderDetailModal } from "./AdminOrderDetailModal";
-import { formatCurrency, formatDate } from "../../../lib/format";
+import type { OrderDetail } from "@/types/order";
+import { OrderStatusBadge } from "@/components/order/OrderStatusBadge";
+import { formatCurrency, formatDate } from "@/lib/format";
 
 interface AdminOrderListProps {
   initialOrders: OrderDetail[];
 }
 
 export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders }) => {
-  const [orders, setOrders] = useState<OrderDetail[]>(initialOrders);
+  const router = useRouter();
+  const [orders] = useState<OrderDetail[]>(initialOrders);
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedOrder, setSelectedOrder] = useState<OrderDetail | null>(null);
 
   // Filter orders
   const filteredOrders = useMemo(() => {
@@ -58,15 +60,6 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
 
     return { totalOrders, pendingCount, shippingCount, completedCount, totalRevenue };
   }, [orders]);
-
-  const handleStatusUpdated = (orderId: string, newStatus: OrderStatus) => {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
-    );
-    if (selectedOrder && selectedOrder.id === orderId) {
-      setSelectedOrder({ ...selectedOrder, status: newStatus });
-    }
-  };
 
   return (
     <div className="space-y-3 text-left">
@@ -175,14 +168,14 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
             </div>
           ) : (
             filteredOrders.map((order) => (
-              <div
+              <Link
                 key={order.id}
-                onClick={() => setSelectedOrder(order)}
-                className="p-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer space-y-2"
+                href={`/admin/orders/${order.id}`}
+                className="block p-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors space-y-2 group"
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5 min-w-0">
-                    <span className="font-mono text-xs font-black text-[#075FA8] dark:text-blue-400">
+                    <span className="font-mono text-xs font-black text-[#075FA8] dark:text-blue-400 group-hover:underline">
                       #{order.orderCode}
                     </span>
                     <span className="text-[10px] text-slate-400">• {formatDate(order.createdAt)}</span>
@@ -192,7 +185,7 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
 
                 <div className="flex items-center justify-between gap-2 text-xs">
                   <div className="min-w-0">
-                    <p className="font-extrabold text-slate-900 dark:text-white truncate">
+                    <p className="font-extrabold text-slate-900 dark:text-white truncate group-hover:text-[#075FA8] dark:group-hover:text-blue-400">
                       {order.customerName}
                     </p>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
@@ -205,13 +198,13 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
                     <p className="font-black text-sm text-slate-900 dark:text-white">
                       {formatCurrency(order.totalAmount)}
                     </p>
-                    <span className="text-[10px] text-[#075FA8] dark:text-blue-400 font-bold flex items-center gap-0.5 justify-end">
-                      <span>Chi tiết</span>
+                    <span className="text-[10px] text-[#075FA8] dark:text-blue-400 font-bold flex items-center gap-0.5 justify-end mt-0.5 group-hover:translate-x-0.5 transition-transform">
+                      <span>Xem chi tiết</span>
                       <ChevronRight className="w-3 h-3" />
                     </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))
           )}
         </div>
@@ -241,19 +234,19 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
                 filteredOrders.map((order) => (
                   <tr
                     key={order.id}
-                    className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
-                    onClick={() => setSelectedOrder(order)}
+                    className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group"
+                    onClick={() => router.push(`/admin/orders/${order.id}`)}
                   >
-                    <td className="px-4 py-2.5 font-mono font-bold text-[#075FA8] dark:text-blue-400">
+                    <td className="px-4 py-3 font-mono font-bold text-[#075FA8] dark:text-blue-400 group-hover:underline">
                       {order.orderCode}
                     </td>
-                    <td className="px-4 py-2.5">
+                    <td className="px-4 py-3">
                       <div className="font-bold text-slate-900 dark:text-white truncate max-w-[150px]">
                         {order.customerName}
                       </div>
                       <div className="text-[11px] text-slate-400">{order.customerPhone}</div>
                     </td>
-                    <td className="px-4 py-2.5">
+                    <td className="px-4 py-3">
                       {order.shippingMethod === "DELIVERY" ? (
                         <span className="inline-flex items-center gap-1 text-slate-600 dark:text-slate-300">
                           <Truck className="w-3.5 h-3.5 text-blue-500" /> Giao tận nơi
@@ -264,24 +257,24 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-2.5 text-slate-500 whitespace-nowrap">
+                    <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
                       {formatDate(order.createdAt)}
                     </td>
-                    <td className="px-4 py-2.5 font-black text-slate-900 dark:text-white whitespace-nowrap">
+                    <td className="px-4 py-3 font-black text-slate-900 dark:text-white whitespace-nowrap">
                       {formatCurrency(order.totalAmount)}
                     </td>
-                    <td className="px-4 py-2.5 whitespace-nowrap">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       <OrderStatusBadge status={order.status} />
                     </td>
-                    <td className="px-4 py-2.5 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedOrder(order)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-bold transition-colors cursor-pointer !min-h-0"
+                    <td className="px-4 py-3 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                      <Link
+                        href={`/admin/orders/${order.id}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#075FA8]/10 hover:bg-[#075FA8] text-[#075FA8] hover:text-white dark:bg-blue-900/30 dark:hover:bg-blue-600 dark:text-blue-300 dark:hover:text-white rounded-xl font-bold transition-all cursor-pointer !min-h-0 shadow-2xs"
                       >
                         <Eye className="w-3.5 h-3.5" />
-                        <span>Xem</span>
-                      </button>
+                        <span>Xem chi tiết</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </Link>
                     </td>
                   </tr>
                 ))
@@ -290,15 +283,7 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
           </table>
         </div>
       </div>
-
-      {/* Order Detail Modal */}
-      {selectedOrder && (
-        <AdminOrderDetailModal
-          order={selectedOrder}
-          onClose={() => setSelectedOrder(null)}
-          onStatusUpdated={handleStatusUpdated}
-        />
-      )}
     </div>
   );
 };
+

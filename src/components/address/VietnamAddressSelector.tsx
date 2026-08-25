@@ -68,13 +68,51 @@ export const VietnamAddressSelector: React.FC<VietnamAddressSelectorProps> = ({
 
   // Try to parse initial raw address string if provided
   useEffect(() => {
-    if (initialAddress && initialAddress.trim()) {
-      const parts = initialAddress.split(",").map((p) => p.trim());
-      if (parts.length >= 2 && !streetAddress) {
-        setStreetAddress(parts[0]);
+    if (!initialAddress || !initialAddress.trim() || provinces.length === 0) return;
+    const raw = initialAddress.trim();
+    const parts = raw.split(",").map((p) => p.trim());
+    if (parts.length === 0) return;
+
+    // Find province match from end of string
+    const lastPart = parts[parts.length - 1].toLowerCase();
+    const matchedProv = provinces.find(
+      (p) =>
+        lastPart.includes(p.name.toLowerCase()) ||
+        p.name.toLowerCase().includes(lastPart) ||
+        lastPart.replace(/^(tỉnh|thành phố|tp\.?)\s+/i, "").includes(p.name.toLowerCase().replace(/^(tỉnh|thành phố|tp\.?)\s+/i, ""))
+    );
+
+    if (matchedProv) {
+      setSelectedProvinceCode(String(matchedProv.code));
+    }
+
+    if (parts.length >= 2 && !streetAddress) {
+      setStreetAddress(parts[0]);
+    }
+  }, [initialAddress, provinces]);
+
+  // Match ward once wardUnits are loaded for the selected province
+  useEffect(() => {
+    if (!initialAddress || wardUnits.length === 0) return;
+    const parts = initialAddress.split(",").map((p) => p.trim());
+    if (parts.length >= 2) {
+      // Typically ward is the second or middle part
+      for (const part of parts.slice(1)) {
+        const partLower = part.toLowerCase();
+        const matchedWard = wardUnits.find(
+          (w) =>
+            w.name.toLowerCase() === partLower ||
+            partLower.includes(w.name.toLowerCase()) ||
+            w.name.toLowerCase().replace(/^(phường|xã|thị trấn|đặc khu)\s+/i, "") ===
+              partLower.replace(/^(phường|xã|thị trấn|đặc khu)\s+/i, "")
+        );
+        if (matchedWard) {
+          setSelectedWardCode(String(matchedWard.code));
+          break;
+        }
       }
     }
-  }, [initialAddress]);
+  }, [initialAddress, wardUnits]);
 
   // Notify parent on any change
   const notifyChange = useCallback(

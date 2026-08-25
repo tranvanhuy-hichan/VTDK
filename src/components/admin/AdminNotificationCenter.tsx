@@ -237,7 +237,7 @@ export const AdminNotificationCenter: React.FC = () => {
               notifications.map((order) => (
                 <Link
                   key={order.id}
-                  href="/admin/orders"
+                  href={`/admin/orders/${order.id}`}
                   onClick={() => setIsOpen(false)}
                   className="block p-3 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors group"
                 >
@@ -322,7 +322,7 @@ export const AdminNotificationCenter: React.FC = () => {
 
               <div className="mt-2.5 flex items-center gap-2">
                 <Link
-                  href="/admin/orders"
+                  href={`/admin/orders/${activeAlert.id}`}
                   onClick={() => {
                     setActiveAlert(null);
                     document.title = "Quản Trị Đông Kha";

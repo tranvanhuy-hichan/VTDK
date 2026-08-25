@@ -252,7 +252,7 @@ export const AdminDashboardHome: React.FC<AdminDashboardHomeProps> = ({
               recentOrders.map((order) => (
                 <Link
                   key={order.id}
-                  href="/admin/orders"
+                  href={`/admin/orders/${order.id}`}
                   className="p-3 sm:p-4 flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group"
                 >
                   <div className="min-w-0 flex-1">
