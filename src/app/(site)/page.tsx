@@ -1,6 +1,11 @@
 import React from "react";
-import { prisma } from "../../lib/prisma";
 import { getCompanyInfo } from "../../lib/company";
+import {
+  getCachedCategories,
+  getCachedActiveProducts,
+  getCachedServices,
+  getCachedGalleryImages,
+} from "../../lib/cachedData";
 import { Hero } from "../../components/home/Hero";
 import { BrandSlider } from "../../components/home/BrandSlider";
 import { ProductList } from "../../components/product/ProductList";
@@ -10,27 +15,16 @@ import { CustomerTypes } from "../../components/home/CustomerTypes";
 import { Gallery } from "../../components/home/Gallery";
 import { Location } from "../../components/home/Location";
 
-// Statically cached and refreshed on-demand via revalidatePath("/") in
-// admin/actions.ts whenever a product/service/gallery/company edit is saved.
+export const revalidate = 120; // Revalidate every 2 minutes or on-demand via Server Actions
 
 export default async function HomePage() {
-  // Fetch all home data concurrently in a single round-trip
+  // Fetch all home data concurrently with ultra-fast caching
   const [categories, products, company, services, galleryImages] = await Promise.all([
-    prisma.category.findMany({
-      orderBy: { name: "asc" },
-    }),
-    prisma.product.findMany({
-      where: { active: true },
-      include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
-      orderBy: { createdAt: "desc" },
-    }),
+    getCachedCategories(),
+    getCachedActiveProducts(),
     getCompanyInfo(),
-    prisma.service.findMany({
-      orderBy: { sortOrder: "asc" },
-    }),
-    prisma.galleryImage.findMany({
-      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-    }),
+    getCachedServices(),
+    getCachedGalleryImages(),
   ]);
 
   return (

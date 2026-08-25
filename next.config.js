@@ -7,7 +7,7 @@ const nextConfig = {
   reactStrictMode: true,
   compress: true,
   experimental: {
-    optimizePackageImports: ["lucide-react"],
+    optimizePackageImports: ["lucide-react", "@prisma/client", "canvas-confetti"],
     serverActions: {
       // Default is 1MB, too small for photos uploaded from a phone camera
       // (product/service/gallery/company image uploads go through a Server Action).

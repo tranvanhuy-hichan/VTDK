@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import fs from "fs/promises";
 import path from "path";
 import { put, del } from "@vercel/blob";
@@ -12,6 +12,19 @@ import { checkRateLimit, resetRateLimit } from "../lib/rateLimit";
 
 const SESSION_COOKIE = "admin_session";
 const PLACEHOLDER_IMAGE = "/images/placeholder.svg";
+
+function revalidateSiteData(tags: string[] = []) {
+  revalidatePath("/", "layout");
+  revalidatePath("/");
+  revalidatePath("/san-pham");
+  revalidatePath("/giai-phap");
+  revalidatePath("/admin");
+  for (const tag of tags) {
+    try {
+      revalidateTag(tag);
+    } catch {}
+  }
+}
 
 // Simple slugify function
 function slugify(text: string): string {
@@ -232,8 +245,7 @@ export async function createProductAction(formData: FormData) {
       },
     });
 
-    revalidatePath("/");
-    revalidatePath("/admin");
+    revalidateSiteData(["products", "categories"]);
     return { success: true };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi thêm sản phẩm!" };
@@ -351,8 +363,7 @@ export async function updateProductAction(
       },
     });
 
-    revalidatePath("/");
-    revalidatePath("/admin");
+    revalidateSiteData(["products", "categories"]);
     return { success: true };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi sửa sản phẩm!" };
@@ -405,8 +416,7 @@ export async function deleteProductAction(id: string) {
       where: { id },
     });
 
-    revalidatePath("/");
-    revalidatePath("/admin");
+    revalidateSiteData(["products", "categories"]);
     return { success: true };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi xóa sản phẩm!" };
@@ -454,9 +464,7 @@ export async function createGalleryImageAction(formData: FormData) {
       },
     });
 
-    revalidatePath("/");
-    revalidatePath("/admin/gallery");
-    revalidatePath("/api/gallery");
+    revalidateSiteData(["gallery"]);
     return { success: true };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi thêm ảnh!" };
@@ -483,9 +491,7 @@ export async function deleteGalleryImageAction(id: string) {
 
     await prisma.galleryImage.delete({ where: { id } });
 
-    revalidatePath("/");
-    revalidatePath("/admin/gallery");
-    revalidatePath("/api/gallery");
+    revalidateSiteData(["gallery"]);
     return { success: true };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi xóa ảnh!" };
@@ -586,8 +592,7 @@ export async function updateCompanyInfoAction(formData: FormData) {
       await prisma.companyInfo.create({ data });
     }
 
-    revalidatePath("/");
-    revalidatePath("/admin/company");
+    revalidateSiteData(["company-info"]);
     return { success: true };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi cập nhật thông tin công ty!" };
@@ -652,8 +657,7 @@ export async function createServiceAction(formData: FormData) {
       },
     });
 
-    revalidatePath("/");
-    revalidatePath("/admin/services");
+    revalidateSiteData(["services"]);
     return { success: true };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi thêm giải pháp!" };
@@ -763,8 +767,7 @@ export async function deleteServiceAction(id: string) {
 
     await prisma.service.delete({ where: { id } });
 
-    revalidatePath("/");
-    revalidatePath("/admin/services");
+    revalidateSiteData(["services"]);
     return { success: true };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi xóa giải pháp!" };
@@ -790,8 +793,7 @@ export async function createCategoryAction(formData: FormData) {
       data: { name, slug },
     });
 
-    revalidatePath("/");
-    revalidatePath("/admin");
+    revalidateSiteData(["categories", "products"]);
     return { success: true };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi tạo danh mục!" };
@@ -824,8 +826,7 @@ export async function updateCategoryAction(formData: FormData) {
       data: { name, slug },
     });
 
-    revalidatePath("/");
-    revalidatePath("/admin");
+    revalidateSiteData(["categories", "products"]);
     return { success: true };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi sửa danh mục!" };
@@ -845,8 +846,7 @@ export async function deleteCategoryAction(id: string) {
 
     await prisma.category.delete({ where: { id } });
 
-    revalidatePath("/");
-    revalidatePath("/admin");
+    revalidateSiteData(["categories", "products"]);
     return { success: true };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi xóa danh mục!" };

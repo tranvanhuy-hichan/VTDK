@@ -1,4 +1,4 @@
-import React from "react";
+import React, { cache } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -8,16 +8,18 @@ import { ProductDetailHeader } from "@/components/product/ProductDetailHeader";
 import { ProductCard } from "@/components/product/ProductCard";
 import { SITE_URL } from "@/lib/site";
 
+export const revalidate = 300;
+
 interface ProductPageParams {
   params: Promise<{ slug: string }>;
 }
 
-async function getProduct(slug: string) {
+const getProduct = cache(async (slug: string) => {
   return prisma.product.findFirst({
     where: { slug, active: true },
     include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
   });
-}
+});
 
 export async function generateMetadata({ params }: ProductPageParams): Promise<Metadata> {
   const { slug } = await params;

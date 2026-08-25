@@ -184,3 +184,102 @@ export const CustomerHomeSkeleton: React.FC = () => (
     </div>
   </div>
 );
+
+export const CustomerOrderHistorySkeleton: React.FC = () => (
+  <div className="w-full min-h-screen bg-[#F6F8FA] dark:bg-[#0F172A] pt-1.5 sm:pt-2.5 pb-12">
+    <div className="w-full max-w-[1700px] mx-auto px-3 sm:px-6 lg:px-8 space-y-4">
+      {/* Breadcrumb skeleton */}
+      <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded-md w-48 animate-pulse my-1" />
+
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2">
+        <div className="space-y-1.5 animate-pulse">
+          <div className="h-6 sm:h-7 bg-slate-200 dark:bg-slate-800 rounded-lg w-48" />
+          <div className="h-3.5 bg-slate-150 dark:bg-slate-800/70 rounded-md w-64" />
+        </div>
+        <div className="h-7 bg-slate-200 dark:bg-slate-800 rounded-full w-28 animate-pulse" />
+      </div>
+
+      {/* Order Cards List */}
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-xs p-4 sm:p-6 space-y-4 animate-pulse"
+          >
+            {/* Top Bar: Code + Badge */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800" />
+                <div className="space-y-1.5">
+                  <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-md w-36" />
+                  <div className="h-3 bg-slate-150 dark:bg-slate-800/60 rounded-md w-28" />
+                </div>
+              </div>
+              <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded-full w-24" />
+            </div>
+
+            {/* Items */}
+            <div className="space-y-3">
+              {[1, 2].map((j) => (
+                <div key={j} className="flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-xl bg-slate-200 dark:bg-slate-800 shrink-0" />
+                  <div className="flex-1 space-y-1.5">
+                    <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-md w-3/4" />
+                    <div className="h-3 bg-slate-150 dark:bg-slate-800/60 rounded-md w-1/3" />
+                  </div>
+                  <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-md w-20 shrink-0" />
+                </div>
+              ))}
+            </div>
+
+            {/* Footer */}
+            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+              <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-md w-32" />
+              <div className="flex items-center gap-2">
+                <div className="h-5 bg-slate-250 dark:bg-slate-700 rounded-md w-28" />
+                <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded-xl w-24" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+export const CustomerOrderDetailSkeleton: React.FC = () => (
+  <div className="w-full min-h-screen bg-[#F6F8FA] dark:bg-[#0F172A] pt-1.5 sm:pt-2.5 pb-12">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 space-y-4">
+      {/* Breadcrumb skeleton */}
+      <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded-md w-48 animate-pulse my-1" />
+
+      {/* Main Order Detail Card */}
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-lg p-6 sm:p-8 space-y-6 animate-pulse">
+        <div className="text-center space-y-2 pb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="w-16 h-16 rounded-full bg-slate-200 dark:bg-slate-800 mx-auto" />
+          <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded-lg w-48 mx-auto" />
+          <div className="h-4 bg-slate-150 dark:bg-slate-800/60 rounded-md w-64 mx-auto" />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="h-24 bg-slate-150 dark:bg-slate-800 rounded-2xl" />
+          <div className="h-24 bg-slate-150 dark:bg-slate-800 rounded-2xl" />
+        </div>
+
+        <div className="space-y-3 pt-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
+              <div className="w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-800 shrink-0" />
+              <div className="flex-1 space-y-1.5">
+                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-md w-3/4" />
+                <div className="h-3 bg-slate-150 dark:bg-slate-800/60 rounded-md w-1/4" />
+              </div>
+              <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-md w-20" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+);

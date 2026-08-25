@@ -1,4 +1,4 @@
-import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { prisma } from "./prisma";
 import { COMPANY_DATA } from "../data/company";
 
@@ -36,12 +36,16 @@ const FALLBACK: CompanyContact = {
   images: [],
 };
 
-export const getCompanyInfo = cache(async (): Promise<CompanyContact> => {
-  try {
-    const info = await prisma.companyInfo.findFirst();
-    return info ?? FALLBACK;
-  } catch (e) {
-    console.warn("getCompanyInfo database query failed, using fallback:", e);
-    return FALLBACK;
-  }
-});
+export const getCompanyInfo = unstable_cache(
+  async (): Promise<CompanyContact> => {
+    try {
+      const info = await prisma.companyInfo.findFirst();
+      return info ?? FALLBACK;
+    } catch (e) {
+      console.warn("getCompanyInfo database query failed, using fallback:", e);
+      return FALLBACK;
+    }
+  },
+  ["company-info"],
+  { revalidate: 300, tags: ["company-info"] }
+);

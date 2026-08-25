@@ -1,10 +1,12 @@
-import React from "react";
+import React, { cache } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCompanyInfo } from "@/lib/company";
 import { SITE_URL } from "@/lib/site";
 import { SeoLandingPage, SeoLandingConfig } from "@/components/product/SeoLandingPage";
+
+export const revalidate = 300;
 
 interface DynamicCategoryPageProps {
   params: Promise<{ slug: string }>;
@@ -13,7 +15,7 @@ interface DynamicCategoryPageProps {
 /**
  * Helper to match category by slug, accounting for optional local SEO suffixes (-da-nang, -may-lanh-da-nang)
  */
-async function resolveCategory(rawSlug: string) {
+const resolveCategory = cache(async (rawSlug: string) => {
   const cleanSlug = rawSlug.toLowerCase().trim();
 
   if (cleanSlug === "vat-tu-dien-lanh-da-nang" || cleanSlug === "vat-tu-dien-lanh") {
@@ -65,7 +67,7 @@ async function resolveCategory(rawSlug: string) {
     isGeneralStore: false,
     category,
   };
-}
+});
 
 export async function generateMetadata({ params }: DynamicCategoryPageProps): Promise<Metadata> {
   const { slug } = await params;

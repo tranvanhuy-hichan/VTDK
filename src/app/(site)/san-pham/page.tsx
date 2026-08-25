@@ -1,9 +1,11 @@
 import React from "react";
 import type { Metadata } from "next";
-import { prisma } from "../../../lib/prisma";
 import { getCompanyInfo } from "../../../lib/company";
+import { getCachedCategories, getCachedActiveProducts } from "../../../lib/cachedData";
 import { SITE_URL } from "../../../lib/site";
 import { AllProductsCatalog } from "../../../components/product/AllProductsCatalog";
+
+export const revalidate = 120;
 
 export async function generateMetadata(): Promise<Metadata> {
   const company = await getCompanyInfo();
@@ -55,14 +57,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ProductsCatalogPage() {
   const [categories, products, company] = await Promise.all([
-    prisma.category.findMany({
-      orderBy: { name: "asc" },
-    }),
-    prisma.product.findMany({
-      where: { active: true },
-      include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
-      orderBy: { createdAt: "desc" },
-    }),
+    getCachedCategories(),
+    getCachedActiveProducts(),
     getCompanyInfo(),
   ]);
 

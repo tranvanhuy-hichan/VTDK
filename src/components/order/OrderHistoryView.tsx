@@ -19,6 +19,7 @@ import type { OrderDetail } from "../../types/order";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 import { formatCurrency, formatDate } from "../../lib/format";
 import { ProductDetailHeader } from "../product/ProductDetailHeader";
+import { CustomerOrderHistorySkeleton } from "../home/CustomerSkeleton";
 
 export const OrderHistoryView: React.FC = () => {
   const { user, isLoading: isAuthLoading, openAuthModal } = useAuth();
@@ -39,16 +40,7 @@ export const OrderHistoryView: React.FC = () => {
   }, [user, isAuthLoading]);
 
   if (isAuthLoading || loading) {
-    return (
-      <section className="pt-1.5 sm:pt-2.5 pb-12 bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen">
-        <div className="w-full max-w-[1700px] mx-auto px-3 sm:px-6 lg:px-8 space-y-3">
-          <ProductDetailHeader productName="Đơn hàng của tôi" />
-          <div className="flex items-center justify-center p-12">
-            <Loader2 className="w-8 h-8 text-[#075FA8] animate-spin" />
-          </div>
-        </div>
-      </section>
-    );
+    return <CustomerOrderHistorySkeleton />;
   }
 
   if (!user) {

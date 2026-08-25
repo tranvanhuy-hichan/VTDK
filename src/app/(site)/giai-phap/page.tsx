@@ -1,9 +1,11 @@
 import React from "react";
 import type { Metadata } from "next";
-import { prisma } from "../../../lib/prisma";
 import { getCompanyInfo } from "../../../lib/company";
+import { getCachedServices } from "../../../lib/cachedData";
 import { SITE_URL } from "../../../lib/site";
 import { SolutionsView } from "../../../components/solutions/SolutionsView";
+
+export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   const company = await getCompanyInfo();
@@ -37,9 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function SolutionsPage() {
   const [company, dbServices] = await Promise.all([
     getCompanyInfo(),
-    prisma.service.findMany({
-      orderBy: { sortOrder: "asc" },
-    }),
+    getCachedServices(),
   ]);
 
   const formattedServices = dbServices.map((s) => ({
