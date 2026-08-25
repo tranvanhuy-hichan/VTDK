@@ -5,7 +5,9 @@ const nextConfig = {
   // dev manifest pointing at CSS chunks that no longer exist.
   distDir: process.env.NODE_ENV === "development" ? ".next-dev" : ".next",
   reactStrictMode: true,
+  compress: true,
   experimental: {
+    optimizePackageImports: ["lucide-react"],
     serverActions: {
       // Default is 1MB, too small for photos uploaded from a phone camera
       // (product/service/gallery/company image uploads go through a Server Action).
@@ -13,6 +15,8 @@ const nextConfig = {
     },
   },
   images: {
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 2592000,
     remotePatterns: [
       {
         protocol: "https",

@@ -102,22 +102,26 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
 
   useEffect(() => {
     if (!isHomePage) return;
+    let ticking = false;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 20);
 
-      const sectionIds = ["trang-chu", "san-pham", "thuong-hieu", "dich-vu", "gioi-thieu", "hinh-anh", "lien-he"];
-      const scrollPosition = window.scrollY + 160;
+          const sectionIds = ["trang-chu", "san-pham", "thuong-hieu", "dich-vu", "gioi-thieu", "hinh-anh", "lien-he"];
+          const scrollPosition = window.scrollY + 160;
 
-      const sections = sectionIds
-        .map((id) => document.getElementById(id))
-        .filter((el): el is HTMLElement => el !== null)
-        .sort((a, b) => a.offsetTop - b.offsetTop);
-
-      for (let i = sections.length - 1; i >= 0; i--) {
-        if (scrollPosition >= sections[i].offsetTop) {
-          setActiveSectionState(sections[i].id);
-          break;
-        }
+          for (let i = sectionIds.length - 1; i >= 0; i--) {
+            const el = document.getElementById(sectionIds[i]);
+            if (el && scrollPosition >= el.offsetTop) {
+              setActiveSectionState(sectionIds[i]);
+              break;
+            }
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 

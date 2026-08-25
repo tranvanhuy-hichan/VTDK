@@ -54,17 +54,17 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProductsCatalogPage() {
-  const categories = await prisma.category.findMany({
-    orderBy: { name: "asc" },
-  });
-
-  const products = await prisma.product.findMany({
-    where: { active: true },
-    include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
-    orderBy: { createdAt: "desc" },
-  });
-
-  const company = await getCompanyInfo();
+  const [categories, products, company] = await Promise.all([
+    prisma.category.findMany({
+      orderBy: { name: "asc" },
+    }),
+    prisma.product.findMany({
+      where: { active: true },
+      include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
+      orderBy: { createdAt: "desc" },
+    }),
+    getCompanyInfo(),
+  ]);
 
   const catalogSchema = {
     "@context": "https://schema.org",

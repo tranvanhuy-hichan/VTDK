@@ -14,26 +14,24 @@ import { Location } from "../../components/home/Location";
 // admin/actions.ts whenever a product/service/gallery/company edit is saved.
 
 export default async function HomePage() {
-  // Fetch categories and active products
-  const categories = await prisma.category.findMany({
-    orderBy: { name: "asc" },
-  });
-
-  const products = await prisma.product.findMany({
-    where: { active: true },
-    include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
-    orderBy: { createdAt: "desc" },
-  });
-
-  const company = await getCompanyInfo();
-
-  const services = await prisma.service.findMany({
-    orderBy: { sortOrder: "asc" },
-  });
-
-  const galleryImages = await prisma.galleryImage.findMany({
-    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-  });
+  // Fetch all home data concurrently in a single round-trip
+  const [categories, products, company, services, galleryImages] = await Promise.all([
+    prisma.category.findMany({
+      orderBy: { name: "asc" },
+    }),
+    prisma.product.findMany({
+      where: { active: true },
+      include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
+      orderBy: { createdAt: "desc" },
+    }),
+    getCompanyInfo(),
+    prisma.service.findMany({
+      orderBy: { sortOrder: "asc" },
+    }),
+    prisma.galleryImage.findMany({
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    }),
+  ]);
 
   return (
     <>

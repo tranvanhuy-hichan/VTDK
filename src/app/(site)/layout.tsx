@@ -1,4 +1,4 @@
-import React from "react";
+import dynamic from "next/dynamic";
 import { Header } from "../../components/layout/Header";
 import { Footer } from "../../components/layout/Footer";
 import { FloatingContact } from "../../components/layout/FloatingContact";
@@ -7,18 +7,23 @@ import { getCompanyInfo } from "../../lib/company";
 import { prisma } from "../../lib/prisma";
 import { CartProvider } from "../../context/CartContext";
 import { AuthProvider } from "../../context/AuthContext";
-import { AuthModal } from "../../components/auth/AuthModal";
+
+const AuthModal = dynamic(
+  () => import("../../components/auth/AuthModal").then((m) => m.AuthModal)
+);
 
 export default async function SiteLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const company = await getCompanyInfo();
-  const categories = await prisma.category.findMany({
-    select: { id: true, name: true, slug: true },
-    orderBy: { name: "asc" },
-  });
+  const [company, categories] = await Promise.all([
+    getCompanyInfo(),
+    prisma.category.findMany({
+      select: { id: true, name: true, slug: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
 
   return (
     <AuthProvider>

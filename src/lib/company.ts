@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { prisma } from "./prisma";
 import { COMPANY_DATA } from "../data/company";
 
@@ -35,7 +36,7 @@ const FALLBACK: CompanyContact = {
   images: [],
 };
 
-export async function getCompanyInfo(): Promise<CompanyContact> {
+export const getCompanyInfo = cache(async (): Promise<CompanyContact> => {
   try {
     const info = await prisma.companyInfo.findFirst();
     return info ?? FALLBACK;
@@ -43,4 +44,4 @@ export async function getCompanyInfo(): Promise<CompanyContact> {
     console.warn("getCompanyInfo database query failed, using fallback:", e);
     return FALLBACK;
   }
-}
+});
