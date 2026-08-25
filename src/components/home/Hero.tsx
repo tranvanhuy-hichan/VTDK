@@ -20,12 +20,12 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
           {/* Branded Badge */}
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/80 border border-blue-100 dark:border-blue-900 text-[#075FA8] dark:text-blue-300 text-[11px] font-bold shadow-2xs">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Tổng Kho Vật Tư Điện Lạnh Đà Nẵng</span>
+            <span>Tổng Kho Vật Tư Điện Lạnh {company.city || "Đà Nẵng"}</span>
           </div>
 
           {/* Main Clean Headline */}
           <h1 className="text-2xl min-[380px]:text-[1.65rem] font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-            Vật Tư Điện Lạnh <span className="text-[#075FA8] dark:text-blue-400">Đông Kha</span>
+            Vật Tư Điện Lạnh <span className="text-[#075FA8] dark:text-blue-400">{company.brandName}</span>
             <span className="block text-xs sm:text-sm font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-1">
               Phân Phối Sỉ &amp; Lẻ • Giá Tốt Cho Thợ
             </span>
@@ -61,7 +61,7 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
             <div className="aspect-[16/10]">
               <ImageCarousel
                 images={[company.image, ...company.images]}
-                alt="Cửa hàng Vật tư Điện lạnh Đông Kha tại Đà Nẵng"
+                alt={`Cửa hàng ${company.fullName} tại ${company.city || "Đà Nẵng"}`}
                 className="h-full w-full"
                 imgClassName="transition-transform duration-700"
                 priority
@@ -73,7 +73,7 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
                 <MapPin className="h-4 w-4 fill-white" />
               </div>
               <div className="min-w-0">
-                <span className="block text-[9px] font-bold uppercase tracking-wider text-orange-200">Kho Hàng Đông Kha</span>
+                <span className="block text-[9px] font-bold uppercase tracking-wider text-orange-200">Kho Hàng {company.brandName}</span>
                 <span className="block text-xs font-bold truncate">{company.address}</span>
               </div>
             </div>
@@ -102,7 +102,7 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
             {/* Small Corporate Intro Line */}
             <div>
               <span className="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-950/60 border border-blue-100 dark:border-blue-900 text-[#075FA8] dark:text-amber-400 text-[10px] sm:text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider mb-3">
-                CÔNG TY TNHH VẬT TƯ ĐÔNG KHA • ĐÀ NẴNG
+                {company.fullName || company.name} • {company.city || "ĐÀ NẴNG"}
               </span>
             </div>
 
@@ -110,7 +110,7 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
             <h1 className="max-w-[620px] text-[clamp(2.3rem,3vw,3.1rem)] font-black leading-[1.1] tracking-[-0.04em] text-slate-950 dark:text-white">
               Vật Tư Điện Lạnh
               <span className="mt-1 block text-[#075FA8] dark:text-blue-400">
-                Đông Kha Đà Nẵng <span className="underline decoration-[#F47A20] underline-offset-8">– Sỉ &amp; Lẻ</span>
+                {company.brandName} {company.city || "Đà Nẵng"} <span className="underline decoration-[#F47A20] underline-offset-8">– Sỉ &amp; Lẻ</span>
               </span>
               <span className="mt-1 block text-slate-900 dark:text-slate-100">Chính Hãng Giá Tốt</span>
             </h1>
@@ -163,7 +163,7 @@ export const Hero: React.FC<HeroProps> = ({ company }) => {
               <div className="aspect-[4/3] w-full">
                 <ImageCarousel
                   images={[company.image, ...company.images]}
-                  alt="Cửa hàng Vật tư Điện lạnh Đông Kha tại Đà Nẵng"
+                  alt={`Cửa hàng ${company.fullName} tại ${company.city || "Đà Nẵng"}`}
                   className="h-full w-full"
                   priority
                 />

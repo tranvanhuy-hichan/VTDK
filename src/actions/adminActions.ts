@@ -504,10 +504,17 @@ export async function updateCompanyInfoAction(formData: FormData) {
   if (!isAuth) return { error: "Chưa đăng nhập!" };
 
   try {
-    const name = (formData.get("name") as string)?.trim();
+    const fullName = (formData.get("fullName") as string)?.trim() || (formData.get("name") as string)?.trim();
+    const shortName = (formData.get("shortName") as string)?.trim() || "VẬT TƯ ĐÔNG KHA";
+    const brandName = (formData.get("brandName") as string)?.trim() || "Đông Kha";
+    const tagline = (formData.get("tagline") as string)?.trim() || "VẬT TƯ ĐIỆN LẠNH ĐÀ NẴNG";
+    const city = (formData.get("city") as string)?.trim() || "Đà Nẵng";
+    const email = (formData.get("email") as string)?.trim() || null;
+    const taxCode = (formData.get("taxCode") as string)?.trim() || null;
+
     const address = (formData.get("address") as string)?.trim();
     const hotline = (formData.get("hotline") as string)?.trim();
-    const hotlineRaw = (formData.get("hotlineRaw") as string)?.trim();
+    const hotlineRaw = (formData.get("hotlineRaw") as string)?.trim() || (hotline ? hotline.replace(/\D/g, "") : "");
     const zaloUrl = (formData.get("zaloUrl") as string)?.trim();
     const whatsAppUrl = (formData.get("whatsAppUrl") as string)?.trim();
     const facebookUrl = (formData.get("facebookUrl") as string)?.trim();
@@ -516,33 +523,30 @@ export async function updateCompanyInfoAction(formData: FormData) {
     const workingHours = (formData.get("workingHours") as string)?.trim();
     const hasDelivery = formData.get("hasDelivery") === "true";
     const imageFile = formData.get("image") as File | null;
+    const logoFile = formData.get("logo") as File | null;
 
     if (
-      !name ||
+      !fullName ||
       !address ||
       !hotline ||
-      !hotlineRaw ||
-      !zaloUrl ||
-      !whatsAppUrl ||
-      !facebookUrl ||
-      !googleMapsUrl ||
-      !googleMapsEmbed ||
       !workingHours
     ) {
-      return { error: "Vui lòng nhập đầy đủ các trường!" };
+      return { error: "Vui lòng nhập đầy đủ các trường bắt buộc (Tên công ty, Địa chỉ, Hotline, Giờ làm việc)!" };
     }
 
-    const existing = await prisma.companyInfo.findFirst();
+    const existing = (await prisma.companyInfo.findFirst()) as any;
 
     let imagePath = existing?.image ?? "/images/storefront.png";
+    let logoPath = existing?.logoUrl ?? "/images/logo.png";
 
+    // Handle Cover Image Upload
     if (imageFile && imageFile.size > 0) {
       if (imageFile.size > 5 * 1024 * 1024) {
-        return { error: "Dung lượng ảnh phải nhỏ hơn hoặc bằng 5MB!" };
+        return { error: "Dung lượng ảnh bìa phải nhỏ hơn hoặc bằng 5MB!" };
       }
       const ext = path.extname(imageFile.name).toLowerCase();
       if (![".jpg", ".jpeg", ".png", ".webp"].includes(ext)) {
-        return { error: "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP." };
+        return { error: "Định dạng ảnh bìa không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP." };
       }
 
       const safeName = sanitizeFileName(imageFile.name);
@@ -562,6 +566,28 @@ export async function updateCompanyInfoAction(formData: FormData) {
       imagePath = PLACEHOLDER_IMAGE;
     }
 
+    // Handle Logo Upload
+    if (logoFile && logoFile.size > 0) {
+      if (logoFile.size > 5 * 1024 * 1024) {
+        return { error: "Dung lượng logo phải nhỏ hơn hoặc bằng 5MB!" };
+      }
+      const ext = path.extname(logoFile.name).toLowerCase();
+      if (![".jpg", ".jpeg", ".png", ".webp", ".svg"].includes(ext)) {
+        return { error: "Định dạng logo không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP, SVG." };
+      }
+
+      const safeName = sanitizeFileName(logoFile.name);
+      const logoBlob = await put(`company/logo-${Date.now()}-${safeName}`, logoFile, {
+        access: "public",
+      });
+
+      if (existing && isBlobUrl(existing.logoUrl)) {
+        await del(existing.logoUrl).catch(() => {});
+      }
+
+      logoPath = logoBlob.url;
+    }
+
     const galleryResult = await processGalleryImages(formData, "company");
     if ("error" in galleryResult) {
       return { error: galleryResult.error };
@@ -571,25 +597,33 @@ export async function updateCompanyInfoAction(formData: FormData) {
     }
 
     const data = {
-      name,
+      name: fullName,
+      fullName,
+      shortName,
+      brandName,
+      tagline,
+      city,
+      email,
+      taxCode,
       address,
       hotline,
       hotlineRaw,
-      zaloUrl,
-      whatsAppUrl,
-      facebookUrl,
-      googleMapsUrl,
-      googleMapsEmbed,
+      zaloUrl: zaloUrl || `https://zalo.me/${hotlineRaw}`,
+      whatsAppUrl: whatsAppUrl || `https://wa.me/84${hotlineRaw.replace(/^0/, "")}`,
+      facebookUrl: facebookUrl || "",
+      googleMapsUrl: googleMapsUrl || "",
+      googleMapsEmbed: googleMapsEmbed || "",
       workingHours,
       hasDelivery,
+      logoUrl: logoPath,
       image: imagePath,
       images: galleryResult.images,
     };
 
     if (existing) {
-      await prisma.companyInfo.update({ where: { id: existing.id }, data });
+      await (prisma.companyInfo as any).update({ where: { id: existing.id }, data });
     } else {
-      await prisma.companyInfo.create({ data });
+      await (prisma.companyInfo as any).create({ data });
     }
 
     revalidateSiteData(["company-info"]);

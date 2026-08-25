@@ -3,6 +3,7 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { ZoomIn, X, Camera, Image as ImageIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import type { CompanyContact } from "../../lib/company";
 
 interface GalleryItem {
   id: string;
@@ -11,20 +12,20 @@ interface GalleryItem {
 }
 
 interface GalleryProps {
-  items: GalleryItem[];
+  items?: GalleryItem[];
+  company?: CompanyContact;
 }
 
-export const Gallery: React.FC<GalleryProps> = ({ items: galleryItems }) => {
+export const Gallery: React.FC<GalleryProps> = ({ items = [], company }) => {
   const [activeImage, setActiveImage] = useState<GalleryItem | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  const galleryItems = items;
+
   const scroll = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
-      const scrollAmount = scrollContainerRef.current.clientWidth * 0.75;
-      scrollContainerRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
+      const scrollAmount = direction === "left" ? -350 : 350;
+      scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
     }
   };
 
@@ -40,10 +41,10 @@ export const Gallery: React.FC<GalleryProps> = ({ items: galleryItems }) => {
             HÌNH ẢNH THỰC TẾ
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
-            Hình ảnh hoạt động tại Đông Kha
+            Hình ảnh hoạt động tại {company?.brandName || "công ty"}
           </h2>
           <p className="mt-2 sm:mt-3 text-xs sm:text-base text-slate-600 dark:text-slate-300 font-normal">
-            Hình ảnh thực tế cửa hàng, kho vật tư và hoạt động tại Đà Nẵng. Vuốt ngang để xem thêm.
+            Hình ảnh thực tế cửa hàng, kho vật tư và hoạt động tại {company?.city || "Đà Nẵng"}. Vuốt ngang để xem thêm.
           </p>
 
           {/* Slider Arrow Buttons */}
@@ -89,7 +90,7 @@ export const Gallery: React.FC<GalleryProps> = ({ items: galleryItems }) => {
               {/* Hover Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-900/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-end text-left">
                 <span className="text-[11px] font-extrabold text-[#F47A20] uppercase tracking-wider mb-1 flex items-center gap-1">
-                  <ImageIcon className="w-3.5 h-3.5" /> Đông Kha Đà Nẵng
+                  <ImageIcon className="w-3.5 h-3.5" /> {company?.brandName || "Kho Hàng"} {company?.city || "Đà Nẵng"}
                 </span>
                 <h3 className="text-white font-bold text-sm sm:text-base leading-snug line-clamp-2">
                   {item.title}
@@ -102,7 +103,7 @@ export const Gallery: React.FC<GalleryProps> = ({ items: galleryItems }) => {
 
               {/* Tag Category top left badge */}
               <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-850/95 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-bold text-slate-800 dark:text-slate-200 shadow">
-                Đông Kha Photo
+                {company?.shortName || "Thực tế"}
               </div>
             </div>
           ))}
@@ -140,7 +141,7 @@ export const Gallery: React.FC<GalleryProps> = ({ items: galleryItems }) => {
               {/* Bottom Caption */}
               <div className="p-4 bg-slate-950 text-left border-t border-slate-800">
                 <p className="text-sm text-slate-300 font-medium">
-                  {activeImage.title} - Vật Tư Điện Lạnh Đông Kha Đà Nẵng
+                  {activeImage.title} - {company?.fullName || "Tổng Kho Vật Tư Điện Lạnh"}
                 </p>
               </div>
 

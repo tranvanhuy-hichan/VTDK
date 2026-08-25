@@ -17,19 +17,19 @@ export const Location: React.FC<LocationProps> = ({ company }) => {
             BẢN ĐỒ &amp; ĐỊA CHỈ TRỰC TIẾP
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
-            Ghé Đông Kha tại Đà Nẵng
+            Ghé {company.brandName} tại {company.city || "Đà Nẵng"}
           </h2>
           <p className="mt-2 sm:mt-3 text-xs sm:text-base text-slate-600 dark:text-slate-300 font-normal">
             Khách hàng và anh em thợ có thể đến xem vật tư, thử bo mạch &amp; nhận hàng trực tiếp tại cửa hàng.
           </p>
-                </div>
+        </div>
 
-                {/* Standalone Map Box */}
-                <div id="dia-chi" className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-md relative">
-                    <div className="h-72 sm:h-96 md:h-[420px] w-full relative">
-                        <iframe
-                            title="Bản đồ chỉ đường đến Vật Tư Điện Lạnh Đông Kha Đà Nẵng"
-                            src={company.googleMapsEmbed}
+        {/* Standalone Map Box */}
+        <div id="dia-chi" className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-md relative">
+          <div className="h-72 sm:h-96 md:h-[420px] w-full relative">
+            <iframe
+              title={`Bản đồ chỉ đường đến ${company.fullName || company.name} tại ${company.city || "Đà Nẵng"}`}
+              src={company.googleMapsEmbed}
                             width="100%"
                             height="100%"
                             style={{ border: 0 }}

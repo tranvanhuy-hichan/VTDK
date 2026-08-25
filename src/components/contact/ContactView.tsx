@@ -62,10 +62,10 @@ export const ContactView: React.FC<ContactViewProps> = ({ company }) => {
           </div>
 
           <h1 className="text-xl sm:text-3xl font-black tracking-tight text-white">
-            Liên Hệ Tổng Kho Vật Tư Đông Kha
+            Liên Hệ Tổng Kho {company.fullName || company.name}
           </h1>
           <p className="text-xs sm:text-sm text-blue-100/90 max-w-xl mx-auto font-medium">
-            Hân hạnh phục vụ Quý khách hàng, quý anh em thợ điện lạnh và các nhà thầu cơ điện tại Đà Nẵng &amp; Miền Trung.
+            Hân hạnh phục vụ Quý khách hàng, quý anh em thợ điện lạnh và các nhà thầu cơ điện tại {company.city || "Đà Nẵng & Miền Trung"}.
           </p>
         </div>
       </section>
@@ -198,7 +198,7 @@ export const ContactView: React.FC<ContactViewProps> = ({ company }) => {
                   Yêu Cầu Đã Gửi Thành Công!
                 </h3>
                 <p className="text-xs text-emerald-700 dark:text-emerald-400 leading-relaxed">
-                  Cảm ơn Quý khách <strong className="font-bold">{fullName}</strong>. Chuyên viên kinh doanh Đông Kha sẽ gọi đến số <strong className="font-mono">{phone}</strong> trong ít phút.
+                  Cảm ơn Quý khách <strong className="font-bold">{fullName}</strong>. Chuyên viên kinh doanh {company.brandName} sẽ gọi đến số <strong className="font-mono">{phone}</strong> trong ít phút.
                 </p>
                 <button
                   type="button"
@@ -299,7 +299,7 @@ export const ContactView: React.FC<ContactViewProps> = ({ company }) => {
                     BẢN ĐỒ KHO HÀNG
                   </div>
                   <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white mt-0.5">
-                    Vị Trí Cửa Hàng &amp; Kho Tổng Đông Kha
+                    Vị Trí Cửa Hàng &amp; Kho Tổng {company.brandName}
                   </h3>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     {company.address}
@@ -320,7 +320,7 @@ export const ContactView: React.FC<ContactViewProps> = ({ company }) => {
 
               <div className="h-[360px] sm:h-[420px] w-full relative bg-slate-100 dark:bg-slate-800">
                 <iframe
-                  title="Bản đồ chỉ đường đến Vật Tư Điện Lạnh Đông Kha Đà Nẵng"
+                  title={`Bản đồ chỉ đường đến ${company.fullName || company.name} tại ${company.city || "Đà Nẵng"}`}
                   src={company.googleMapsEmbed}
                   width="100%"
                   height="100%"

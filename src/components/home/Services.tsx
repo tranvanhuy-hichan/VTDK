@@ -63,7 +63,7 @@ export const Services: React.FC<ServicesProps> = ({ company, services }) => {
             Giải Pháp Điện Lạnh Toàn Diện
           </h2>
           <p className="mt-2 text-xs sm:text-base text-slate-600 dark:text-slate-300 font-normal">
-            Không chỉ phân phối vật tư, Đông Kha còn đồng hành tư vấn &amp; hỗ trợ kỹ thuật chuyên sâu cho mọi công trình.
+            Không chỉ phân phối vật tư, {company.brandName || "chúng tôi"} còn đồng hành tư vấn &amp; hỗ trợ kỹ thuật chuyên sâu cho mọi công trình.
           </p>
         </div>
 

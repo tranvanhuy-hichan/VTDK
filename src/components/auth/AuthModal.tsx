@@ -75,7 +75,7 @@ export const AuthModal: React.FC = () => {
             <div className="p-1 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xs shrink-0">
               <Image
                 src={COMPANY_DATA.logoUrl}
-                alt="Đông Kha Logo"
+                alt={`${COMPANY_DATA.shortName || COMPANY_DATA.brandName} Logo`}
                 width={30}
                 height={30}
                 className="h-7 w-auto object-contain"
@@ -83,7 +83,7 @@ export const AuthModal: React.FC = () => {
             </div>
             <div className="min-w-0">
               <div className="text-[9px] text-[#075FA8] dark:text-blue-400 font-extrabold uppercase tracking-wider leading-none">
-                VẬT TƯ ĐÔNG KHA
+                {COMPANY_DATA.shortName}
               </div>
               <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate mt-0.5">
                 {completeProfileUser

@@ -58,7 +58,7 @@ export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({
           
           <div className="inline-flex items-center gap-1.5 bg-orange-500/20 border border-orange-400/40 text-orange-200 text-[10px] sm:text-xs font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-2">
             <MapPin className="w-3 h-3 text-orange-400 shrink-0" />
-            <span>Kho Hàng Đông Kha • 400 Phạm Hùng, Đà Nẵng</span>
+            <span>Kho Hàng {company.brandName} • {company.address}</span>
           </div>
 
           <h1 className="text-xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight mb-2 text-white max-w-4xl">
@@ -150,10 +150,10 @@ export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-[#075FA8] dark:text-amber-400 font-extrabold text-xs sm:text-base">
                 <MapPin className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
-                <span>Xem Hàng Trực Tiếp Tại Kho 400 Phạm Hùng, Đà Nẵng</span>
+                <span>Xem Hàng Trực Tiếp Tại Kho {company.address}</span>
               </div>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-                Đông Kha luôn sẵn kho số lượng lớn linh kiện &amp; vật tư điện lạnh. Anh em thợ có thể ghé cửa hàng đối chiếu mã zin và nhận báo giá sỉ tốt nhất.
+                {company.brandName || "Chúng tôi"} luôn sẵn kho số lượng lớn linh kiện &amp; vật tư điện lạnh. Anh em thợ có thể ghé cửa hàng đối chiếu mã zin và nhận báo giá sỉ tốt nhất.
               </p>
             </div>
             <a

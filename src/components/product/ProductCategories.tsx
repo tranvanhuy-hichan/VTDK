@@ -196,7 +196,7 @@ export const ProductCategories: React.FC = () => {
               Không tìm thấy chủng loại vật tư bạn đang cần?
             </h4>
             <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
-              Hãy liên hệ trực tiếp với Đông Kha. Chúng tôi sẽ hỗ trợ tra cứu đúng quy cách kỹ thuật và kiểm tra tình trạng hàng tồn kho tức thì.
+              Hãy liên hệ trực tiếp với {COMPANY_DATA.brandName || "chúng tôi"}. Chúng tôi sẽ hỗ trợ tra cứu đúng quy cách kỹ thuật và kiểm tra tình trạng hàng tồn kho tức thì.
             </p>
           </div>
           <div className="flex items-center gap-2.5 shrink-0 w-full md:w-auto">

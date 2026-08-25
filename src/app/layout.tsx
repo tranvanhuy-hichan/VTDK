@@ -22,8 +22,8 @@ const inter = Inter({
 export async function generateMetadata(): Promise<Metadata> {
   const company = await getCompanyInfo();
 
-  const title = "Vật Tư Điện Lạnh Đông Kha Đà Nẵng | Sỉ & Lẻ Chính Hãng Giá Tốt";
-  const description = "Đại lý vật tư điện lạnh Đà Nẵng - Đông Kha: sỉ & lẻ ống đồng, gas lạnh R32/R410A, linh kiện điều hòa, tủ lạnh, máy giặt chính hãng. Hàng sẵn kho, giá tốt.";
+  const title = `${company.shortName || company.fullName} ${company.city || "Đà Nẵng"} | Sỉ & Lẻ Chính Hãng Giá Tốt`;
+  const description = `Đại lý vật tư điện lạnh ${company.city || "Đà Nẵng"} - ${company.brandName}: sỉ & lẻ ống đồng, gas lạnh, linh kiện điều hòa, tủ lạnh, máy giặt chính hãng. Hàng sẵn kho, giá tốt.`;
   
   const rawImage = company.image || "/images/storefront.png";
   const shareImage = rawImage.startsWith("http")
@@ -35,27 +35,28 @@ export async function generateMetadata(): Promise<Metadata> {
 
     title: {
       default: title,
-      template: "%s | Đông Kha",
+      template: `%s | ${company.brandName}`,
     },
 
     description,
 
     keywords: [
-      "vật tư điện lạnh Đà Nẵng",
-      "vật tư điều hòa Đà Nẵng",
+      `vật tư điện lạnh ${company.city || "Đà Nẵng"}`,
+      `vật tư điều hòa ${company.city || "Đà Nẵng"}`,
       "ống đồng điều hòa",
       "gas lạnh R32 R410A",
-      "linh kiện điều hòa Đà Nẵng",
-      "linh kiện tủ lạnh Đà Nẵng",
-      "linh kiện máy giặt Đà Nẵng",
-      "cửa hàng vật tư điện lạnh Đà Nẵng",
-      "Đông Kha",
+      `linh kiện điều hòa ${company.city || "Đà Nẵng"}`,
+      `linh kiện tủ lạnh ${company.city || "Đà Nẵng"}`,
+      `linh kiện máy giặt ${company.city || "Đà Nẵng"}`,
+      `cửa hàng vật tư điện lạnh ${company.city || "Đà Nẵng"}`,
+      company.brandName,
+      company.shortName,
       "đại lý vật tư điện lạnh",
     ],
 
-    authors: [{ name: company.name, url: SITE_URL }],
-    creator: company.name,
-    publisher: company.name,
+    authors: [{ name: company.fullName || company.name, url: SITE_URL }],
+    creator: company.fullName || company.name,
+    publisher: company.fullName || company.name,
     category: "Vật tư điện lạnh",
 
     formatDetection: {
@@ -95,13 +96,13 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       url: SITE_URL,
-      siteName: company.name,
+      siteName: company.fullName || company.name,
       images: [
         {
           url: shareImage,
           width: 1200,
           height: 630,
-          alt: `${company.name} - ${company.address}`,
+          alt: `${company.fullName || company.name} - ${company.address}`,
         },
       ],
       locale: "vi_VN",
@@ -120,10 +121,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
 
     other: {
-      "geo.region": "VN-DN",
-      "geo.placename": "Đà Nẵng",
-      "geo.position": "16.024567;108.204561",
-      "ICBM": "16.024567, 108.204561",
+      "geo.region": "VN",
+      "geo.placename": company.city || "Đà Nẵng",
     },
   };
 }
@@ -135,6 +134,10 @@ export default async function RootLayout({
 }) {
   const company = await getCompanyInfo();
 
+  const logoUrl = company.logoUrl?.startsWith("http")
+    ? company.logoUrl
+    : `${SITE_URL}${company.logoUrl?.startsWith("/") ? "" : "/"}${company.logoUrl || "images/logo.png"}`;
+
   const schemaData = {
     "@context": "https://schema.org",
     "@graph": [
@@ -142,8 +145,8 @@ export default async function RootLayout({
         "@type": "WebSite",
         "@id": `${SITE_URL}/#website`,
         url: SITE_URL,
-        name: company.name,
-        alternateName: ["Vật Tư Đông Kha", "Đông Kha", "Vật Tư Điện Lạnh Đông Kha"],
+        name: company.fullName || company.name,
+        alternateName: [company.shortName, company.brandName, company.fullName].filter(Boolean),
         publisher: {
           "@id": `${SITE_URL}/#organization`,
         },
@@ -156,10 +159,10 @@ export default async function RootLayout({
       {
         "@type": ["HVACBusiness", "Store", "LocalBusiness"],
         "@id": `${SITE_URL}/#organization`,
-        name: company.name,
-        description: `Chuyên sỉ & lẻ vật tư điện lạnh, ống đồng, gas lạnh, linh kiện điều hòa, tủ lạnh, máy giặt uy tín tại Đà Nẵng.`,
+        name: company.fullName || company.name,
+        description: `Chuyên sỉ & lẻ vật tư điện lạnh, ống đồng, gas lạnh, linh kiện điều hòa, tủ lạnh, máy giặt uy tín tại ${company.city || "Đà Nẵng"}.`,
         image: company.image || "/images/storefront.png",
-        logo: `${SITE_URL}/images/logo.png`,
+        logo: logoUrl,
         url: SITE_URL,
         telephone: company.hotlineRaw,
         hasMap: company.googleMapsUrl,
@@ -175,20 +178,15 @@ export default async function RootLayout({
         },
         areaServed: {
           "@type": "AdministrativeArea",
-          name: "Đà Nẵng",
+          name: company.city || "Đà Nẵng",
         },
         address: {
           "@type": "PostalAddress",
           streetAddress: company.address,
-          addressLocality: "TP Đà Nẵng",
-          addressRegion: "Đà Nẵng",
+          addressLocality: `TP ${company.city || "Đà Nẵng"}`,
+          addressRegion: company.city || "Đà Nẵng",
           postalCode: "550000",
           addressCountry: "VN",
-        },
-        geo: {
-          "@type": "GeoCoordinates",
-          latitude: 16.024567,
-          longitude: 108.204561,
         },
         openingHoursSpecification: {
           "@type": "OpeningHoursSpecification",
@@ -207,7 +205,7 @@ export default async function RootLayout({
         sameAs: [
           company.zaloUrl,
           company.facebookUrl,
-        ],
+        ].filter(Boolean),
       },
     ],
   };

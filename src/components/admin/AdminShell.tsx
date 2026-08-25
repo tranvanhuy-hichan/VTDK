@@ -31,6 +31,7 @@ import {
 import { logoutAction } from "../../app/admin/actions";
 import { AdminNotificationCenter, playAdminChimeSound } from "./AdminNotificationCenter";
 import type { UserProfile } from "../../types/auth";
+import { COMPANY_DATA } from "../../data/company";
 
 interface AdminShellProps {
   children: React.ReactNode;
@@ -50,31 +51,25 @@ interface NavSection {
 
 const NAV_SECTIONS: NavSection[] = [
   {
-    title: "TỔNG QUAN",
+    title: "Tổng quan",
     items: [
-      { href: "/admin", label: "Bảng điều khiển", icon: LayoutDashboard },
+      { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/admin/orders", label: "Đơn hàng", icon: ShoppingBag },
     ],
   },
   {
-    title: "BÁN HÀNG & KHO VẬT TƯ",
+    title: "Quản lý dữ liệu",
     items: [
-      { href: "/admin/orders", label: "Đơn hàng", icon: ShoppingBag, badge: "Mới" },
-      { href: "/admin/products", label: "Sản phẩm & Giá sỉ", icon: Package },
-      { href: "/admin/services", label: "Giải pháp kỹ thuật", icon: Wrench },
+      { href: "/admin/products", label: "Sản phẩm", icon: Package },
+      { href: "/admin/services", label: "Giải pháp", icon: Wrench },
+      { href: "/admin/gallery", label: "Thư viện ảnh", icon: ImageIcon },
     ],
   },
   {
-    title: "NỘI DUNG & THƯƠNG HIỆU",
+    title: "Cài đặt & Cấu hình",
     items: [
-      { href: "/admin/gallery", label: "Thư viện hình ảnh", icon: ImageIcon },
-      { href: "/admin/company", label: "Thông tin công ty", icon: Building2 },
-    ],
-  },
-  {
-    title: "HỆ THỐNG",
-    items: [
-      { href: "/admin/settings", label: "Cài đặt hệ thống", icon: Settings },
-      { href: "/", label: "Xem Website cửa hàng", icon: Globe },
+      { href: "/admin/company", label: "Doanh nghiệp", icon: Building2 },
+      { href: "/admin/settings", label: "Cấu hình PRO", icon: Settings },
     ],
   },
 ];
@@ -93,11 +88,11 @@ export const AdminShell: React.FC<AdminShellProps> = ({
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
-  const adminName = adminUser?.name || "Đông Kha";
-  const adminEmail = adminUser?.email || "vattudongkha@gmail.com";
+  const adminName = adminUser?.name || COMPANY_DATA.brandName || "Admin";
+  const adminEmail = adminUser?.email || COMPANY_DATA.email || "admin@example.com";
   const initials = adminName
     .split(" ")
-    .map((w) => w[0])
+    .map((w: string) => w[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
@@ -179,12 +174,12 @@ export const AdminShell: React.FC<AdminShellProps> = ({
       <div className="p-3.5 border-b border-slate-800/90 bg-[#06101c]/80 flex items-center justify-between">
         <Link href="/admin" className="flex items-center gap-2.5 group min-w-0">
           <div className="w-9 h-9 rounded-xl bg-white p-1 shadow-sm border border-slate-700/60 flex items-center justify-center shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
-            <img src="/images/logo.png" alt="Logo" className="w-full h-full object-contain rounded-lg" />
+            <img src={COMPANY_DATA.logoUrl} alt="Logo" className="w-full h-full object-contain rounded-lg" />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 leading-none">
               <span className="text-xs font-black tracking-tight text-white uppercase truncate">
-                ĐÔNG KHA
+                {COMPANY_DATA.shortName || "HỆ THỐNG"}
               </span>
               <span className="text-[8px] font-black uppercase text-cyan-400 bg-cyan-950/80 px-1 py-0.2 rounded border border-cyan-800/60 shrink-0">
                 PRO

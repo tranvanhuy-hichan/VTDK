@@ -5,9 +5,9 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
   const company = await getCompanyInfo();
 
   return {
-    name: company.name,
-    short_name: "Đông Kha",
-    description: "Nhà Phân Phối Vật Tư Điện Lạnh Chính Hãng Đà Nẵng",
+    name: company.fullName || company.name,
+    short_name: company.shortName || company.brandName,
+    description: `Nhà Phân Phối Vật Tư Điện Lạnh Chính Hãng ${company.city || "Đà Nẵng"}`,
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

@@ -65,7 +65,7 @@ export const OrderSuccessView: React.FC<OrderSuccessViewProps> = ({ order, compa
               </h1>
 
               <p className="text-xs sm:text-sm text-slate-200 font-normal leading-relaxed hidden sm:block">
-                Đơn hàng đã chuyển tới bộ phận kho vận <strong>Vật Tư Điện Lạnh Đông Kha</strong>. Chúng tôi sẽ sớm liên hệ để giao hàng.
+                Đơn hàng đã chuyển tới bộ phận kho vận <strong>{company.fullName || company.name}</strong>. Chúng tôi sẽ sớm liên hệ để giao hàng.
               </p>
 
               {/* Order Code & Status Pill */}

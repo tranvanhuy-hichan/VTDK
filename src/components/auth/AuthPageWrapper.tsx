@@ -34,7 +34,7 @@ const BRAND_FEATURES = [
   { icon: Truck, text: "Giao hỏa tốc 1 - 2h" },
   { icon: ShieldCheck, text: "100% CO / CQ chính hãng" },
   { icon: Wrench, text: "Giá sỉ độc quyền cho thợ" },
-  { icon: Store, text: "Kho sẵn: 400 Phạm Hùng" },
+  { icon: Store, text: `Kho sẵn: ${COMPANY_DATA.city || "Đà Nẵng"}` },
 ];
 
 export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "login" }) => {
@@ -165,7 +165,7 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
             <div className="p-2 rounded-2xl bg-white shadow-md group-hover:scale-105 transition-transform shrink-0">
               <Image
                 src={COMPANY_DATA.logoUrl}
-                alt="Đông Kha Logo"
+                alt={`${COMPANY_DATA.shortName || COMPANY_DATA.brandName} Logo`}
                 width={48}
                 height={48}
                 priority
@@ -174,10 +174,10 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
             </div>
             <div>
               <div className="text-[11px] text-amber-300 font-extrabold uppercase tracking-widest leading-none">
-                CÔNG TY TNHH VẬT TƯ ĐÔNG KHA
+                {COMPANY_DATA.fullName.toUpperCase()}
               </div>
               <div className="font-black text-xl tracking-tight text-white leading-none mt-1.5">
-                VẬT TƯ ĐÔNG KHA
+                {COMPANY_DATA.shortName}
               </div>
             </div>
           </Link>
@@ -186,7 +186,7 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
         {/* Middle Clean Intro */}
         <div className="relative z-10 space-y-3.5 my-auto py-2">
           <h2 className="text-2xl xl:text-3xl font-black text-white leading-snug tracking-tight">
-            Phân phối vật tư điện lạnh &amp; linh kiện chính hãng tại Đà Nẵng
+            Phân phối vật tư điện lạnh &amp; linh kiện chính hãng tại {COMPANY_DATA.city}
           </h2>
 
           <p className="text-xs xl:text-sm text-blue-100/80 leading-relaxed">
@@ -215,7 +215,7 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
           </div>
 
           <a
-            href={`tel:${COMPANY_DATA.hotline}`}
+            href={`tel:${COMPANY_DATA.hotlineRaw}`}
             className="text-[11px] font-bold text-blue-200 hover:text-white transition-colors cursor-pointer"
           >
             Hotline: <span className="text-emerald-300 font-mono">{COMPANY_DATA.hotline}</span>
@@ -243,14 +243,14 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
                 <Link href="/" className="inline-flex flex-col items-center gap-2 group">
                   <Image
                     src={COMPANY_DATA.logoUrl}
-                    alt="Đông Kha Logo"
+                    alt={`${COMPANY_DATA.shortName || COMPANY_DATA.brandName} Logo`}
                     width={140}
                     height={140}
                     priority
                     className="h-24 sm:h-28 w-auto object-contain"
                   />
                   <span className="text-xl sm:text-2xl font-black tracking-tight text-[#EA580C] leading-tight">
-                    VẬT TƯ ĐÔNG KHA
+                    {COMPANY_DATA.shortName}
                   </span>
                 </Link>
               </div>
@@ -286,14 +286,14 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
                 <Link href="/" className="inline-flex flex-col items-center gap-2 group active:scale-95 transition-transform">
                   <Image
                     src={COMPANY_DATA.logoUrl}
-                    alt="Đông Kha Logo"
+                    alt={`${COMPANY_DATA.shortName || COMPANY_DATA.brandName} Logo`}
                     width={160}
                     height={160}
                     priority
                     className="h-28 sm:h-32 w-auto object-contain transition-transform group-hover:scale-105"
                   />
                   <span className="text-2xl sm:text-3xl font-black tracking-tight text-[#EA580C] leading-tight">
-                    VẬT TƯ ĐÔNG KHA
+                    {COMPANY_DATA.shortName}
                   </span>
                 </Link>
               </div>
@@ -338,7 +338,7 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
 
           {/* Footer note */}
           <p className="text-[10px] text-center text-slate-400">
-            Bảo mật thông tin khách hàng tuyệt đối • CÔNG TY TNHH VẬT TƯ ĐÔNG KHA
+            Bảo mật thông tin khách hàng tuyệt đối • {COMPANY_DATA.fullName.toUpperCase()}
           </p>
         </div>
       </div>

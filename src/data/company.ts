@@ -41,21 +41,25 @@ export interface GalleryItem {
 }
 
 export const COMPANY_DATA = {
-  name: "Công ty TNHH Vật Tư Đông Kha",
-  brandName: "Vật Tư Đông Kha",
-  tagline: "Nhà Phân Phối Vật Tư & Thiết Bị Điện Lạnh Chính Hãng",
-  subTagline: "Chuyên phân phối sỉ & lẻ ống đồng, gas lạnh, linh kiện điều hòa – tủ lạnh – máy giặt cùng giải pháp kỹ thuật điều hòa & thông gió cho mọi công trình tại Đà Nẵng & miền Trung.",
+  fullName: process.env.NEXT_PUBLIC_COMPANY_FULL_NAME || "Công ty TNHH Vật Tư Đông Kha",
+  shortName: process.env.NEXT_PUBLIC_COMPANY_SHORT_NAME || "VẬT TƯ ĐÔNG KHA",
+  brandName: process.env.NEXT_PUBLIC_COMPANY_BRAND_NAME || "Đông Kha",
+  tagline: process.env.NEXT_PUBLIC_COMPANY_TAGLINE || "VẬT TƯ ĐIỆN LẠNH ĐÀ NẴNG",
+  name: process.env.NEXT_PUBLIC_COMPANY_FULL_NAME || "Công ty TNHH Vật Tư Đông Kha",
+  subTagline: "Chuyên phân phối sỉ & lẻ ống đồng, gas lạnh, linh kiện điều hòa – tủ lạnh – máy giặt cùng giải pháp kỹ thuật điều hòa & thông gió.",
   
-  logoUrl: "/images/logo.png",
+  logoUrl: process.env.NEXT_PUBLIC_COMPANY_LOGO || "/images/logo.png",
   storefrontUrl: "/images/storefront.png",
 
-  address: "400 Phạm Hùng, Phường Hòa Xuân, TP. Đà Nẵng",
-  city: "Đà Nẵng",
-  hotline: "0905 487 441",
-  hotlineRaw: "0905487441",
-  zaloUrl: "https://zalo.me/0905487441",
-  whatsAppUrl: "https://wa.me/84905487441",
-  facebookUrl: "https://www.facebook.com/vattudienlanhdongkha",
+  address: process.env.NEXT_PUBLIC_COMPANY_ADDRESS || "400 Phạm Hùng, Hòa Phước, Hòa Vang, Đà Nẵng",
+  city: process.env.NEXT_PUBLIC_COMPANY_CITY || "Đà Nẵng",
+  email: process.env.NEXT_PUBLIC_COMPANY_EMAIL || "lienhe@vattudongkha.io.vn",
+  taxCode: process.env.NEXT_PUBLIC_COMPANY_TAX_CODE || "0402123456",
+  hotline: process.env.NEXT_PUBLIC_COMPANY_HOTLINE || "0905 487 441",
+  hotlineRaw: process.env.NEXT_PUBLIC_COMPANY_HOTLINE_RAW || "0905487441",
+  zaloUrl: process.env.NEXT_PUBLIC_COMPANY_ZALO || "https://zalo.me/0905487441",
+  whatsAppUrl: process.env.NEXT_PUBLIC_COMPANY_WHATSAPP || "https://wa.me/84905487441",
+  facebookUrl: process.env.NEXT_PUBLIC_COMPANY_FACEBOOK || "https://www.facebook.com/vattudienlanhdongkha",
   googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=400+Ph%E1%BA%A1m+H%C3%B9ng,+H%C3%B2a+Xu%C3%A2n,+%C4%90%C3%A0+N%E1%BA%B5ng",
   googleMapsEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.7924795328456!2d108.204561!3d16.024567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314219c676d05f31%3A0x6b2b7fb760b29!2s400%20Ph%E1%BA%A1m%20H%C3%B9ng%2C%20H%C3%B2a%20Xu%C3%A2n%2C%20C%E1%BA%A9m%20L%E1%BB%87%2C%20%C4%90%C3%A0%20N%E1%BA%B5ng!5e0!3m2!1svi!2svn!4v1700000000000!5m2!1svi!2svn",
 

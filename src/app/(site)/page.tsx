@@ -33,10 +33,10 @@ export default async function HomePage() {
       <BrandSlider />
       {/* Render the dynamic product catalog */}
       <ProductList initialCategories={categories} initialProducts={products} company={company} />
-      <CustomerTypes />
+      <CustomerTypes company={company} />
       <Services company={company} services={services} />
       <WhyChooseUs company={company} />
-      <Gallery items={galleryImages} />
+      <Gallery items={galleryImages} company={company} />
       <Location company={company} />
     </>
   );

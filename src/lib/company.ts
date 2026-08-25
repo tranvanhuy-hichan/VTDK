@@ -5,10 +5,18 @@ import { COMPANY_DATA } from "../data/company";
 export { COMPANY_DATA };
 
 export interface CompanyContact {
+  id?: string;
   name: string;
+  fullName: string;
+  shortName: string;
+  brandName: string;
+  tagline: string;
+  city: string;
   address: string;
   hotline: string;
   hotlineRaw: string;
+  email?: string | null;
+  taxCode?: string | null;
   zaloUrl: string;
   whatsAppUrl: string;
   facebookUrl: string;
@@ -16,15 +24,23 @@ export interface CompanyContact {
   googleMapsEmbed: string;
   workingHours: string;
   hasDelivery: boolean;
+  logoUrl: string;
   image: string;
   images: string[];
 }
 
 const FALLBACK: CompanyContact = {
-  name: COMPANY_DATA.name,
+  name: COMPANY_DATA.fullName,
+  fullName: COMPANY_DATA.fullName,
+  shortName: COMPANY_DATA.shortName,
+  brandName: COMPANY_DATA.brandName,
+  tagline: COMPANY_DATA.tagline,
+  city: COMPANY_DATA.city,
   address: COMPANY_DATA.address,
   hotline: COMPANY_DATA.hotline,
   hotlineRaw: COMPANY_DATA.hotlineRaw,
+  email: COMPANY_DATA.email,
+  taxCode: COMPANY_DATA.taxCode,
   zaloUrl: COMPANY_DATA.zaloUrl,
   whatsAppUrl: COMPANY_DATA.whatsAppUrl,
   facebookUrl: COMPANY_DATA.facebookUrl,
@@ -32,6 +48,7 @@ const FALLBACK: CompanyContact = {
   googleMapsEmbed: COMPANY_DATA.googleMapsEmbed,
   workingHours: COMPANY_DATA.workingHours,
   hasDelivery: false,
+  logoUrl: COMPANY_DATA.logoUrl,
   image: COMPANY_DATA.storefrontUrl,
   images: [],
 };
@@ -39,8 +56,33 @@ const FALLBACK: CompanyContact = {
 export const getCompanyInfo = unstable_cache(
   async (): Promise<CompanyContact> => {
     try {
-      const info = await prisma.companyInfo.findFirst();
-      return info ?? FALLBACK;
+      const info = (await prisma.companyInfo.findFirst()) as any;
+      if (!info) return FALLBACK;
+
+      return {
+        id: info.id,
+        name: info.fullName || info.name || FALLBACK.fullName,
+        fullName: info.fullName || info.name || FALLBACK.fullName,
+        shortName: info.shortName || FALLBACK.shortName,
+        brandName: info.brandName || FALLBACK.brandName,
+        tagline: info.tagline || FALLBACK.tagline,
+        city: info.city || FALLBACK.city,
+        address: info.address || FALLBACK.address,
+        hotline: info.hotline || FALLBACK.hotline,
+        hotlineRaw: info.hotlineRaw || FALLBACK.hotlineRaw,
+        email: info.email ?? FALLBACK.email,
+        taxCode: info.taxCode ?? FALLBACK.taxCode,
+        zaloUrl: info.zaloUrl || FALLBACK.zaloUrl,
+        whatsAppUrl: info.whatsAppUrl || FALLBACK.whatsAppUrl,
+        facebookUrl: info.facebookUrl || FALLBACK.facebookUrl,
+        googleMapsUrl: info.googleMapsUrl || FALLBACK.googleMapsUrl,
+        googleMapsEmbed: info.googleMapsEmbed || FALLBACK.googleMapsEmbed,
+        workingHours: info.workingHours || FALLBACK.workingHours,
+        hasDelivery: Boolean(info.hasDelivery),
+        logoUrl: info.logoUrl || FALLBACK.logoUrl,
+        image: info.image || FALLBACK.image,
+        images: Array.isArray(info.images) ? info.images : [],
+      };
     } catch (e) {
       console.warn("getCompanyInfo database query failed, using fallback:", e);
       return FALLBACK;

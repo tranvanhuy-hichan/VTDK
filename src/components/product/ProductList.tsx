@@ -100,7 +100,7 @@ export const ProductList: React.FC<ProductListProps> = ({
             Sản phẩm phân phối chính hãng
           </h2>
           <p className="mt-1.5 sm:mt-2 text-xs sm:text-base text-slate-600 dark:text-slate-300 font-normal mb-2.5">
-            Bảng giá tham khảo vật tư điện lạnh chất lượng cao của Đông Kha.
+            Bảng giá tham khảo vật tư điện lạnh chất lượng cao của {company.brandName || "chúng tôi"}.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 mt-1.5">

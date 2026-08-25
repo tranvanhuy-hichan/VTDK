@@ -80,10 +80,17 @@ model Service {
 // Single-row table holding editable company contact info
 model CompanyInfo {
   id              String   @id @default(uuid())
-  name            String
+  name            String   @default("Công ty TNHH Vật Tư Đông Kha")
+  fullName        String   @default("Công ty TNHH Vật Tư Đông Kha")
+  shortName       String   @default("VẬT TƯ ĐÔNG KHA")
+  brandName       String   @default("Đông Kha")
+  tagline         String   @default("VẬT TƯ ĐIỆN LẠNH ĐÀ NẴNG")
+  city            String   @default("Đà Nẵng")
   address         String
   hotline         String
   hotlineRaw      String
+  email           String?
+  taxCode         String?
   zaloUrl         String
   whatsAppUrl     String
   facebookUrl     String
@@ -91,6 +98,7 @@ model CompanyInfo {
   googleMapsEmbed String
   workingHours    String
   hasDelivery     Boolean  @default(false)
+  logoUrl         String   @default("/images/logo.png")
   image           String   @default("/images/storefront.png") // cover image
   images          String[] @default([]) // additional gallery images
   updatedAt       DateTime @updatedAt

@@ -22,7 +22,7 @@ export const QuickContactBar: React.FC<QuickContactBarProps> = ({ company }) => 
                 Bạn đang cần tìm vật tư hoặc tư vấn kỹ thuật điện lạnh?
               </h3>
               <p className="text-[11px] sm:text-sm text-blue-100/90 font-medium mt-0.5 sm:mt-1">
-                Đông Kha luôn sẵn sàng báo giá sỉ &amp; lẻ và hỗ trợ bạn nhanh chóng nhất.
+                {company.brandName || "Chúng tôi"} luôn sẵn sàng báo giá sỉ &amp; lẻ và hỗ trợ bạn nhanh chóng nhất.
               </p>
             </div>
           </div>

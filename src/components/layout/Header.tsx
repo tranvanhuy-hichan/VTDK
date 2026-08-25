@@ -23,6 +23,7 @@ import type { CompanyContact } from "../../lib/company";
 import { CartButton } from "../cart/CartButton";
 import { UserMenu } from "../auth/UserMenu";
 import { useAuth } from "../../context/AuthContext";
+import { SystemNoticeBanner } from "./SystemNoticeBanner";
 
 interface HeaderProps {
   activeSection?: string;
@@ -61,7 +62,7 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
   }, []);
 
   const toggleTheme = () => {
-    const nextTheme = theme === "light" ? "dark" : "light";
+    const nextTheme = theme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
     if (nextTheme === "dark") {
       document.documentElement.classList.add("dark");
@@ -80,13 +81,27 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
   };
 
   useEffect(() => {
-    if (!isHomePage) return;
-    let ticking = false;
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
 
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Update active section on scroll for homepage
+  useEffect(() => {
+    if (!isHomePage) return;
+
+    let ticking = false;
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          setIsScrolled(window.scrollY > 20);
+          if (window.scrollY < 200) {
+            setActiveSectionState("trang-chu");
+            ticking = false;
+            return;
+          }
 
           const sectionIds = ["trang-chu", "san-pham", "thuong-hieu", "dich-vu", "gioi-thieu", "hinh-anh", "lien-he"];
           const scrollPosition = window.scrollY + 160;
@@ -119,12 +134,15 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
 
   return (
     <>
+      {/* 0. Top System Development / Testing Notice Banner */}
+      <SystemNoticeBanner />
+
       {/* Top Banner Notice for Local Customers */}
       <div className="bg-[#0B1F33] text-slate-200 text-[11px] sm:text-xs py-1 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
         <div className="w-full max-w-[1700px] mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-1.5 text-slate-300 truncate">
             <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-            <span className="truncate">Kho Đà Nẵng: 400 Phạm Hùng, Hòa Phước, Hòa Vang</span>
+            <span className="truncate">Kho {company.city || "Đà Nẵng"}: {company.address}</span>
           </div>
 
           <div className="flex items-center gap-4 shrink-0 text-slate-300">
@@ -156,8 +174,8 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
           <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
             <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group shrink-0 min-w-0">
               <Image
-                src={COMPANY_DATA.logoUrl}
-                alt="Đông Kha Logo"
+                src={company.logoUrl || COMPANY_DATA.logoUrl}
+                alt={`${company.shortName || company.brandName} Logo`}
                 width={36}
                 height={36}
                 priority
@@ -165,11 +183,13 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
               />
               <div className="flex flex-col min-w-0">
                 <span className="font-black text-xs sm:text-base lg:text-lg tracking-tight text-slate-900 dark:text-white leading-tight truncate">
-                  VẬT TƯ ĐÔNG KHA
+                  {company.shortName || company.fullName}
                 </span>
-                <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest hidden sm:block leading-none mt-0.5">
-                  VẬT TƯ ĐIỆN LẠNH ĐÀ NẴNG
-                </span>
+                {company.tagline && (
+                  <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest hidden sm:block leading-none mt-0.5">
+                    {company.tagline}
+                  </span>
+                )}
               </div>
             </Link>
           </div>

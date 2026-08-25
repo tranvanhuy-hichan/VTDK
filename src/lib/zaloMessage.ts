@@ -1,4 +1,5 @@
 import { SITE_URL } from "./site";
+import { COMPANY_DATA } from "../data/company";
 
 export interface BuyerInfo {
   name: string;
@@ -24,6 +25,7 @@ interface BuildProductZaloMessageArgs {
   qty?: number;
   mode?: ZaloMessageMode;
   buyer?: BuyerInfo;
+  brandName?: string;
 }
 
 export function buildProductZaloMessage({
@@ -34,6 +36,7 @@ export function buildProductZaloMessage({
   qty = 1,
   mode = "inquire",
   buyer,
+  brandName = COMPANY_DATA.brandName || "Đông Kha",
 }: BuildProductZaloMessageArgs): string {
   const productLine = variantLabel ? `${name} (${variantLabel})` : name;
   const productUrl = `${SITE_URL}/san-pham/${slug}`;
@@ -44,10 +47,10 @@ export function buildProductZaloMessage({
 
   const intro =
     mode === "buy"
-      ? "Chào Đông Kha, tôi muốn đặt mua sản phẩm:"
+      ? `Chào ${brandName}, tôi muốn đặt mua sản phẩm:`
       : price > 0
-      ? "Chào Đông Kha, tôi muốn hỏi mua sản phẩm:"
-      : "Chào Đông Kha, tôi muốn hỏi giá sản phẩm:";
+      ? `Chào ${brandName}, tôi muốn hỏi mua sản phẩm:`
+      : `Chào ${brandName}, tôi muốn hỏi giá sản phẩm:`;
   const closing =
     mode === "buy"
       ? "Nhờ shop xác nhận đơn và giao hàng giúp tôi."
@@ -70,10 +73,14 @@ interface CartZaloMessageItem {
 interface BuildCartZaloMessageOptions {
   mode?: ZaloMessageMode;
   buyer?: BuyerInfo;
+  brandName?: string;
 }
 
-export function buildCartZaloMessage(items: CartZaloMessageItem[], options: BuildCartZaloMessageOptions = {}): string {
-  const { mode = "inquire", buyer } = options;
+export function buildCartZaloMessage(
+  items: CartZaloMessageItem[],
+  options: BuildCartZaloMessageOptions = {}
+): string {
+  const { mode = "inquire", buyer, brandName = COMPANY_DATA.brandName || "Đông Kha" } = options;
 
   const lines = items.map((item, index) => {
     const productLine = item.variantLabel ? `${item.name} (${item.variantLabel})` : item.name;
@@ -96,8 +103,8 @@ export function buildCartZaloMessage(items: CartZaloMessageItem[], options: Buil
 
   const intro =
     mode === "buy"
-      ? "Chào Đông Kha, tôi muốn đặt mua các sản phẩm sau:"
-      : "Chào Đông Kha, tôi muốn hỏi về các sản phẩm sau:";
+      ? `Chào ${brandName}, tôi muốn đặt mua các sản phẩm sau:`
+      : `Chào ${brandName}, tôi muốn hỏi về các sản phẩm sau:`;
   const closing = mode === "buy" ? "Nhờ shop xác nhận đơn và giao hàng giúp tôi." : "Nhờ shop tư vấn và báo giá giúp tôi.";
 
   const message = `${intro}\n\n${lines.join("\n\n")}\n\n${totalLine}${closing}`;

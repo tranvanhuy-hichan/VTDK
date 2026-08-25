@@ -40,7 +40,7 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ company }) => {
             CAM KẾT THƯƠNG HIỆU
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
-            Vì sao khách hàng chọn Đông Kha?
+            Vì sao khách hàng chọn {company?.brandName || "chúng tôi"}?
           </h2>
           <p className="mt-2 sm:mt-3 text-xs sm:text-base text-slate-300 font-normal">
             Chúng tôi tạo dựng uy tín bằng sản phẩm chuẩn kỹ thuật, báo giá minh bạch và phong cách phục vụ tận tâm.
@@ -84,7 +84,7 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ company }) => {
                 Bạn cần tìm vật tư hoặc tư vấn kỹ thuật điện lạnh?
               </p>
               <p className="text-[11px] sm:text-xs text-slate-300 font-normal mt-0.5">
-                Đông Kha sẵn sàng báo giá sỉ &amp; lẻ và hỗ trợ bạn nhanh chóng nhất.
+                {company?.brandName || "Chúng tôi"} sẵn sàng báo giá sỉ &amp; lẻ và hỗ trợ bạn nhanh chóng nhất.
               </p>
             </div>
           </div>

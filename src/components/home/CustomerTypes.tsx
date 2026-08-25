@@ -1,8 +1,13 @@
 import React from "react";
 import { Wrench, Users, ShoppingBag, Briefcase, Home, ArrowRight } from "lucide-react";
 import { COMPANY_DATA } from "../../data/company";
+import type { CompanyContact } from "../../lib/company";
 
-export const CustomerTypes: React.FC = () => {
+interface CustomerTypesProps {
+  company?: CompanyContact;
+}
+
+export const CustomerTypes: React.FC<CustomerTypesProps> = ({ company }) => {
   const getCustomerIcon = (iconName: string) => {
     const iconClass = "w-4 h-4 sm:w-5 sm:h-5";
     switch (iconName) {
@@ -29,10 +34,10 @@ export const CustomerTypes: React.FC = () => {
             ĐỐI TƯỢNG PHỤC VỤ
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
-            Đông Kha đồng hành cùng
+            {company?.brandName || "Chúng tôi"} đồng hành cùng
           </h2>
           <p className="mt-2 sm:mt-3 text-xs sm:text-base text-slate-600 dark:text-slate-300 font-normal">
-            Dù bạn là thợ cá nhân, chủ nhà thầu hay khách hàng gia đình, Đông Kha luôn có giải pháp vật tư phù hợp nhất.
+            Dù bạn là thợ cá nhân, chủ nhà thầu hay khách hàng gia đình, {company?.brandName || "chúng tôi"} luôn có giải pháp vật tư phù hợp nhất.
           </p>
         </div>
 
