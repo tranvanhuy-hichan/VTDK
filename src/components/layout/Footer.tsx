@@ -18,8 +18,8 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
   return (
-    <footer className="bg-[#0B1F33] text-slate-200 pt-6 sm:pt-9 pb-7 sm:pb-9 border-t border-slate-800/90 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6 text-left">
+    <footer className="bg-[#0B1F33] text-slate-200 pt-5 sm:pt-7 pb-4 sm:pb-5 border-t border-slate-800/90 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3 sm:space-y-4 text-left">
         
         {/* Top Grid: Info & Contact */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 items-start">
@@ -86,16 +86,16 @@ export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
               THÔNG TIN LIÊN HỆ
             </h4>
 
-            <div className="space-y-2.5 text-xs sm:text-sm">
+            <div className="space-y-2 text-xs sm:text-sm">
               {/* Địa chỉ */}
-              <div className="flex items-start gap-2.5">
-                <div className="w-6 h-6 rounded-full bg-blue-500/20 text-[#38BDF8] flex items-center justify-center shrink-0 mt-0.5 border border-blue-400/30">
+              <div className="flex items-center gap-2.5">
+                <div className="w-6 h-6 rounded-full bg-blue-500/20 text-[#38BDF8] flex items-center justify-center shrink-0 border border-blue-400/30">
                   <MapPin className="w-3.5 h-3.5" />
                 </div>
-                <div className="text-slate-300 leading-snug">
-                  <span className="font-bold text-white">Kho hàng: </span>
+                <p className="text-slate-300 leading-snug">
+                  <strong className="text-white">Kho hàng: </strong>
                   <span>{company.address}</span>
-                </div>
+                </p>
               </div>
 
               {/* Hotline & Zalo */}
@@ -103,15 +103,15 @@ export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
                 <div className="w-6 h-6 rounded-full bg-orange-500/20 text-[#F47A20] flex items-center justify-center shrink-0 border border-orange-400/30">
                   <Phone className="w-3.5 h-3.5" />
                 </div>
-                <div className="text-slate-300 text-xs sm:text-sm flex items-center gap-1.5 whitespace-nowrap min-w-0 leading-tight">
-                  <span className="font-bold text-white shrink-0">Hotline &amp; Zalo:</span>
+                <p className="text-slate-300 leading-snug">
+                  <strong className="text-white">Hotline &amp; Zalo: </strong>
                   <a
                     href={`tel:${company.hotlineRaw}`}
-                    className="font-bold text-xs sm:text-sm text-[#F47A20] hover:underline shrink-0"
+                    className="font-bold text-[#F47A20] hover:underline whitespace-nowrap"
                   >
                     {company.hotline}
                   </a>
-                </div>
+                </p>
               </div>
 
               {/* Giờ làm việc */}
@@ -119,10 +119,10 @@ export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
                 <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-400/30">
                   <Clock className="w-3.5 h-3.5" />
                 </div>
-                <div className="text-slate-300 text-xs sm:text-sm leading-tight flex items-center gap-1">
-                  <span className="font-bold text-white shrink-0">Thời gian làm việc:</span>
+                <p className="text-slate-300 leading-snug">
+                  <strong className="text-white">Thời gian làm việc: </strong>
                   <span>{company.workingHours}</span>
-                </div>
+                </p>
               </div>
             </div>
           </div>
@@ -167,19 +167,11 @@ export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
           </div>
         </div>
 
-        {/* Bottom Bar: Bản quyền & Link Admin */}
-        <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between gap-3 text-[11px] text-slate-400">
-          <p className="truncate">
+        {/* Bottom Bar: Bản quyền Căn Giữa */}
+        <div className="pt-2 border-t border-slate-800/60 text-center text-[11px] text-slate-400">
+          <p>
             © 2026 | Designed by Tran Van Huy
           </p>
-
-          <Link
-            href="/admin"
-            className="inline-flex items-center gap-1 hover:text-white transition-colors py-0.5 shrink-0"
-          >
-            <Lock className="w-3 h-3" />
-            <span>Quản trị</span>
-          </Link>
         </div>
 
       </div>
