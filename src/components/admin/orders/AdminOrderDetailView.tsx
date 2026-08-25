@@ -92,112 +92,140 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
     .toUpperCase()
     .slice(-2);
 
+  // Quick next status progression
+  const getNextStatus = (status: OrderStatus): { nextStatus: OrderStatus; actionLabel: string; bgClass: string } | null => {
+    switch (status) {
+      case "PENDING":
+        return { nextStatus: "CONFIRMED", actionLabel: "Xác nhận đơn hàng", bgClass: "bg-blue-600 hover:bg-blue-700 text-white" };
+      case "CONFIRMED":
+        return { nextStatus: "SHIPPING", actionLabel: "Bàn giao vận chuyển", bgClass: "bg-purple-600 hover:bg-purple-700 text-white" };
+      case "SHIPPING":
+        return { nextStatus: "COMPLETED", actionLabel: "Xác nhận hoàn thành & thu tiền", bgClass: "bg-emerald-600 hover:bg-emerald-700 text-white" };
+      default:
+        return null;
+    }
+  };
+
+  const nextAction = getNextStatus(currentStatus);
+
   return (
-    <div className="space-y-3 sm:space-y-5 text-left max-w-7xl mx-auto pb-16 px-0 sm:px-2">
-      {/* 1. Header Bar: Fully Responsive across 320px - 1440px */}
-      <div className="bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-2.5 sm:space-y-0 sm:flex sm:items-center sm:justify-between sm:gap-3">
-        {/* Top Row / Left Info */}
-        <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 min-w-0">
-          <Link
-            href="/admin/orders"
-            className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all cursor-pointer !min-h-0 shrink-0 border border-slate-200 dark:border-slate-700"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span className="hidden xs:inline">Danh sách đơn</span>
-            <span className="xs:hidden">Đơn</span>
-          </Link>
+    <div className="space-y-3.5 sm:space-y-5 text-left max-w-7xl mx-auto pb-16 px-1 sm:px-2">
+      {/* 1. TOP APP BAR */}
+      <div className="flex items-center justify-between gap-2 py-1">
+        <Link
+          href="/admin/orders"
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all border border-slate-200/90 dark:border-slate-800 shadow-2xs"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Danh sách đơn hàng</span>
+        </Link>
 
-          <div className="h-4 w-[1px] bg-slate-200 dark:bg-slate-700 hidden sm:block" />
-
-          {/* Order Code Pill & Badge */}
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="font-mono text-xs sm:text-sm font-black text-white px-2 py-1 sm:px-2.5 sm:py-1 bg-[#075FA8] dark:bg-blue-600 rounded-lg inline-flex items-center gap-1 shadow-2xs shrink-0">
-              #{order.orderCode}
-              <button
-                type="button"
-                onClick={handleCopyCode}
-                className="p-0.5 hover:bg-white/20 rounded transition-colors cursor-pointer !min-h-0"
-                title="Sao chép mã đơn"
-              >
-                {copied ? <Check className="w-3 h-3 text-emerald-300" /> : <Copy className="w-3 h-3 text-white/80" />}
-              </button>
-            </span>
-            <OrderStatusBadge status={currentStatus} />
-          </div>
-        </div>
-
-        {/* Action Buttons Row on Mobile / Right Group on Desktop */}
-        <div className="flex items-center gap-1.5 sm:gap-2 pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <a
             href={`tel:${order.customerPhone}`}
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold transition-all cursor-pointer !min-h-0"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs"
           >
-            <Phone className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">Gọi {order.customerPhone}</span>
+            <Phone className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Gọi:</span>
+            <span>{order.customerPhone}</span>
           </a>
 
           <button
             type="button"
             onClick={handlePrint}
-            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-bold transition-all cursor-pointer !min-h-0 shrink-0"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-800 text-xs font-bold transition-all shadow-2xs"
           >
-            <Printer className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" />
-            <span>In đơn</span>
+            <Printer className="w-3.5 h-3.5 text-slate-500" />
+            <span className="hidden sm:inline">In phiếu</span>
           </button>
         </div>
       </div>
 
-      {/* 2. Status Stepper Management Box: Horizontal Scroll & Tap on Mobile */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-2.5">
-        <div className="flex items-center justify-between gap-2">
+      {/* 2. HERO ORDER CARD WITH STATUS */}
+      <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-4">
+        {/* Header: Order Code, Time & Price */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800">
           <div>
-            <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
-              <span>Trạng Thái Đơn Hàng</span>
-            </h3>
-            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
-              Nhấp vào bước bên dưới để đổi trạng thái quy trình
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-mono text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                #{order.orderCode}
+              </span>
+              <button
+                type="button"
+                onClick={handleCopyCode}
+                className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                title="Sao chép mã đơn"
+              >
+                {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+              </button>
+              <OrderStatusBadge status={currentStatus} />
+            </div>
+
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Khách hàng: <strong className="text-slate-800 dark:text-slate-200 font-bold">{order.customerName}</strong> • {formatDate(order.createdAt)}
             </p>
           </div>
 
+          <div className="text-left sm:text-right">
+            <span className="text-[11px] text-slate-400 font-semibold block">Tổng tiền:</span>
+            <span className="text-lg sm:text-2xl font-black text-[#075FA8] dark:text-blue-400">
+              {formatCurrency(order.totalAmount)}
+            </span>
+          </div>
+        </div>
+
+        {/* Status Actions: 1-Click Progression & Quick Switcher */}
+        <div className="space-y-3">
           {msg && (
-            <div className="text-[11px] sm:text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-xl animate-in fade-in flex items-center gap-1 shrink-0">
-              <CheckCircle2 className="w-3.5 h-3.5" />
+            <div className="text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-3.5 py-2 rounded-xl flex items-center gap-2 animate-in fade-in">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>{msg}</span>
             </div>
           )}
-        </div>
 
-        {/* Stepper Buttons: Horizontal Scroll on Mobile, 5-col Grid on Desktop */}
-        <div className="flex items-stretch gap-1.5 sm:grid sm:grid-cols-5 sm:gap-2 overflow-x-auto pb-1.5 sm:pb-0 scrollbar-none pt-0.5 -mx-1 px-1">
-          {STEPS.map((step) => {
-            const isActive = currentStatus === step.status;
-            const isCancelled = step.status === "CANCELLED";
-            return (
-              <button
-                key={step.status}
-                type="button"
-                disabled={loading}
-                onClick={() => handleStatusChange(step.status)}
-                className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl text-left transition-all border cursor-pointer !min-h-0 flex flex-col justify-between shrink-0 min-w-[130px] sm:min-w-0 ${
-                  isActive
-                    ? isCancelled
-                      ? "bg-red-600 text-white border-red-600 shadow-md ring-2 ring-red-300 dark:ring-red-900"
-                      : "bg-[#075FA8] dark:bg-blue-600 text-white border-[#075FA8] dark:border-blue-600 shadow-md ring-2 ring-blue-300 dark:ring-blue-900"
-                    : "bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
-                }`}
-              >
-                <div className="flex items-center justify-between gap-1">
-                  <span className={`text-xs font-black truncate ${isActive ? "text-white" : "text-slate-900 dark:text-white"}`}>
-                    {step.label}
-                  </span>
-                  {isActive && <CheckCircle2 className="w-3.5 h-3.5 text-white shrink-0" />}
-                </div>
-                <p className={`text-[10px] mt-1 line-clamp-2 leading-tight ${isActive ? "text-blue-100" : "text-slate-500 dark:text-slate-400"}`}>
-                  {step.desc}
-                </p>
-              </button>
-            );
-          })}
+          {/* Primary Action Button (Next Step in workflow) */}
+          {nextAction && (
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => handleStatusChange(nextAction.nextStatus)}
+              className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.99] cursor-pointer ${nextAction.bgClass}`}
+            >
+              <span>{nextAction.actionLabel}</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* 5-Step Direct Switcher Pills (Horizontal on Desktop, 2-Row Grid on Mobile) */}
+          <div>
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1.5">
+              Chuyển đổi trạng thái nhanh:
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
+              {STEPS.map((step) => {
+                const isActive = currentStatus === step.status;
+                const isCancelled = step.status === "CANCELLED";
+                return (
+                  <button
+                    key={step.status}
+                    type="button"
+                    disabled={loading}
+                    onClick={() => handleStatusChange(step.status)}
+                    className={`px-2.5 py-2 rounded-xl text-xs font-bold text-center transition-all border cursor-pointer !min-h-0 flex items-center justify-center gap-1.5 ${
+                      isActive
+                        ? isCancelled
+                          ? "bg-red-600 text-white border-red-600 shadow-xs ring-2 ring-red-200 dark:ring-red-950"
+                          : "bg-[#075FA8] dark:bg-blue-600 text-white border-[#075FA8] dark:border-blue-600 shadow-xs ring-2 ring-blue-200 dark:ring-blue-950"
+                        : "bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200/90 dark:border-slate-700"
+                    } ${isCancelled ? "col-span-2 sm:col-span-1" : ""}`}
+                  >
+                    <span>{step.label}</span>
+                    {isActive && <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 
