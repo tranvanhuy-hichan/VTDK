@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import type { CompanyContact } from "../../lib/company";
+import { Breadcrumb } from "../common/Breadcrumb";
 
 const BTUCalculatorModal = dynamic(
   () => import("./BTUCalculatorModal").then((m) => m.BTUCalculatorModal),
@@ -95,8 +96,13 @@ export const AllProductsCatalog: React.FC<AllProductsCatalogProps> = ({
     <div className="w-full bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 pb-16">
       
       {/* 1. Basic, Sleek, Compact Hero Header */}
-      <section className="bg-gradient-to-r from-[#075FA8] via-[#08457A] to-[#0B2540] text-white py-4 sm:py-6 px-4 sm:px-6 shadow-xs">
-        <div className="max-w-4xl mx-auto space-y-2.5 text-center">
+      <section className="bg-gradient-to-r from-[#075FA8] via-[#08457A] to-[#0B2540] text-white pt-0 pb-4 sm:pb-5 px-4 sm:px-6 lg:px-8 shadow-xs">
+        <div className="w-full max-w-[1700px] mx-auto">
+          {/* Seamless Banner Breadcrumb */}
+          <Breadcrumb items={[{ label: "Tất cả sản phẩm" }]} variant="banner" />
+        </div>
+
+        <div className="max-w-4xl mx-auto space-y-2.5 text-center pt-1">
           <h1 className="text-lg sm:text-2xl font-black tracking-tight text-white">
             Danh Mục Vật Tư Điện Lạnh Chính Hãng
           </h1>

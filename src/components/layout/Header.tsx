@@ -134,7 +134,6 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
     { name: "Trang chủ", href: "/", hash: "#trang-chu", icon: Home },
     { name: "Sản phẩm", href: "/san-pham", hash: "#san-pham", icon: Package },
     { name: "Giải pháp", href: "/giai-phap", hash: "#dich-vu", icon: Wrench },
-    { name: "Thương hiệu", href: isHomePage ? "#thuong-hieu" : "/#thuong-hieu", hash: "#thuong-hieu", icon: Sparkles },
     { name: "Kho & Cửa hàng", href: isHomePage ? "#hinh-anh" : "/#hinh-anh", hash: "#hinh-anh", icon: Store },
     { name: "Liên hệ", href: "/lien-he", hash: "#lien-he", icon: Phone },
   ];

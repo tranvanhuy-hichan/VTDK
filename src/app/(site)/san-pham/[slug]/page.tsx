@@ -162,8 +162,8 @@ export default async function ProductDetailPage({ params }: ProductPageParams) {
   };
 
   return (
-    <section className="pt-1.5 sm:pt-2.5 pb-8 bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-1.5 sm:space-y-2">
+    <section className="pt-0 pb-8 bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
+      <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Pure Text Breadcrumb Line with Back Button */}
         <ProductDetailHeader

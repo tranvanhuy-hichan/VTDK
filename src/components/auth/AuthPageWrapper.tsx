@@ -18,6 +18,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { COMPANY_DATA } from "../../data/company";
+import { Breadcrumb } from "../common/Breadcrumb";
 import { LoginForm } from "./LoginForm";
 import { RegisterForm } from "./RegisterForm";
 import { CompleteProfileForm } from "./CompleteProfileForm";
@@ -220,16 +221,15 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
         <div className="w-full max-w-md transition-all duration-300 space-y-4 my-auto">
           {/* Top navigation bar */}
           <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer !min-h-0"
-            >
-              <ArrowLeft className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
-              <span>Quay lại trang chủ</span>
-            </Link>
+            <Breadcrumb
+              items={[{ label: tab === "login" ? "Đăng nhập" : "Đăng ký" }]}
+              showBackButton={true}
+              variant="light"
+              className="py-1"
+            />
 
             {/* Mobile-only logo with full company name */}
-            <div className="lg:hidden flex flex-col items-end">
+            <div className="lg:hidden flex flex-col items-end shrink-0 pl-2">
               <span className="text-xs font-black text-slate-900 dark:text-white">VẬT TƯ ĐÔNG KHA</span>
               <span className="text-[9px] text-slate-500 dark:text-slate-400 font-bold">
                 CÔNG TY TNHH VẬT TƯ ĐÔNG KHA

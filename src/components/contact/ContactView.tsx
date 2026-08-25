@@ -19,6 +19,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 import type { CompanyContact } from "../../lib/company";
+import { Breadcrumb } from "../common/Breadcrumb";
 
 interface ContactViewProps {
   company: CompanyContact;
@@ -48,30 +49,22 @@ export const ContactView: React.FC<ContactViewProps> = ({ company }) => {
   return (
     <div className="w-full bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 pb-16">
       {/* 1. Header Banner */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#063B66] via-[#075FA8] to-[#0A2239] text-white py-8 sm:py-12 px-4 sm:px-6 lg:px-8 shadow-sm">
-        {/* Ambient Glows */}
-        <div className="absolute -left-20 -bottom-20 w-72 h-72 bg-cyan-400/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -right-20 -top-20 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative overflow-hidden bg-gradient-to-r from-[#075FA8] via-[#08457A] to-[#0B2540] text-white pt-0 pb-5 sm:pb-6 px-4 sm:px-6 lg:px-8 shadow-xs">
+        <div className="w-full max-w-[1700px] mx-auto">
+          {/* Seamless Banner Breadcrumb */}
+          <Breadcrumb items={[{ label: "Liên hệ" }]} variant="banner" />
+        </div>
 
-        <div className="max-w-5xl mx-auto relative z-10 space-y-3 text-center">
-          {/* Breadcrumb */}
-          <div className="flex items-center justify-center gap-2 text-xs font-bold text-blue-200">
-            <Link href="/" className="hover:text-white transition-colors">
-              Trang chủ
-            </Link>
-            <span>/</span>
-            <span className="text-amber-300">Liên hệ</span>
-          </div>
-
-          <div className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-md text-blue-100 border border-white/20 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider">
+        <div className="max-w-4xl mx-auto space-y-2 text-center pt-1 sm:pt-2">
+          <div className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-md text-blue-100 border border-white/20 px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
             <span>KẾT NỐI TRỰC TIẾP &amp; HỖ TRỢ BÁO GIÁ 24/7</span>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
+          <h1 className="text-xl sm:text-3xl font-black tracking-tight text-white">
             Liên Hệ Tổng Kho Vật Tư Đông Kha
           </h1>
-          <p className="text-xs sm:text-base text-blue-100/90 max-w-2xl mx-auto font-medium leading-relaxed">
+          <p className="text-xs sm:text-sm text-blue-100/90 max-w-xl mx-auto font-medium">
             Hân hạnh phục vụ Quý khách hàng, quý anh em thợ điện lạnh và các nhà thầu cơ điện tại Đà Nẵng &amp; Miền Trung.
           </p>
         </div>

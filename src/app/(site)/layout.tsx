@@ -28,7 +28,7 @@ export default async function SiteLayout({
   return (
     <AuthProvider>
       <CartProvider>
-        <div className="min-h-screen flex flex-col bg-[#F6F8FA] dark:bg-[#0F172A] text-slate-800 dark:text-slate-100 antialiased font-sans transition-colors duration-300 pb-14 sm:pb-0">
+        <div className="min-h-screen flex flex-col bg-[#F6F8FA] dark:bg-[#0F172A] text-slate-800 dark:text-slate-100 antialiased font-sans transition-colors duration-300 pb-17 sm:pb-0">
           <Header company={company} />
           <main className="flex-1">{children}</main>
           <FloatingContact company={company} />

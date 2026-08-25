@@ -51,32 +51,32 @@ export const MobileBottomBar: React.FC = () => {
   return (
     <nav
       aria-label="Mobile Bottom Navigation"
-      className="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] pb-[env(safe-area-inset-bottom)] transition-colors"
+      className="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/90 dark:border-slate-800 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom)] transition-colors"
     >
-      <div className="grid grid-cols-5 h-13.5 max-w-lg mx-auto px-1">
+      <div className="grid grid-cols-5 h-16 max-w-lg mx-auto px-1.5">
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
             <Link
               key={item.label}
               href={item.href}
-              className={`flex flex-col items-center justify-center gap-0.5 relative transition-colors cursor-pointer select-none !min-h-0 py-1 ${
+              className={`flex flex-col items-center justify-center gap-1 relative transition-colors cursor-pointer select-none !min-h-0 py-1.5 ${
                 item.isActive
                   ? "text-[#075FA8] dark:text-blue-400 font-black"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold"
               }`}
             >
               <Icon
-                className={`w-4.5 h-4.5 transition-transform duration-200 ${
+                className={`w-5 h-5 transition-transform duration-200 ${
                   item.isActive ? "scale-110 stroke-[2.5]" : "stroke-[1.75]"
                 }`}
               />
-              <span className="text-[9px] tracking-tight truncate max-w-full">
+              <span className="text-[10px] tracking-tight truncate max-w-full font-medium">
                 {item.label}
               </span>
 
               {item.isActive && (
-                <span className="absolute top-0 inset-x-3 h-0.5 bg-[#075FA8] dark:bg-blue-400 rounded-full" />
+                <span className="absolute top-0 inset-x-3.5 h-0.5 bg-[#075FA8] dark:bg-blue-400 rounded-full shadow-xs" />
               )}
             </Link>
           );

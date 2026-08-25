@@ -7,6 +7,8 @@ import { Phone, MessageSquare, MapPin, CheckCircle2, ChevronRight, HelpCircle, A
 import type { CompanyContact } from "@/lib/company";
 import { ProductCard } from "@/components/product/ProductCard";
 
+import { Breadcrumb } from "@/components/common/Breadcrumb";
+
 export interface SeoLandingConfig {
   slug: string;
   title: string;
@@ -36,49 +38,23 @@ export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({
   company,
   products,
 }) => {
-  const router = useRouter();
-
   return (
     <div className="bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 pb-12">
-      {/* Top Breadcrumb Navigation - 100% Identical to Product Detail Page */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-1.5 sm:pt-2.5 pb-1">
-        <div className="flex items-center gap-2 text-xs sm:text-sm font-medium whitespace-nowrap overflow-x-auto no-scrollbar py-0.5 my-0 leading-none max-w-full">
-          {/* Back button - icon only on mobile */}
-          <button
-            type="button"
-            onClick={() => router.back()}
-            aria-label="Quay lại trang trước"
-            className="inline-flex items-center gap-1 font-bold text-slate-700 dark:text-slate-200 hover:text-[#075FA8] dark:hover:text-blue-400 transition-colors shrink-0 cursor-pointer !min-h-0"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400 shrink-0" />
-            <span className="hidden sm:inline">Quay lại</span>
-          </button>
-
-          <span className="text-slate-300 dark:text-slate-700 font-normal shrink-0">|</span>
-
-          {/* Breadcrumb line: Trang chủ > [Category Landing Page] */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 leading-none shrink-0 min-w-0">
-            <Link
-              href="/"
-              className="hidden sm:inline-flex items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-[#075FA8] dark:hover:text-blue-400 transition-colors"
-            >
-              <Home className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              <span>Trang chủ</span>
-            </Link>
-
-            <ChevronRight className="hidden sm:inline-block w-3.5 h-3.5 text-slate-400 shrink-0" />
-
-            <span className="inline-flex items-center font-extrabold text-slate-900 dark:text-white truncate max-w-[180px] sm:max-w-xs">
-              {config.title}
-            </span>
-          </nav>
-        </div>
-      </div>
-
       {/* Hero Header Section - Compact Height */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-blue-900 via-[#075FA8] to-[#0B1F33] text-white py-4 sm:py-6">
+      <section className="relative overflow-hidden bg-gradient-to-b from-blue-900 via-[#075FA8] to-[#0B1F33] text-white pt-0 pb-4 sm:pb-5">
+        <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Seamless Banner Breadcrumb */}
+          <Breadcrumb
+            items={[
+              { label: "Sản phẩm", href: "/san-pham" },
+              { label: config.title },
+            ]}
+            variant="banner"
+          />
+        </div>
+
         <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 rounded-full bg-blue-400/10 blur-3xl pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-left">
+        <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-left">
           
           <div className="inline-flex items-center gap-1.5 bg-orange-500/20 border border-orange-400/40 text-orange-200 text-[10px] sm:text-xs font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-2">
             <MapPin className="w-3 h-3 text-orange-400 shrink-0" />

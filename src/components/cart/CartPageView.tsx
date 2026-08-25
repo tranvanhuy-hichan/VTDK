@@ -34,8 +34,8 @@ export const CartPageView: React.FC = () => {
   };
 
   return (
-    <section className="pt-1.5 sm:pt-2.5 pb-10 bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
-      <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+    <section className="pt-0 pb-10 bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
+      <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
 
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">

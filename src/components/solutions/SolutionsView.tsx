@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import type { CompanyContact } from "../../lib/company";
 import { ImageCarousel } from "../product/ImageCarousel";
+import { Breadcrumb } from "../common/Breadcrumb";
 
 export interface ServiceItem {
   id: string;
@@ -52,10 +53,14 @@ export const SolutionsView: React.FC<SolutionsViewProps> = ({ company, services 
 
   return (
     <div className="w-full bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 pb-16">
-      
       {/* 1. Sleek Compact Header (Không chiếm diện tích) */}
-      <section className="bg-gradient-to-r from-[#075FA8] via-[#08457A] to-[#0B2540] text-white py-5 sm:py-7 px-4 sm:px-6 shadow-xs">
-        <div className="max-w-4xl mx-auto space-y-2 text-center">
+      <section className="bg-gradient-to-r from-[#075FA8] via-[#08457A] to-[#0B2540] text-white pt-0 pb-5 sm:pb-6 px-4 sm:px-6 lg:px-8 shadow-xs">
+        <div className="w-full max-w-[1700px] mx-auto">
+          {/* Seamless Banner Breadcrumb */}
+          <Breadcrumb items={[{ label: "Giải pháp kỹ thuật" }]} variant="banner" />
+        </div>
+
+        <div className="max-w-4xl mx-auto space-y-2 text-center pt-1 sm:pt-2">
           <div className="inline-flex items-center gap-1.5 bg-white/15 text-blue-100 border border-white/20 px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider">
             <Wrench className="w-3.5 h-3.5 text-amber-300" />
             <span>KỸ THUẬT &amp; THI CÔNG CHUYÊN NGHIỆP</span>
