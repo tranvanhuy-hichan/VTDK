@@ -6,8 +6,9 @@ const nextConfig = {
   distDir: process.env.NODE_ENV === "development" ? ".next-dev" : ".next",
   reactStrictMode: true,
   compress: true,
+  serverExternalPackages: ["@prisma/client", "bcryptjs"],
   experimental: {
-    optimizePackageImports: ["lucide-react", "@prisma/client", "canvas-confetti"],
+    optimizePackageImports: ["lucide-react", "canvas-confetti"],
     serverActions: {
       // Default is 1MB, too small for photos uploaded from a phone camera
       // (product/service/gallery/company image uploads go through a Server Action).
