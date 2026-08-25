@@ -10,6 +10,9 @@ import { comparePassword, setAuthCookie, clearAuthCookie, getCurrentAdmin } from
 import { ensureDefaultAdmin, DEFAULT_ADMIN_EMAIL } from "../lib/seedAdmin";
 import { checkRateLimit, resetRateLimit } from "../lib/rateLimit";
 
+import { invalidateMemoryCache } from "../lib/cachedData";
+import { invalidateCompanyCache } from "../lib/company";
+
 const SESSION_COOKIE = "admin_session";
 const PLACEHOLDER_IMAGE = "/images/placeholder.svg";
 
@@ -19,6 +22,10 @@ function revalidateSiteData(tags: string[] = []) {
   revalidatePath("/san-pham");
   revalidatePath("/giai-phap");
   revalidatePath("/admin");
+  invalidateMemoryCache(tags);
+  if (tags.includes("company-info")) {
+    invalidateCompanyCache();
+  }
   for (const tag of tags) {
     try {
       revalidateTag(tag);

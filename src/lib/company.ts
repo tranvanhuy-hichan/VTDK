@@ -53,13 +53,23 @@ const FALLBACK: CompanyContact = {
   images: [],
 };
 
+const globalForCompany = globalThis as unknown as {
+  __companyInfoBackup?: CompanyContact | null;
+};
+
+export function invalidateCompanyCache() {
+  globalForCompany.__companyInfoBackup = null;
+}
+
 export const getCompanyInfo = unstable_cache(
   async (): Promise<CompanyContact> => {
     try {
       const info = (await prisma.companyInfo.findFirst()) as any;
-      if (!info) return FALLBACK;
+      if (!info) {
+        return globalForCompany.__companyInfoBackup || FALLBACK;
+      }
 
-      return {
+      const formatted: CompanyContact = {
         id: info.id,
         name: info.fullName || info.name || FALLBACK.fullName,
         fullName: info.fullName || info.name || FALLBACK.fullName,
@@ -83,9 +93,12 @@ export const getCompanyInfo = unstable_cache(
         image: info.image || FALLBACK.image,
         images: Array.isArray(info.images) ? info.images : [],
       };
+
+      globalForCompany.__companyInfoBackup = formatted;
+      return formatted;
     } catch (e) {
-      console.warn("getCompanyInfo database query failed, using fallback:", e);
-      return FALLBACK;
+      console.warn("getCompanyInfo database query failed, using memory backup or fallback:", e);
+      return globalForCompany.__companyInfoBackup || FALLBACK;
     }
   },
   ["company-info"],
