@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -24,6 +24,7 @@ import {
   Volume2,
   VolumeX,
   Sparkles,
+  ArrowLeft,
 } from "lucide-react";
 import { logoutAction } from "../../app/admin/actions";
 import { AdminNotificationCenter, playAdminChimeSound } from "./AdminNotificationCenter";
@@ -75,6 +76,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({
   adminUser,
 }) => {
   const pathname = usePathname();
+  const router = useRouter();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isSoundEnabled, setIsSoundEnabled] = useState(true);
@@ -293,18 +295,33 @@ export const AdminShell: React.FC<AdminShellProps> = ({
               >
                 <Menu className="w-4.5 h-4.5" />
               </button>
+              <button
+                type="button"
+                onClick={() => router.back()}
+                aria-label="Quay lại trang trước"
+                className="inline-flex items-center gap-1 font-bold text-slate-600 dark:text-slate-300 hover:text-[#075FA8] dark:hover:text-blue-400 transition-colors shrink-0 cursor-pointer !min-h-0"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
+                <span className="hidden sm:inline text-xs">Quay lại</span>
+              </button>
 
-              <nav className="flex items-center flex-nowrap whitespace-nowrap gap-1.5 text-xs text-slate-500 dark:text-slate-400 min-w-0 overflow-hidden">
+              <span className="hidden sm:inline text-slate-300 dark:text-slate-700">|</span>
+
+              <nav
+
+                aria-label="Breadcrumb"
+                className="flex items-center flex-nowrap whitespace-nowrap gap-1.5 text-xs leading-none text-slate-500 dark:text-slate-400 min-w-0 overflow-hidden"
+              >
                 <Link
                   href="/admin"
-                  className="font-bold hover:text-slate-900 dark:hover:text-white transition-colors shrink-0"
+                  className="inline-flex items-center font-bold hover:text-slate-900 dark:hover:text-white transition-colors shrink-0 !min-h-0"
                 >
                   Admin
                 </Link>
                 {currentActiveItem && currentActiveItem.href !== "/admin" && (
                   <>
                     <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-400" />
-                    <span className="font-extrabold text-slate-900 dark:text-white truncate shrink-0">
+                    <span className="inline-flex items-center font-extrabold text-slate-900 dark:text-white truncate shrink-0">
                       {currentActiveItem.label}
                     </span>
                   </>

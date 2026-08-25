@@ -205,10 +205,33 @@ export async function adminUpdateOrderStatusAction(
       return { success: false, error: "Bạn không có quyền quản trị viên." };
     }
 
-    await prisma.order.update({
+    const currentOrder = await prisma.order.findUnique({
       where: { id: orderId },
+      select: { status: true },
+    });
+
+    if (!currentOrder) {
+      return { success: false, error: "Không tìm thấy đơn hàng." };
+    }
+
+    const allowedNextStatuses: Partial<Record<OrderStatus, OrderStatus[]>> = {
+      PENDING: ["CONFIRMED", "CANCELLED"],
+      CONFIRMED: ["SHIPPING", "CANCELLED"],
+      SHIPPING: ["COMPLETED", "CANCELLED"],
+    };
+
+    if (!allowedNextStatuses[currentOrder.status]?.includes(status)) {
+      return { success: false, error: "Chỉ có thể chuyển đơn hàng sang trạng thái tiếp theo." };
+    }
+
+    const updated = await prisma.order.updateMany({
+      where: { id: orderId, status: currentOrder.status },
       data: { status },
     });
+
+    if (updated.count !== 1) {
+      return { success: false, error: "Trạng thái đơn hàng vừa thay đổi. Vui lòng tải lại trang." };
+    }
 
     revalidatePath("/admin");
     revalidatePath("/tai-khoan/don-hang");
