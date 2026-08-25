@@ -25,12 +25,16 @@ interface OrderNotification {
 // Synthesize pleasant chime using Web Audio API
 export function playAdminChimeSound() {
   try {
+    if (typeof window === "undefined") return;
     const AudioContextClass =
       window.AudioContext ||
       (window as unknown as { webkitAudioContext: typeof AudioContext })
         .webkitAudioContext;
     if (!AudioContextClass) return;
     const ctx = new AudioContextClass();
+    if (ctx.state === "suspended") {
+      ctx.resume().catch(() => {});
+    }
 
     const now = ctx.currentTime;
 
@@ -63,17 +67,21 @@ export function playAdminChimeSound() {
 }
 
 function timeAgo(dateString: string) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  try {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  if (diffInSeconds < 60) return "Vừa xong";
-  const minutes = Math.floor(diffInSeconds / 60);
-  if (minutes < 60) return `${minutes} phút trước`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} giờ trước`;
-  const days = Math.floor(hours / 24);
-  return `${days} ngày trước`;
+    if (diffInSeconds < 60) return "Vừa xong";
+    const minutes = Math.floor(diffInSeconds / 60);
+    if (minutes < 60) return `${minutes} phút trước`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} giờ trước`;
+    const days = Math.floor(hours / 24);
+    return `${days} ngày trước`;
+  } catch {
+    return "Vừa xong";
+  }
 }
 
 export const AdminNotificationCenter: React.FC = () => {
@@ -106,32 +114,34 @@ export const AdminNotificationCenter: React.FC = () => {
   }, [activeAlert]);
 
   const triggerSystemNotification = useCallback((order: OrderNotification) => {
-    const title = `📦 Đơn hàng mới: #${order.orderCode}`;
-    const body = `Khách hàng: ${order.customerName} (${order.customerPhone}) • Tổng tiền: ${order.totalAmount.toLocaleString("vi-VN")} ₫`;
+    try {
+      const title = `📦 Đơn hàng mới: #${order.orderCode}`;
+      const body = `Khách hàng: ${order.customerName} (${order.customerPhone}) • Tổng tiền: ${order.totalAmount.toLocaleString("vi-VN")} ₫`;
 
-    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
-      navigator.serviceWorker.ready.then((reg) => {
-        reg.showNotification(title, {
-          body,
-          icon: "/images/logo.png",
-          badge: "/images/logo.png",
-          data: { url: "/admin/orders" },
-        });
-      });
-    } else if ("Notification" in window && Notification.permission === "granted") {
-      try {
-        const notif = new Notification(title, {
-          body,
-          icon: "/images/logo.png",
-        });
-        notif.onclick = () => {
-          window.focus();
-          window.location.href = "/admin/orders";
-        };
-      } catch (e) {
-        console.log("Notification error:", e);
+      if (typeof window !== "undefined" && "serviceWorker" in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.ready
+          .then((reg) => {
+            return reg.showNotification(title, {
+              body,
+              icon: "/images/logo.png",
+              badge: "/images/logo.png",
+              data: { url: "/admin/orders" },
+            });
+          })
+          .catch(() => {});
+      } else if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+        try {
+          const notif = new Notification(title, {
+            body,
+            icon: "/images/logo.png",
+          });
+          notif.onclick = () => {
+            window.focus();
+            window.location.href = "/admin/orders";
+          };
+        } catch {}
       }
-    }
+    } catch {}
   }, []);
 
   // Poll for new orders every 15 seconds

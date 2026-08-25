@@ -94,14 +94,16 @@ export const AdminShell: React.FC<AdminShellProps> = ({
     .toUpperCase();
 
   useEffect(() => {
-    setIsDarkMode(document.documentElement.classList.contains("dark"));
-    const soundPref = localStorage.getItem("admin_order_sound");
-    if (soundPref === "false") {
-      setIsSoundEnabled(false);
-    }
-    if (typeof window !== "undefined" && "Notification" in window) {
-      setPermission(Notification.permission);
-    }
+    try {
+      setIsDarkMode(document.documentElement.classList.contains("dark"));
+      const soundPref = localStorage.getItem("admin_order_sound");
+      if (soundPref === "false") {
+        setIsSoundEnabled(false);
+      }
+      if (typeof window !== "undefined" && "Notification" in window && Notification.permission) {
+        setPermission(Notification.permission);
+      }
+    } catch {}
   }, []);
 
   // Close dropdown on click outside
