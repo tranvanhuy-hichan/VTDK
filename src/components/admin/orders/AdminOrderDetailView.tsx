@@ -14,10 +14,15 @@ import {
   CreditCard,
   CheckCircle2,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import type { OrderDetail, OrderStatus } from "@/types/order";
 import { adminUpdateOrderStatusAction } from "@/actions/orderActions";
 import { formatCurrency, formatDate } from "@/lib/format";
-import { PrintableOrderSlip } from "./PrintableOrderSlip";
+
+const PrintableOrderSlip = dynamic(
+  () => import("./PrintableOrderSlip").then((mod) => mod.PrintableOrderSlip),
+  { ssr: false }
+);
 
 import type { CompanyContact } from "@/lib/company";
 

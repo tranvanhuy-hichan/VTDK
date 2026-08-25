@@ -16,11 +16,16 @@ import {
   Printer,
   CreditCard,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import type { OrderDetail, OrderStatus } from "../../../types/order";
 import { OrderStatusBadge } from "../../order/OrderStatusBadge";
 import { adminUpdateOrderStatusAction } from "../../../actions/orderActions";
 import { formatCurrency, formatDate } from "../../../lib/format";
-import { PrintableOrderSlip } from "./PrintableOrderSlip";
+
+const PrintableOrderSlip = dynamic(
+  () => import("./PrintableOrderSlip").then((mod) => mod.PrintableOrderSlip),
+  { ssr: false }
+);
 
 interface AdminOrderDetailModalProps {
   order: OrderDetail;

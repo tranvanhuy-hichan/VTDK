@@ -6,10 +6,30 @@ import { getCompanyInfo } from "@/lib/company";
 import { SITE_URL } from "@/lib/site";
 import { SeoLandingPage, SeoLandingConfig } from "@/components/product/SeoLandingPage";
 
-export const revalidate = 300;
+export const revalidate = 3600; // 1 hour ISR, revalidated on-demand via Server Actions
 
 interface DynamicCategoryPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+  try {
+    const categories = await prisma.category.findMany({
+      select: { slug: true },
+    });
+    const baseSlugs = categories.map((c) => ({ slug: c.slug }));
+    const extraSlugs = [
+      { slug: "vat-tu-dien-lanh" },
+      { slug: "vat-tu-dien-lanh-da-nang" },
+      ...categories.map((c) => ({ slug: `${c.slug}-da-nang` })),
+      ...categories.map((c) => ({ slug: `${c.slug}-may-lanh-da-nang` })),
+      ...categories.map((c) => ({ slug: `${c.slug}-dieu-hoa-da-nang` })),
+    ];
+    return [...baseSlugs, ...extraSlugs];
+  } catch (error) {
+    console.error("Error generating static params for categories:", error);
+    return [];
+  }
 }
 
 /**

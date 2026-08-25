@@ -3,9 +3,14 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { PackageOpen, X, Search, ChevronDown, Grid, ArrowRight } from "lucide-react";
+import dynamic from "next/dynamic";
 import type { CompanyContact } from "../../lib/company";
 import { Pagination } from "./Pagination";
-import { BTUCalculatorModal } from "./BTUCalculatorModal";
+
+const BTUCalculatorModal = dynamic(
+  () => import("./BTUCalculatorModal").then((m) => m.BTUCalculatorModal),
+  { ssr: false }
+);
 
 interface Category {
   id: string;

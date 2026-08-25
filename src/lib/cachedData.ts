@@ -13,7 +13,7 @@ export const getCachedCategories = unstable_cache(
     });
   },
   ["all-categories"],
-  { revalidate: 300, tags: ["categories"] }
+  { revalidate: 3600, tags: ["categories"] }
 );
 
 export const getCachedActiveProducts = unstable_cache(
@@ -25,7 +25,7 @@ export const getCachedActiveProducts = unstable_cache(
     });
   },
   ["all-active-products"],
-  { revalidate: 120, tags: ["products"] }
+  { revalidate: 3600, tags: ["products"] }
 );
 
 export const getCachedServices = unstable_cache(
@@ -35,7 +35,7 @@ export const getCachedServices = unstable_cache(
     });
   },
   ["all-services"],
-  { revalidate: 300, tags: ["services"] }
+  { revalidate: 3600, tags: ["services"] }
 );
 
 export const getCachedGalleryImages = unstable_cache(
@@ -45,5 +45,5 @@ export const getCachedGalleryImages = unstable_cache(
     });
   },
   ["all-gallery-images"],
-  { revalidate: 300, tags: ["gallery"] }
+  { revalidate: 3600, tags: ["gallery"] }
 );

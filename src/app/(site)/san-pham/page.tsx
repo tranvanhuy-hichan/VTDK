@@ -5,7 +5,7 @@ import { getCachedCategories, getCachedActiveProducts } from "../../../lib/cache
 import { SITE_URL } from "../../../lib/site";
 import { AllProductsCatalog } from "../../../components/product/AllProductsCatalog";
 
-export const revalidate = 120;
+export const revalidate = 3600; // 1 hour ISR, revalidated on-demand via Server Actions
 
 export async function generateMetadata(): Promise<Metadata> {
   const company = await getCompanyInfo();

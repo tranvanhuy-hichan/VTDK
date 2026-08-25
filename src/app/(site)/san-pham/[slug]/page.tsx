@@ -8,10 +8,23 @@ import { ProductDetailHeader } from "@/components/product/ProductDetailHeader";
 import { ProductCard } from "@/components/product/ProductCard";
 import { SITE_URL } from "@/lib/site";
 
-export const revalidate = 300;
+export const revalidate = 3600; // 1 hour ISR, revalidated on-demand via Server Actions
 
 interface ProductPageParams {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+  try {
+    const products = await prisma.product.findMany({
+      where: { active: true },
+      select: { slug: true },
+    });
+    return products.map((p) => ({ slug: p.slug }));
+  } catch (error) {
+    console.error("Error generating static params for products:", error);
+    return [];
+  }
 }
 
 const getProduct = cache(async (slug: string) => {

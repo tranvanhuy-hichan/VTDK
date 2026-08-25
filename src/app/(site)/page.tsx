@@ -15,7 +15,7 @@ import { CustomerTypes } from "../../components/home/CustomerTypes";
 import { Gallery } from "../../components/home/Gallery";
 import { Location } from "../../components/home/Location";
 
-export const revalidate = 120; // Revalidate every 2 minutes or on-demand via Server Actions
+export const revalidate = 3600; // 1 hour ISR, revalidated on-demand via Server Actions
 
 export default async function HomePage() {
   // Fetch all home data concurrently with ultra-fast caching
