@@ -64,16 +64,6 @@ export const AllProductsCatalog: React.FC<AllProductsCatalogProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>("all");
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const toggleExpand = (categoryId: string) => {
     setExpandedCategories((prev) => ({
@@ -195,8 +185,8 @@ export const AllProductsCatalog: React.FC<AllProductsCatalogProps> = ({
             return null;
           }
 
-          // Rule: Max 10 items on PC (2 full rows of 5), Max 8 items on Mobile unless expanded
-          const maxInitialLimit = isMobile ? 8 : 10;
+          // Consistent 10 items (2 full rows of 5 on PC, 5 full rows of 2 on Mobile)
+          const maxInitialLimit = 10;
           const isExpanded = Boolean(expandedCategories[category.id]);
           const visibleProducts = isExpanded
             ? catProducts

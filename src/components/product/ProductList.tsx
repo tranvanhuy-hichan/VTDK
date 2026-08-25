@@ -53,17 +53,7 @@ export const ProductList: React.FC<ProductListProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(9);
-
-  // Dynamic page size based on screen width (8 for 2-col mobile, 10 for 5-col desktop)
-  useEffect(() => {
-    const handleResize = () => {
-      setPageSize(window.innerWidth < 1024 ? 8 : 10);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const pageSize = 10; // 10 items (2 full rows of 5 on desktop, 5 full rows of 2 on mobile)
 
   // Pick up ?q= from the header search on initial load
   useEffect(() => {
