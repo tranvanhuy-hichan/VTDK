@@ -28,10 +28,15 @@ export async function generateStaticParams() {
 }
 
 const getProduct = cache(async (slug: string) => {
-  return prisma.product.findFirst({
-    where: { slug, active: true },
-    include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
-  });
+  try {
+    return await prisma.product.findFirst({
+      where: { slug, active: true },
+      include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
+    });
+  } catch (error) {
+    console.warn("getProduct DB error:", error);
+    return null;
+  }
 });
 
 export async function generateMetadata({ params }: ProductPageParams): Promise<Metadata> {
@@ -95,11 +100,16 @@ export default async function ProductDetailPage({ params }: ProductPageParams) {
   const company = await getCompanyInfo();
 
   // Fetch max 5 related products in the same category
-  const relatedProducts = await prisma.product.findMany({
-    where: { categoryId: product.categoryId, id: { not: product.id }, active: true },
-    include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
-    take: 5,
-  });
+  let relatedProducts: any[] = [];
+  try {
+    relatedProducts = await prisma.product.findMany({
+      where: { categoryId: product.categoryId, id: { not: product.id }, active: true },
+      include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
+      take: 5,
+    });
+  } catch (error) {
+    console.warn("relatedProducts DB error:", error);
+  }
 
   // Calculate variant prices for schema
   const variantPrices = product.variants.map((v) => v.price).filter((p) => p > 0);

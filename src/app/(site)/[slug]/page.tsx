@@ -45,48 +45,53 @@ const resolveCategory = cache(async (rawSlug: string) => {
     };
   }
 
-  // 1. Try exact match first
-  let category = await prisma.category.findUnique({
-    where: { slug: cleanSlug },
-  });
+  try {
+    // 1. Try exact match first
+    let category = await prisma.category.findUnique({
+      where: { slug: cleanSlug },
+    });
 
-  // 2. Try stripping common Local SEO suffixes (e.g. "ong-dong-may-lanh-da-nang" -> "ong-dong")
-  if (!category) {
-    const candidates = [
-      cleanSlug.replace(/-da-nang$/, ""),
-      cleanSlug.replace(/-may-lanh-da-nang$/, ""),
-      cleanSlug.replace(/-dieu-hoa-da-nang$/, ""),
-    ];
+    // 2. Try stripping common Local SEO suffixes (e.g. "ong-dong-may-lanh-da-nang" -> "ong-dong")
+    if (!category) {
+      const candidates = [
+        cleanSlug.replace(/-da-nang$/, ""),
+        cleanSlug.replace(/-may-lanh-da-nang$/, ""),
+        cleanSlug.replace(/-dieu-hoa-da-nang$/, ""),
+      ];
 
-    for (const candidate of candidates) {
-      category = await prisma.category.findUnique({
-        where: { slug: candidate },
-      });
-      if (category) break;
+      for (const candidate of candidates) {
+        category = await prisma.category.findUnique({
+          where: { slug: candidate },
+        });
+        if (category) break;
+      }
     }
-  }
 
-  // 3. Fallback: fuzzy match against existing category slugs
-  if (!category) {
-    const allCategories = await prisma.category.findMany();
-    category =
-      allCategories.find((cat) => {
-        const catSlug = cat.slug.toLowerCase();
-        return (
-          cleanSlug.includes(catSlug) ||
-          catSlug.includes(cleanSlug.replace(/-da-nang$/, ""))
-        );
-      }) || null;
-  }
+    // 3. Fallback: fuzzy match against existing category slugs
+    if (!category) {
+      const allCategories = await prisma.category.findMany();
+      category =
+        allCategories.find((cat) => {
+          const catSlug = cat.slug.toLowerCase();
+          return (
+            cleanSlug.includes(catSlug) ||
+            catSlug.includes(cleanSlug.replace(/-da-nang$/, ""))
+          );
+        }) || null;
+    }
 
-  if (!category) {
+    if (!category) {
+      return null;
+    }
+
+    return {
+      isGeneralStore: false,
+      category,
+    };
+  } catch (error) {
+    console.warn("resolveCategory DB error:", error);
     return null;
   }
-
-  return {
-    isGeneralStore: false,
-    category,
-  };
 });
 
 export async function generateMetadata({ params }: DynamicCategoryPageProps): Promise<Metadata> {
@@ -236,11 +241,16 @@ export default async function DynamicCategorySEOPage({ params }: DynamicCategory
 
   // Category specific landing page
   const cat = resolved.category!;
-  const products = await prisma.product.findMany({
-    where: { categoryId: cat.id, active: true },
-    include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
-    orderBy: { createdAt: "desc" },
-  });
+  let products: any[] = [];
+  try {
+    products = await prisma.product.findMany({
+      where: { categoryId: cat.id, active: true },
+      include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    console.warn("Category products fetch DB error:", error);
+  }
 
   // Ensure category title explicitly highlights "Linh Kiện" / "Vật Tư"
   const isComponentCat = cat.name.includes("Linh Kiện") || cat.name.includes("Vật Tư") || cat.name.includes("Ống Đồng") || cat.name.includes("Gas");
