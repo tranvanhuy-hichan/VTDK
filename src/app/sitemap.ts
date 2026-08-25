@@ -11,10 +11,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     COMPANY_DATA.siteUrl ||
     "https://vattudongkha.io.vn";
 
-  const [products, categories] = await Promise.all([
-    getCachedActiveProducts(),
-    getCachedCategories(),
-  ]);
+  let products: any[] = [];
+  let categories: any[] = [];
+
+  try {
+    const [fetchedProducts, fetchedCategories] = await Promise.all([
+      getCachedActiveProducts(),
+      getCachedCategories(),
+    ]);
+    products = fetchedProducts;
+    categories = fetchedCategories;
+  } catch (error) {
+    console.warn("sitemap generation: Database unavailable during build, falling back to static routes:", error);
+  }
 
   // Static core routes
   const staticPages: MetadataRoute.Sitemap = [
