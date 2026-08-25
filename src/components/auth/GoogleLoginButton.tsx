@@ -5,8 +5,10 @@ import Script from "next/script";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
+import type { UserProfile } from "../../types/auth";
+
 interface GoogleLoginButtonProps {
-  onSuccess?: () => void;
+  onSuccess?: (user?: UserProfile | null, isNewUser?: boolean, needsPassword?: boolean) => void;
 }
 
 declare global {
@@ -48,7 +50,7 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onSuccess 
   const { loginWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [scriptLoaded, setScriptLoaded] = useState(false);
+  const [isGoogleRendered, setIsGoogleRendered] = useState(false);
   const googleBtnContainerRef = useRef<HTMLDivElement>(null);
 
   const initGoogleAuth = () => {
@@ -67,7 +69,7 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onSuccess 
           try {
             const res = await loginWithGoogle(response.credential);
             if (res.success) {
-              onSuccess?.();
+              onSuccess?.(res.user, res.isNewUser, res.needsPassword);
             } else {
               setError(res.error || "Đăng nhập Google thất bại.");
             }
@@ -93,6 +95,7 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onSuccess 
           width: 320,
           locale: "vi",
         });
+        setIsGoogleRendered(true);
       }
     } catch (err) {
       console.error("Google Auth init error:", err);
@@ -100,17 +103,17 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onSuccess 
   };
 
   useEffect(() => {
-    if (scriptLoaded || (typeof window !== "undefined" && window.google?.accounts?.id)) {
+    if (typeof window !== "undefined" && window.google?.accounts?.id) {
       initGoogleAuth();
     }
-  }, [scriptLoaded]);
+  }, []);
 
   const handleCustomClick = () => {
     setError(null);
     if (typeof window !== "undefined" && window.google?.accounts?.id) {
       window.google.accounts.id.prompt();
     } else {
-      setError("Đang tải thư viện Google Identity Services, vui lòng thử lại sau 1-2 giây...");
+      setError("Đang kết nối Google Identity Services, vui lòng thử lại sau 1-2 giây...");
     }
   };
 
@@ -120,13 +123,12 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onSuccess 
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
         onLoad={() => {
-          setScriptLoaded(true);
           initGoogleAuth();
         }}
       />
 
       {error && (
-        <div className="w-full p-2 text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl text-center">
+        <div className="w-full p-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-xl text-center">
           {error}
         </div>
       )}
@@ -134,16 +136,18 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onSuccess 
       {/* Render Google's native official button */}
       <div
         ref={googleBtnContainerRef}
-        className="w-full flex justify-center min-h-[44px] items-center"
+        className={`w-full flex justify-center min-h-[44px] items-center ${
+          isGoogleRendered ? "block" : "hidden"
+        }`}
       />
 
-      {/* Fallback button if container isn't rendered yet */}
-      {!scriptLoaded && (
+      {/* Fallback button ONLY if official Google button is not rendered yet */}
+      {!isGoogleRendered && (
         <button
           type="button"
           onClick={handleCustomClick}
           disabled={loading}
-          className="w-full inline-flex items-center justify-center gap-2.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm py-2.5 px-4 border border-slate-300 dark:border-slate-700 rounded-xl shadow-xs transition-all active:scale-98 cursor-pointer disabled:opacity-50 !min-h-0"
+          className="w-full max-w-[320px] inline-flex items-center justify-center gap-2.5 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm py-2.5 px-4 border border-slate-300 rounded-full shadow-xs transition-all active:scale-98 cursor-pointer disabled:opacity-50 !min-h-[44px]"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin text-slate-500" />

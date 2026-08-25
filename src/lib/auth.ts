@@ -146,10 +146,22 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
           address: true,
           role: true,
           avatar: true,
+          passwordHash: true,
         },
       });
 
-      if (user) return user;
+      if (user) {
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          phone: user.phone,
+          address: user.address,
+          role: user.role,
+          avatar: user.avatar,
+          hasPassword: !!user.passwordHash,
+        };
+      }
     } catch (dbErr) {
       console.warn("getCurrentUser DB query failed, using verified JWT payload:", dbErr);
     }
@@ -163,6 +175,7 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
       address: null,
       role: payload.role,
       avatar: null,
+      hasPassword: false,
     };
   } catch {
     return null;

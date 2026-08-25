@@ -18,7 +18,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import { COMPANY_DATA } from "../../data/company";
-import { Breadcrumb } from "../common/Breadcrumb";
 import { LoginForm } from "./LoginForm";
 import { RegisterForm } from "./RegisterForm";
 import { CompleteProfileForm } from "./CompleteProfileForm";
@@ -58,8 +57,8 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
         setRedirectingInfo({ isRedirecting: true, isAdmin: true });
         const target = redirectUrl.startsWith("/admin") ? redirectUrl : "/admin";
         window.location.replace(target);
-      } else if (!user.phone || !user.address) {
-        // If missing phone or address, allow completing profile
+      } else if (!user.hasPassword || !user.phone || !user.address) {
+        // If missing password, phone, or address, allow completing profile
         setCompleteProfileUser(user);
       } else {
         isRedirectingRef.current = true;
@@ -73,7 +72,11 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
     return <AuthLoadingSkeleton />;
   }
 
-  const handleSuccess = (loggedUser?: UserProfile | null) => {
+  const handleSuccess = (
+    loggedUser?: UserProfile | null,
+    isNewUser?: boolean,
+    needsPassword?: boolean
+  ) => {
     if (isRedirectingRef.current) return;
     const active = loggedUser || user;
     if (active?.role === "ADMIN") {
@@ -84,7 +87,14 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
       return;
     }
 
-    if (active && (!active.phone || !active.address)) {
+    if (
+      active &&
+      (isNewUser ||
+        needsPassword ||
+        !active.hasPassword ||
+        !active.phone ||
+        !active.address)
+    ) {
       setCompleteProfileUser(active);
       return;
     }
@@ -100,42 +110,42 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
   };
 
   return (
-    <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 animate-in fade-in duration-300 relative">
+    <div className="h-screen max-h-screen h-[100dvh] max-h-[100dvh] overflow-hidden w-full flex flex-col lg:flex-row bg-white text-slate-900 transition-colors duration-300 animate-in fade-in duration-300 relative [color-scheme:light]">
       {/* Dynamic Smooth Redirecting Overlay */}
       {redirectingInfo?.isRedirecting && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-7 sm:p-8 max-w-sm w-full shadow-2xl text-center space-y-4 animate-in zoom-in-95 duration-200 relative overflow-hidden">
+          <div className="bg-white rounded-3xl border border-slate-200 p-7 sm:p-8 max-w-sm w-full shadow-2xl text-center space-y-4 animate-in zoom-in-95 duration-200 relative overflow-hidden">
             {/* Ambient top glowing line */}
             <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#075FA8] via-cyan-400 to-[#075FA8]" />
 
             {/* Glowing Icon */}
             <div className="relative mx-auto w-16 h-16 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-2xl bg-emerald-500/20 dark:bg-emerald-400/20 animate-ping opacity-75" />
+              <div className="absolute inset-0 rounded-2xl bg-emerald-500/20 animate-ping opacity-75" />
               <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white shadow-lg flex items-center justify-center shadow-emerald-500/30">
                 <CheckCircle2 className="w-8 h-8 animate-in zoom-in duration-300" />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-1 text-[11px] font-black uppercase text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+              <div className="inline-flex items-center gap-1 text-[11px] font-black uppercase text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
                 <Sparkles className="w-3 h-3" />
                 <span>Xác thực thành công</span>
               </div>
 
-              <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+              <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
                 {redirectingInfo.isAdmin
                   ? "Đang mở Bảng điều khiển Quản trị..."
                   : "Đang chuyển tiếp đến trang chủ..."}
               </h3>
 
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              <p className="text-xs text-slate-500 leading-relaxed">
                 Hệ thống đang chuẩn bị dữ liệu và phiên làm việc, vui lòng chờ trong giây lát.
               </p>
             </div>
 
             {/* Shimmering Progress Bar */}
             <div className="pt-2">
-              <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden relative">
+              <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden relative">
                 <div className="h-full w-2/3 bg-gradient-to-r from-[#075FA8] via-cyan-400 to-[#075FA8] rounded-full animate-indeterminate-bar" />
               </div>
             </div>
@@ -152,25 +162,22 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
         {/* Top Corporate Brand */}
         <div className="relative z-10">
           <Link href="/" className="inline-flex items-center gap-3.5 group">
-            <div className="p-2 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 shadow-md group-hover:scale-105 transition-transform shrink-0">
+            <div className="p-2 rounded-2xl bg-white shadow-md group-hover:scale-105 transition-transform shrink-0">
               <Image
                 src={COMPANY_DATA.logoUrl}
                 alt="Đông Kha Logo"
-                width={44}
-                height={44}
+                width={48}
+                height={48}
                 priority
-                className="h-10 w-auto object-contain"
+                className="h-11 w-auto object-contain"
               />
             </div>
             <div>
               <div className="text-[11px] text-amber-300 font-extrabold uppercase tracking-widest leading-none">
                 CÔNG TY TNHH VẬT TƯ ĐÔNG KHA
               </div>
-              <div className="font-black text-xl tracking-tight text-white flex items-center gap-2 leading-none mt-1.5">
-                <span>VẬT TƯ ĐÔNG KHA</span>
-                <span className="text-[9px] bg-amber-400 text-slate-950 font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider">
-                  Chính Hãng
-                </span>
+              <div className="font-black text-xl tracking-tight text-white leading-none mt-1.5">
+                VẬT TƯ ĐÔNG KHA
               </div>
             </div>
           </Link>
@@ -216,87 +223,86 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
         </div>
       </div>
 
-      {/* 2. Right Form Column (Clean, Modern, Universal Theme) */}
-      <div className="flex-1 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 h-full overflow-y-auto lg:overflow-hidden">
-        <div className="w-full max-w-md transition-all duration-300 space-y-4 my-auto">
-          {/* Top navigation bar */}
-          <div className="flex items-center justify-between">
-            <Breadcrumb
-              items={[{ label: tab === "login" ? "Đăng nhập" : "Đăng ký" }]}
-              showBackButton={true}
-              variant="light"
-              className="py-1"
-            />
+      {/* 2. Right Form Column (Locked viewport, Overflow Hidden, Zero Scroll) */}
+      <div className="flex-1 flex flex-col justify-center items-center p-3.5 sm:p-6 lg:p-8 h-full max-h-screen max-h-[100dvh] overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/40 relative">
+        {/* Background Visual Effects: Ambient Orbs & Dot Grid */}
+        <div className="absolute -top-28 -right-28 w-96 h-96 bg-blue-200/50 rounded-full blur-3xl pointer-events-none animate-pulse duration-1000" />
+        <div className="absolute top-1/2 -left-28 w-80 h-80 bg-amber-200/40 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-28 -right-12 w-96 h-96 bg-cyan-200/45 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(#075FA8_0.8px,transparent_0.8px)] [background-size:24px_24px] opacity-[0.18] pointer-events-none" />
 
-            {/* Mobile-only logo with full company name */}
-            <div className="lg:hidden flex flex-col items-end shrink-0 pl-2">
-              <span className="text-xs font-black text-slate-900 dark:text-white">VẬT TƯ ĐÔNG KHA</span>
-              <span className="text-[9px] text-slate-500 dark:text-slate-400 font-bold">
-                CÔNG TY TNHH VẬT TƯ ĐÔNG KHA
-              </span>
-            </div>
-          </div>
-
+        <div className="w-full max-w-md transition-all duration-300 space-y-2.5 sm:space-y-4 my-auto relative z-10">
           {/* If user needs to complete profile (e.g. from Google login) */}
           {completeProfileUser ? (
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-5 sm:p-7 shadow-xl shadow-slate-200/60 dark:shadow-none text-left space-y-4 animate-in fade-in zoom-in-95 duration-200">
-              <div className="space-y-1">
-                <h1 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
-                  Hoàn thiện thông tin nhận hàng
+            <div className="bg-white/95 backdrop-blur-md rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-2xl shadow-slate-300/40 text-left space-y-4 animate-in fade-in zoom-in-95 duration-200 relative overflow-hidden">
+              {/* Subtle top accent bar */}
+              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#075FA8] via-cyan-400 to-[#075FA8]" />
+
+              {/* Mobile-Only Brand Header */}
+              <div className="lg:hidden flex flex-col items-center text-center space-y-1 pb-1">
+                <Link href="/" className="inline-flex flex-col items-center gap-2 group">
+                  <Image
+                    src={COMPANY_DATA.logoUrl}
+                    alt="Đông Kha Logo"
+                    width={140}
+                    height={140}
+                    priority
+                    className="h-24 sm:h-28 w-auto object-contain"
+                  />
+                  <span className="text-xl sm:text-2xl font-black tracking-tight text-[#EA580C] leading-tight">
+                    VẬT TƯ ĐÔNG KHA
+                  </span>
+                </Link>
+              </div>
+
+              <div className="text-center space-y-1 pt-1 pb-0.5">
+                <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight">
+                  {!completeProfileUser.hasPassword
+                    ? "Thiết lập tài khoản & Mật khẩu"
+                    : "Hoàn thiện thông tin nhận hàng"}
                 </h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Cung cấp số điện thoại &amp; địa chỉ nhận hàng để tiện lợi cho các đơn hàng tiếp theo.
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  {!completeProfileUser.hasPassword
+                    ? "Nhập thông tin cá nhân và thiết lập mật khẩu đăng nhập để hoàn tất tài khoản."
+                    : "Cung cấp số điện thoại & địa chỉ nhận hàng để tiện lợi cho các đơn hàng tiếp theo."}
                 </p>
               </div>
 
               <CompleteProfileForm
                 user={completeProfileUser}
                 onComplete={() => router.push(redirectUrl)}
-                onSkip={() => router.push(redirectUrl)}
+                onSkip={
+                  completeProfileUser.hasPassword
+                    ? () => router.push(redirectUrl)
+                    : undefined
+                }
               />
             </div>
           ) : (
-            /* Form Card (White in light mode, Dark in dark mode) */
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-5 sm:p-7 shadow-xl shadow-slate-200/60 dark:shadow-none text-left space-y-4">
-              {/* Segmented Tab Switcher (Đăng nhập / Đăng ký) */}
-              <div className="grid grid-cols-2 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
-                <button
-                  type="button"
-                  onClick={() => setTab("login")}
-                  className={`py-2 px-3 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
-                    tab === "login"
-                      ? "bg-[#075FA8] text-white shadow-md"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                  }`}
-                >
-                  <LogIn className="w-3.5 h-3.5" />
-                  <span>Đăng nhập</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setTab("register")}
-                  className={`py-2 px-3 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
-                    tab === "register"
-                      ? "bg-[#075FA8] text-white shadow-md"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                  }`}
-                >
-                  <UserPlus className="w-3.5 h-3.5" />
-                  <span>Đăng ký</span>
-                </button>
+            /* Form Card (Pure White Light Mode - Integrated Header) */
+            <div className="bg-white/95 backdrop-blur-md rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-2xl shadow-slate-300/40 text-left space-y-4 relative overflow-hidden">
+              {/* Mobile-Only: Large Brand Header */}
+              <div className="lg:hidden flex flex-col items-center justify-center text-center pb-1">
+                <Link href="/" className="inline-flex flex-col items-center gap-2 group active:scale-95 transition-transform">
+                  <Image
+                    src={COMPANY_DATA.logoUrl}
+                    alt="Đông Kha Logo"
+                    width={160}
+                    height={160}
+                    priority
+                    className="h-28 sm:h-32 w-auto object-contain transition-transform group-hover:scale-105"
+                  />
+                  <span className="text-2xl sm:text-3xl font-black tracking-tight text-[#EA580C] leading-tight">
+                    VẬT TƯ ĐÔNG KHA
+                  </span>
+                </Link>
               </div>
 
-              {/* Sleek Header Title & Subtitle */}
-              <div className="text-center space-y-1 pt-1 pb-0.5">
-                <h1 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
-                  {tab === "login" ? "Chào mừng trở lại!" : "Tạo tài khoản thành viên"}
+              {/* PC / Desktop: Title 'Đăng nhập' or 'Đăng ký' */}
+              <div className="hidden lg:block text-center pb-1">
+                <h1 className="text-2xl xl:text-3xl font-black tracking-tight text-slate-900 leading-tight">
+                  {tab === "login" ? "Đăng nhập" : "Đăng ký"}
                 </h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
-                  {tab === "login"
-                    ? "Đăng nhập để tra cứu đơn hàng & nhận chiết khấu thợ."
-                    : "Đăng ký để đặt hàng nhanh & lưu sẵn địa chỉ giao nhận."}
-                </p>
               </div>
 
               {/* Form component with smooth animated transition */}
@@ -308,17 +314,21 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
                     initialEmail={prefilledEmail}
                   />
                 ) : (
-                  <RegisterForm onSuccess={handleSuccess} initialEmail={prefilledEmail} />
+                  <RegisterForm
+                    onSuccess={handleSuccess}
+                    onSwitchToLogin={() => setTab("login")}
+                    initialEmail={prefilledEmail}
+                  />
                 )}
               </div>
 
               {/* Clean Horizontal Divider */}
               <div className="flex items-center gap-3 my-2 w-full">
-                <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider whitespace-nowrap shrink-0">
+                <div className="h-px bg-slate-200 flex-1" />
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap shrink-0">
                   Hoặc tiếp tục với
                 </span>
-                <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
+                <div className="h-px bg-slate-200 flex-1" />
               </div>
 
               {/* Google Login Button */}
@@ -327,7 +337,7 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
           )}
 
           {/* Footer note */}
-          <p className="text-[10px] text-center text-slate-400 dark:text-slate-500">
+          <p className="text-[10px] text-center text-slate-400">
             Bảo mật thông tin khách hàng tuyệt đối • CÔNG TY TNHH VẬT TƯ ĐÔNG KHA
           </p>
         </div>

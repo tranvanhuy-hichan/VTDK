@@ -8,6 +8,7 @@ export interface UserProfile {
   address?: string | null;
   role: UserRole;
   avatar?: string | null;
+  hasPassword?: boolean;
 }
 
 export interface AuthSessionPayload {
@@ -36,4 +37,11 @@ export interface GoogleLoginDTO {
   name?: string;
   avatar?: string;
   googleId?: string;
+}
+
+export interface CompleteAccountDTO {
+  name: string;
+  phone?: string;
+  address?: string;
+  password?: string;
 }

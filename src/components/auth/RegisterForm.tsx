@@ -20,10 +20,15 @@ import { VietnamAddressSelector } from "../address/VietnamAddressSelector";
 
 interface RegisterFormProps {
   onSuccess?: () => void;
+  onSwitchToLogin?: () => void;
   initialEmail?: string;
 }
 
-export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, initialEmail = "" }) => {
+export const RegisterForm: React.FC<RegisterFormProps> = ({
+  onSuccess,
+  onSwitchToLogin,
+  initialEmail = "",
+}) => {
   const { register } = useAuth();
   const [step, setStep] = useState<1 | 2>(1);
 
@@ -31,9 +36,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, initialEm
   const [name, setName] = useState("");
   const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -73,6 +80,16 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, initialEm
       return;
     }
 
+    if (!confirmPassword) {
+      setError("Vui lòng xác nhận lại mật khẩu.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Mật khẩu xác nhận không khớp. Vui lòng kiểm tra lại.");
+      return;
+    }
+
     setStep(2);
   };
 
@@ -83,6 +100,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, initialEm
     if (!name.trim() || !email.trim() || !password) {
       setStep(1);
       setError("Vui lòng nhập đầy đủ họ tên, email và mật khẩu.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setStep(1);
+      setError("Mật khẩu xác nhận không khớp. Vui lòng kiểm tra lại.");
       return;
     }
 
@@ -197,25 +220,26 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, initialEm
             </div>
           </div>
 
-          {/* Email & Mật khẩu */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <div>
-              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-0.5">
-                Email đăng nhập <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="example@gmail.com"
-                  required
-                  className="w-full pl-8 pr-3 py-1.5 sm:py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#075FA8] transition-all"
-                />
-              </div>
+          {/* Email đăng nhập */}
+          <div>
+            <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-0.5">
+              Email đăng nhập <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="example@gmail.com"
+                required
+                className="w-full pl-8 pr-3 py-1.5 sm:py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#075FA8] transition-all"
+              />
             </div>
+          </div>
 
+          {/* Mật khẩu & Xác nhận Mật khẩu (Nhập 2 lần) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div>
               <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-0.5">
                 Mật khẩu <span className="text-red-500">*</span>
@@ -237,6 +261,31 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, initialEm
                   className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 !min-h-0 cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-0.5">
+                Xác nhận mật khẩu <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <Lock className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Nhập lại mật khẩu"
+                  required
+                  className="w-full pl-8 pr-8 py-1.5 sm:py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#075FA8] transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  aria-label="Ẩn hiện xác nhận mật khẩu"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 !min-h-0 cursor-pointer"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 </button>
               </div>
             </div>
@@ -294,6 +343,18 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, initialEm
               )}
             </button>
           </div>
+        </div>
+      )}
+
+      {onSwitchToLogin && (
+        <div className="text-center pt-1">
+          <button
+            type="button"
+            onClick={onSwitchToLogin}
+            className="text-xs text-slate-500 hover:text-[#075FA8] dark:text-slate-400 dark:hover:text-blue-400 transition-colors cursor-pointer !min-h-0"
+          >
+            Đã có tài khoản, <span className="font-bold text-[#075FA8] dark:text-blue-400 underline decoration-1 underline-offset-2">Đăng nhập</span>
+          </button>
         </div>
       )}
     </form>

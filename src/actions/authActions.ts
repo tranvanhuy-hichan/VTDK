@@ -133,7 +133,13 @@ export async function loginAction(dto: LoginDTO): Promise<{ success: boolean; us
   }
 }
 
-export async function googleLoginAction(credential: string): Promise<{ success: boolean; user?: UserProfile; error?: string }> {
+export async function googleLoginAction(credential: string): Promise<{
+  success: boolean;
+  user?: UserProfile;
+  isNewUser?: boolean;
+  needsPassword?: boolean;
+  error?: string;
+}> {
   try {
     const payload = await verifyGoogleToken(credential);
     if (!payload?.email) {
@@ -145,7 +151,12 @@ export async function googleLoginAction(credential: string): Promise<{ success: 
       where: { email },
     });
 
+    let isNewUser = false;
+    let needsPassword = false;
+
     if (!user) {
+      isNewUser = true;
+      needsPassword = true;
       user = await prisma.user.create({
         data: {
           email,
@@ -156,6 +167,7 @@ export async function googleLoginAction(credential: string): Promise<{ success: 
         },
       });
     } else {
+      needsPassword = !user.passwordHash;
       // Update avatar or googleId if missing
       user = await prisma.user.update({
         where: { id: user.id },
@@ -174,6 +186,7 @@ export async function googleLoginAction(credential: string): Promise<{ success: 
       address: user.address,
       role: user.role,
       avatar: user.avatar,
+      hasPassword: !needsPassword,
     };
 
     await setAuthCookie({
@@ -183,10 +196,90 @@ export async function googleLoginAction(credential: string): Promise<{ success: 
       role: user.role,
     });
 
-    return { success: true, user: profile };
+    return { success: true, user: profile, isNewUser, needsPassword };
   } catch (err: unknown) {
     console.error("googleLoginAction error:", err);
     return { success: false, error: "Đăng nhập Google thất bại." };
+  }
+}
+
+export async function completeGoogleAccountAction(dto: {
+  name: string;
+  phone?: string;
+  address?: string;
+  password?: string;
+  confirmPassword?: string;
+}): Promise<{ success: boolean; user?: UserProfile; error?: string }> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) return { success: false, error: "Bạn chưa đăng nhập." };
+
+    const name = dto.name.trim();
+    if (!name) {
+      return { success: false, error: "Họ và tên không được để trống." };
+    }
+
+    const password = dto.password?.trim();
+    const confirmPassword = dto.confirmPassword?.trim();
+
+    if (!password) {
+      return { success: false, error: "Vui lòng nhập mật khẩu tài khoản." };
+    }
+
+    if (password.length < 6) {
+      return { success: false, error: "Mật khẩu phải có ít nhất 6 ký tự." };
+    }
+
+    if (password !== confirmPassword) {
+      return { success: false, error: "Mật khẩu xác nhận không khớp. Vui lòng kiểm tra lại." };
+    }
+
+    const passwordHash = await hashPassword(password);
+
+    const updated = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        name,
+        phone: dto.phone?.trim() || null,
+        address: dto.address?.trim() || null,
+        passwordHash,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        phone: true,
+        address: true,
+        role: true,
+        avatar: true,
+        passwordHash: true,
+      },
+    });
+
+    const updatedProfile: UserProfile = {
+      id: updated.id,
+      email: updated.email,
+      name: updated.name,
+      phone: updated.phone,
+      address: updated.address,
+      role: updated.role,
+      avatar: updated.avatar,
+      hasPassword: true,
+    };
+
+    // Refresh JWT session cookie
+    await setAuthCookie({
+      userId: updated.id,
+      email: updated.email,
+      name: updated.name,
+      role: updated.role,
+    });
+
+    revalidatePath("/", "layout");
+    return { success: true, user: updatedProfile };
+  } catch (err) {
+    console.error("completeGoogleAccountAction error:", err);
+    return { success: false, error: "Không thể hoàn tất thiết lập tài khoản. Vui lòng thử lại." };
   }
 }
 
@@ -221,7 +314,6 @@ export async function updateUserAddressAction(address: string, phone?: string): 
 }
 
 export async function updateUserProfileInfoAction(dto: {
-
   name: string;
   phone?: string;
   address?: string;
@@ -250,8 +342,20 @@ export async function updateUserProfileInfoAction(dto: {
         address: true,
         role: true,
         avatar: true,
+        passwordHash: true,
       },
     });
+
+    const updatedProfile: UserProfile = {
+      id: updated.id,
+      email: updated.email,
+      name: updated.name,
+      phone: updated.phone,
+      address: updated.address,
+      role: updated.role,
+      avatar: updated.avatar,
+      hasPassword: !!updated.passwordHash,
+    };
 
     // Refresh JWT session cookie
     await setAuthCookie({
@@ -262,7 +366,7 @@ export async function updateUserProfileInfoAction(dto: {
     });
 
     revalidatePath("/", "layout");
-    return { success: true, user: updated };
+    return { success: true, user: updatedProfile };
   } catch (err) {
     console.error("updateUserProfileInfoAction error:", err);
     return { success: false, error: "Không thể cập nhật thông tin cá nhân." };

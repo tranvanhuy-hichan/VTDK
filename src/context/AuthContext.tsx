@@ -19,7 +19,13 @@ interface AuthContextValue {
   closeAuthModal: () => void;
   login: (dto: LoginDTO) => Promise<{ success: boolean; error?: string; user?: UserProfile | null; isNotRegistered?: boolean }>;
   register: (dto: RegisterDTO) => Promise<{ success: boolean; error?: string; user?: UserProfile | null }>;
-  loginWithGoogle: (credential: string) => Promise<{ success: boolean; error?: string; user?: UserProfile | null }>;
+  loginWithGoogle: (credential: string) => Promise<{
+    success: boolean;
+    error?: string;
+    user?: UserProfile | null;
+    isNewUser?: boolean;
+    needsPassword?: boolean;
+  }>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -104,9 +110,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await googleLoginAction(credential);
       if (res.success && res.user) {
         setUser(res.user);
-        setIsAuthModalOpen(false);
-        triggerSuccessCallback();
-        return { success: true, user: res.user };
+        if (!res.needsPassword && res.user.phone && res.user.address) {
+          setIsAuthModalOpen(false);
+          triggerSuccessCallback();
+        }
+        return {
+          success: true,
+          user: res.user,
+          isNewUser: res.isNewUser,
+          needsPassword: res.needsPassword,
+        };
       }
       return { success: false, error: res.error || "Đăng nhập Google thất bại." };
     },

@@ -156,6 +156,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           <span>Đăng nhập</span>
         )}
       </button>
+
+      {onSwitchToRegister && (
+        <div className="text-center pt-1">
+          <button
+            type="button"
+            onClick={() => onSwitchToRegister(email)}
+            className="text-xs text-slate-500 hover:text-[#075FA8] dark:text-slate-400 dark:hover:text-blue-400 transition-colors cursor-pointer !min-h-0"
+          >
+            Chưa có tài khoản, <span className="font-bold text-[#075FA8] dark:text-blue-400 underline decoration-1 underline-offset-2">Đăng ký</span>
+          </button>
+        </div>
+      )}
     </form>
   );
 };
