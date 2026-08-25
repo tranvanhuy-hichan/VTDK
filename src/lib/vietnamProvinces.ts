@@ -53,7 +53,7 @@ export const VIETNAM_PROVINCES: ProvinceItem[] = [
   { code: "96", name: "Tỉnh Cà Mau", administrativeLevel: "Tỉnh" },
 ];
 
-const ADDRESS_KIT_API_BASE = "https://production.cas.so/address-kit/latest";
+const ADDRESS_API_PATH = "/api/address";
 
 let cachedProvinces: ProvinceItem[] | null = null;
 const wardCache: Record<string, WardUnitItem[]> = {};
@@ -72,7 +72,7 @@ export async function fetchProvinces(): Promise<ProvinceItem[]> {
   }
 
   try {
-    const res = await fetch(`${ADDRESS_KIT_API_BASE}/provinces`);
+    const res = await fetch(ADDRESS_API_PATH);
     if (res.ok) {
       const data = await res.json();
       if (data && Array.isArray(data.provinces) && data.provinces.length > 0) {
@@ -103,7 +103,7 @@ export async function fetchWardsByProvince(provinceCode: number | string): Promi
   }
 
   try {
-    const res = await fetch(`${ADDRESS_KIT_API_BASE}/provinces/${normCode}/communes`);
+    const res = await fetch(`${ADDRESS_API_PATH}?provinceCode=${encodeURIComponent(normCode)}`);
     if (res.ok) {
       const data = await res.json();
       if (data && Array.isArray(data.communes)) {

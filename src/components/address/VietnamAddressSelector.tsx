@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { ChevronDown, Loader2, Home } from "lucide-react";
+import { Home } from "lucide-react";
+import { SearchableAddressSelect } from "./SearchableAddressSelect";
 import {
   fetchProvinces,
   fetchWardsByProvince,
@@ -36,6 +37,7 @@ export const VietnamAddressSelector: React.FC<VietnamAddressSelectorProps> = ({
 
   const [loadingProvinces, setLoadingProvinces] = useState(true);
   const [loadingWards, setLoadingWards] = useState(false);
+  const [wardLoadError, setWardLoadError] = useState(false);
 
   // Load provinces on mount
   useEffect(() => {
@@ -53,17 +55,27 @@ export const VietnamAddressSelector: React.FC<VietnamAddressSelectorProps> = ({
 
   // When province changes, load 2-tier wards / administrative units
   useEffect(() => {
+    let cancelled = false;
+
     if (!selectedProvinceCode) {
       setWardUnits([]);
       setSelectedWardCode("");
+      setWardLoadError(false);
       return;
     }
 
     setLoadingWards(true);
+    setWardLoadError(false);
     fetchWardsByProvince(selectedProvinceCode).then((units) => {
+      if (cancelled) return;
       setWardUnits(units);
+      setWardLoadError(units.length === 0);
       setLoadingWards(false);
     });
+
+    return () => {
+      cancelled = true;
+    };
   }, [selectedProvinceCode]);
 
   // Try to parse initial raw address string if provided
@@ -86,8 +98,8 @@ export const VietnamAddressSelector: React.FC<VietnamAddressSelectorProps> = ({
       setSelectedProvinceCode(String(matchedProv.code));
     }
 
-    if (parts.length >= 2 && !streetAddress) {
-      setStreetAddress(parts[0]);
+    if (parts.length >= 2) {
+      setStreetAddress((current) => current || parts[0]);
     }
   }, [initialAddress, provinces]);
 
@@ -137,15 +149,13 @@ export const VietnamAddressSelector: React.FC<VietnamAddressSelectorProps> = ({
     [provinces, wardUnits, onChange]
   );
 
-  const handleProvinceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newProvCode = e.target.value;
+  const handleProvinceChange = (newProvCode: string) => {
     setSelectedProvinceCode(newProvCode);
     setSelectedWardCode("");
     notifyChange(newProvCode, "", streetAddress);
   };
 
-  const handleWardChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newWardCode = e.target.value;
+  const handleWardChange = (newWardCode: string) => {
     setSelectedWardCode(newWardCode);
     notifyChange(selectedProvinceCode, newWardCode, streetAddress);
   };
@@ -165,57 +175,32 @@ export const VietnamAddressSelector: React.FC<VietnamAddressSelectorProps> = ({
           <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-0.5">
             Tỉnh / Thành phố {required && <span className="text-red-500">*</span>}
           </label>
-          <div className="relative">
-            <select
-              value={selectedProvinceCode}
-              onChange={handleProvinceChange}
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-medium text-slate-900 dark:text-white appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#075FA8] pr-7 truncate"
-            >
-              <option value="">-- Chọn Tỉnh / Thành phố --</option>
-              {provinces.map((p) => (
-                <option key={p.code} value={p.code}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-              {loadingProvinces ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ChevronDown className="w-3.5 h-3.5" />}
-            </div>
-          </div>
+          <SearchableAddressSelect
+            value={selectedProvinceCode}
+            options={provinces.map((province) => ({ value: String(province.code), label: province.name }))}
+            onChange={handleProvinceChange}
+            placeholder="Tìm Tỉnh / Thành phố..."
+            loading={loadingProvinces}
+            disabled={loadingProvinces}
+            emptyMessage="Không tìm thấy Tỉnh / Thành phố"
+          />
         </div>
-
         {/* 2. Xã / Phường / Đặc khu */}
         <div>
           <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-0.5">
             Xã / Phường / Thị trấn / Đặc khu {required && <span className="text-red-500">*</span>}
           </label>
-          <div className="relative">
-            <select
-              value={selectedWardCode}
-              onChange={handleWardChange}
-              disabled={!selectedProvinceCode || wardUnits.length === 0}
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-medium text-slate-900 dark:text-white appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#075FA8] pr-7 truncate"
-            >
-              <option value="">
-                {!selectedProvinceCode
-                  ? "-- Chọn Tỉnh/TP trước --"
-                  : loadingWards
-                  ? "Đang tải danh sách..."
-                  : "-- Chọn Xã / Phường / Đặc khu --"}
-              </option>
-              {wardUnits.map((w) => (
-                <option key={w.code} value={w.code}>
-                  {w.label}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-              {loadingWards ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ChevronDown className="w-3.5 h-3.5" />}
-            </div>
-          </div>
+          <SearchableAddressSelect
+            value={selectedWardCode}
+            options={wardUnits.map((ward) => ({ value: String(ward.code), label: ward.label }))}
+            onChange={handleWardChange}
+            placeholder="Tìm Xã / Phường / Đặc khu..."
+            loading={loadingWards}
+            disabled={!selectedProvinceCode || loadingWards || wardUnits.length === 0}
+            emptyMessage={wardLoadError ? "Không tải được danh sách xã/phường" : "Không tìm thấy Xã / Phường / Đặc khu"}
+          />
         </div>
       </div>
-
       {/* 3. Địa chỉ chi tiết (Số nhà, tên đường, thôn, xóm...) */}
       <div>
         <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-0.5">
