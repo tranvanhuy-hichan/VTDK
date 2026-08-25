@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { CompanyContact } from "../../lib/company";
 import { ImageCarousel } from "./ImageCarousel";
-import { AddToCartOptionsButton } from "../cart/AddToCartOptionsButton";
 
 interface Category {
   id: string;
@@ -111,43 +110,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </h3>
         </div>
 
-        {/* Price & Action Section */}
-        <div className="pt-2.5 sm:pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2.5 mt-auto">
-          {/* Row 1: Full-width Large Price */}
-          <div>
-            <span className="text-[9px] text-slate-400 dark:text-slate-500 block font-bold uppercase tracking-wider mb-0.5">
-              {product.variants.length > 0 ? "Giá bán lẻ (Theo quy cách)" : "Giá bán lẻ"}
-            </span>
-            <span className="text-base sm:text-lg font-black text-orange-600 dark:text-orange-400 tracking-tight block truncate">
-              {priceDisplay}
-            </span>
-          </div>
-
-          {/* Row 2: Buy Now + Add to Cart (Hidden on mobile for clean card layout, shown on tablet/desktop) */}
-          <div className="hidden sm:flex gap-2">
-            <AddToCartOptionsButton
-              product={{
-                slug: product.slug,
-                name: product.name,
-                price: product.price,
-                image: product.image,
-              }}
-              variants={product.variants}
-              mode="buy_now"
-              label="Mua ngay"
-            />
-            <AddToCartOptionsButton
-              product={{
-                slug: product.slug,
-                name: product.name,
-                price: product.price,
-                image: product.image,
-              }}
-              variants={product.variants}
-              mode="icon"
-              sizeClassName="w-10 h-10"
-            />
-          </div>
+        {/* Price Section */}
+        <div className="pt-2 sm:pt-2.5 border-t border-slate-100 dark:border-slate-800 mt-auto">
+          <span className="text-[9px] text-slate-400 dark:text-slate-500 block font-bold uppercase tracking-wider mb-0.5">
+            {product.variants.length > 0 ? "Giá bán lẻ (Theo quy cách)" : "Giá bán lẻ"}
+          </span>
+          <span className="text-sm sm:text-base font-black text-orange-600 dark:text-orange-400 tracking-tight block truncate">
+            {priceDisplay}
+          </span>
         </div>
       </div>
     </div>

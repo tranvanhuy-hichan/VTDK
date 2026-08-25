@@ -50,10 +50,10 @@ export const ProductList: React.FC<ProductListProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(9);
 
-  // Dynamic page size based on screen width (8 for 2-col mobile, 12 for 4-col desktop)
+  // Dynamic page size based on screen width (8 for 2-col mobile, 10 for 5-col desktop)
   useEffect(() => {
     const handleResize = () => {
-      setPageSize(window.innerWidth < 1024 ? 8 : 12);
+      setPageSize(window.innerWidth < 1024 ? 8 : 10);
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -201,7 +201,7 @@ export const ProductList: React.FC<ProductListProps> = ({
         {/* Products Grid */}
         {filteredProducts.length > 0 ? (
           <>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-4.5">
               {pagedProducts.map((product) => (
                 <ProductCard
                   key={product.id}

@@ -79,11 +79,11 @@ export default async function ProductDetailPage({ params }: ProductPageParams) {
 
   const company = await getCompanyInfo();
 
-  // Fetch max 4 related products in the same category
+  // Fetch max 5 related products in the same category
   const relatedProducts = await prisma.product.findMany({
     where: { categoryId: product.categoryId, id: { not: product.id }, active: true },
     include: { category: true, variants: { orderBy: { sortOrder: "asc" } } },
-    take: 4,
+    take: 5,
   });
 
   // Calculate variant prices for schema
@@ -186,7 +186,7 @@ export default async function ProductDetailPage({ params }: ProductPageParams) {
               </h2>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-4.5">
               {relatedProducts.map((item) => (
                 <ProductCard key={item.id} product={item} company={company} />
               ))}

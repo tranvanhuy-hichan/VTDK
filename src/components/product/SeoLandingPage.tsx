@@ -118,7 +118,7 @@ export const SeoLandingPage: React.FC<SeoLandingPageProps> = ({
           </div>
 
           {products.length > 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-4.5">
               {products.map((prod) => (
                 <ProductCard key={prod.id} product={prod} company={company} />
               ))}

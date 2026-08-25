@@ -195,8 +195,8 @@ export const AllProductsCatalog: React.FC<AllProductsCatalogProps> = ({
             return null;
           }
 
-          // Rule: Max 12 items on PC, Max 8 items on Mobile unless expanded
-          const maxInitialLimit = isMobile ? 8 : 12;
+          // Rule: Max 10 items on PC (2 full rows of 5), Max 8 items on Mobile unless expanded
+          const maxInitialLimit = isMobile ? 8 : 10;
           const isExpanded = Boolean(expandedCategories[category.id]);
           const visibleProducts = isExpanded
             ? catProducts
@@ -237,10 +237,10 @@ export const AllProductsCatalog: React.FC<AllProductsCatalogProps> = ({
                 )}
               </div>
 
-              {/* Product Grid */}
+              {/* Product Grid (5 Cột trên PC) */}
               {catProducts.length > 0 ? (
                 <>
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-4.5">
                     {visibleProducts.map((product) => (
                       <ProductCard
                         key={product.id}
