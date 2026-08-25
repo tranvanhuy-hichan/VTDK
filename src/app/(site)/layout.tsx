@@ -4,7 +4,7 @@ import { Footer } from "../../components/layout/Footer";
 import { FloatingContact } from "../../components/layout/FloatingContact";
 import { MobileBottomBar } from "../../components/layout/MobileBottomBar";
 import { getCompanyInfo } from "../../lib/company";
-import { prisma } from "../../lib/prisma";
+import { getCachedCategories } from "../../lib/cachedData";
 import { CartProvider } from "../../context/CartContext";
 import { AuthProvider } from "../../context/AuthContext";
 
@@ -19,10 +19,7 @@ export default async function SiteLayout({
 }) {
   const [company, categories] = await Promise.all([
     getCompanyInfo(),
-    prisma.category.findMany({
-      select: { id: true, name: true, slug: true },
-      orderBy: { name: "asc" },
-    }),
+    getCachedCategories(),
   ]);
 
   return (
