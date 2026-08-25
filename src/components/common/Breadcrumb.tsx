@@ -75,6 +75,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
       {/* Home link */}
       <Link
         href="/"
+        prefetch={true}
         className={`inline-flex items-center gap-1 ${textColor} font-medium transition-colors shrink-0`}
       >
         <Home className={`w-3 h-3 ${homeIconColor} shrink-0`} />
@@ -97,6 +98,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
             ) : (
               <Link
                 href={item.href}
+                prefetch={true}
                 className={`inline-flex items-center ${textColor} font-medium transition-colors shrink-0`}
               >
                 <span>{item.label}</span>

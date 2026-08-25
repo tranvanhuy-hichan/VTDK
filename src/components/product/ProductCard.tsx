@@ -79,8 +79,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   }
 
   return (
-    <div
-      onClick={() => router.push(`/san-pham/${product.slug}`)}
+    <Link
+      href={`/san-pham/${product.slug}`}
+      prefetch={true}
       className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-500 transition-all duration-300 flex flex-col overflow-hidden group text-left cursor-pointer"
     >
       {/* Product Image */}
@@ -99,14 +100,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       {/* Card Body */}
       <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
         <div>
-          <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug mb-2 sm:mb-2.5 line-clamp-2">
-            <Link
-              href={`/san-pham/${product.slug}`}
-              onClick={(e) => e.stopPropagation()}
-              className="hover:text-[#075FA8] dark:hover:text-blue-400 transition-colors"
-            >
-              {product.name}
-            </Link>
+          <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug mb-2 sm:mb-2.5 line-clamp-2 group-hover:text-[#075FA8] dark:group-hover:text-blue-400 transition-colors">
+            {product.name}
           </h3>
         </div>
 
@@ -120,6 +115,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
