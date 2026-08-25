@@ -20,27 +20,27 @@ export default async function AdminDashboardPage() {
     recentProducts,
     rawRecentOrders,
   ] = await Promise.all([
-    prisma.product.count(),
-    prisma.product.count({ where: { active: true } }),
-    prisma.product.count({ where: { active: false } }),
-    prisma.category.count(),
-    prisma.service.count(),
-    prisma.order.count(),
-    prisma.order.count({ where: { status: "PENDING" } }),
+    prisma.product.count().catch(() => 0),
+    prisma.product.count({ where: { active: true } }).catch(() => 0),
+    prisma.product.count({ where: { active: false } }).catch(() => 0),
+    prisma.category.count().catch(() => 0),
+    prisma.service.count().catch(() => 0),
+    prisma.order.count().catch(() => 0),
+    prisma.order.count({ where: { status: "PENDING" } }).catch(() => 0),
     prisma.order.aggregate({
       _sum: { totalAmount: true },
-    }),
+    }).catch(() => ({ _sum: { totalAmount: 0 } })),
     getCompanyInfo(),
     prisma.product.findMany({
       take: 6,
       orderBy: { createdAt: "desc" },
       include: { category: true },
-    }),
+    }).catch(() => []),
     prisma.order.findMany({
       take: 5,
       orderBy: { createdAt: "desc" },
       include: { items: true },
-    }),
+    }).catch(() => []),
   ]);
 
   const totalRevenue = revenueResult._sum.totalAmount || 0;

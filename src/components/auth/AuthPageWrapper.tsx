@@ -13,6 +13,9 @@ import {
   Star,
   LogIn,
   UserPlus,
+  CheckCircle2,
+  Loader2,
+  Sparkles,
 } from "lucide-react";
 import { COMPANY_DATA } from "../../data/company";
 import { LoginForm } from "./LoginForm";
@@ -42,16 +45,24 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
   const [tab, setTab] = useState<"login" | "register">(defaultTab);
   const [prefilledEmail, setPrefilledEmail] = useState("");
   const [completeProfileUser, setCompleteProfileUser] = useState<UserProfile | null>(null);
+  const [redirectingInfo, setRedirectingInfo] = useState<{ isRedirecting: boolean; isAdmin: boolean } | null>(null);
 
-  // If already logged in and has profile completed, redirect away
+  const isRedirectingRef = useRef(false);
+
+  // If already logged in and has profile completed, redirect away safely
   useEffect(() => {
-    if (user && !completeProfileUser) {
+    if (user && !completeProfileUser && !isRedirectingRef.current) {
       if (user.role === "ADMIN") {
-        window.location.href = "/admin";
+        isRedirectingRef.current = true;
+        setRedirectingInfo({ isRedirecting: true, isAdmin: true });
+        const target = redirectUrl.startsWith("/admin") ? redirectUrl : "/admin";
+        window.location.replace(target);
       } else if (!user.phone || !user.address) {
         // If missing phone or address, allow completing profile
         setCompleteProfileUser(user);
       } else {
+        isRedirectingRef.current = true;
+        setRedirectingInfo({ isRedirecting: true, isAdmin: false });
         router.push(redirectUrl);
       }
     }
@@ -62,9 +73,13 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
   }
 
   const handleSuccess = (loggedUser?: UserProfile | null) => {
+    if (isRedirectingRef.current) return;
     const active = loggedUser || user;
     if (active?.role === "ADMIN") {
-      window.location.href = "/admin";
+      isRedirectingRef.current = true;
+      setRedirectingInfo({ isRedirecting: true, isAdmin: true });
+      const target = redirectUrl.startsWith("/admin") ? redirectUrl : "/admin";
+      window.location.replace(target);
       return;
     }
 
@@ -73,6 +88,8 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
       return;
     }
 
+    isRedirectingRef.current = true;
+    setRedirectingInfo({ isRedirecting: true, isAdmin: false });
     router.push(redirectUrl);
   };
 
@@ -82,7 +99,48 @@ export const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ defaultTab = "
   };
 
   return (
-    <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 animate-in fade-in duration-300">
+    <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300 animate-in fade-in duration-300 relative">
+      {/* Dynamic Smooth Redirecting Overlay */}
+      {redirectingInfo?.isRedirecting && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-7 sm:p-8 max-w-sm w-full shadow-2xl text-center space-y-4 animate-in zoom-in-95 duration-200 relative overflow-hidden">
+            {/* Ambient top glowing line */}
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#075FA8] via-cyan-400 to-[#075FA8]" />
+
+            {/* Glowing Icon */}
+            <div className="relative mx-auto w-16 h-16 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-2xl bg-emerald-500/20 dark:bg-emerald-400/20 animate-ping opacity-75" />
+              <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white shadow-lg flex items-center justify-center shadow-emerald-500/30">
+                <CheckCircle2 className="w-8 h-8 animate-in zoom-in duration-300" />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-1 text-[11px] font-black uppercase text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                <Sparkles className="w-3 h-3" />
+                <span>Xác thực thành công</span>
+              </div>
+
+              <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                {redirectingInfo.isAdmin
+                  ? "Đang mở Bảng điều khiển Quản trị..."
+                  : "Đang chuyển tiếp đến trang chủ..."}
+              </h3>
+
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                Hệ thống đang chuẩn bị dữ liệu và phiên làm việc, vui lòng chờ trong giây lát.
+              </p>
+            </div>
+
+            {/* Shimmering Progress Bar */}
+            <div className="pt-2">
+              <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden relative">
+                <div className="h-full w-2/3 bg-gradient-to-r from-[#075FA8] via-cyan-400 to-[#075FA8] rounded-full animate-indeterminate-bar" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* 1. Left Showcase Column (Clean, Corporate, Uncluttered) */}
       <div className="hidden lg:flex lg:w-5/12 xl:w-5/12 bg-gradient-to-br from-[#064B85] via-[#073863] to-[#0A1F33] p-8 xl:p-10 flex-col justify-between relative overflow-hidden text-white shrink-0 shadow-2xl border-r border-blue-900/50">
         {/* Ambient Glowing Blobs */}

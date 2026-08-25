@@ -34,7 +34,11 @@ export const AuthModal: React.FC = () => {
 
   const handleLoginSuccess = (loggedUser?: UserProfile | null) => {
     const active = loggedUser || user;
-    if (active && (!active.phone || !active.address) && active.role !== "ADMIN") {
+    if (active?.role === "ADMIN") {
+      window.location.replace("/admin");
+      return;
+    }
+    if (active && (!active.phone || !active.address)) {
       setCompleteProfileUser(active);
     } else {
       closeAuthModal();

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Mail, Lock, Eye, EyeOff, Loader2, UserPlus, ArrowRight } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2, UserPlus, ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 interface LoginFormProps {
@@ -20,6 +20,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notRegisteredEmail, setNotRegisteredEmail] = useState<string | null>(null);
 
@@ -31,6 +32,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading || isSuccess) return;
     setError(null);
     setNotRegisteredEmail(null);
 
@@ -42,20 +44,20 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
     setLoading(true);
     const res = await login({ email: trimmedEmail, password });
-    setLoading(false);
 
     if (!res.success) {
+      setLoading(false);
       if (res.isNotRegistered) {
         setNotRegisteredEmail(trimmedEmail);
       } else {
         setError(res.error || "Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.");
       }
     } else {
-      if (res.user?.role === "ADMIN") {
-        window.location.href = "/admin";
-        return;
-      }
-      onSuccess?.();
+      setIsSuccess(true);
+      // Give a tiny moment for the success animation to be perceived before handing off
+      setTimeout(() => {
+        onSuccess?.();
+      }, 350);
     }
   };
 
@@ -133,13 +135,22 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
       <button
         type="submit"
-        disabled={loading}
-        className="w-full inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-black text-xs sm:text-sm py-2.5 sm:py-3 px-4 rounded-xl shadow-md transition-all active:scale-98 disabled:opacity-50 cursor-pointer pt-1"
+        disabled={loading || isSuccess}
+        className={`w-full inline-flex items-center justify-center gap-2 font-black text-xs sm:text-sm py-2.5 sm:py-3 px-4 rounded-xl shadow-md transition-all duration-300 active:scale-98 cursor-pointer pt-1 overflow-hidden relative ${
+          isSuccess
+            ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/30 scale-[1.01]"
+            : "bg-[#075FA8] hover:bg-[#0B1F33] text-white disabled:opacity-60"
+        }`}
       >
-        {loading ? (
+        {isSuccess ? (
+          <span className="inline-flex items-center gap-2 animate-in zoom-in-95 duration-200">
+            <CheckCircle2 className="w-4 h-4 text-emerald-200 animate-bounce" />
+            <span>Đăng nhập thành công! Đang chuyển tiếp...</span>
+          </span>
+        ) : loading ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            <span>Đang đăng nhập...</span>
+            <span>Đang xác thực thông tin...</span>
           </>
         ) : (
           <span>Đăng nhập</span>

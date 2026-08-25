@@ -116,7 +116,7 @@ export async function clearAuthCookie() {
   cookieStore.delete(ADMIN_COOKIE_NAME);
 }
 
-// Get Current User with Silent 8-Hour Token Key Rotation
+// Get Current User with Silent 8-Hour Token Key Rotation & Resilient DB Fallback
 export async function getCurrentUser(): Promise<UserProfile | null> {
   try {
     const cookieStore = await cookies();
@@ -135,20 +135,35 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
       }
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: payload.userId },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        phone: true,
-        address: true,
-        role: true,
-        avatar: true,
-      },
-    });
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: payload.userId },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          phone: true,
+          address: true,
+          role: true,
+          avatar: true,
+        },
+      });
 
-    return user;
+      if (user) return user;
+    } catch (dbErr) {
+      console.warn("getCurrentUser DB query failed, using verified JWT payload:", dbErr);
+    }
+
+    // Fallback to verified JWT payload to prevent session drops
+    return {
+      id: payload.userId,
+      email: payload.email,
+      name: payload.name,
+      phone: null,
+      address: null,
+      role: payload.role,
+      avatar: null,
+    };
   } catch {
     return null;
   }
