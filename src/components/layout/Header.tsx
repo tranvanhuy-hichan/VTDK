@@ -4,7 +4,24 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
-import { Phone, Menu, X, MapPin, ChevronRight, Shield, Search, Sun, Moon } from "lucide-react";
+import {
+  Phone,
+  Menu,
+  X,
+  MapPin,
+  ChevronRight,
+  Shield,
+  ShieldCheck,
+  Search,
+  Sun,
+  Moon,
+  Home,
+  Package,
+  Sparkles,
+  Wrench,
+  Building2,
+  Store,
+} from "lucide-react";
 import { COMPANY_DATA } from "../../data/company";
 import type { CompanyContact } from "../../lib/company";
 import { CartButton } from "../cart/CartButton";
@@ -22,7 +39,6 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
   const { user } = useAuth();
   const isHomePage = pathname === "/";
 
-
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSectionState, setActiveSectionState] = useState<string>("trang-chu");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -30,6 +46,21 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const searchDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Lock body scroll when mobile sidebar drawer is open to prevent background scrolling
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+    } else {
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+    };
+  }, [isMobileMenuOpen]);
 
   useEffect(() => {
     if (!isMobileSearchOpen) return;
@@ -96,13 +127,13 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
   }, [isHomePage]);
 
   const rawNavLinks = [
-    { name: "Trang chủ", hash: "#trang-chu" },
-    { name: "Sản phẩm", hash: "#san-pham" },
-    { name: "Thương hiệu", hash: "#thuong-hieu" },
-    { name: "Giải pháp", hash: "#dich-vu" },
-    { name: "Giới thiệu", hash: "#gioi-thieu" },
-    { name: "Kho & cửa hàng", hash: "#hinh-anh" },
-    { name: "Liên hệ", hash: "#lien-he" },
+    { name: "Trang chủ", hash: "#trang-chu", icon: Home },
+    { name: "Sản phẩm", hash: "#san-pham", icon: Package },
+    { name: "Thương hiệu", hash: "#thuong-hieu", icon: Sparkles },
+    { name: "Giải pháp kỹ thuật", hash: "#dich-vu", icon: Wrench },
+    { name: "Giới thiệu", hash: "#gioi-thieu", icon: Building2 },
+    { name: "Kho & cửa hàng", hash: "#hinh-anh", icon: Store },
+    { name: "Liên hệ", hash: "#lien-he", icon: Phone },
   ];
 
   const getTargetHref = (hash: string) => {
@@ -113,7 +144,6 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
 
   return (
     <>
-      {/* Top Banner Notice for Local Customers */}
       {/* Top Banner Notice for Local Customers */}
       <div className="bg-[#0B1F33] text-slate-200 text-[11px] sm:text-xs py-1 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
         <div className="w-full max-w-[1700px] mx-auto flex items-center justify-between gap-4">
@@ -234,7 +264,6 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
             )}
           </div>
 
-
           {/* Mobile & Tablet Right Controls: Search + Cart + User (User on the FAR RIGHT) */}
           <div className="flex items-center gap-1 sm:gap-1.5 xl:hidden shrink-0">
             <button
@@ -252,7 +281,7 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
           </div>
         </div>
 
-        {/* Search Dropdown Popover — floats near the search icon, doesn't push the page down */}
+        {/* Search Dropdown Popover */}
         {isMobileSearchOpen && (
           <div
             ref={searchDropdownRef}
@@ -280,11 +309,65 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
             </form>
           </div>
         )}
+      </header>
 
-        {/* Mobile Menu Drawer */}
-        {isMobileMenuOpen && (
-          <div className="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xl px-4 py-5 animate-in slide-in-from-top-2 duration-200">
-            <div className="flex flex-col gap-1.5">
+      {/* Mobile Off-Canvas Sidebar Drawer (Isolated from Header with Background Scroll Lock) */}
+      {isMobileMenuOpen && (
+        <div
+          className="xl:hidden fixed inset-0 z-50 flex animate-in fade-in duration-200"
+          style={{ touchAction: "none" }}
+        >
+          {/* Backdrop blur overlay */}
+          <div
+            className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+
+          {/* Sidebar Drawer */}
+          <aside
+            className="relative flex flex-col w-72 max-w-[85vw] h-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-2xl animate-in slide-in-from-left duration-200 z-10 text-left"
+            style={{ touchAction: "auto" }}
+          >
+            {/* Header */}
+            <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-800/50">
+              <Link
+                href="/"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2.5 min-w-0"
+              >
+                <Image
+                  src={COMPANY_DATA.logoUrl}
+                  alt="Logo"
+                  width={36}
+                  height={36}
+                  className="h-8 w-auto object-contain rounded-lg shrink-0"
+                />
+                <div className="min-w-0">
+                  <span className="font-black text-xs text-slate-900 dark:text-white uppercase tracking-tight block truncate">
+                    VẬT TƯ ĐÔNG KHA
+                  </span>
+                  <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold block truncate mt-0.5">
+                    Vật tư điện lạnh Đà Nẵng
+                  </span>
+                </div>
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Đóng menu"
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors !min-h-0 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Navigation Links */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
+              <div className="px-2 pb-1.5 text-[9px] font-black tracking-wider uppercase text-slate-400 dark:text-slate-500">
+                DANH MỤC ĐIỀU HƯỚNG
+              </div>
+
               {rawNavLinks.map((link) => {
                 const targetHref = getTargetHref(link.hash);
                 const sectionId = link.hash.replace("#", "");
@@ -292,57 +375,63 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                   ? activeSectionState === sectionId
                   : (pathname === "/san-pham" && link.hash === "#san-pham") ||
                   (pathname === "/" && link.hash === "#trang-chu");
+                const Icon = link.icon;
 
                 return (
                   <Link
                     key={link.hash}
                     href={targetHref}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center justify-between p-3 rounded-xl font-bold text-base transition-colors ${isActive
-                        ? "bg-[#075FA8]/10 dark:bg-blue-900/30 text-[#075FA8] dark:text-blue-400 font-extrabold border-l-4 border-[#075FA8] dark:border-blue-400"
-                        : "text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
-                      }`}
+                    className={`flex items-center justify-between px-3 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all group ${
+                      isActive
+                        ? "bg-[#075FA8] text-white font-extrabold shadow-md shadow-blue-900/20"
+                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[#075FA8] dark:hover:text-white"
+                    }`}
                   >
-                    <span>{link.name}</span>
-                    <ChevronRight className={`w-5 h-5 ${isActive ? "text-[#075FA8] dark:text-blue-400" : "text-slate-400"}`} />
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <Icon
+                        className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${
+                          isActive ? "text-white" : "text-slate-400 group-hover:text-[#075FA8] dark:group-hover:text-blue-400"
+                        }`}
+                      />
+                      <span className="truncate">{link.name}</span>
+                    </div>
+
+                    <ChevronRight
+                      className={`w-4 h-4 shrink-0 ${
+                        isActive ? "text-white/80" : "text-slate-400"
+                      }`}
+                    />
                   </Link>
                 );
               })}
+
+              {/* Admin Dashboard Item (Identical style, placed at the end of the list) */}
+              {user?.role === "ADMIN" && (
+                <Link
+                  href="/admin"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-between px-3 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all group text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[#075FA8] dark:hover:text-white"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <ShieldCheck className="w-4 h-4 shrink-0 text-slate-400 group-hover:text-[#075FA8] dark:group-hover:text-blue-400 transition-transform group-hover:scale-110" />
+                    <span className="truncate">Trang quản trị (Admin)</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 shrink-0 text-slate-400" />
+                </Link>
+              )}
             </div>
 
-            <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-3">
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-800 transition-colors hover:border-blue-200 hover:bg-blue-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-slate-600 dark:hover:bg-slate-750"
-                aria-label="Chuyển giao diện sáng tối"
-              >
-                <span className="flex items-center gap-3">
-                  {theme === "light" ? <Moon className="h-5 w-5 text-[#075FA8]" /> : <Sun className="h-5 w-5 text-amber-400" />}
-                  {theme === "light" ? "Giao diện tối" : "Giao diện sáng"}
-                </span>
-                <span className="text-xs font-semibold text-slate-400">Chuyển</span>
-              </button>
-              <a
-                href={`tel:${company.hotlineRaw}`}
-                className="w-full flex items-center justify-center gap-3 bg-[#075FA8] text-white font-bold py-3.5 px-4 rounded-xl shadow text-lg"
-              >
-                <Phone className="w-5 h-5 fill-current" />
-                <span>Gọi Hotline: {company.hotline}</span>
-              </a>
-
-              <a
-                href={company.zaloUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 bg-[#0068FF] text-white font-bold py-3 px-4 rounded-xl text-base"
-              >
-                <span>💬 Nhắn Zalo tư vấn</span>
-              </a>
+            {/* Footer Address */}
+            <div className="p-3.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50 space-y-2">
+              <div className="flex items-start gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+                <MapPin className="w-3.5 h-3.5 text-[#F47A20] shrink-0 mt-0.5" />
+                <span className="leading-tight">{company.address}</span>
+              </div>
             </div>
-          </div>
-        )}
-      </header>
+          </aside>
+        </div>
+      )}
     </>
   );
 };
