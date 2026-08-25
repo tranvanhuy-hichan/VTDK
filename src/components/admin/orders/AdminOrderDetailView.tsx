@@ -72,18 +72,24 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
 
   return (
     <div className="w-full text-left max-w-6xl mx-auto space-y-3 pb-16 px-1 sm:px-2">
-      {/* 1. Standard In-Page Breadcrumb & Quick Action Buttons */}
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-        <nav className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-          <Link href="/admin" className="hover:text-slate-900 dark:hover:text-white transition-colors font-medium">
+      {/* 1. Single-Line Straight Breadcrumb & Action Buttons */}
+      <div className="flex items-center justify-between gap-2 pt-1">
+        <nav className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap overflow-hidden">
+          <Link
+            href="/admin"
+            className="hover:text-slate-900 dark:hover:text-white transition-colors font-semibold shrink-0"
+          >
             Admin
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-          <Link href="/admin/orders" className="hover:text-slate-900 dark:hover:text-white transition-colors font-medium">
+          <Link
+            href="/admin/orders"
+            className="hover:text-slate-900 dark:hover:text-white transition-colors font-semibold shrink-0"
+          >
             Đơn hàng
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-          <span className="font-mono font-bold text-slate-900 dark:text-white">
+          <span className="font-mono font-bold text-slate-900 dark:text-white truncate shrink-0">
             #{order.orderCode}
           </span>
         </nav>
@@ -91,7 +97,7 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
         <div className="flex items-center gap-1.5 shrink-0">
           <a
             href={`tel:${order.customerPhone}`}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs"
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs shrink-0 whitespace-nowrap"
           >
             <Phone className="w-3 h-3" />
             <span>Gọi khách</span>
@@ -100,7 +106,7 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
           <button
             type="button"
             onClick={handlePrint}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-800 text-xs font-bold transition-all shadow-2xs"
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-800 text-xs font-bold transition-all shadow-2xs shrink-0 whitespace-nowrap"
           >
             <Printer className="w-3 h-3 text-slate-500" />
             <span>In</span>
@@ -108,62 +114,61 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
         </div>
       </div>
 
-      {/* 2. Ultra-Compact Status & Order Bar (Saves 150px height!) */}
-      <div className="bg-white dark:bg-slate-900 rounded-xl p-3 sm:p-3.5 border border-slate-200/90 dark:border-slate-800 shadow-2xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          {/* Code, Copy & Meta */}
-          <div className="flex items-center gap-2 flex-wrap min-w-0">
-            <span className="font-mono text-sm sm:text-base font-black text-slate-900 dark:text-white">
+      {/* 2. Ultra-Compact Status & Order Bar */}
+      <div className="bg-white dark:bg-slate-900 rounded-xl p-3 sm:p-4 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          {/* Order Code & Copy */}
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="font-mono text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">
               #{order.orderCode}
             </span>
             <button
               type="button"
               onClick={handleCopyCode}
-              className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer !min-h-0"
+              className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer !min-h-0 shrink-0"
               title="Sao chép mã đơn"
             >
               {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
             </button>
-            <span className="text-slate-300 dark:text-slate-700">•</span>
-            <span className="text-xs text-slate-500 dark:text-slate-400">
-              {formatDate(order.createdAt)}
-            </span>
-            <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 hidden sm:inline truncate">
-              {order.customerName}
-            </span>
           </div>
 
-          {/* Inline Compact Status Switcher & Price */}
-          <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-1.5 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
-            {/* Status Dropdown Selector */}
-            <div className="relative">
-              <select
-                value={currentStatus}
-                disabled={loading}
-                onChange={(e) => handleStatusChange(e.target.value as OrderStatus)}
-                className={`appearance-none font-bold text-xs px-2.5 py-1 pr-6 rounded-lg cursor-pointer border transition-all focus:outline-none disabled:opacity-50 ${
-                  currentStatus === "PENDING"
-                    ? "bg-amber-50 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800"
-                    : currentStatus === "CONFIRMED"
-                    ? "bg-blue-50 dark:bg-blue-950/70 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-800"
-                    : currentStatus === "SHIPPING"
-                    ? "bg-purple-50 dark:bg-purple-950/70 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-800"
-                    : currentStatus === "COMPLETED"
-                    ? "bg-emerald-50 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800"
-                    : "bg-red-50 dark:bg-red-950/70 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800"
-                }`}
-              >
-                <option value="PENDING">🟡 Chờ xử lý</option>
-                <option value="CONFIRMED">🔵 Đã xác nhận</option>
-                <option value="SHIPPING">🟣 Đang giao</option>
-                <option value="COMPLETED">🟢 Hoàn thành</option>
-                <option value="CANCELLED">🔴 Đã hủy</option>
-              </select>
-              <ChevronDown className="w-3 h-3 text-current absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-60" />
-            </div>
+          {/* Status Dropdown Selector */}
+          <div className="relative shrink-0">
+            <select
+              value={currentStatus}
+              disabled={loading}
+              onChange={(e) => handleStatusChange(e.target.value as OrderStatus)}
+              className={`appearance-none font-bold text-xs px-2.5 py-1 pr-6 rounded-lg cursor-pointer border transition-all focus:outline-none disabled:opacity-50 ${
+                currentStatus === "PENDING"
+                  ? "bg-amber-50 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800"
+                  : currentStatus === "CONFIRMED"
+                  ? "bg-blue-50 dark:bg-blue-950/70 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-800"
+                  : currentStatus === "SHIPPING"
+                  ? "bg-purple-50 dark:bg-purple-950/70 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-800"
+                  : currentStatus === "COMPLETED"
+                  ? "bg-emerald-50 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800"
+                  : "bg-red-50 dark:bg-red-950/70 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800"
+              }`}
+            >
+              <option value="PENDING">🟡 Chờ xử lý</option>
+              <option value="CONFIRMED">🔵 Đã xác nhận</option>
+              <option value="SHIPPING">🟣 Đang giao</option>
+              <option value="COMPLETED">🟢 Hoàn thành</option>
+              <option value="CANCELLED">🔴 Đã hủy</option>
+            </select>
+            <ChevronDown className="w-3 h-3 text-current absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-60" />
+          </div>
+        </div>
 
-            {/* Total Price */}
+        {/* Row 2: Customer Name, Order Time & Total Amount */}
+        <div className="flex items-center justify-between gap-2 text-xs pt-1.5 border-t border-slate-100 dark:border-slate-800">
+          <div className="text-slate-500 dark:text-slate-400 truncate min-w-0">
+            <strong className="text-slate-800 dark:text-slate-200 font-bold">{order.customerName}</strong>
+            <span className="mx-1">•</span>
+            <span>{formatDate(order.createdAt)}</span>
+          </div>
+
+          <div className="text-right shrink-0">
             <span className="font-black text-sm sm:text-base text-[#075FA8] dark:text-blue-400">
               {formatCurrency(order.totalAmount)}
             </span>
