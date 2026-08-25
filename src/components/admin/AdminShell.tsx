@@ -304,9 +304,36 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                 {currentActiveItem && currentActiveItem.href !== "/admin" && (
                   <div className="flex items-center gap-1.5 leading-none min-w-0">
                     <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-400" />
-                    <span className="font-extrabold text-slate-900 dark:text-white truncate leading-none">
-                      {currentActiveItem.label}
-                    </span>
+                    {pathname !== currentActiveItem.href ? (
+                      <Link
+                        href={currentActiveItem.href}
+                        className="hover:text-slate-900 dark:hover:text-white transition-colors truncate"
+                      >
+                        {currentActiveItem.label}
+                      </Link>
+                    ) : (
+                      <span className="font-extrabold text-slate-900 dark:text-white truncate leading-none">
+                        {currentActiveItem.label}
+                      </span>
+                    )}
+
+                    {pathname.startsWith("/admin/orders/") && pathname !== "/admin/orders" && (
+                      <>
+                        <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+                        <span className="font-extrabold text-slate-900 dark:text-white truncate leading-none">
+                          Chi tiết đơn hàng
+                        </span>
+                      </>
+                    )}
+
+                    {pathname.startsWith("/admin/products/") && pathname !== "/admin/products" && (
+                      <>
+                        <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+                        <span className="font-extrabold text-slate-900 dark:text-white truncate leading-none">
+                          {pathname.includes("/create") ? "Thêm mới" : "Chỉnh sửa"}
+                        </span>
+                      </>
+                    )}
                   </div>
                 )}
               </nav>
