@@ -294,25 +294,25 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                 <Menu className="w-4.5 h-4.5" />
               </button>
 
-              <nav className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 min-w-0 leading-none">
+              <nav className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 min-w-0 overflow-hidden whitespace-nowrap">
                 <Link
                   href="/admin"
-                  className="font-bold hover:text-slate-900 dark:hover:text-white transition-colors shrink-0 leading-none flex items-center"
+                  className="font-bold hover:text-slate-900 dark:hover:text-white transition-colors shrink-0"
                 >
                   Admin
                 </Link>
                 {currentActiveItem && currentActiveItem.href !== "/admin" && (
-                  <div className="flex items-center gap-1.5 leading-none min-w-0">
+                  <>
                     <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-400" />
                     {pathname !== currentActiveItem.href ? (
                       <Link
                         href={currentActiveItem.href}
-                        className="hover:text-slate-900 dark:hover:text-white transition-colors truncate"
+                        className="hover:text-slate-900 dark:hover:text-white transition-colors truncate max-w-[120px] sm:max-w-none"
                       >
                         {currentActiveItem.label}
                       </Link>
                     ) : (
-                      <span className="font-extrabold text-slate-900 dark:text-white truncate leading-none">
+                      <span className="font-extrabold text-slate-900 dark:text-white truncate max-w-[150px] sm:max-w-none">
                         {currentActiveItem.label}
                       </span>
                     )}
@@ -320,8 +320,8 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                     {pathname.startsWith("/admin/orders/") && pathname !== "/admin/orders" && (
                       <>
                         <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-400" />
-                        <span className="font-extrabold text-slate-900 dark:text-white truncate leading-none">
-                          Chi tiết đơn hàng
+                        <span className="font-extrabold text-slate-900 dark:text-white truncate hidden xs:inline">
+                          Chi tiết đơn
                         </span>
                       </>
                     )}
@@ -329,12 +329,12 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                     {pathname.startsWith("/admin/products/") && pathname !== "/admin/products" && (
                       <>
                         <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-400" />
-                        <span className="font-extrabold text-slate-900 dark:text-white truncate leading-none">
+                        <span className="font-extrabold text-slate-900 dark:text-white truncate hidden xs:inline">
                           {pathname.includes("/create") ? "Thêm mới" : "Chỉnh sửa"}
                         </span>
                       </>
                     )}
-                  </div>
+                  </>
                 )}
               </nav>
             </div>
