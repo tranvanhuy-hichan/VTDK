@@ -171,24 +171,26 @@ export const SolutionsView: React.FC<SolutionsViewProps> = ({ company, services 
                       ))}
                     </div>
 
-                    {/* Action CTAs */}
-                    <div className="flex items-center gap-3 pt-2 flex-wrap sm:flex-nowrap">
+                    {/* Action CTAs (Cân bằng kích thước, ngắn gọn trên Mobile) */}
+                    <div className="grid grid-cols-2 sm:flex items-center gap-2.5 pt-2">
                       <a
                         href={`tel:${company.hotlineRaw}`}
-                        className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#064B85] text-white font-black px-5 py-2.5 rounded-xl shadow-md transition-all text-xs cursor-pointer !min-h-0 active:scale-95"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#064B85] text-white font-bold px-3.5 sm:px-5 py-2.5 rounded-xl shadow-md transition-all text-xs cursor-pointer !min-h-0 active:scale-95 whitespace-nowrap text-center"
                       >
                         <Phone className="w-3.5 h-3.5 fill-current shrink-0 animate-pulse-subtle" />
-                        <span>Tư vấn kỹ thuật: {company.hotline}</span>
+                        <span className="sm:hidden">Gọi tư vấn</span>
+                        <span className="hidden sm:inline">Tư vấn kỹ thuật: {company.hotline}</span>
                       </a>
 
                       <a
                         href={company.zaloUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-[#0068FF] hover:bg-blue-700 text-white font-black px-5 py-2.5 rounded-xl shadow-md transition-all text-xs cursor-pointer !min-h-0 active:scale-95"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-[#0068FF] hover:bg-blue-700 text-white font-bold px-3.5 sm:px-5 py-2.5 rounded-xl shadow-md transition-all text-xs cursor-pointer !min-h-0 active:scale-95 whitespace-nowrap text-center"
                       >
-                        <MessageSquare className="w-3.5 h-3.5 fill-current" />
-                        <span>Gửi bản vẽ qua Zalo</span>
+                        <MessageSquare className="w-3.5 h-3.5 fill-current shrink-0" />
+                        <span className="sm:hidden">Gửi Zalo</span>
+                        <span className="hidden sm:inline">Gửi bản vẽ qua Zalo</span>
                       </a>
                     </div>
                   </div>
