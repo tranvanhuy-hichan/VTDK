@@ -26,7 +26,7 @@ export const FloatingContact: React.FC<FloatingContactProps> = ({ company }) => 
   };
 
   return (
-    <div className="fixed bottom-5 right-4 z-40 flex flex-col items-center gap-1.5 pointer-events-auto sm:bottom-7 sm:right-6">
+    <div className="fixed bottom-18 right-3.5 z-30 flex flex-col items-center gap-1.5 pointer-events-auto sm:bottom-7 sm:right-6">
       {/* Floating Scroll to Top Chevron Icon Only (No circle background, no vertical stem line) */}
       <button
         type="button"

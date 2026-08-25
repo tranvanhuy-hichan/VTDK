@@ -161,8 +161,10 @@ export const AdminShell: React.FC<AdminShellProps> = ({
   };
 
   const handleLogout = async () => {
-    await logoutAction();
-    window.location.href = "/";
+    try {
+      await logoutAction();
+    } catch {}
+    window.location.replace("/");
   };
 
   const isActive = (href: string) =>

@@ -192,7 +192,7 @@ export async function googleLoginAction(credential: string): Promise<{ success: 
 
 export async function logoutAction(): Promise<{ success: boolean }> {
   await clearAuthCookie();
-  revalidatePath("/", "layout");
+  revalidatePath("/");
   return { success: true };
 }
 

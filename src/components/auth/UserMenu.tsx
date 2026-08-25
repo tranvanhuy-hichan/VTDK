@@ -146,8 +146,10 @@ export const UserMenu: React.FC = () => {
               type="button"
               onClick={async () => {
                 setIsOpen(false);
-                await logout();
-                window.location.href = "/";
+                try {
+                  await logout();
+                } catch {}
+                window.location.replace("/");
               }}
               className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer !min-h-0 text-left"
             >

@@ -128,7 +128,8 @@ export async function loginAction(emailOrPassword: string, maybePassword?: strin
 // 2. Admin Logout
 export async function logoutAction() {
   await clearAuthCookie();
-  revalidatePath("/", "layout");
+  revalidatePath("/");
+  return { success: true };
 }
 
 // Check session server-side helper (Database-backed role check)
