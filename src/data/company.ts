@@ -50,6 +50,7 @@ export const COMPANY_DATA = {
   
   logoUrl: process.env.NEXT_PUBLIC_COMPANY_LOGO || "/images/logo.png",
   storefrontUrl: "/images/storefront.png",
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://vattudongkha.io.vn",
 
   address: process.env.NEXT_PUBLIC_COMPANY_ADDRESS || "400 Phạm Hùng, Hòa Phước, Hòa Vang, Đà Nẵng",
   city: process.env.NEXT_PUBLIC_COMPANY_CITY || "Đà Nẵng",

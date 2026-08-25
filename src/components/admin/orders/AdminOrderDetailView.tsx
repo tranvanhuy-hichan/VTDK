@@ -17,6 +17,9 @@ import {
 import type { OrderDetail, OrderStatus } from "@/types/order";
 import { adminUpdateOrderStatusAction } from "@/actions/orderActions";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { PrintableOrderSlip } from "./PrintableOrderSlip";
+
+import type { CompanyContact } from "@/lib/company";
 
 const ORDER_FLOW = ["PENDING", "CONFIRMED", "SHIPPING", "COMPLETED"] as const;
 
@@ -28,9 +31,10 @@ const ORDER_STEP_LABELS: Record<(typeof ORDER_FLOW)[number], string> = {
 };
 interface AdminOrderDetailViewProps {
   initialOrder: OrderDetail;
+  company?: CompanyContact;
 }
 
-export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ initialOrder }) => {
+export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ initialOrder, company }) => {
   const [order, setOrder] = useState<OrderDetail>(initialOrder);
   const [currentStatus, setCurrentStatus] = useState<OrderStatus>(initialOrder.status);
   const [loading, setLoading] = useState(false);
@@ -58,10 +62,9 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
     if (res.success) {
       setCurrentStatus(newStatus);
       setOrder((prev) => ({ ...prev, status: newStatus }));
-      setMsg("Đã cập nhật trạng thái!");
-      setTimeout(() => setMsg(null), 2500);
+      setMsg(`Đã cập nhật trạng thái đơn thành “${nextLabel}”`);
     } else {
-      setMsg(res.error || "Lỗi cập nhật.");
+      setMsg(res.error || "Cập nhật trạng thái thất bại");
     }
   };
 
@@ -82,13 +85,16 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
           <span className="text-slate-500 dark:text-slate-400 whitespace-nowrap">{formatDate(order.createdAt)}</span>
         </div>
 
-        <a
-          href={`tel:${order.customerPhone}`}
-          className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-colors shrink-0 whitespace-nowrap !min-h-0"
-        >
-          <Phone className="w-3 h-3" />
-          <span>Gọi khách</span>
-        </a>
+        <div className="flex items-center gap-2">
+          <PrintableOrderSlip order={order} company={company} />
+          <a
+            href={`tel:${order.customerPhone}`}
+            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-colors shrink-0 whitespace-nowrap !min-h-0"
+          >
+            <Phone className="w-3 h-3" />
+            <span>Gọi khách</span>
+          </a>
+        </div>
         </div>
 
         {/* Forward-only order progress */}

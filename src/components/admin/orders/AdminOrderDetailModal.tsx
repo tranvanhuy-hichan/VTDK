@@ -20,6 +20,7 @@ import type { OrderDetail, OrderStatus } from "../../../types/order";
 import { OrderStatusBadge } from "../../order/OrderStatusBadge";
 import { adminUpdateOrderStatusAction } from "../../../actions/orderActions";
 import { formatCurrency, formatDate } from "../../../lib/format";
+import { PrintableOrderSlip } from "./PrintableOrderSlip";
 
 interface AdminOrderDetailModalProps {
   order: OrderDetail;
@@ -107,15 +108,19 @@ export const AdminOrderDetailModal: React.FC<AdminOrderDetailModalProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
-            <button
-              type="button"
-              onClick={handlePrint}
-              className="p-1.5 sm:px-2.5 sm:py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors cursor-pointer !min-h-0 flex items-center gap-1 text-xs font-bold border border-slate-700"
-              title="In đơn"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">In</span>
-            </button>
+            <PrintableOrderSlip
+              order={order}
+              triggerButton={
+                <button
+                  type="button"
+                  className="p-1.5 sm:px-2.5 sm:py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors cursor-pointer !min-h-0 flex items-center gap-1 text-xs font-bold border border-slate-700"
+                  title="In phiếu xuất kho & giao hàng"
+                >
+                  <Printer className="w-3.5 h-3.5 text-cyan-400" />
+                  <span className="hidden sm:inline">In phiếu</span>
+                </button>
+              }
+            />
             <button
               type="button"
               onClick={onClose}

@@ -15,10 +15,13 @@ import {
   ChevronRight,
   Phone,
   ArrowRight,
+  Download,
+  Loader2,
 } from "lucide-react";
 import type { OrderDetail } from "@/types/order";
 import { OrderStatusBadge } from "@/components/order/OrderStatusBadge";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { COMPANY_DATA } from "@/data/company";
 
 interface AdminOrderListProps {
   initialOrders: OrderDetail[];
@@ -29,6 +32,7 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
   const [orders] = useState<OrderDetail[]>(initialOrders);
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [isExporting, setIsExporting] = useState<boolean>(false);
 
   // Filter orders
   const filteredOrders = useMemo(() => {
@@ -60,6 +64,284 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
 
     return { totalOrders, pendingCount, shippingCount, completedCount, totalRevenue };
   }, [orders]);
+
+  // Export to Real Microsoft Excel (.xlsx) with Enterprise Corporate Formatting
+  const handleExportExcel = async () => {
+    if (filteredOrders.length === 0) {
+      alert("Không có đơn hàng nào để xuất!");
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      const ExcelJS = (await import("exceljs")).default;
+      const workbook = new ExcelJS.Workbook();
+      workbook.creator = COMPANY_DATA.fullName;
+      workbook.lastModifiedBy = "Admin";
+      workbook.created = new Date();
+
+      const worksheet = workbook.addWorksheet("Danh Sách Đơn Hàng", {
+        views: [{ showGridLines: true }],
+        pageSetup: { paperSize: 9, orientation: "landscape" },
+      });
+
+      const statusMap: Record<string, string> = {
+        ALL: "Tất cả đơn hàng",
+        PENDING: "Chờ xử lý",
+        CONFIRMED: "Đã xác nhận",
+        SHIPPING: "Đang giao hàng",
+        COMPLETED: "Đã hoàn thành",
+        CANCELLED: "Đã hủy",
+      };
+
+      const now = new Date();
+      const exportTimeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")} ngày ${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}`;
+      const totalRevenue = filteredOrders.reduce((sum, o) => sum + o.totalAmount, 0);
+      const totalQuantity = filteredOrders.reduce(
+        (sum, o) => sum + o.items.reduce((s, it) => s + it.quantity, 0),
+        0
+      );
+
+      // Define column widths
+      worksheet.columns = [
+        { key: "stt", width: 8 },
+        { key: "code", width: 24 },
+        { key: "time", width: 18 },
+        { key: "customer", width: 24 },
+        { key: "phone", width: 16 },
+        { key: "email", width: 26 },
+        { key: "method", width: 18 },
+        { key: "address", width: 40 },
+        { key: "items", width: 48 },
+        { key: "qty", width: 12 },
+        { key: "amount", width: 20 },
+        { key: "status", width: 18 },
+        { key: "note", width: 28 },
+      ];
+
+      // 1. Header Company Info (Clean Left-Aligned Corporate Layout)
+      const row1 = worksheet.addRow([COMPANY_DATA.fullName.toUpperCase()]);
+      row1.font = { name: "Segoe UI", size: 12, bold: true, color: { argb: "FF0F172A" } };
+      row1.height = 20;
+
+      const row2 = worksheet.addRow([
+        `Địa chỉ: ${COMPANY_DATA.address}   |   Hotline: ${COMPANY_DATA.hotline}${
+          COMPANY_DATA.taxCode ? `   |   MST: ${COMPANY_DATA.taxCode}` : ""
+        }${COMPANY_DATA.email ? `   |   Email: ${COMPANY_DATA.email}` : ""}`,
+      ]);
+      row2.font = { name: "Segoe UI", size: 9.5, color: { argb: "FF475569" } };
+      row2.height = 18;
+
+      worksheet.addRow([]); // Row 3 spacer (height: 6)
+      worksheet.getRow(3).height = 6;
+
+      // Title Row (Left-aligned, professional)
+      const titleRow = worksheet.addRow(["BÁO CÁO TỔNG HỢP DANH SÁCH ĐƠN HÀNG"]);
+      titleRow.font = { name: "Segoe UI", size: 15, bold: true, color: { argb: "FF0F172A" } };
+      titleRow.alignment = { vertical: "middle", horizontal: "left" };
+      titleRow.height = 24;
+
+      // Subtitle Row
+      const subRow = worksheet.addRow([
+        `Thời gian xuất: ${exportTimeStr}   •   Bộ lọc: ${
+          statusMap[selectedStatus] || selectedStatus
+        }   •   Tổng cộng: ${filteredOrders.length} đơn hàng   •   Tổng giá trị: ${formatCurrency(totalRevenue)}`,
+      ]);
+      subRow.font = { name: "Segoe UI", size: 10, italic: true, color: { argb: "FF475569" } };
+      subRow.alignment = { vertical: "middle", horizontal: "left" };
+      subRow.height = 18;
+
+      worksheet.addRow([]); // Row 6 spacer
+      worksheet.getRow(6).height = 8;
+
+      // 2. Table Headers (Row 7)
+      const headerValues = [
+        "STT",
+        "Mã đơn hàng",
+        "Thời gian đặt",
+        "Tên khách hàng",
+        "Số điện thoại",
+        "Email",
+        "Hình thức nhận",
+        "Địa chỉ nhận hàng",
+        "Chi tiết sản phẩm & số lượng",
+        "Tổng SL",
+        "Tổng tiền (VNĐ)",
+        "Trạng thái",
+        "Ghi chú",
+      ];
+      const headerRow = worksheet.addRow(headerValues);
+      headerRow.height = 26;
+      headerRow.eachCell((cell) => {
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FF0F172A" },
+        };
+        cell.font = {
+          name: "Segoe UI",
+          size: 10.5,
+          bold: true,
+          color: { argb: "FFFFFFFF" },
+        };
+        cell.alignment = {
+          vertical: "middle",
+          horizontal: "center",
+          wrapText: true,
+        };
+        cell.border = {
+          top: { style: "thin", color: { argb: "FF334155" } },
+          left: { style: "thin", color: { argb: "FF334155" } },
+          bottom: { style: "medium", color: { argb: "FF0F172A" } },
+          right: { style: "thin", color: { argb: "FF334155" } },
+        };
+      });
+
+      // 3. Table Data Rows
+      filteredOrders.forEach((o, index) => {
+        const itemsSummary = o.items
+          .map((it) => `${it.productName}${it.variantLabel ? ` (${it.variantLabel})` : ""} x${it.quantity}`)
+          .join("; ");
+        const orderQty = o.items.reduce((s, it) => s + it.quantity, 0);
+        const isEven = index % 2 === 0;
+
+        const row = worksheet.addRow([
+          index + 1,
+          o.orderCode,
+          formatDate(o.createdAt),
+          o.customerName,
+          o.customerPhone,
+          o.customerEmail || "",
+          o.shippingMethod === "STORE_PICKUP" ? "Lấy tại kho" : "Giao tận nơi",
+          o.address || (o.shippingMethod === "STORE_PICKUP" ? "Nhận tại kho cửa hàng" : ""),
+          itemsSummary,
+          orderQty,
+          o.totalAmount,
+          statusMap[o.status] || o.status,
+          o.note || "",
+        ]);
+
+        row.height = 24;
+        const bgColor = isEven ? "FFFFFFFF" : "FFF8FAFC";
+
+        row.eachCell((cell, colNumber) => {
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: bgColor },
+          };
+          cell.font = { name: "Segoe UI", size: 10.5, color: { argb: "FF1E293B" } };
+          cell.border = {
+            top: { style: "thin", color: { argb: "FFE2E8F0" } },
+            left: { style: "thin", color: { argb: "FFE2E8F0" } },
+            bottom: { style: "thin", color: { argb: "FFE2E8F0" } },
+            right: { style: "thin", color: { argb: "FFE2E8F0" } },
+          };
+
+          // Custom Alignments & Number Formats
+          if (colNumber === 1 || colNumber === 5 || colNumber === 7) {
+            cell.alignment = { vertical: "middle", horizontal: "center" };
+          } else if (colNumber === 2) {
+            cell.alignment = { vertical: "middle", horizontal: "center" };
+            cell.font = { name: "Consolas", size: 10.5, bold: true, color: { argb: "FF075FA8" } };
+          } else if (colNumber === 3) {
+            cell.alignment = { vertical: "middle", horizontal: "center" };
+          } else if (colNumber === 10) {
+            cell.alignment = { vertical: "middle", horizontal: "center" };
+            cell.font = { name: "Segoe UI", size: 10.5, bold: true };
+          } else if (colNumber === 11) {
+            cell.alignment = { vertical: "middle", horizontal: "right" };
+            cell.numFmt = '#,##0 "₫"';
+            cell.font = { name: "Segoe UI", size: 10.5, bold: true, color: { argb: "FFD97706" } };
+          } else if (colNumber === 12) {
+            cell.alignment = { vertical: "middle", horizontal: "center" };
+            cell.font = { name: "Segoe UI", size: 10, bold: true };
+            if (o.status === "COMPLETED") {
+              cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFDCFCE7" } };
+              cell.font = { name: "Segoe UI", size: 10, bold: true, color: { argb: "FF15803D" } };
+            } else if (o.status === "SHIPPING") {
+              cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFE0F2FE" } };
+              cell.font = { name: "Segoe UI", size: 10, bold: true, color: { argb: "FF0369A1" } };
+            } else if (o.status === "CONFIRMED") {
+              cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF3E8FF" } };
+              cell.font = { name: "Segoe UI", size: 10, bold: true, color: { argb: "FF7E22CE" } };
+            } else if (o.status === "PENDING") {
+              cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFEF3C7" } };
+              cell.font = { name: "Segoe UI", size: 10, bold: true, color: { argb: "FFB45309" } };
+            } else if (o.status === "CANCELLED") {
+              cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFEE2E2" } };
+              cell.font = { name: "Segoe UI", size: 10, bold: true, color: { argb: "FFB91C1C" } };
+            }
+          } else {
+            cell.alignment = { vertical: "middle", horizontal: "left" };
+          }
+        });
+      });
+
+      // 4. Summary Total Footer Row
+      const lastRowNum = worksheet.rowCount + 1;
+      const totalRow = worksheet.addRow([
+        "",
+        "TỔNG CỘNG DOANH THU & SẢN PHẨM:",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        totalQuantity,
+        totalRevenue,
+        "",
+        "",
+      ]);
+      totalRow.height = 28;
+      worksheet.mergeCells(`B${lastRowNum}:I${lastRowNum}`);
+
+      totalRow.eachCell((cell, colNumber) => {
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFF1F5F9" },
+        };
+        cell.border = {
+          top: { style: "medium", color: { argb: "FF94A3B8" } },
+          bottom: { style: "double", color: { argb: "FF334155" } },
+        };
+
+        if (colNumber === 2) {
+          cell.alignment = { vertical: "middle", horizontal: "right" };
+          cell.font = { name: "Segoe UI", size: 11, bold: true, color: { argb: "FF0F172A" } };
+        } else if (colNumber === 10) {
+          cell.alignment = { vertical: "middle", horizontal: "center" };
+          cell.font = { name: "Segoe UI", size: 11.5, bold: true, color: { argb: "FF075FA8" } };
+        } else if (colNumber === 11) {
+          cell.alignment = { vertical: "middle", horizontal: "right" };
+          cell.numFmt = '#,##0 "₫"';
+          cell.font = { name: "Segoe UI", size: 12, bold: true, color: { argb: "FFB45309" } };
+        }
+      });
+
+      // Write and download buffer
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Bao_Cao_Don_Hang_${selectedStatus}_${now.toISOString().slice(0, 10)}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Lỗi xuất Excel:", err);
+      alert("Có lỗi khi xuất file Excel. Vui lòng thử lại!");
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="space-y-3 text-left">
@@ -144,16 +426,35 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
             ))}
           </div>
 
-          {/* Search bar */}
-          <div className="relative w-full sm:w-64">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm mã đơn, tên, SĐT..."
-              className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#075FA8]"
-            />
+          {/* Search bar & Export CTA */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 sm:w-64">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Tìm mã đơn, tên, SĐT..."
+                className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#075FA8]"
+              />
+            </div>
+
+            <button
+              type="button"
+              disabled={isExporting}
+              onClick={handleExportExcel}
+              title="Xuất file Excel (.xlsx) danh sách đơn hàng chuẩn doanh nghiệp"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-xs transition-colors shrink-0 cursor-pointer !min-h-0"
+            >
+              {isExporting ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Download className="w-3.5 h-3.5" />
+              )}
+              <span className="hidden sm:inline">
+                {isExporting ? "Đang xuất..." : "Xuất Excel"}
+              </span>
+            </button>
           </div>
         </div>
       </div>

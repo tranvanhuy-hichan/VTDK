@@ -1,6 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getCompanyInfo } from "@/lib/company";
 import { AdminOrderDetailView } from "@/components/admin/orders/AdminOrderDetailView";
 import type { OrderDetail } from "@/types/order";
 
@@ -15,18 +16,21 @@ interface AdminOrderDetailPageProps {
 export default async function AdminOrderDetailPage({ params }: AdminOrderDetailPageProps) {
   const { id } = await params;
 
-  // Find order by ID or fallback to orderCode
-  const rawOrder = await prisma.order.findFirst({
-    where: {
-      OR: [
-        { id },
-        { orderCode: id },
-      ],
-    },
-    include: {
-      items: true,
-    },
-  });
+  // Find order and company info in parallel
+  const [rawOrder, company] = await Promise.all([
+    prisma.order.findFirst({
+      where: {
+        OR: [
+          { id },
+          { orderCode: id },
+        ],
+      },
+      include: {
+        items: true,
+      },
+    }),
+    getCompanyInfo(),
+  ]);
 
   if (!rawOrder) {
     notFound();
@@ -38,5 +42,5 @@ export default async function AdminOrderDetailPage({ params }: AdminOrderDetailP
     updatedAt: rawOrder.updatedAt.toISOString(),
   };
 
-  return <AdminOrderDetailView initialOrder={order} />;
+  return <AdminOrderDetailView initialOrder={order} company={company} />;
 }

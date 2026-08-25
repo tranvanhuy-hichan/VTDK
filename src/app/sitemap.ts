@@ -1,92 +1,64 @@
-import type { MetadataRoute } from "next";
-import { prisma } from "@/lib/prisma";
-import { SITE_URL } from "@/lib/site";
+import { MetadataRoute } from "next";
+import { COMPANY_DATA } from "@/data/company";
+import {
+  getCachedActiveProducts,
+  getCachedCategories,
+} from "@/lib/cachedData";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    COMPANY_DATA.siteUrl ||
+    "https://vattudongkha.io.vn";
 
-  try {
-    const products = await prisma.product.findMany({
-      where: { active: true },
-      select: { slug: true, updatedAt: true },
-    });
+  const [products, categories] = await Promise.all([
+    getCachedActiveProducts(),
+    getCachedCategories(),
+  ]);
 
-    const categories = await prisma.category.findMany({
-      select: { slug: true },
-    });
+  // Static core routes
+  const staticPages: MetadataRoute.Sitemap = [
+    {
+      url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/san-pham`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/giai-phap`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/lien-he`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+  ];
 
-    const categoryRoutes = [
-      "/vat-tu-dien-lanh",
-      ...categories.map((c) => `/${c.slug}`),
-    ];
+  // Category pages
+  const categoryPages: MetadataRoute.Sitemap = categories.map((cat) => ({
+    url: `${baseUrl}/${cat.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "daily",
+    priority: 0.85,
+  }));
 
-    const uniqueCategoryRoutes = Array.from(new Set(categoryRoutes));
+  // Product detail pages
+  const productPages: MetadataRoute.Sitemap = products.map((prod) => ({
+    url: `${baseUrl}/san-pham/${prod.slug}`,
+    lastModified: prod.updatedAt || prod.createdAt || new Date(),
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
 
-    return [
-      {
-        url: SITE_URL,
-        lastModified: now,
-        changeFrequency: "daily",
-        priority: 1,
-      },
-      {
-        url: `${SITE_URL}/san-pham`,
-        lastModified: now,
-        changeFrequency: "daily" as const,
-        priority: 0.9,
-      },
-      {
-        url: `${SITE_URL}/giai-phap`,
-        lastModified: now,
-        changeFrequency: "weekly" as const,
-        priority: 0.9,
-      },
-      {
-        url: `${SITE_URL}/lien-he`,
-        lastModified: now,
-        changeFrequency: "weekly" as const,
-        priority: 0.9,
-      },
-      ...uniqueCategoryRoutes.map((route) => ({
-        url: `${SITE_URL}${route}`,
-        lastModified: now,
-        changeFrequency: "weekly" as const,
-        priority: 0.9,
-      })),
-      ...products.map((product) => ({
-        url: `${SITE_URL}/san-pham/${product.slug}`,
-        lastModified: product.updatedAt || now,
-        changeFrequency: "weekly" as const,
-        priority: 0.8,
-      })),
-    ];
-  } catch (err) {
-    console.warn("sitemap generation db query fallback:", err);
-    return [
-      {
-        url: SITE_URL,
-        lastModified: now,
-        changeFrequency: "daily",
-        priority: 1,
-      },
-      {
-        url: `${SITE_URL}/san-pham`,
-        lastModified: now,
-        changeFrequency: "daily",
-        priority: 0.9,
-      },
-      {
-        url: `${SITE_URL}/giai-phap`,
-        lastModified: now,
-        changeFrequency: "weekly",
-        priority: 0.9,
-      },
-      {
-        url: `${SITE_URL}/lien-he`,
-        lastModified: now,
-        changeFrequency: "weekly",
-        priority: 0.9,
-      },
-    ];
-  }
+  return [...staticPages, ...categoryPages, ...productPages];
 }
