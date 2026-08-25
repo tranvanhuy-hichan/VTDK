@@ -6,21 +6,17 @@ import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import {
   Phone,
-  Menu,
   X,
   MapPin,
   ChevronRight,
   Shield,
-  ShieldCheck,
   Search,
   Sun,
   Moon,
   Home,
   Package,
-  Sparkles,
   Wrench,
-  Building2,
-  Store,
+  ShoppingBag,
 } from "lucide-react";
 import { COMPANY_DATA } from "../../data/company";
 import type { CompanyContact } from "../../lib/company";
@@ -41,26 +37,10 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSectionState, setActiveSectionState] = useState<string>("trang-chu");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const searchDropdownRef = useRef<HTMLDivElement>(null);
-
-  // Lock body scroll when mobile sidebar drawer is open to prevent background scrolling
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-      document.body.style.touchAction = "none";
-    } else {
-      document.body.style.overflow = "";
-      document.body.style.touchAction = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-      document.body.style.touchAction = "";
-    };
-  }, [isMobileMenuOpen]);
 
   useEffect(() => {
     if (!isMobileSearchOpen) return;
@@ -95,7 +75,6 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const q = searchQuery.trim();
-    setIsMobileMenuOpen(false);
     setIsMobileSearchOpen(false);
     router.push(q ? `/san-pham?q=${encodeURIComponent(q)}` : "/san-pham");
   };
@@ -133,8 +112,8 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
   const rawNavLinks = [
     { name: "Trang chủ", href: "/", hash: "#trang-chu", icon: Home },
     { name: "Sản phẩm", href: "/san-pham", hash: "#san-pham", icon: Package },
+    { name: "Đơn hàng", href: "/tai-khoan/don-hang", hash: "#don-hang", icon: ShoppingBag },
     { name: "Giải pháp", href: "/giai-phap", hash: "#dich-vu", icon: Wrench },
-    { name: "Kho & Cửa hàng", href: isHomePage ? "#hinh-anh" : "/#hinh-anh", hash: "#hinh-anh", icon: Store },
     { name: "Liên hệ", href: "/lien-he", hash: "#lien-he", icon: Phone },
   ];
 
@@ -173,17 +152,8 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
         }`}
       >
         <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 h-13 sm:h-15 lg:h-16 flex items-center justify-between gap-2 sm:gap-4 lg:gap-6">
-          {/* Mobile Menu Button + Brand Logo */}
+          {/* Brand Logo */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
-            <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              aria-label="Mở menu danh mục"
-              className="p-1.5 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 xl:hidden !min-h-0 cursor-pointer"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-
-            {/* Logo */}
             <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group shrink-0 min-w-0">
               <Image
                 src={COMPANY_DATA.logoUrl}
@@ -242,6 +212,8 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
                     ? pathname.startsWith("/san-pham")
                     : link.href === "/giai-phap"
                     ? pathname.startsWith("/giai-phap")
+                    : link.href === "/tai-khoan/don-hang"
+                    ? pathname.startsWith("/tai-khoan/don-hang") || pathname.startsWith("/don-hang")
                     : link.href === "/lien-he"
                     ? pathname.startsWith("/lien-he")
                     : isHomePage && activeSectionState === link.hash.replace("#", "");
@@ -276,7 +248,7 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
             )}
           </div>
 
-          {/* Mobile & Tablet Right Controls: Search + Cart + User (User on the FAR RIGHT) */}
+          {/* Mobile & Tablet Right Controls: Search + Cart + User */}
           <div className="flex items-center gap-1 sm:gap-1.5 xl:hidden shrink-0">
             <button
               onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
@@ -322,132 +294,6 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
           </div>
         )}
       </header>
-
-      {/* Mobile Off-Canvas Sidebar Drawer (Isolated from Header with Background Scroll Lock) */}
-      {isMobileMenuOpen && (
-        <div
-          className="xl:hidden fixed inset-0 z-50 flex animate-in fade-in duration-200"
-          style={{ touchAction: "none" }}
-        >
-          {/* Backdrop blur overlay */}
-          <div
-            className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-
-          {/* Sidebar Drawer */}
-          <aside
-            className="relative flex flex-col w-72 max-w-[85vw] h-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-2xl animate-in slide-in-from-left duration-200 z-10 text-left"
-            style={{ touchAction: "auto" }}
-          >
-            {/* Header */}
-            <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-800/50">
-              <Link
-                href="/"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2.5 min-w-0"
-              >
-                <Image
-                  src={COMPANY_DATA.logoUrl}
-                  alt="Logo"
-                  width={36}
-                  height={36}
-                  className="h-8 w-auto object-contain rounded-lg shrink-0"
-                />
-                <div className="min-w-0">
-                  <span className="font-black text-xs text-slate-900 dark:text-white uppercase tracking-tight block truncate">
-                    VẬT TƯ ĐÔNG KHA
-                  </span>
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold block truncate mt-0.5">
-                    Vật tư điện lạnh Đà Nẵng
-                  </span>
-                </div>
-              </Link>
-
-              <button
-                type="button"
-                onClick={() => setIsMobileMenuOpen(false)}
-                aria-label="Đóng menu"
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors !min-h-0 cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Navigation Links */}
-            <div className="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
-              <div className="px-2 pb-1.5 text-[9px] font-black tracking-wider uppercase text-slate-400 dark:text-slate-500">
-                DANH MỤC ĐIỀU HƯỚNG
-              </div>
-
-              {rawNavLinks.map((link) => {
-                const isActive =
-                  link.href === "/"
-                    ? pathname === "/"
-                    : link.href === "/san-pham"
-                    ? pathname.startsWith("/san-pham")
-                    : link.href === "/giai-phap"
-                    ? pathname.startsWith("/giai-phap")
-                    : link.href === "/lien-he"
-                    ? pathname.startsWith("/lien-he")
-                    : isHomePage && activeSectionState === link.hash.replace("#", "");
-                const Icon = link.icon;
-
-                return (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-3 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all group ${
-                      isActive
-                        ? "bg-[#075FA8] text-white font-extrabold shadow-md shadow-blue-900/20"
-                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[#075FA8] dark:hover:text-white"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <Icon
-                        className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${
-                          isActive ? "text-white" : "text-slate-400 group-hover:text-[#075FA8] dark:group-hover:text-blue-400"
-                        }`}
-                      />
-                      <span className="truncate">{link.name}</span>
-                    </div>
-
-                    <ChevronRight
-                      className={`w-4 h-4 shrink-0 ${
-                        isActive ? "text-white/80" : "text-slate-400"
-                      }`}
-                    />
-                  </Link>
-                );
-              })}
-
-              {/* Admin Dashboard Item (Identical style, placed at the end of the list) */}
-              {user?.role === "ADMIN" && (
-                <Link
-                  href="/admin"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-3 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all group text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[#075FA8] dark:hover:text-white"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <ShieldCheck className="w-4 h-4 shrink-0 text-slate-400 group-hover:text-[#075FA8] dark:group-hover:text-blue-400 transition-transform group-hover:scale-110" />
-                    <span className="truncate">Trang quản trị (Admin)</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 shrink-0 text-slate-400" />
-                </Link>
-              )}
-            </div>
-
-            {/* Footer Address */}
-            <div className="p-3.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50 space-y-2">
-              <div className="flex items-start gap-2 text-[11px] text-slate-500 dark:text-slate-400">
-                <MapPin className="w-3.5 h-3.5 text-[#F47A20] shrink-0 mt-0.5" />
-                <span className="leading-tight">{company.address}</span>
-              </div>
-            </div>
-          </aside>
-        </div>
-      )}
     </>
   );
 };

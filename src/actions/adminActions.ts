@@ -8,6 +8,7 @@ import { put, del } from "@vercel/blob";
 import { prisma } from "../lib/prisma";
 import { comparePassword, setAuthCookie, clearAuthCookie, getCurrentAdmin } from "../lib/auth";
 import { ensureDefaultAdmin, DEFAULT_ADMIN_EMAIL } from "../lib/seedAdmin";
+import { checkRateLimit, resetRateLimit } from "../lib/rateLimit";
 
 const SESSION_COOKIE = "admin_session";
 const PLACEHOLDER_IMAGE = "/images/placeholder.svg";
@@ -25,6 +26,14 @@ function slugify(text: string): string {
     .replace(/-+/g, "-") // Collapse dashes
     .replace(/^-+/, "") // Trim - from start
     .replace(/-+$/, ""); // Trim - from end
+}
+
+// Sanitize file name to prevent path traversal and unsafe characters
+function sanitizeFileName(fileName: string): string {
+  const ext = path.extname(fileName).toLowerCase();
+  const baseName = path.basename(fileName, ext);
+  const safeBase = slugify(baseName).slice(0, 50) || "upload";
+  return `${safeBase}${ext}`;
 }
 
 // Parse repeatable variant rows (label + price) from FormData
@@ -71,7 +80,8 @@ async function processGalleryImages(
     if (![".jpg", ".jpeg", ".png", ".webp"].includes(ext)) {
       return { error: `Ảnh "${file.name}" sai định dạng. Chỉ chấp nhận JPG, JPEG, PNG, WEBP.` };
     }
-    const blob = await put(`${folder}/${Date.now()}-${file.name}`, file, { access: "public" });
+    const safeName = sanitizeFileName(file.name);
+    const blob = await put(`${folder}/${Date.now()}-${safeName}`, file, { access: "public" });
     uploadedUrls.push(blob.url);
   }
 
@@ -100,6 +110,14 @@ export async function loginAction(emailOrPassword: string, maybePassword?: strin
     password = emailOrPassword;
   }
 
+  // Rate Limiting: Max 5 failed attempts per 5 minutes
+  const rateCheck = checkRateLimit(`admin-login:${email}`, 5, 300);
+  if (!rateCheck.allowed) {
+    return {
+      error: `Bạn đã nhập sai quá nhiều lần. Vui lòng chờ ${rateCheck.resetInSeconds} giây rồi thử lại.`,
+    };
+  }
+
   await ensureDefaultAdmin();
 
   const user = await prisma.user.findUnique({
@@ -114,6 +132,9 @@ export async function loginAction(emailOrPassword: string, maybePassword?: strin
   if (!isValid) {
     return { error: "Mật khẩu không chính xác!" };
   }
+
+  // Reset rate limit on success
+  resetRateLimit(`admin-login:${email}`);
 
   await setAuthCookie({
     userId: user.id,
@@ -173,7 +194,8 @@ export async function createProductAction(formData: FormData) {
         return { error: "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP." };
       }
 
-      const blob = await put(`products/${Date.now()}-${imageFile.name}`, imageFile, {
+      const safeName = sanitizeFileName(imageFile.name);
+      const blob = await put(`products/${Date.now()}-${safeName}`, imageFile, {
         access: "public",
       });
       imagePath = blob.url;
@@ -269,7 +291,8 @@ export async function updateProductAction(
         return { error: "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP." };
       }
 
-      const blob = await put(`products/${Date.now()}-${imageFile.name}`, imageFile, {
+      const safeName = sanitizeFileName(imageFile.name);
+      const blob = await put(`products/${Date.now()}-${safeName}`, imageFile, {
         access: "public",
       });
 
@@ -414,7 +437,8 @@ export async function createGalleryImageAction(formData: FormData) {
       return { error: "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP." };
     }
 
-    const blob = await put(`gallery/${Date.now()}-${imageFile.name}`, imageFile, {
+    const safeName = sanitizeFileName(imageFile.name);
+    const blob = await put(`gallery/${Date.now()}-${safeName}`, imageFile, {
       access: "public",
     });
 
@@ -515,7 +539,8 @@ export async function updateCompanyInfoAction(formData: FormData) {
         return { error: "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP." };
       }
 
-      const blob = await put(`company/${Date.now()}-${imageFile.name}`, imageFile, {
+      const safeName = sanitizeFileName(imageFile.name);
+      const blob = await put(`company/${Date.now()}-${safeName}`, imageFile, {
         access: "public",
       });
 
@@ -597,7 +622,8 @@ export async function createServiceAction(formData: FormData) {
         return { error: "Biểu tượng không hợp lệ!" };
       }
 
-      const blob = await put(`services/${Date.now()}-${imageFile.name}`, imageFile, {
+      const safeName = sanitizeFileName(imageFile.name);
+      const blob = await put(`services/${Date.now()}-${safeName}`, imageFile, {
         access: "public",
       });
       imagePath = blob.url;
@@ -679,7 +705,8 @@ export async function updateServiceAction(
         return { error: "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, JPEG, PNG, WEBP." };
       }
 
-      const blob = await put(`services/${Date.now()}-${imageFile.name}`, imageFile, {
+      const safeName = sanitizeFileName(imageFile.name);
+      const blob = await put(`services/${Date.now()}-${safeName}`, imageFile, {
         access: "public",
       });
 

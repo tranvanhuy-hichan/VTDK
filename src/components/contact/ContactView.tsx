@@ -49,7 +49,7 @@ export const ContactView: React.FC<ContactViewProps> = ({ company }) => {
   return (
     <div className="w-full bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 pb-16">
       {/* 1. Header Banner */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-[#075FA8] via-[#08457A] to-[#0B2540] text-white pt-0 pb-5 sm:pb-6 px-4 sm:px-6 lg:px-8 shadow-xs">
+      <section className="relative overflow-hidden bg-gradient-to-r from-[#075FA8] via-[#08457A] to-[#0B2540] text-white pt-0 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 shadow-xs">
         <div className="w-full max-w-[1700px] mx-auto">
           {/* Seamless Banner Breadcrumb */}
           <Breadcrumb items={[{ label: "Liên hệ" }]} variant="banner" />

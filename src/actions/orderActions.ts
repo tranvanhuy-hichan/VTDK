@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "../lib/prisma";
 import { getCurrentUser, getCurrentAdmin } from "../lib/auth";
+import { checkRateLimit } from "../lib/rateLimit";
 import type { CreateOrderDTO, OrderDetail, OrderStatus } from "../types/order";
 
 function generateOrderCode(): string {
@@ -19,13 +20,26 @@ export async function createOrderAction(dto: CreateOrderDTO): Promise<{
 }> {
   try {
     const customerName = dto.customerName?.trim();
-    const customerPhone = dto.customerPhone?.trim();
+    const customerPhone = dto.customerPhone?.trim().replace(/\s+/g, "");
     const shippingMethod = dto.shippingMethod || "DELIVERY";
     const address = dto.address?.trim();
     const note = dto.note?.trim();
 
     if (!customerName || !customerPhone) {
       return { success: false, error: "Vui lòng nhập họ tên và số điện thoại nhận hàng." };
+    }
+
+    if (customerPhone.length < 9 || customerPhone.length > 15 || !/^[0-9+]+$/.test(customerPhone)) {
+      return { success: false, error: "Số điện thoại nhận hàng không hợp lệ." };
+    }
+
+    // Anti-spam Rate Limiting: Max 5 orders per minute per phone number
+    const rateCheck = checkRateLimit(`order:${customerPhone}`, 5, 60);
+    if (!rateCheck.allowed) {
+      return {
+        success: false,
+        error: `Bạn đang tạo đơn hàng quá nhanh. Vui lòng chờ ${rateCheck.resetInSeconds} giây rồi thử lại.`,
+      };
     }
 
     if (shippingMethod === "DELIVERY" && !address) {

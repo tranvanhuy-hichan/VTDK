@@ -11,6 +11,7 @@ import {
 } from "../lib/auth";
 import { ensureDefaultAdmin, DEFAULT_ADMIN_EMAIL } from "../lib/seedAdmin";
 import { verifyGoogleToken } from "../lib/googleAuth";
+import { checkRateLimit, resetRateLimit } from "../lib/rateLimit";
 import type { RegisterDTO, LoginDTO, UserProfile } from "../types/auth";
 
 export async function registerAction(dto: RegisterDTO): Promise<{ success: boolean; user?: UserProfile; error?: string }> {
@@ -25,6 +26,15 @@ export async function registerAction(dto: RegisterDTO): Promise<{ success: boole
 
     if (password.length < 6) {
       return { success: false, error: "Mật khẩu phải có ít nhất 6 ký tự." };
+    }
+
+    // Rate limiting: Max 3 registration attempts per email / 10 minutes
+    const rateCheck = checkRateLimit(`register:${email}`, 3, 600);
+    if (!rateCheck.allowed) {
+      return {
+        success: false,
+        error: `Quá nhiều yêu cầu đăng ký cho email này. Vui lòng thử lại sau ${rateCheck.resetInSeconds} giây.`,
+      };
     }
 
     // Check if user exists
@@ -64,6 +74,7 @@ export async function registerAction(dto: RegisterDTO): Promise<{ success: boole
       role: user.role,
     });
 
+    resetRateLimit(`register:${email}`);
     return { success: true, user };
   } catch (err: unknown) {
     console.error("registerAction error:", err);
@@ -78,6 +89,15 @@ export async function loginAction(dto: LoginDTO): Promise<{ success: boolean; us
 
     if (!email || !password) {
       return { success: false, error: "Vui lòng nhập email và mật khẩu." };
+    }
+
+    // Rate limiting: Max 5 failed attempts per email / 5 minutes
+    const rateCheck = checkRateLimit(`login:${email}`, 5, 300);
+    if (!rateCheck.allowed) {
+      return {
+        success: false,
+        error: `Bạn đã thử đăng nhập sai quá nhiều lần. Vui lòng thử lại sau ${rateCheck.resetInSeconds} giây để bảo vệ tài khoản.`,
+      };
     }
 
     // If it's the default admin email, ensure the admin record exists
@@ -108,6 +128,9 @@ export async function loginAction(dto: LoginDTO): Promise<{ success: boolean; us
     if (!isValid) {
       return { success: false, error: "Tài khoản hoặc mật khẩu không chính xác." };
     }
+
+    // Clear rate limit on successful authentication
+    resetRateLimit(`login:${email}`);
 
     const profile: UserProfile = {
       id: user.id,
