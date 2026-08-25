@@ -294,7 +294,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                 <Menu className="w-4.5 h-4.5" />
               </button>
 
-              <nav className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 min-w-0">
+              <nav className="flex items-center flex-nowrap whitespace-nowrap gap-1.5 text-xs text-slate-500 dark:text-slate-400 min-w-0 overflow-hidden">
                 <Link
                   href="/admin"
                   className="font-bold hover:text-slate-900 dark:hover:text-white transition-colors shrink-0"
@@ -302,12 +302,12 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                   Admin
                 </Link>
                 {currentActiveItem && currentActiveItem.href !== "/admin" && (
-                  <div className="flex items-center gap-1.5 min-w-0">
+                  <>
                     <ChevronRight className="w-3.5 h-3.5 shrink-0 text-slate-400" />
-                    <span className="font-extrabold text-slate-900 dark:text-white truncate">
+                    <span className="font-extrabold text-slate-900 dark:text-white truncate shrink-0">
                       {currentActiveItem.label}
                     </span>
-                  </div>
+                  </>
                 )}
               </nav>
             </div>
