@@ -212,24 +212,14 @@ export const AllProductsCatalog: React.FC<AllProductsCatalogProps> = ({
               className="scroll-mt-32 space-y-5"
             >
               {/* Category Section Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3.5">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/80 border border-blue-100 dark:border-blue-800 text-[#075FA8] dark:text-blue-400 flex items-center justify-center shrink-0 shadow-2xs">
-                    <Grid className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                        {category.name}
-                      </h2>
-                      <span className="bg-blue-100 dark:bg-blue-950 text-[#075FA8] dark:text-blue-300 text-xs font-black px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
-                        {catProducts.length} sản phẩm
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-                      Vật tư chất lượng cao chính hãng phân phối tại Đà Nẵng
-                    </p>
-                  </div>
+              <div className="flex flex-row items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-2.5 sm:pb-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                    {category.name}
+                  </h2>
+                  <span className="bg-blue-100 dark:bg-blue-950 text-[#075FA8] dark:text-blue-300 text-xs font-black px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
+                    {catProducts.length} sản phẩm
+                  </span>
                 </div>
 
                 {hasMore && (

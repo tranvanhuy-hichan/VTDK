@@ -86,7 +86,7 @@ export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
               THÔNG TIN LIÊN HỆ
             </h4>
 
-            <div className="space-y-2 text-xs sm:text-sm">
+            <div className="space-y-2.5 text-xs sm:text-sm">
               {/* Địa chỉ */}
               <div className="flex items-start gap-2.5">
                 <div className="w-6 h-6 rounded-full bg-blue-500/20 text-[#38BDF8] flex items-center justify-center shrink-0 mt-0.5 border border-blue-400/30">
@@ -98,16 +98,16 @@ export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
                 </div>
               </div>
 
-              {/* Hotline & Zalo (Cố định không bao giờ bị lệch dòng) */}
+              {/* Hotline & Zalo */}
               <div className="flex items-center gap-2.5">
                 <div className="w-6 h-6 rounded-full bg-orange-500/20 text-[#F47A20] flex items-center justify-center shrink-0 border border-orange-400/30">
                   <Phone className="w-3.5 h-3.5" />
                 </div>
-                <div className="text-slate-300 text-xs sm:text-sm flex items-center gap-1.5 whitespace-nowrap min-w-0">
+                <div className="text-slate-300 text-xs sm:text-sm flex items-center gap-1.5 whitespace-nowrap min-w-0 leading-tight">
                   <span className="font-bold text-white shrink-0">Hotline &amp; Zalo:</span>
                   <a
                     href={`tel:${company.hotlineRaw}`}
-                    className="font-mono font-black text-sm sm:text-base text-[#F47A20] hover:underline shrink-0"
+                    className="font-bold text-xs sm:text-sm text-[#F47A20] hover:underline shrink-0"
                   >
                     {company.hotline}
                   </a>
@@ -119,8 +119,8 @@ export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
                 <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-400/30">
                   <Clock className="w-3.5 h-3.5" />
                 </div>
-                <div className="text-slate-300">
-                  <span className="font-bold text-white">Thời gian làm việc: </span>
+                <div className="text-slate-300 text-xs sm:text-sm leading-tight flex items-center gap-1">
+                  <span className="font-bold text-white shrink-0">Thời gian làm việc:</span>
                   <span>{company.workingHours}</span>
                 </div>
               </div>
