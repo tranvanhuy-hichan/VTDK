@@ -92,141 +92,108 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
     .toUpperCase()
     .slice(-2);
 
-  // Quick next status progression
-  const getNextStatus = (status: OrderStatus): { nextStatus: OrderStatus; actionLabel: string; bgClass: string } | null => {
-    switch (status) {
-      case "PENDING":
-        return { nextStatus: "CONFIRMED", actionLabel: "Xác nhận đơn hàng", bgClass: "bg-blue-600 hover:bg-blue-700 text-white" };
-      case "CONFIRMED":
-        return { nextStatus: "SHIPPING", actionLabel: "Bàn giao vận chuyển", bgClass: "bg-purple-600 hover:bg-purple-700 text-white" };
-      case "SHIPPING":
-        return { nextStatus: "COMPLETED", actionLabel: "Xác nhận hoàn thành & thu tiền", bgClass: "bg-emerald-600 hover:bg-emerald-700 text-white" };
-      default:
-        return null;
-    }
-  };
-
-  const nextAction = getNextStatus(currentStatus);
-
   return (
-    <div className="space-y-3.5 sm:space-y-5 text-left max-w-7xl mx-auto pb-16 px-1 sm:px-2">
+    <div className="space-y-3 sm:space-y-4 text-left max-w-7xl mx-auto pb-16 px-1 sm:px-2">
       {/* 1. TOP APP BAR */}
-      <div className="flex items-center justify-between gap-2 py-1">
+      <div className="flex items-center justify-between gap-2 py-0.5">
         <Link
           href="/admin/orders"
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all border border-slate-200/90 dark:border-slate-800 shadow-2xs"
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all border border-slate-200/90 dark:border-slate-800 shadow-2xs"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Danh sách đơn hàng</span>
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Danh sách đơn</span>
         </Link>
 
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-1.5">
           <a
             href={`tel:${order.customerPhone}`}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs"
           >
             <Phone className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Gọi:</span>
-            <span>{order.customerPhone}</span>
+            <span>Gọi khách</span>
           </a>
 
           <button
             type="button"
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-800 text-xs font-bold transition-all shadow-2xs"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-800 text-xs font-bold transition-all shadow-2xs"
           >
             <Printer className="w-3.5 h-3.5 text-slate-500" />
-            <span className="hidden sm:inline">In phiếu</span>
+            <span>In</span>
           </button>
         </div>
       </div>
 
-      {/* 2. HERO ORDER CARD WITH STATUS */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-4">
-        {/* Header: Order Code, Time & Price */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800">
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-mono text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                #{order.orderCode}
-              </span>
-              <button
-                type="button"
-                onClick={handleCopyCode}
-                className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                title="Sao chép mã đơn"
-              >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
-              <OrderStatusBadge status={currentStatus} />
-            </div>
-
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Khách hàng: <strong className="text-slate-800 dark:text-slate-200 font-bold">{order.customerName}</strong> • {formatDate(order.createdAt)}
-            </p>
+      {/* 2. ULTRA-COMPACT HERO CARD WITH INLINE STATUS CHANGER */}
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-3 sm:p-4 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-2">
+        {/* Row 1: Code & Status Selector Dropdown Pill */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="font-mono text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">
+              #{order.orderCode}
+            </span>
+            <button
+              type="button"
+              onClick={handleCopyCode}
+              className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              title="Sao chép mã đơn"
+            >
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+            </button>
           </div>
 
-          <div className="text-left sm:text-right">
-            <span className="text-[11px] text-slate-400 font-semibold block">Tổng tiền:</span>
-            <span className="text-lg sm:text-2xl font-black text-[#075FA8] dark:text-blue-400">
+          {/* Interactive Status Selector Pill */}
+          <div className="relative shrink-0">
+            <select
+              value={currentStatus}
+              disabled={loading}
+              onChange={(e) => handleStatusChange(e.target.value as OrderStatus)}
+              className={`appearance-none font-bold text-xs px-3 py-1.5 pr-7 rounded-full cursor-pointer border shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 ${
+                currentStatus === "PENDING"
+                  ? "bg-amber-50 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800 focus:ring-amber-500"
+                  : currentStatus === "CONFIRMED"
+                  ? "bg-blue-50 dark:bg-blue-950/70 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-800 focus:ring-blue-500"
+                  : currentStatus === "SHIPPING"
+                  ? "bg-purple-50 dark:bg-purple-950/70 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-800 focus:ring-purple-500"
+                  : currentStatus === "COMPLETED"
+                  ? "bg-emerald-50 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800 focus:ring-emerald-500"
+                  : "bg-red-50 dark:bg-red-950/70 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800 focus:ring-red-500"
+              }`}
+            >
+              <option value="PENDING">🟡 Chờ xử lý</option>
+              <option value="CONFIRMED">🔵 Đã xác nhận</option>
+              <option value="SHIPPING">🟣 Đang giao</option>
+              <option value="COMPLETED">🟢 Hoàn thành</option>
+              <option value="CANCELLED">🔴 Đã hủy</option>
+            </select>
+            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-60">
+              <ChevronRight className="w-3.5 h-3.5 rotate-90" />
+            </div>
+          </div>
+        </div>
+
+        {/* Row 2: Customer Name, Date & Total Price */}
+        <div className="flex items-center justify-between gap-2 text-xs pt-1.5 border-t border-slate-100 dark:border-slate-800">
+          <div className="text-slate-500 dark:text-slate-400 truncate min-w-0">
+            <strong className="text-slate-800 dark:text-slate-200 font-bold">{order.customerName}</strong>
+            <span className="mx-1">•</span>
+            <span>{formatDate(order.createdAt)}</span>
+          </div>
+
+          <div className="text-right shrink-0">
+            <span className="font-black text-sm sm:text-base text-[#075FA8] dark:text-blue-400">
               {formatCurrency(order.totalAmount)}
             </span>
           </div>
         </div>
 
-        {/* Status Actions: 1-Click Progression & Quick Switcher */}
-        <div className="space-y-3">
-          {msg && (
-            <div className="text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-3.5 py-2 rounded-xl flex items-center gap-2 animate-in fade-in">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>{msg}</span>
-            </div>
-          )}
-
-          {/* Primary Action Button (Next Step in workflow) */}
-          {nextAction && (
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => handleStatusChange(nextAction.nextStatus)}
-              className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.99] cursor-pointer ${nextAction.bgClass}`}
-            >
-              <span>{nextAction.actionLabel}</span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          )}
-
-          {/* 5-Step Direct Switcher Pills (Horizontal on Desktop, 2-Row Grid on Mobile) */}
-          <div>
-            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1.5">
-              Chuyển đổi trạng thái nhanh:
-            </span>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
-              {STEPS.map((step) => {
-                const isActive = currentStatus === step.status;
-                const isCancelled = step.status === "CANCELLED";
-                return (
-                  <button
-                    key={step.status}
-                    type="button"
-                    disabled={loading}
-                    onClick={() => handleStatusChange(step.status)}
-                    className={`px-2.5 py-2 rounded-xl text-xs font-bold text-center transition-all border cursor-pointer !min-h-0 flex items-center justify-center gap-1.5 ${
-                      isActive
-                        ? isCancelled
-                          ? "bg-red-600 text-white border-red-600 shadow-xs ring-2 ring-red-200 dark:ring-red-950"
-                          : "bg-[#075FA8] dark:bg-blue-600 text-white border-[#075FA8] dark:border-blue-600 shadow-xs ring-2 ring-blue-200 dark:ring-blue-950"
-                        : "bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200/90 dark:border-slate-700"
-                    } ${isCancelled ? "col-span-2 sm:col-span-1" : ""}`}
-                  >
-                    <span>{step.label}</span>
-                    {isActive && <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
-                  </button>
-                );
-              })}
-            </div>
+        {/* Toast update notification */}
+        {msg && (
+          <div className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-lg flex items-center gap-1.5 animate-in fade-in">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <span>{msg}</span>
           </div>
-        </div>
+        )}
       </div>
 
       {/* 3. Main Full-Screen Layout: Stacks on Mobile, 2-Col on Desktop */}
