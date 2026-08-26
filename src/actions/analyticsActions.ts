@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "../lib/prisma";
-import { getCurrentAdminUser } from "../lib/auth";
+import { getCurrentAdmin } from "../lib/auth";
 
 export interface AnalyticsSummary {
   totalRevenue: number;
@@ -71,7 +71,7 @@ export async function getAdminAnalyticsAction(
   timeRange: "7d" | "30d" | "this_month" | "last_month" | "all" = "30d"
 ): Promise<{ success: boolean; data?: AnalyticsData; error?: string }> {
   try {
-    const admin = await getCurrentAdminUser();
+    const admin = await getCurrentAdmin();
     if (!admin) {
       return { success: false, error: "Bạn không có quyền truy cập trang này." };
     }

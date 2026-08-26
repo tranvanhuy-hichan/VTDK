@@ -190,3 +190,5 @@ export async function getCurrentAdmin(): Promise<UserProfile | null> {
   }
   return null;
 }
+
+export const getCurrentAdminUser = getCurrentAdmin;
