@@ -309,36 +309,38 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
   const [mobileTab, setMobileTab] = useState<"catalog" | "quote" | "customer">("catalog");
 
   return (
-    <div className="w-full flex flex-col h-auto lg:h-[calc(100dvh-4.5rem)] pb-16 lg:pb-0 space-y-1.5 overflow-hidden text-left bg-slate-100 dark:bg-slate-950 font-sans">
-      {/* 1. Ultra Slim Top Status Bar */}
-      <div className="h-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-2.5 flex items-center justify-between shrink-0 shadow-2xs rounded-lg">
-        <div className="flex items-center gap-2">
+    <div className="w-full flex flex-col h-auto lg:h-[calc(100dvh-4.5rem)] pb-16 lg:pb-0 overflow-hidden text-left bg-slate-100 dark:bg-slate-950 font-sans space-y-2 lg:space-y-2.5">
+      {/* 1. Header Toolbar - Compact */}
+      <div className="h-9 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3 flex items-center justify-between shrink-0 shadow-2xs">
+        <div className="flex items-center gap-2.5">
           <Link
             href="/admin"
-            className="w-6 h-6 !min-h-0 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors inline-flex items-center justify-center shrink-0"
+            className="w-6.5 h-6.5 !min-h-0 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors inline-flex items-center justify-center shrink-0"
             title="Về trang quản trị"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
           </Link>
-          <div className="flex items-center gap-1.5 leading-none">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-            <h1 className="text-xs font-black text-slate-900 dark:text-white tracking-tight leading-none">
-              BÁO GIÁ B2B
+          <div className="flex items-center gap-2 leading-none">
+            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0" />
+            <h1 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white tracking-tight leading-none">
+              TẠO BÁO GIÁ B2B
             </h1>
-            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-[#075FA8] dark:text-blue-300 border border-blue-100 dark:border-blue-800 hidden sm:inline-block leading-none">
-              QUOTATION STUDIO
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#075FA8] dark:text-blue-300 border border-blue-100 dark:border-blue-800 hidden sm:inline-block leading-none">
+              A4 Studio
             </span>
           </div>
         </div>
 
+        {/* Action Buttons */}
         <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={handleClearQuote}
-            className="h-6 !min-h-0 inline-flex items-center gap-1 text-[10px] font-extrabold px-2 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+            disabled={quoteItems.length === 0}
+            className="h-6.5 !min-h-0 inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
             title="Làm mới toàn bộ bảng báo giá"
           >
-            <RefreshCw className="w-2.5 h-2.5" />
+            <RefreshCw className="w-3 h-3" />
             <span className="hidden sm:inline">Làm mới</span>
           </button>
 
@@ -346,20 +348,20 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
             type="button"
             onClick={() => setIsPreviewOpen(true)}
             disabled={quoteItems.length === 0}
-            className="h-6 !min-h-0 inline-flex items-center gap-1 text-[10px] font-black px-2.5 rounded-md bg-[#075FA8] hover:bg-[#0B3D66] text-white shadow-xs transition-colors cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+            className="h-6.5 !min-h-0 inline-flex items-center gap-1 text-[11px] font-black px-3 rounded-md bg-[#075FA8] hover:bg-[#0B3D66] text-white shadow-xs transition-colors cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
           >
-            <FileText className="w-3 h-3" />
+            <FileText className="w-3.5 h-3.5" />
             <span>Xuất Báo Giá A4 ({quoteItems.length})</span>
           </button>
         </div>
       </div>
 
       {/* Mobile Tab Switcher (Visible only on mobile/tablet < lg) */}
-      <div className="lg:hidden bg-slate-100 dark:bg-slate-800 p-1 rounded-lg flex items-center gap-1 shrink-0 border border-slate-200 dark:border-slate-700 select-none">
+      <div className="lg:hidden bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl flex items-center gap-1.5 shrink-0 border border-slate-200 dark:border-slate-700 select-none mx-2">
         <button
           type="button"
           onClick={() => setMobileTab("catalog")}
-          className={`flex-1 py-1 px-1.5 rounded-md text-xs font-bold flex items-center justify-center gap-1 transition-all !min-h-0 ${
+          className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all !min-h-0 ${
             mobileTab === "catalog"
               ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
@@ -375,7 +377,7 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
             setMobileTab("quote");
             setRightTab("items");
           }}
-          className={`flex-1 py-1 px-1.5 rounded-md text-xs font-bold flex items-center justify-center gap-1 transition-all !min-h-0 ${
+          className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all !min-h-0 ${
             mobileTab === "quote"
               ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
@@ -394,7 +396,7 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
             setMobileTab("customer");
             setRightTab("customer");
           }}
-          className={`flex-1 py-1 px-1.5 rounded-md text-xs font-bold flex items-center justify-center gap-1 transition-all !min-h-0 ${
+          className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all !min-h-0 ${
             mobileTab === "customer"
               ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
@@ -406,16 +408,16 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
       </div>
 
       {/* 2. Main Two-Column Layout (Fills remaining height, 0 outer scroll) */}
-      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2 overflow-hidden">
+      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2.5 lg:gap-3 px-0 lg:px-2 overflow-hidden">
         
         {/* LEFT COLUMN: Product Catalog Picker (7 cols) - Independent Scroll */}
-        <div className={`lg:col-span-7 h-full flex flex-col bg-white dark:bg-slate-900 rounded-xl p-2 sm:p-2.5 shadow-xs border border-slate-200 dark:border-slate-800 space-y-1.5 overflow-hidden ${mobileTab !== 'catalog' ? 'hidden lg:flex' : 'flex'}`}>
+        <div className={`lg:col-span-7 h-full flex flex-col bg-white dark:bg-slate-900 rounded-none lg:rounded-xl p-2.5 sm:p-3 shadow-xs border border-slate-200 dark:border-slate-800 space-y-2 overflow-hidden ${mobileTab !== 'catalog' ? 'hidden lg:flex' : 'flex'}`}>
           
           {/* Pinned Top Controls on Left Side */}
-          <div className="space-y-1.5 shrink-0">
-            <div className="flex items-center justify-between gap-1.5">
-              <div className="flex items-center gap-1.5 leading-none">
-                <Layers className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
+          <div className="space-y-2 shrink-0">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 leading-none">
+                <Layers className="w-4 h-4 text-[#075FA8] dark:text-blue-400" />
                 <h2 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight">
                   Kho Sản Phẩm &amp; Vật Tư
                 </h2>
@@ -425,22 +427,22 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
               <button
                 type="button"
                 onClick={() => setIsAddingCustomItem(!isAddingCustomItem)}
-                className="px-2 py-0.5 rounded-md bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer !min-h-0"
+                className="px-2.5 py-1 rounded-md bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer !min-h-0"
               >
-                <PlusCircle className="w-3 h-3" />
+                <PlusCircle className="w-3.5 h-3.5" />
                 <span>+ Thêm ngoài</span>
               </button>
             </div>
 
             {/* Search Input */}
             <div className="relative">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm kiếm theo tên, mã SKU, quy cách..."
-                className="w-full pl-8 pr-7 py-1 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#075FA8]"
+                className="w-full pl-8.5 pr-7 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#075FA8]"
               />
               {searchQuery && (
                 <button
@@ -454,11 +456,11 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
             </div>
 
             {/* Category Pills */}
-            <div className="flex items-center gap-1 overflow-x-auto pb-0.5 no-scrollbar">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
               <button
                 type="button"
                 onClick={() => setSelectedCategory("ALL")}
-                className={`px-2 py-0.5 rounded-md text-[10px] font-bold shrink-0 transition-all cursor-pointer !min-h-0 ${
+                className={`px-2.5 py-1 rounded-md text-[11px] font-bold shrink-0 transition-all cursor-pointer !min-h-0 ${
                   selectedCategory === "ALL"
                     ? "bg-[#075FA8] text-white shadow-xs"
                     : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
@@ -471,7 +473,7 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-2 py-0.5 rounded-md text-[10px] font-bold shrink-0 transition-all cursor-pointer !min-h-0 ${
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-bold shrink-0 transition-all cursor-pointer !min-h-0 ${
                     selectedCategory === cat.id
                       ? "bg-[#075FA8] text-white shadow-xs"
                       : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
@@ -783,29 +785,29 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
         </div>
 
         {/* RIGHT COLUMN: Quotation Sheet & Partner Information (5 cols) - Tabbed Layout */}
-        <div className={`lg:col-span-5 h-full flex flex-col bg-white dark:bg-slate-900 rounded-xl p-2 sm:p-2.5 shadow-xs border border-slate-200 dark:border-slate-800 space-y-1.5 overflow-hidden ${mobileTab === 'catalog' ? 'hidden lg:flex' : 'flex'}`}>
+        <div className={`lg:col-span-5 h-full flex flex-col bg-white dark:bg-slate-900 rounded-none lg:rounded-xl p-2.5 sm:p-3 shadow-xs border border-slate-200 dark:border-slate-800 space-y-2 overflow-hidden ${mobileTab === 'catalog' ? 'hidden lg:flex' : 'flex'}`}>
           
           {/* Top Segmented Tab Switcher */}
-          <div className="bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg flex items-center gap-1 shrink-0 border border-slate-200/80 dark:border-slate-700/80">
+          <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-xl flex items-center gap-1.5 shrink-0 border border-slate-200/80 dark:border-slate-700/80">
             <button
               type="button"
               onClick={() => setRightTab("items")}
-              className={`flex-1 py-1 px-2.5 rounded-md text-[11px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
+              className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
                 rightTab === "items"
-                  ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs"
+                  ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              <Calculator className="w-3 h-3" />
+              <Calculator className="w-3.5 h-3.5" />
               <span>Hàng Hóa ({quoteItems.length})</span>
             </button>
 
             <button
               type="button"
               onClick={() => setRightTab("customer")}
-              className={`flex-1 py-1 px-2.5 rounded-md text-[11px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
+              className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
                 rightTab === "customer"
-                  ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs"
+                  ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >

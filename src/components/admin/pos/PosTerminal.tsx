@@ -308,48 +308,48 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
   });
 
   return (
-    <div className="w-full flex flex-col h-auto lg:h-[calc(100dvh-4.5rem)] pb-16 lg:pb-0 overflow-hidden text-left bg-slate-100 dark:bg-slate-950 font-sans">
-      {/* Top POS Status Bar - Ultra Thin & Compact */}
-      <div className="h-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-2.5 flex items-center justify-between shrink-0 shadow-2xs">
-        <div className="flex items-center gap-2">
+    <div className="w-full flex flex-col h-auto lg:h-[calc(100dvh-4.5rem)] pb-16 lg:pb-0 overflow-hidden text-left bg-slate-100 dark:bg-slate-950 font-sans space-y-2">
+      {/* Top POS Status Bar */}
+      <div className="h-9 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3 flex items-center justify-between shrink-0 shadow-2xs">
+        <div className="flex items-center gap-2.5">
           <Link
             href="/admin"
-            className="w-6 h-6 !min-h-0 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors inline-flex items-center justify-center shrink-0"
+            className="w-6.5 h-6.5 !min-h-0 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors inline-flex items-center justify-center shrink-0"
             title="Về trang quản trị"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
           </Link>
-          <div className="flex items-center gap-1.5 leading-none">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-            <h1 className="text-xs font-black text-slate-900 dark:text-white tracking-tight leading-none">
+          <div className="flex items-center gap-2 leading-none">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <h1 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white tracking-tight leading-none">
               BÁN HÀNG TẠI QUẦY (POS)
             </h1>
-            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-[#075FA8] dark:text-blue-300 border border-blue-100 dark:border-blue-800 hidden sm:inline-block leading-none">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#075FA8] dark:text-blue-300 border border-blue-100 dark:border-blue-800 hidden sm:inline-block leading-none">
               {company.brandName}
             </span>
           </div>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={handleNewOrder}
-            className="h-6 !min-h-0 inline-flex items-center gap-1 text-[10px] font-extrabold px-2 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+            className="h-6.5 !min-h-0 inline-flex items-center gap-1.5 text-[11px] font-extrabold px-2.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
             title="Phím tắt: F2"
           >
-            <RefreshCw className="w-2.5 h-2.5" />
-            <span className="hidden sm:inline">Đơn mới</span> <kbd className="text-[8px] font-mono opacity-60">F2</kbd>
+            <RefreshCw className="w-3 h-3" />
+            <span className="hidden sm:inline">Đơn mới</span> <kbd className="text-[9px] font-mono opacity-60">F2</kbd>
           </button>
         </div>
       </div>
 
       {/* Mobile Tab Switcher (Visible only on mobile/tablet < lg) */}
-      <div className="lg:hidden bg-slate-100 dark:bg-slate-800 p-1 rounded-lg flex items-center gap-1 shrink-0 border border-slate-200 dark:border-slate-700 select-none">
+      <div className="lg:hidden bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl flex items-center gap-1.5 shrink-0 border border-slate-200 dark:border-slate-700 select-none mx-2">
         <button
           type="button"
           onClick={() => setMobileTab("catalog")}
-          className={`flex-1 py-1 px-2 rounded-md text-xs font-bold flex items-center justify-center gap-1.5 transition-all !min-h-0 ${
+          className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all !min-h-0 ${
             mobileTab === "catalog"
               ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
@@ -362,7 +362,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
         <button
           type="button"
           onClick={() => setMobileTab("cart")}
-          className={`flex-1 py-1 px-2 rounded-md text-xs font-bold flex items-center justify-center gap-1.5 transition-all !min-h-0 ${
+          className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all !min-h-0 ${
             mobileTab === "cart"
               ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
@@ -377,17 +377,17 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
       </div>
 
       {/* Main Terminal Layout: Left (Catalog & Barcode Scan) - Right (Live Cashier Cart) */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden gap-0">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden gap-2 lg:gap-3 px-0 lg:px-2">
         
         {/* LEFT COLUMN (7 Cols): BARCODE SCANNER & PRODUCT CATALOG */}
-        <div className={`lg:col-span-7 flex flex-col h-full border-r border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-50/50 dark:bg-slate-900/50 ${mobileTab === 'cart' ? 'hidden lg:flex' : 'flex'}`}>
+        <div className={`lg:col-span-7 flex flex-col h-full rounded-none lg:rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-50/50 dark:bg-slate-900/50 shadow-xs ${mobileTab === 'cart' ? 'hidden lg:flex' : 'flex'}`}>
           
-          {/* Barcode & Search Controls - Ultra Compact */}
-          <div className="p-2 sm:p-2.5 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 space-y-1.5 shrink-0">
+          {/* Barcode & Search Controls */}
+          <div className="p-2.5 sm:p-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 space-y-2 shrink-0">
             {/* Primary Barcode Scan Form */}
             <form onSubmit={handleBarcodeSubmit} className="relative">
               <div className="relative flex items-center">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 text-[#075FA8] dark:text-blue-400">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[#075FA8] dark:text-blue-400">
                   <Barcode className="w-4 h-4 animate-pulse" />
                 </span>
                 <input
@@ -396,11 +396,11 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
                   value={barcodeInput}
                   onChange={(e) => setBarcodeInput(e.target.value)}
                   placeholder="Quét mã vạch hoặc nhập Barcode / SKU rồi nhấn Enter..."
-                  className="w-full text-xs font-mono font-bold bg-blue-50/50 dark:bg-slate-800 border border-blue-200 dark:border-blue-900/60 rounded-lg pl-9 pr-20 py-1.5 text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-blue-200 transition-all"
+                  className="w-full text-xs font-mono font-bold bg-blue-50/50 dark:bg-slate-800 border border-blue-200 dark:border-blue-900/60 rounded-lg pl-9.5 pr-20 py-2 text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-blue-200 transition-all"
                 />
                 <button
                   type="submit"
-                  className="absolute right-1 px-2.5 py-1 bg-[#075FA8] hover:bg-[#0B1F33] text-white text-[10px] font-bold rounded-md shadow-xs transition-all cursor-pointer !min-h-0"
+                  className="absolute right-1 px-3 py-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white text-[11px] font-bold rounded-md shadow-xs transition-all cursor-pointer !min-h-0"
                 >
                   Thêm (Enter)
                 </button>
@@ -408,11 +408,11 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
             </form>
 
             {/* Filter Row: Category Tabs & Search input */}
-            <div className="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
               <button
                 type="button"
                 onClick={() => setSelectedCategory("all")}
-                className={`px-2 py-0.5 rounded-md text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer !min-h-0 ${
+                className={`px-2.5 py-1 rounded-md text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer !min-h-0 ${
                   selectedCategory === "all"
                     ? "bg-[#075FA8] text-white shadow-2xs"
                     : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200"
@@ -425,7 +425,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedCategory(cat.name)}
-                  className={`px-2 py-0.5 rounded-md text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer !min-h-0 ${
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer !min-h-0 ${
                     selectedCategory === cat.name
                       ? "bg-[#075FA8] text-white shadow-2xs"
                       : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200"
@@ -544,11 +544,11 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
         </div>
 
         {/* RIGHT COLUMN (5 Cols): CASHIER CART & PAYMENT */}
-        <div className={`lg:col-span-5 flex flex-col h-full bg-white dark:bg-slate-900 overflow-hidden ${mobileTab === 'catalog' ? 'hidden lg:flex' : 'flex'}`}>
+        <div className={`lg:col-span-5 flex flex-col h-full bg-white dark:bg-slate-900 rounded-none lg:rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs ${mobileTab === 'catalog' ? 'hidden lg:flex' : 'flex'}`}>
           
           {/* Cart Header */}
-          <div className="px-3 py-1.5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-slate-800/30">
-            <div className="flex items-center gap-1.5">
+          <div className="px-3.5 py-2 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-slate-800/30">
+            <div className="flex items-center gap-2">
               <ShoppingBag className="w-4 h-4 text-[#075FA8] dark:text-blue-400" />
               <h2 className="font-black text-xs sm:text-sm text-slate-900 dark:text-white">
                 HÓA ĐƠN ({cart.reduce((sum, it) => sum + it.quantity, 0)} MÓN)
@@ -567,10 +567,10 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
           </div>
 
           {/* Cart Items Scroll Area */}
-          <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
+          <div className="flex-1 overflow-y-auto p-2.5 sm:p-3 space-y-2">
             {cart.length === 0 ? (
               <div className="h-full min-h-[140px] flex flex-col items-center justify-center text-slate-400">
-                <ShoppingBag className="w-8 h-8 mb-1.5 opacity-20" />
+                <ShoppingBag className="w-8 h-8 mb-2 opacity-20" />
                 <p className="text-xs font-bold">Chưa có sản phẩm nào trong đơn</p>
                 <p className="text-[10px]">Quét mã vạch hoặc nhấn vào mặt hàng để thêm</p>
               </div>
@@ -589,21 +589,21 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
             )}
           </div>
 
-          {/* Bottom Checkout & Payment Section - Compact */}
-          <div className="p-2 sm:p-2.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50/95 dark:bg-slate-900/95 space-y-1.5 shrink-0 shadow-sm">
+          {/* Bottom Checkout & Payment Section */}
+          <div className="p-2.5 sm:p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50/95 dark:bg-slate-900/95 space-y-2 shrink-0 shadow-sm">
             
             {/* Customer Information (Optional) */}
-            <div className="grid grid-cols-2 gap-1.5">
+            <div className="grid grid-cols-2 gap-2">
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-slate-400 pointer-events-none">
-                  <User className="w-3 h-3" />
+                <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400 pointer-events-none">
+                  <User className="w-3.5 h-3.5" />
                 </span>
                 <input
                   type="text"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="Khách lẻ tại quầy"
-                  className="w-full h-7 text-[11px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md pl-6 pr-2 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#075FA8]"
+                  className="w-full h-7.5 text-[11px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg pl-7 pr-2 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#075FA8]"
                 />
               </div>
 
