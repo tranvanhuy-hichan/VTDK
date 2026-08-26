@@ -211,7 +211,7 @@ export const AdminNotificationCenter: React.FC = () => {
 
       {/* Notifications Dropdown Drawer - Full Width on Mobile, Anchored on Desktop */}
       {isOpen && (
-        <div className="fixed inset-x-2.5 top-13 sm:absolute sm:inset-auto sm:right-0 sm:mt-2 sm:w-96 w-auto bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 animate-in fade-in zoom-in-95 overflow-hidden text-left">
+        <div className="fixed inset-x-3 top-14 sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 max-h-[calc(100vh-4.5rem)] flex flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 z-[9999] animate-in fade-in zoom-in-95 overflow-hidden text-left">
           {/* Header */}
           <div className="p-3.5 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2">

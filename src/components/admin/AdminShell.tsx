@@ -244,7 +244,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({
       {/* Main Content Layout */}
       <div className="lg:pl-56 flex flex-col min-h-screen">
         {/* Modern Compact Topbar Header */}
-        <header className="sticky top-0 z-20 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
+        <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
           <div className="flex items-center justify-between gap-2.5 px-2.5 sm:px-4 py-1.5">
             {/* Left: Mobile Toggle & Centered Breadcrumbs */}
             <div className="flex items-center gap-2 min-w-0">
@@ -324,7 +324,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({
 
                 {/* Admin User Menu Dropdown */}
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-72 sm:w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-2.5 z-50 animate-in fade-in zoom-in-95 text-left space-y-1.5">
+                  <div className="fixed inset-x-3 top-14 sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-2.5 z-[9999] animate-in fade-in zoom-in-95 text-left space-y-1.5">
                     {/* User Info Header */}
                     <div className="px-2.5 py-2 border-b border-slate-100 dark:border-slate-800">
                       <div className="flex items-center gap-2">
