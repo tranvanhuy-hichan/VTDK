@@ -127,7 +127,7 @@ export const PosInvoiceModal: React.FC<PosInvoiceModalProps> = ({
               <div className="text-[11px] text-slate-600 text-left pt-1">
                 <span>Khách hàng: </span>
                 <span className="font-bold text-slate-900">{data.customerName}</span>
-                {data.customerPhone && (
+                {Boolean(data.customerPhone && data.customerPhone.trim() && !data.customerPhone.startsWith("0900000000") && !data.customerPhone.startsWith("0000000000")) && (
                   <span className="text-slate-500"> ({data.customerPhone})</span>
                 )}
               </div>

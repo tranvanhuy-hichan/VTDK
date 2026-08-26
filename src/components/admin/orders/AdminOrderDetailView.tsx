@@ -122,13 +122,15 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
               </button>
             )}
 
-            <a
-              href={`tel:${order.customerPhone}`}
-              className="inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors shrink-0 whitespace-nowrap !min-h-0"
-            >
-              <Phone className="w-3 h-3" />
-              <span>Gọi khách</span>
-            </a>
+            {Boolean(order.customerPhone && order.customerPhone.trim() && !order.customerPhone.startsWith("0900000000") && !order.customerPhone.startsWith("0000000000")) && (
+              <a
+                href={`tel:${order.customerPhone}`}
+                className="inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors shrink-0 whitespace-nowrap !min-h-0"
+              >
+                <Phone className="w-3 h-3" />
+                <span>Gọi khách</span>
+              </a>
+            )}
           </div>
         </div>
 
@@ -288,12 +290,19 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
               <p className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">
                 {order.customerName}
               </p>
-              <p className="text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                <Phone className="w-3 h-3 text-slate-400" />
-                <a href={`tel:${order.customerPhone}`} className="text-[#075FA8] dark:text-blue-400 font-bold hover:underline !min-h-0 inline-flex items-center">
-                  {order.customerPhone}
-                </a>
-              </p>
+              {Boolean(order.customerPhone && order.customerPhone.trim() && !order.customerPhone.startsWith("0900000000") && !order.customerPhone.startsWith("0000000000")) ? (
+                <p className="text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                  <Phone className="w-3 h-3 text-slate-400" />
+                  <a href={`tel:${order.customerPhone}`} className="text-[#075FA8] dark:text-blue-400 font-bold hover:underline !min-h-0 inline-flex items-center">
+                    {order.customerPhone}
+                  </a>
+                </p>
+              ) : (
+                <p className="text-slate-400 dark:text-slate-500 italic text-[11px] flex items-center gap-1">
+                  <Phone className="w-3 h-3 text-slate-400 opacity-60" />
+                  <span>Không có số điện thoại</span>
+                </p>
+              )}
               {order.customerEmail && (
                 <p className="text-slate-500 dark:text-slate-400">{order.customerEmail}</p>
               )}

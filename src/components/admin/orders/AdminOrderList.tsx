@@ -472,10 +472,16 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
                     <p className="font-extrabold text-slate-900 dark:text-white truncate group-hover:text-[#075FA8] dark:group-hover:text-blue-400">
                       {order.customerName}
                     </p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
-                      <Phone className="w-3 h-3 text-slate-400" />
-                      <span>{order.customerPhone}</span>
-                    </p>
+                    {Boolean(order.customerPhone && order.customerPhone.trim() && !order.customerPhone.startsWith("0900000000") && !order.customerPhone.startsWith("0000000000")) ? (
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                        <Phone className="w-3 h-3 text-slate-400" />
+                        <span>{order.customerPhone}</span>
+                      </p>
+                    ) : (
+                      <p className="text-[11px] text-slate-400 dark:text-slate-500 italic mt-0.5">
+                        Không có SĐT
+                      </p>
+                    )}
                   </div>
 
                   <div className="text-right shrink-0">
@@ -541,7 +547,11 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
                       <div className="font-bold text-slate-900 dark:text-white truncate max-w-[150px]">
                         {order.customerName}
                       </div>
-                      <div className="text-[11px] text-slate-400">{order.customerPhone}</div>
+                      {Boolean(order.customerPhone && order.customerPhone.trim() && !order.customerPhone.startsWith("0900000000") && !order.customerPhone.startsWith("0000000000")) ? (
+                        <div className="text-[11px] text-slate-400">{order.customerPhone}</div>
+                      ) : (
+                        <div className="text-[11px] text-slate-400/60 italic">Không có SĐT</div>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       {order.shippingMethod === "DELIVERY" ? (

@@ -122,7 +122,13 @@ export const AdminNotificationCenter: React.FC = () => {
   const triggerSystemNotification = useCallback((order: OrderNotification) => {
     try {
       const title = `📦 Đơn hàng mới: #${order.orderCode}`;
-      const body = `Khách hàng: ${order.customerName} (${order.customerPhone}) • Tổng tiền: ${order.totalAmount.toLocaleString("vi-VN")} ₫`;
+      const hasPhone =
+        order.customerPhone &&
+        order.customerPhone.trim() !== "" &&
+        !order.customerPhone.startsWith("0900000000") &&
+        !order.customerPhone.startsWith("0000000000");
+      const phoneText = hasPhone ? ` (${order.customerPhone})` : "";
+      const body = `Khách hàng: ${order.customerName}${phoneText} • Tổng tiền: ${order.totalAmount.toLocaleString("vi-VN")} ₫`;
 
       if (typeof window !== "undefined" && "serviceWorker" in navigator && navigator.serviceWorker.controller) {
         navigator.serviceWorker.ready
@@ -269,7 +275,13 @@ export const AdminNotificationCenter: React.FC = () => {
                           {order.customerName}
                         </p>
                         <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                          Đơn #{order.orderCode} • SĐT: {order.customerPhone}
+                          Đơn #{order.orderCode}
+                          {order.customerPhone &&
+                            order.customerPhone.trim() !== "" &&
+                            !order.customerPhone.startsWith("0900000000") &&
+                            !order.customerPhone.startsWith("0000000000") && (
+                              <span> • SĐT: {order.customerPhone}</span>
+                            )}
                         </p>
                         <p className="text-xs font-black text-[#075FA8] dark:text-blue-400 mt-1">
                           {order.totalAmount.toLocaleString("vi-VN")} ₫
@@ -333,7 +345,13 @@ export const AdminNotificationCenter: React.FC = () => {
               </h4>
 
               <p className="text-xs font-bold text-[#075FA8] dark:text-blue-400 mt-0.5 truncate">
-                {activeAlert.totalAmount.toLocaleString("vi-VN")} ₫ • SĐT: {activeAlert.customerPhone}
+                {activeAlert.totalAmount.toLocaleString("vi-VN")} ₫
+                {activeAlert.customerPhone &&
+                  activeAlert.customerPhone.trim() !== "" &&
+                  !activeAlert.customerPhone.startsWith("0900000000") &&
+                  !activeAlert.customerPhone.startsWith("0000000000") && (
+                    <span> • SĐT: {activeAlert.customerPhone}</span>
+                  )}
               </p>
 
               <div className="mt-2.5 flex items-center gap-2">

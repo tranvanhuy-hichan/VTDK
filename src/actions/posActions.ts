@@ -194,7 +194,7 @@ export async function createPosOrderAction(payload: CreatePosOrderPayload) {
     const orderCode = `POS-${datePart}-${randomSuffix}`;
 
     const customerName = payload.customerName?.trim() || "Khách mua lẻ tại quầy";
-    const customerPhone = payload.customerPhone?.trim() || "0900000000";
+    const customerPhone = payload.customerPhone?.trim() || "";
     const customerEmail = payload.customerEmail?.trim() || null;
 
     const company = await getCompanyInfo();
