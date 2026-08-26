@@ -308,7 +308,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
   });
 
   return (
-    <div className="w-full flex flex-col h-[calc(100vh-65px)] overflow-hidden text-left bg-slate-100 dark:bg-slate-950 font-sans">
+    <div className="w-full flex flex-col h-auto lg:h-[calc(100dvh-4.5rem)] pb-16 lg:pb-0 overflow-hidden text-left bg-slate-100 dark:bg-slate-950 font-sans">
       {/* Top POS Status Bar - Ultra Thin & Compact */}
       <div className="h-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-2.5 flex items-center justify-between shrink-0 shadow-2xs">
         <div className="flex items-center gap-2">

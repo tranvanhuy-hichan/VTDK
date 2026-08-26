@@ -306,7 +306,7 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
   const [mobileTab, setMobileTab] = useState<"catalog" | "quote" | "customer">("catalog");
 
   return (
-    <div className="h-[calc(100vh-60px)] flex flex-col space-y-1.5 overflow-hidden text-left pb-0.5">
+    <div className="w-full flex flex-col h-auto lg:h-[calc(100dvh-4.5rem)] pb-16 lg:pb-0 space-y-1.5 overflow-hidden text-left bg-slate-100 dark:bg-slate-950 font-sans">
       {/* 1. Ultra Slim Top Status Bar */}
       <div className="h-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-2.5 flex items-center justify-between shrink-0 shadow-2xs rounded-lg">
         <div className="flex items-center gap-2">

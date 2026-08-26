@@ -391,8 +391,8 @@ export const AdminShell: React.FC<AdminShellProps> = ({
           </div>
         </header>
 
-        {/* Main Dashboard Workspace Content - Full Width & Clean */}
-        <main className="flex-1 p-2 sm:p-3 lg:p-4 w-full mx-auto animate-in fade-in duration-200">
+        {/* Main Dashboard Workspace Content - Full Width & Clean with Bottom Safe Area */}
+        <main className="flex-1 p-2 sm:p-3 lg:p-4 pb-20 sm:pb-24 lg:pb-12 w-full mx-auto animate-in fade-in duration-200">
           {children}
         </main>
       </div>

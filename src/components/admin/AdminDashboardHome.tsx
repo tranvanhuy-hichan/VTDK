@@ -79,16 +79,16 @@ export const AdminDashboardHome: React.FC<AdminDashboardHomeProps> = ({
             </h1>
           </div>
 
-          <div className="grid grid-cols-2 sm:flex sm:items-center gap-1.5 w-full sm:w-auto shrink-0">
+          <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto custom-scrollbar flex-nowrap w-full sm:w-auto shrink-0 pb-0.5">
             {company?.enablePosModule !== false && (
               <Button
                 variant="primary"
                 size="sm"
                 href="/admin/pos"
                 leftIcon={<Store className="w-3.5 h-3.5 text-slate-900" />}
-                className="bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold shadow-xs justify-center"
+                className="bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold shadow-xs shrink-0"
               >
-                Bán Tại Quầy (POS)
+                POS
               </Button>
             )}
 
@@ -97,9 +97,9 @@ export const AdminDashboardHome: React.FC<AdminDashboardHomeProps> = ({
               size="sm"
               href="/admin/analytics"
               leftIcon={<BarChart3 className="w-3.5 h-3.5" />}
-              className="bg-emerald-600 hover:bg-emerald-700 font-bold justify-center"
+              className="bg-emerald-600 hover:bg-emerald-700 font-bold shrink-0"
             >
-              Báo cáo doanh thu
+              Báo cáo
             </Button>
 
             <Button
@@ -107,9 +107,9 @@ export const AdminDashboardHome: React.FC<AdminDashboardHomeProps> = ({
               size="sm"
               href="/admin/products/new"
               leftIcon={<Plus className="w-3.5 h-3.5" />}
-              className="bg-white hover:bg-slate-100 text-[#075FA8] font-bold border-transparent justify-center"
+              className="bg-white hover:bg-slate-100 text-[#075FA8] font-bold border-transparent shrink-0"
             >
-              Thêm sản phẩm
+              Thêm SP
             </Button>
 
             <Button
@@ -117,9 +117,9 @@ export const AdminDashboardHome: React.FC<AdminDashboardHomeProps> = ({
               size="sm"
               href="/admin/orders"
               leftIcon={<ShoppingBag className="w-3.5 h-3.5 text-cyan-300" />}
-              className="bg-white/10 hover:bg-white/20 text-white border-white/20 justify-center"
+              className="bg-white/10 hover:bg-white/20 text-white border-white/20 shrink-0"
             >
-              Quản lý đơn
+              Đơn hàng
             </Button>
           </div>
         </div>
