@@ -57,13 +57,13 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
   return (
     <>
       {/* Top Action Bar */}
-      <div className="flex justify-end mb-3 sm:mb-4 text-left">
+      <div className="flex justify-end mb-2.5 text-left">
         <Link
           href="/admin/services/new"
-          className="inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-extrabold text-xs sm:text-sm px-4 py-2 rounded-xl shadow-xs transition-all cursor-pointer w-full sm:w-auto transform hover:-translate-y-0.5"
+          className="h-8.5 inline-flex items-center justify-center gap-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold text-xs px-3.5 rounded-lg shadow-xs transition-all cursor-pointer w-full sm:w-auto !min-h-0"
         >
-          <Plus className="w-4 h-4" />
-          <span>Thêm giải pháp mới</span>
+          <Plus className="w-3.5 h-3.5" />
+          <span>+ Thêm giải pháp mới</span>
         </Link>
       </div>
 

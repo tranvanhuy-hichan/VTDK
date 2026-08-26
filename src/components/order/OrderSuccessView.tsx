@@ -24,6 +24,7 @@ import type { CompanyContact } from "../../lib/company";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 import { formatCurrency, formatDate } from "../../lib/format";
 import { ProductDetailHeader } from "../product/ProductDetailHeader";
+import { OrderItemCard } from "@/components/ui";
 
 interface OrderSuccessViewProps {
   order: OrderDetail;
@@ -191,31 +192,17 @@ export const OrderSuccessView: React.FC<OrderSuccessViewProps> = ({ order, compa
             </div>
 
             {/* Product items */}
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="space-y-2 pt-1">
               {order.items.map((item) => (
-                <div key={item.id} className="py-2.5 sm:py-4 flex items-center gap-2.5 sm:gap-4">
-                  <div className="relative w-11 h-11 sm:w-16 sm:h-16 rounded-lg sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 shrink-0 border border-slate-200 dark:border-slate-700">
-                    <Image src={item.image} alt={item.productName} fill sizes="64px" className="object-cover" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
-                      {item.productName}
-                    </h4>
-                    {item.variantLabel && (
-                      <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[9px] sm:text-[11px] font-bold rounded-md">
-                        Quy cách: {item.variantLabel}
-                      </span>
-                    )}
-                    <div className="text-[10px] sm:text-xs text-slate-500 mt-0.5 font-medium">
-                      Đơn giá: {formatCurrency(item.price)} × {item.quantity}
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0 pl-1.5">
-                    <span className="text-xs sm:text-base font-black text-slate-900 dark:text-white">
-                      {formatCurrency(item.price * item.quantity)}
-                    </span>
-                  </div>
-                </div>
+                <OrderItemCard
+                  key={item.id}
+                  title={item.productName}
+                  variantTitle={item.variantLabel}
+                  unitPrice={item.price}
+                  quantity={item.quantity}
+                  image={item.image}
+                  readOnly={true}
+                />
               ))}
             </div>
 

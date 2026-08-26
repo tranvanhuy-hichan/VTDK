@@ -18,7 +18,11 @@ export default async function AdminDashboardLayout({
   const company = await getCompanyInfo();
 
   return (
-    <AdminShell companyName={company.name} adminUser={adminUser}>
+    <AdminShell
+      companyName={company.name}
+      adminUser={adminUser}
+      enablePosModule={company.enablePosModule ?? true}
+    >
       {children}
     </AdminShell>
   );

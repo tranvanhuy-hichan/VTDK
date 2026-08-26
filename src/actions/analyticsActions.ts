@@ -7,6 +7,10 @@ export interface AnalyticsSummary {
   totalRevenue: number;
   completedRevenue: number;
   pendingRevenue: number;
+  onlineRevenue: number;
+  onlineOrders: number;
+  posRevenue: number;
+  posOrders: number;
   totalOrders: number;
   completedOrders: number;
   pendingOrders: number;
@@ -108,6 +112,10 @@ export async function getAdminAnalyticsAction(
     let totalRevenue = 0;
     let completedRevenue = 0;
     let pendingRevenue = 0;
+    let onlineRevenue = 0;
+    let onlineOrders = 0;
+    let posRevenue = 0;
+    let posOrders = 0;
     let completedOrders = 0;
     let pendingOrders = 0;
     let cancelledOrders = 0;
@@ -135,6 +143,15 @@ export async function getAdminAnalyticsAction(
     for (const order of orders) {
       if (order.status !== "CANCELLED") {
         totalRevenue += order.totalAmount;
+      }
+
+      const isPos = (order as any).orderSource === "POS" || order.orderCode.startsWith("POS-");
+      if (isPos) {
+        posOrders++;
+        if (order.status !== "CANCELLED") posRevenue += order.totalAmount;
+      } else {
+        onlineOrders++;
+        if (order.status !== "CANCELLED") onlineRevenue += order.totalAmount;
       }
 
       if (order.status === "COMPLETED") {
@@ -281,6 +298,10 @@ export async function getAdminAnalyticsAction(
           totalRevenue,
           completedRevenue,
           pendingRevenue,
+          onlineRevenue,
+          onlineOrders,
+          posRevenue,
+          posOrders,
           totalOrders: orders.length,
           completedOrders,
           pendingOrders,

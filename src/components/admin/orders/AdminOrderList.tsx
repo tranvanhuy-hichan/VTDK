@@ -22,6 +22,7 @@ import type { OrderDetail } from "@/types/order";
 import { OrderStatusBadge } from "@/components/order/OrderStatusBadge";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { COMPANY_DATA } from "@/data/company";
+import { Button, Input, Tabs } from "@/components/ui";
 
 interface AdminOrderListProps {
   initialOrders: OrderDetail[];
@@ -399,62 +400,44 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
       </div>
 
       {/* 2. Compact Filter & Search Controls */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl p-2.5 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-2">
+      <div className="bg-white dark:bg-slate-900 rounded-xl p-2 sm:p-2.5 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-2">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
           {/* Status Tabs */}
-          <div className="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none">
-            {[
-              { key: "ALL", label: "Tất cả" },
-              { key: "PENDING", label: "Chờ xử lý" },
+          <Tabs
+            variant="pills"
+            size="sm"
+            activeKey={selectedStatus}
+            onChange={(key) => setSelectedStatus(key)}
+            tabs={[
+              { key: "ALL", label: "Tất cả", count: stats.totalOrders },
+              { key: "PENDING", label: "Chờ xử lý", count: stats.pendingCount },
               { key: "CONFIRMED", label: "Đã xác nhận" },
-              { key: "SHIPPING", label: "Đang giao" },
-              { key: "COMPLETED", label: "Hoàn thành" },
+              { key: "SHIPPING", label: "Đang giao", count: stats.shippingCount },
+              { key: "COMPLETED", label: "Hoàn thành", count: stats.completedCount },
               { key: "CANCELLED", label: "Đã hủy" },
-            ].map((tab) => (
-              <button
-                key={tab.key}
-                type="button"
-                onClick={() => setSelectedStatus(tab.key)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 transition-all cursor-pointer !min-h-0 ${
-                  selectedStatus === tab.key
-                    ? "bg-[#075FA8] text-white shadow-2xs font-extrabold"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+            ]}
+          />
 
           {/* Search bar & Export CTA */}
           <div className="flex items-center gap-2">
-            <div className="relative flex-1 sm:w-64">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
+            <div className="w-full sm:w-64">
+              <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm mã đơn, tên, SĐT..."
-                className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#075FA8]"
+                leftIcon={<Search className="w-3.5 h-3.5" />}
               />
             </div>
 
-            <button
-              type="button"
-              disabled={isExporting}
+            <Button
+              variant="success"
+              isLoading={isExporting}
               onClick={handleExportExcel}
-              title="Xuất file Excel (.xlsx) danh sách đơn hàng chuẩn doanh nghiệp"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-xs transition-colors shrink-0 cursor-pointer !min-h-0"
+              leftIcon={<Download className="w-3.5 h-3.5" />}
+              title="Xuất file Excel (.xlsx) danh sách đơn hàng"
             >
-              {isExporting ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Download className="w-3.5 h-3.5" />
-              )}
-              <span className="hidden sm:inline">
-                {isExporting ? "Đang xuất..." : "Xuất Excel"}
-              </span>
-            </button>
+              <span className="hidden sm:inline">Xuất Excel</span>
+            </Button>
           </div>
         </div>
       </div>
@@ -532,14 +515,27 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
                   </td>
                 </tr>
               ) : (
-                filteredOrders.map((order) => (
+                filteredOrders.map((order) => {
+                const isPos = order.orderCode.startsWith("POS-") || (order as any).orderSource === "POS";
+                return (
                   <tr
                     key={order.id}
                     className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group"
                     onClick={() => router.push(`/admin/orders/${order.id}`)}
                   >
                     <td className="px-4 py-3 font-mono font-bold text-[#075FA8] dark:text-blue-400 group-hover:underline">
-                      {order.orderCode}
+                      <div className="flex items-center gap-1.5">
+                        <span>{order.orderCode}</span>
+                        {isPos ? (
+                          <span className="text-[10px] font-sans font-bold px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/80">
+                            POS Quầy
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-sans font-bold px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-300 border border-blue-200/80">
+                            Web
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="font-bold text-slate-900 dark:text-white truncate max-w-[150px]">
@@ -554,7 +550,7 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-slate-600 dark:text-slate-300">
-                          <Store className="w-3.5 h-3.5 text-amber-500" /> Lấy tại kho
+                          <Store className="w-3.5 h-3.5 text-amber-500" /> {isPos ? "Tại quầy" : "Lấy tại kho"}
                         </span>
                       )}
                     </td>
@@ -578,8 +574,9 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
                       </Link>
                     </td>
                   </tr>
-                ))
-              )}
+                );
+              })
+            )}
             </tbody>
           </table>
         </div>

@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   Loader2,
   Save,
@@ -23,7 +22,10 @@ import {
   Copy,
   Lock,
 } from "lucide-react";
-import { updateCompanyInfoAction } from "../../app/admin/actions";
+import {
+  updateCompanyInfoAction,
+  updateCompanyShippingAction,
+} from "../../app/admin/actions";
 import type { CompanyContact } from "../../lib/company";
 import {
   VIETNAM_PROVINCES,
@@ -32,6 +34,7 @@ import {
   REGION_PROVINCE_CODES,
 } from "../../lib/vietnamProvinces";
 import { MultiImageUpload } from "./MultiImageUpload";
+import { Button, Tabs, Badge, Card, CardHeader, CardTitle } from "@/components/ui";
 
 const PLACEHOLDER_IMAGE = "/images/placeholder.svg";
 
@@ -42,15 +45,14 @@ interface CompanyInfoManagerProps {
 type TabType = "brand" | "contact" | "location" | "shipping" | "media";
 
 export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialCompany }) => {
-  const router = useRouter();
   const [savedData, setSavedData] = useState<CompanyContact>(initialCompany);
   const [form, setForm] = useState<CompanyContact>(initialCompany);
-  const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("brand");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Cover Image
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -68,7 +70,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
   // Freeship Provinces Selector State
   const [provinceSearch, setProvinceSearch] = useState("");
 
-  const freeshipList = Array.isArray(form.freeshipProvinces) && form.freeshipProvinces.length > 0
+  const freeshipList = Array.isArray(form.freeshipProvinces)
     ? form.freeshipProvinces
     : ["ALL"];
   const isAllFreeship = freeshipList.includes("ALL");
@@ -155,18 +157,14 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const handleStartEdit = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleStartEdit = () => {
     setForm(savedData);
     setIsEditing(true);
     setSavedSuccess(false);
     setErrorMessage(null);
   };
 
-  const handleCancelEdit = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleCancelEdit = () => {
     setForm(savedData);
     setImageFile(null);
     setImagePreview(null);
@@ -179,7 +177,6 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
     setSavedSuccess(false);
     setErrorMessage(null);
   };
-
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -251,10 +248,11 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
 
     formData.set("hotlineRaw", hotlineRaw);
     formData.set("hasDelivery", String(form.hasDelivery));
+    formData.set("enablePosModule", String(form.enablePosModule ?? true));
     formData.append(
       "freeshipProvinces",
       JSON.stringify(
-        Array.isArray(form.freeshipProvinces) && form.freeshipProvinces.length > 0
+        Array.isArray(form.freeshipProvinces)
           ? form.freeshipProvinces
           : ["ALL"]
       )
@@ -273,18 +271,32 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
     newGalleryFiles.forEach((file) => formData.append("newImages", file));
 
     try {
-      const res = await updateCompanyInfoAction(formData);
+      const res = activeTab === "shipping"
+        ? await updateCompanyShippingAction({
+            hasDelivery: form.hasDelivery,
+            shippingFeeDanang: form.shippingFeeDanang,
+            shippingFeeProvince: form.shippingFeeProvince,
+            freeshipThreshold: form.freeshipThreshold,
+            freeshipProvinces: Array.isArray(form.freeshipProvinces)
+              ? form.freeshipProvinces
+              : ["ALL"],
+            shippingNote: form.shippingNote,
+            enablePosModule: form.enablePosModule,
+          })
+        : await updateCompanyInfoAction(formData);
 
       if (res?.error) {
         setErrorMessage(res.error);
       } else {
+        const persistedCompany = res.company ?? form;
         setSavedSuccess(true);
-        setSavedData(form);
+        setSavedData(persistedCompany);
+        setForm(persistedCompany);
+        setExistingGalleryUrls(persistedCompany.images || []);
         setIsEditing(false);
         setImageFile(null);
         setLogoFile(null);
         setNewGalleryFiles([]);
-        router.refresh();
         setTimeout(() => setSavedSuccess(false), 5000);
       }
     } catch (err: any) {
@@ -300,18 +312,18 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
     : imagePreview ?? form.image ?? savedData.image ?? "/images/storefront.png";
 
   return (
-    <div className="space-y-6 text-left max-w-[1600px] mx-auto pb-16 animate-in fade-in duration-200">
-      {/* 1. TOP HERO BANNER: Brand Identity Showcase */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#061A30] via-[#092B4D] to-[#0A1F33] text-white p-6 sm:p-8 border border-slate-800 shadow-xl">
+    <div className="space-y-3 sm:space-y-4 text-left max-w-[1600px] mx-auto pb-12 animate-in fade-in duration-200">
+      {/* 1. TOP HERO BANNER: Brand Identity Showcase (Compact & Clean) */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#061A30] via-[#092B4D] to-[#0A1F33] text-white p-3.5 sm:p-5 border border-slate-800 shadow-lg">
         {/* Glow ambient background */}
         <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-1/3 -mb-16 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           {/* Logo & Main Info */}
-          <div className="flex items-center gap-4 sm:gap-5 min-w-0">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
             <div className="relative group shrink-0">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white dark:bg-slate-900 border-2 border-white/20 p-2 shadow-2xl flex items-center justify-center overflow-hidden">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-white dark:bg-slate-900 border border-white/20 p-1.5 shadow-md flex items-center justify-center overflow-hidden">
                 <img
                   src={currentLogo}
                   alt="Logo công ty"
@@ -319,8 +331,8 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                 />
               </div>
               {isEditing && (
-                <label className="absolute inset-0 rounded-2xl bg-slate-950/70 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer transition-opacity text-white text-[10px] font-bold gap-1">
-                  <Camera className="w-4 h-4" />
+                <label className="absolute inset-0 rounded-xl bg-slate-950/70 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer transition-opacity text-white text-[9px] font-bold gap-0.5">
+                  <Camera className="w-3 h-3" />
                   <span>Đổi Logo</span>
                   <input
                     type="file"
@@ -332,32 +344,32 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
               )}
             </div>
 
-            <div className="min-w-0 space-y-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+            <div className="min-w-0 space-y-0.5">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="inline-flex items-center gap-1 px-2 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[9px] font-bold uppercase tracking-wider">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Đang hoạt động
+                  Online
                 </span>
-                <span className="text-[11px] text-blue-200/80 font-mono">
+                <span className="text-[10px] text-blue-200/80 font-mono">
                   MST: {form.taxCode || "Chưa thiết lập"}
                 </span>
                 {isEditing && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 text-[10px] font-bold border border-amber-400/30">
-                    ✏️ Đang chỉnh sửa
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-md bg-amber-400/20 text-amber-300 text-[9px] font-bold border border-amber-400/30">
+                    ✏️ Sửa
                   </span>
                 )}
               </div>
 
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight truncate leading-tight">
-                {form.fullName || form.name || "Cấu hình Thông tin Doanh nghiệp"}
+              <h1 className="text-sm sm:text-lg font-black text-white tracking-tight truncate leading-tight">
+                {form.fullName || form.name || "Cấu hình Doanh nghiệp"}
               </h1>
 
-              <div className="flex items-center gap-3 text-xs text-blue-100/80 flex-wrap">
-                <span className="font-bold text-amber-300">
-                  Thương hiệu: {form.shortName || form.brandName}
+              <div className="flex items-center gap-2 text-[11px] text-blue-100/80 flex-wrap">
+                <span className="font-bold text-amber-300 truncate">
+                  {form.shortName || form.brandName}
                 </span>
-                <span>•</span>
-                <span className="truncate max-w-xs sm:max-w-md">
+                <span className="hidden sm:inline">•</span>
+                <span className="hidden sm:inline truncate max-w-xs">
                   {form.address}
                 </span>
               </div>
@@ -365,107 +377,78 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
           </div>
 
           {/* Top Action Buttons */}
-          <div className="flex items-center gap-2.5 w-full lg:w-auto shrink-0 flex-wrap sm:flex-nowrap">
-            {!isEditing ? (
-              <>
-                <Link
-                  href="/"
-                  target="_blank"
-                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl border border-white/20 backdrop-blur-md transition-colors cursor-pointer !min-h-0"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  <span>Xem Website</span>
-                </Link>
+          <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto shrink-0 justify-end">
+            <Button
+              variant="outline"
+              href="/"
+              target="_blank"
+              leftIcon={<ExternalLink className="w-3.5 h-3.5" />}
+              className="bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-md"
+            >
+              Xem Web
+            </Button>
 
-                <button
-                  type="button"
-                  key="btn-edit"
-                  onClick={handleStartEdit}
-                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#064B85] text-white font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-blue-900/40 transition-all active:scale-98 cursor-pointer !min-h-0"
-                >
-                  <Pencil className="w-4 h-4" />
-                  <span>Chỉnh sửa</span>
-                </button>
-              </>
-            ) : (
+            {isEditing ? (
               <>
-                <button
-                  type="button"
-                  key="btn-cancel"
+                <Button
+                  variant="secondary"
                   onClick={handleCancelEdit}
                   disabled={isSubmitting}
-                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl border border-slate-700 transition-colors cursor-pointer !min-h-0"
+                  leftIcon={<X className="w-3.5 h-3.5" />}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700"
                 >
-                  <X className="w-4 h-4" />
-                  <span>Hủy bỏ</span>
-                </button>
-
-                <button
+                  Hủy
+                </Button>
+                <Button
                   type="submit"
-                  key="btn-submit"
                   form="company-form"
-                  disabled={isSubmitting}
-                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-900/40 transition-all active:scale-98 cursor-pointer !min-h-0 disabled:opacity-50"
+                  variant="success"
+                  isLoading={isSubmitting}
+                  leftIcon={<Save className="w-3.5 h-3.5" />}
                 >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Đang lưu...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4" />
-                      <span>LƯU THAY ĐỔI</span>
-                    </>
-                  )}
-                </button>
+                  LƯU THAY ĐỔI
+                </Button>
               </>
+            ) : (
+              <Button
+                variant="primary"
+                onClick={handleStartEdit}
+                leftIcon={<Pencil className="w-3.5 h-3.5" />}
+              >
+                Chỉnh sửa
+              </Button>
             )}
           </div>
         </div>
       </div>
 
       {savedSuccess && (
-        <div className="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 rounded-2xl p-4 text-xs sm:text-sm text-emerald-800 dark:text-emerald-300 font-bold flex items-center gap-2.5 shadow-sm animate-in fade-in duration-200">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-          <span>Thông tin doanh nghiệp đã được cập nhật thành công trên toàn bộ hệ thống!</span>
+        <div className="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 rounded-xl p-2.5 text-xs text-emerald-800 dark:text-emerald-300 font-bold flex items-center gap-2 shadow-2xs animate-in fade-in duration-200">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span>Thông tin doanh nghiệp đã được cập nhật thành công!</span>
         </div>
       )}
 
       {errorMessage && (
-        <div className="bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 rounded-2xl p-4 text-xs sm:text-sm text-red-800 dark:text-red-300 font-bold flex items-center gap-2.5 shadow-sm animate-in fade-in duration-200">
+        <div className="bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 rounded-xl p-2.5 text-xs text-red-800 dark:text-red-300 font-bold flex items-center gap-2 shadow-2xs animate-in fade-in duration-200">
           <span>❌ {errorMessage}</span>
         </div>
       )}
 
       {/* 2. NAVIGATION SEGMENTED TABS */}
-      <div className="flex items-center gap-1.5 p-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-x-auto no-scrollbar shadow-xs">
-        {[
-          { id: "brand", label: "Thương hiệu & Pháp lý", icon: Sparkles },
-          { id: "contact", label: "Liên hệ & Mạng xã hội", icon: Phone },
-          { id: "location", label: "Địa chỉ & Bản đồ", icon: MapPinned },
-          { id: "shipping", label: "Vận chuyển & Phí ship", icon: Truck },
-          { id: "media", label: "Hình ảnh & Kho bãi", icon: Images },
-        ].map((t) => {
-          const Icon = t.icon;
-          const isActive = activeTab === t.id;
-          return (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setActiveTab(t.id as TabType)}
-              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold whitespace-nowrap transition-all cursor-pointer !min-h-0 ${
-                isActive
-                  ? "bg-[#075FA8] text-white shadow-md shadow-blue-800/20"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
-              }`}
-            >
-              <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-slate-400"}`} />
-              <span>{t.label}</span>
-            </button>
-          );
-        })}
-      </div>
+      <Tabs
+        variant="segmented"
+        size="md"
+        activeKey={activeTab}
+        onChange={(key) => setActiveTab(key as TabType)}
+        tabs={[
+          { key: "brand", label: "Thương hiệu & Pháp lý", icon: <Sparkles className="w-3.5 h-3.5" /> },
+          { key: "contact", label: "Liên hệ & MXH", icon: <Phone className="w-3.5 h-3.5" /> },
+          { key: "location", label: "Địa chỉ & Bản đồ", icon: <MapPinned className="w-3.5 h-3.5" /> },
+          { key: "shipping", label: "Vận chuyển & Phí", icon: <Truck className="w-3.5 h-3.5" /> },
+          { key: "media", label: "Hình ảnh & Kho", icon: <Images className="w-3.5 h-3.5" /> },
+        ]}
+      />
 
       {/* 3. MAIN FORM BODY */}
       <form id="company-form" onSubmit={handleSubmit}>
@@ -1027,6 +1010,30 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                     }`}
                   />
                 </div>
+
+                {/* enablePosModule (Bán hàng tại quầy POS) */}
+                <div className="space-y-1.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
+                    Phân hệ Bán Hàng Tại Quầy (POS &amp; Quét Mã Vạch Barcode)
+                  </label>
+                  <label className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 cursor-pointer">
+                    <div className="space-y-0.5 pr-2">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white block">
+                        {form.enablePosModule ?? true ? "🟢 Đang Bật Module POS Bán Tại Quầy" : "⚪ Đã Tắt Module POS"}
+                      </span>
+                      <span className="text-[11px] text-slate-400 block">
+                        Cho phép thu ngân quét mã vạch và tạo đơn hàng bán trực tiếp tại showroom.
+                      </span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      disabled={!isEditing}
+                      checked={form.enablePosModule ?? true}
+                      onChange={(e) => handleChange("enablePosModule", e.target.checked)}
+                      className="w-5 h-5 text-[#075FA8] border-slate-300 rounded focus:ring-[#075FA8]"
+                    />
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -1354,6 +1361,30 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
             </div>
           </div>
         )}
+
+        {/* BOTTOM SAVE ACTION BAR */}
+        {isEditing && <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm mt-6">
+          <div className="text-xs text-slate-500 dark:text-slate-400">
+            💡 Lưu ý: Các thay đổi về cước phí, tỉnh thành Freeship, module POS và thông tin doanh nghiệp sẽ có hiệu lực ngay lập tức khi bạn nhấn Lưu.
+          </div>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-lg shadow-emerald-900/30 transition-all active:scale-98 cursor-pointer disabled:opacity-50 shrink-0"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Đang lưu cài đặt...</span>
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                <span>LƯU THAY ĐỔI CÀI ĐẶT</span>
+              </>
+            )}
+          </button>
+        </div>}
       </form>
     </div>
   );

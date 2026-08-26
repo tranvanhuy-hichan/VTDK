@@ -25,6 +25,9 @@ model Product {
   id          String    @id @default(uuid())
   name        String
   slug        String    @unique
+  sku         String?   @unique
+  barcode     String?   @unique
+  stock       Int       @default(100)
   price       Int
   shortDesc   String?
   image       String    // cover image, e.g. /uploads/xxx.webp
@@ -38,12 +41,17 @@ model Product {
 
   @@index([active, createdAt])
   @@index([categoryId])
+  @@index([barcode])
+  @@index([sku])
 }
 
 model ProductVariant {
   id         String   @id @default(uuid())
   label      String   // e.g. "Độ dày 13mm", "183cm"
   price      Int
+  sku        String?
+  barcode    String?
+  stock      Int?     @default(100)
   sortOrder  Int      @default(0)
   productId  String
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -51,6 +59,8 @@ model ProductVariant {
   updatedAt  DateTime @updatedAt
 
   @@index([productId])
+  @@index([barcode])
+  @@index([sku])
 }
 
 model GalleryImage {
@@ -122,6 +132,8 @@ model CompanyInfo {
   themePreset     String   @default("ocean-blue")
   customCss       String?
   homepageSections String?
+  // POS Module Setting (Bật / Tắt bán hàng tại quầy)
+  enablePosModule Boolean  @default(true)
 
   updatedAt       DateTime @updatedAt
 }
@@ -129,6 +141,11 @@ model CompanyInfo {
 enum Role {
   CUSTOMER
   ADMIN
+}
+
+enum OrderSource {
+  ONLINE
+  POS
 }
 
 enum OrderStatus {
@@ -164,6 +181,10 @@ model User {
 model Order {
   id             String         @id @default(uuid())
   orderCode      String         @unique // Ví dụ: DK-260824-A89F
+  orderSource    OrderSource    @default(ONLINE)
+  paymentMethod  String         @default("CASH") // CASH, VIETQR, CARD, OTHER
+  cashReceived   Int?
+  cashChange     Int?
   userId         String?
   user           User?          @relation(fields: [userId], references: [id])
   customerName   String
@@ -182,6 +203,7 @@ model Order {
   @@index([userId])
   @@index([status, createdAt])
   @@index([orderCode])
+  @@index([orderSource, createdAt])
 }
 
 model OrderItem {

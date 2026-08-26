@@ -2,7 +2,6 @@
 
 import React, { useState, useTransition } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   BarChart3,
   TrendingUp,
@@ -28,6 +27,7 @@ import {
   type AnalyticsData,
 } from "../../actions/analyticsActions";
 import * as XLSX from "xlsx";
+import { Button, Tabs, Badge, Card, CardHeader, CardTitle } from "@/components/ui";
 
 interface AdminAnalyticsViewProps {
   initialData: AnalyticsData;
@@ -35,12 +35,12 @@ interface AdminAnalyticsViewProps {
 
 type TimeRangeKey = "7d" | "30d" | "this_month" | "last_month" | "all";
 
-const TIME_RANGES: { id: TimeRangeKey; label: string }[] = [
-  { id: "7d", label: "7 ngày qua" },
-  { id: "30d", label: "30 ngày qua" },
-  { id: "this_month", label: "Tháng này" },
-  { id: "last_month", label: "Tháng trước" },
-  { id: "all", label: "Toàn thời gian" },
+const TIME_RANGES: { key: TimeRangeKey; label: string }[] = [
+  { key: "7d", label: "7 ngày" },
+  { key: "30d", label: "30 ngày" },
+  { key: "this_month", label: "Tháng này" },
+  { key: "last_month", label: "Tháng trước" },
+  { key: "all", label: "Toàn bộ" },
 ];
 
 export const AdminAnalyticsView: React.FC<AdminAnalyticsViewProps> = ({ initialData }) => {
@@ -56,10 +56,11 @@ export const AdminAnalyticsView: React.FC<AdminAnalyticsViewProps> = ({ initialD
     orderCount: number;
   } | null>(null);
 
-  const handleRangeChange = (range: TimeRangeKey) => {
-    setCurrentRange(range);
+  const handleRangeChange = (range: string) => {
+    const rangeKey = range as TimeRangeKey;
+    setCurrentRange(rangeKey);
     startTransition(async () => {
-      const res = await getAdminAnalyticsAction(range);
+      const res = await getAdminAnalyticsAction(rangeKey);
       if (res.success && res.data) {
         setData(res.data);
       }
@@ -73,7 +74,7 @@ export const AdminAnalyticsView: React.FC<AdminAnalyticsViewProps> = ({ initialD
       // Sheet 1: Tổng quan
       const summaryData = [
         ["BÁO CÁO DOANH THU & KINH DOANH - VẬT TƯ ĐIỆN LẠNH ĐÔNG KHA"],
-        [`Khoảng thời gian: ${TIME_RANGES.find((r) => r.id === currentRange)?.label || currentRange}`],
+        [`Khoảng thời gian: ${TIME_RANGES.find((r) => r.key === currentRange)?.label || currentRange}`],
         [`Ngày xuất báo cáo: ${new Date().toLocaleDateString("vi-VN")}`],
         [],
         ["Chỉ Số", "Giá Trị", "Đơn Vị"],
@@ -133,127 +134,128 @@ export const AdminAnalyticsView: React.FC<AdminAnalyticsViewProps> = ({ initialD
   const maxTimelineRevenue = Math.max(...timeline.map((t) => t.revenue), 1000000);
 
   return (
-    <div className="space-y-4 sm:space-y-5 text-left animate-in fade-in duration-200">
-      {/* 1. Header Banner & Filter Row */}
-      <div className="rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#075FA8] via-[#08457A] to-[#0B2540] p-4 sm:p-5 text-white shadow-md">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/10 text-[10px] font-extrabold tracking-wide uppercase text-cyan-200 border border-white/10">
+    <div className="space-y-3 sm:space-y-3.5 text-left animate-in fade-in duration-200">
+      {/* 1. Header Banner & Filter Row - Compact & Tidy */}
+      <div className="rounded-xl bg-gradient-to-r from-[#075FA8] via-[#08457A] to-[#0B2540] p-3 sm:p-3.5 text-white shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div className="space-y-0.5">
+            <div className="inline-flex items-center gap-1 text-[10px] font-bold tracking-wide uppercase text-cyan-200">
               <BarChart3 className="w-3 h-3" />
-              <span>Thống Kê Doanh Thu &amp; Bán Hàng</span>
+              <span>Thống Kê Doanh Thu</span>
             </div>
-            <h1 className="text-lg sm:text-xl md:text-2xl font-black tracking-tight text-white">
+            <h1 className="text-sm sm:text-base font-black tracking-tight text-white leading-tight">
               Báo Cáo Phân Tích Hoạt Động
             </h1>
-            <p className="text-xs text-blue-100/80 font-medium">
-              Theo dõi hiệu quả doanh số, sản phẩm bán chạy và cơ cấu đơn hàng theo thời gian thực.
-            </p>
           </div>
 
           {/* Export Action */}
           <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
+            <Button
+              variant="success"
+              size="sm"
               onClick={handleExportExcel}
-              className="inline-flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl shadow-md transition-all active:scale-98 cursor-pointer !min-h-0"
+              leftIcon={<Download className="w-3.5 h-3.5" />}
+              className="bg-emerald-600 hover:bg-emerald-700 font-bold"
             >
-              <Download className="w-4 h-4" />
-              <span>Xuất File Excel</span>
-            </button>
+              Xuất Excel
+            </Button>
           </div>
         </div>
 
-        {/* Time Range Pills */}
-        <div className="mt-4 pt-3 border-t border-white/10 flex items-center flex-wrap gap-1.5 sm:gap-2">
-          <span className="text-[11px] font-bold text-blue-200 mr-1 hidden sm:inline">
-            Khoảng thời gian:
+        {/* Time Range Tabs */}
+        <div className="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+            {TIME_RANGES.map((range) => {
+              const isSelected = currentRange === range.key;
+              return (
+                <button
+                  key={range.key}
+                  type="button"
+                  onClick={() => handleRangeChange(range.key)}
+                  disabled={isPending}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer !min-h-0 flex items-center gap-1 shrink-0 ${
+                    isSelected
+                      ? "bg-white text-[#075FA8] shadow-2xs font-extrabold"
+                      : "bg-white/10 hover:bg-white/20 text-blue-100 border border-white/10"
+                  }`}
+                >
+                  {isSelected && isPending && <RefreshCw className="w-3 h-3 animate-spin" />}
+                  <span>{range.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <span className="text-[10px] text-blue-200/70 font-medium hidden md:inline">
+            Cập nhật thời gian thực
           </span>
-          {TIME_RANGES.map((range) => {
-            const isSelected = currentRange === range.id;
-            return (
-              <button
-                key={range.id}
-                type="button"
-                onClick={() => handleRangeChange(range.id)}
-                disabled={isPending}
-                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer !min-h-0 flex items-center gap-1.5 ${
-                  isSelected
-                    ? "bg-white text-[#075FA8] shadow-sm scale-102"
-                    : "bg-white/10 hover:bg-white/20 text-blue-100 border border-white/10"
-                }`}
-              >
-                {isSelected && isPending && <RefreshCw className="w-3 h-3 animate-spin" />}
-                <span>{range.label}</span>
-              </button>
-            );
-          })}
         </div>
       </div>
 
-      {/* 2. Key Metrics Grid (4 Primary KPI Cards) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
+      {/* 2. Key Metrics Grid (4 Primary KPI Cards - Compact) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5">
         {/* Total Revenue */}
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2">
+        <div className="p-2.5 sm:p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Tổng Doanh Thu
             </span>
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
-              <DollarSign className="w-4 h-4" />
+            <div className="w-6 h-6 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+              <DollarSign className="w-3.5 h-3.5" />
             </div>
           </div>
           <div>
-            <div className="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+            <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">
               {formatCurrency(summary.totalRevenue)}
             </div>
-            <div className="flex items-center gap-1 mt-1 text-[10px] text-slate-400">
+            <div className="flex items-center gap-1 text-[10px] text-slate-400">
               <span className="text-emerald-600 dark:text-emerald-400 font-bold">
                 {formatCurrency(summary.completedRevenue)}
               </span>
-              <span>đã hoàn tất</span>
+              <span>đã xong</span>
             </div>
           </div>
         </div>
 
         {/* Average Order Value (AOV) */}
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2">
+        <div className="p-2.5 sm:p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-              Giá Trị TB / Đơn (AOV)
+            <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              Giá Trị TB / Đơn
             </span>
-            <div className="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400 flex items-center justify-center font-bold">
-              <TrendingUp className="w-4 h-4" />
+            <div className="w-6 h-6 rounded-md bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400 flex items-center justify-center font-bold">
+              <TrendingUp className="w-3.5 h-3.5" />
             </div>
           </div>
           <div>
-            <div className="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+            <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">
               {formatCurrency(summary.averageOrderValue)}
             </div>
-            <div className="mt-1 text-[10px] text-slate-400 font-medium">
-              Từ {summary.totalOrders - summary.cancelledOrders} đơn đặt hợp lệ
+            <div className="text-[10px] text-slate-400 font-medium">
+              Từ {summary.totalOrders - summary.cancelledOrders} đơn hợp lệ
             </div>
           </div>
         </div>
 
         {/* Total Orders & Conversion */}
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2">
+        <div className="p-2.5 sm:p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-              Tỷ Lệ Hoàn Tất Đơn
+            <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              Tỷ Lệ Hoàn Tất
             </span>
-            <div className="w-7 h-7 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
-              <CheckCircle2 className="w-4 h-4" />
+            <div className="w-6 h-6 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
+              <CheckCircle2 className="w-3.5 h-3.5" />
             </div>
           </div>
           <div>
-            <div className="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+            <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">
               {summary.conversionRate}%
             </div>
-            <div className="mt-1 text-[10px] text-slate-400 font-medium flex items-center gap-1.5">
+            <div className="text-[10px] text-slate-400 font-medium flex items-center gap-1">
               <span>{summary.completedOrders}/{summary.totalOrders} đơn</span>
               {summary.pendingOrders > 0 && (
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  ({summary.pendingOrders} đang chờ)
+                  ({summary.pendingOrders} chờ)
                 </span>
               )}
             </div>
@@ -261,41 +263,87 @@ export const AdminAnalyticsView: React.FC<AdminAnalyticsViewProps> = ({ initialD
         </div>
 
         {/* Total Items Sold */}
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2">
+        <div className="p-2.5 sm:p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Sản Phẩm Đã Bán
             </span>
-            <div className="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
-              <Package className="w-4 h-4" />
+            <div className="w-6 h-6 rounded-md bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
+              <Package className="w-3.5 h-3.5" />
             </div>
           </div>
           <div>
-            <div className="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+            <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">
               {summary.totalItemsSold.toLocaleString("vi-VN")}
             </div>
-            <div className="mt-1 text-[10px] text-slate-400 font-medium">
-              Vật tư / linh kiện xuất kho
+            <div className="text-[10px] text-slate-400 font-medium">
+              Vật tư / linh kiện
             </div>
           </div>
         </div>
       </div>
 
+      {/* 2.5 Omnichannel Revenue Breakdown (Online vs POS) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+        {/* Online Sales Card */}
+        <div className="p-3 rounded-xl bg-gradient-to-br from-blue-50/70 via-white to-white dark:from-blue-950/30 dark:via-slate-900 dark:to-slate-900 border border-blue-100 dark:border-blue-900/50 shadow-2xs flex items-center justify-between">
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#075FA8] dark:text-blue-400 uppercase tracking-wider">
+              <ShoppingBag className="w-3.5 h-3.5" />
+              <span>Doanh Thu Online (Website)</span>
+            </div>
+            <div className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+              {formatCurrency(summary.onlineRevenue || 0)}
+            </div>
+            <p className="text-[10.5px] text-slate-500 dark:text-slate-400 font-medium">
+              Từ {summary.onlineOrders || 0} đơn đặt hàng trực tuyến
+            </p>
+          </div>
+          <div className="text-right">
+            <span className="inline-block px-2 py-0.5 rounded-lg bg-blue-100 dark:bg-blue-900/60 text-[#075FA8] dark:text-blue-300 font-black text-xs">
+              {summary.totalRevenue > 0
+                ? `${Math.round(((summary.onlineRevenue || 0) / summary.totalRevenue) * 100)}%`
+                : "0%"}
+            </span>
+          </div>
+        </div>
+
+        {/* Offline POS Sales Card */}
+        <div className="p-3 rounded-xl bg-gradient-to-br from-amber-50/70 via-white to-white dark:from-amber-950/30 dark:via-slate-900 dark:to-slate-900 border border-amber-100 dark:border-amber-900/50 shadow-2xs flex items-center justify-between">
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
+              <Store className="w-3.5 h-3.5" />
+              <span>Doanh Thu Bán Tại Quầy (POS)</span>
+            </div>
+            <div className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+              {formatCurrency(summary.posRevenue || 0)}
+            </div>
+            <p className="text-[10.5px] text-slate-500 dark:text-slate-400 font-medium">
+              Từ {summary.posOrders || 0} lượt tạo đơn tại showroom
+            </p>
+          </div>
+          <div className="text-right">
+            <span className="inline-block px-2 py-0.5 rounded-lg bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300 font-black text-xs">
+              {summary.totalRevenue > 0
+                ? `${Math.round(((summary.posRevenue || 0) / summary.totalRevenue) * 100)}%`
+                : "0%"}
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* 3. Revenue Timeline Chart */}
-      <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div className="p-3 sm:p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 border-b border-slate-100 dark:border-slate-800 pb-2">
           <div>
-            <h3 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-[#075FA8] dark:text-blue-400" />
+            <h3 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
+              <BarChart3 className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
               <span>Biểu Đồ Doanh Thu Dòng Thời Gian</span>
             </h3>
-            <p className="text-[11px] text-slate-400">
-              Phân bố doanh số và số lượng đơn hàng theo từng ngày
-            </p>
           </div>
 
           {hoveredPoint && (
-            <div className="p-1.5 px-3 rounded-xl bg-blue-50 dark:bg-blue-950 text-xs font-bold text-[#075FA8] dark:text-blue-300 border border-blue-200 dark:border-blue-800 animate-in fade-in">
+            <div className="py-0.5 px-2 rounded-md bg-blue-50 dark:bg-blue-950 text-[11px] font-bold text-[#075FA8] dark:text-blue-300 border border-blue-200 dark:border-blue-800 animate-in fade-in">
               <span>{hoveredPoint.label}: </span>
               <span className="text-slate-900 dark:text-white ml-1">
                 {formatCurrency(hoveredPoint.revenue)} ({hoveredPoint.orderCount} đơn)
@@ -305,12 +353,12 @@ export const AdminAnalyticsView: React.FC<AdminAnalyticsViewProps> = ({ initialD
         </div>
 
         {timeline.length === 0 ? (
-          <div className="p-8 text-center text-xs text-slate-400">
+          <div className="p-6 text-center text-xs text-slate-400">
             Chưa có dữ liệu giao dịch trong khoảng thời gian này.
           </div>
         ) : (
-          <div className="pt-2">
-            <div className="h-44 sm:h-52 flex items-end gap-1.5 sm:gap-2 pt-4 pb-2 px-1 overflow-x-auto">
+          <div>
+            <div className="h-36 sm:h-40 flex items-end gap-1 sm:gap-1.5 pt-2 pb-1 px-1 overflow-x-auto">
               {timeline.map((point) => {
                 const heightPercent = Math.max(
                   8,
@@ -319,21 +367,21 @@ export const AdminAnalyticsView: React.FC<AdminAnalyticsViewProps> = ({ initialD
                 return (
                   <div
                     key={point.date}
-                    className="flex-1 min-w-[28px] max-w-[48px] h-full flex flex-col justify-end items-center group cursor-pointer"
+                    className="flex-1 min-w-[24px] max-w-[42px] h-full flex flex-col justify-end items-center group cursor-pointer"
                     onMouseEnter={() => setHoveredPoint(point)}
                     onMouseLeave={() => setHoveredPoint(null)}
                   >
                     {/* Bar visual */}
                     <div
-                      className={`w-full rounded-t-lg transition-all duration-300 relative ${
+                      className={`w-full rounded-t-md transition-all duration-200 relative ${
                         point.revenue > 0
-                          ? "bg-gradient-to-t from-[#075FA8] to-blue-400 hover:from-blue-700 hover:to-cyan-400 shadow-xs"
+                          ? "bg-gradient-to-t from-[#075FA8] to-blue-400 hover:from-blue-700 hover:to-cyan-400 shadow-2xs"
                           : "bg-slate-100 dark:bg-slate-800"
                       }`}
                       style={{ height: `${heightPercent}%` }}
                     >
                       {/* Tooltip on bar hover */}
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-20 bg-slate-950 text-white text-[10px] font-bold py-1 px-2 rounded-lg whitespace-nowrap shadow-xl pointer-events-none">
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-20 bg-slate-950 text-white text-[10px] font-bold py-0.5 px-1.5 rounded-md whitespace-nowrap shadow-lg pointer-events-none">
                         <div>{point.label}</div>
                         <div className="text-cyan-300">{formatCurrency(point.revenue)}</div>
                         <div className="text-slate-400 font-normal">{point.orderCount} đơn</div>
@@ -341,7 +389,7 @@ export const AdminAnalyticsView: React.FC<AdminAnalyticsViewProps> = ({ initialD
                     </div>
 
                     {/* Date label */}
-                    <span className="text-[9px] sm:text-[10px] text-slate-400 mt-1.5 font-medium truncate w-full text-center">
+                    <span className="text-[9px] text-slate-400 mt-1 font-medium truncate w-full text-center">
                       {point.label}
                     </span>
                   </div>
@@ -353,169 +401,158 @@ export const AdminAnalyticsView: React.FC<AdminAnalyticsViewProps> = ({ initialD
       </div>
 
       {/* 4. Two Columns: Top 10 Best Sellers & Category/Shipping Distribution */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3.5 sm:gap-4">
-        {/* Left Column (2 cols): Top 10 Best Selling Products */}
-        <div className="lg:col-span-2 p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-md shadow-amber-500/20">
-                <Award className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">
-                  Top Mặt Hàng Bán Chạy Nhất
-                </h3>
-                <p className="text-xs text-slate-400">
-                  Xếp hạng theo tổng doanh thu &amp; sản lượng xuất kho
-                </p>
-              </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        {/* Left Column (2 cols): Top 10 Best Selling Products - Sleek Minimalist Table */}
+        <div className="lg:col-span-2 p-3 sm:p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-2">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+            <div className="flex items-center gap-1.5">
+              <Award className="w-4 h-4 text-amber-500" />
+              <h3 className="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white">
+                Top Mặt Hàng Bán Chạy Nhất
+              </h3>
             </div>
-            <span className="text-xs font-extrabold px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
               {topProducts.length} sản phẩm
             </span>
           </div>
 
           {topProducts.length === 0 ? (
-            <div className="py-12 text-center space-y-2">
-              <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mx-auto">
-                <Package className="w-6 h-6" />
-              </div>
+            <div className="py-8 text-center space-y-1">
+              <Package className="w-6 h-6 text-slate-400 mx-auto" />
               <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
                 Chưa có mặt hàng nào được bán trong giai đoạn này.
               </p>
             </div>
           ) : (
-            <div className="space-y-2.5 max-h-[520px] overflow-y-auto pr-1">
-              {topProducts.map((prod, index) => {
-                const revenueShare =
-                  summary.totalRevenue > 0
-                    ? Math.round((prod.totalRevenue / summary.totalRevenue) * 100)
-                    : 0;
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-400 dark:text-slate-500 font-bold text-[10.5px] uppercase tracking-wider">
+                    <th className="py-1.5 px-2 w-10 text-center">Top</th>
+                    <th className="py-1.5 px-2">Sản phẩm</th>
+                    <th className="py-1.5 px-2 text-right w-24 hidden sm:table-cell">Đơn giá</th>
+                    <th className="py-1.5 px-2 text-center w-16">Đã bán</th>
+                    <th className="py-1.5 px-2 text-right w-24">Doanh thu</th>
+                    <th className="py-1.5 px-2 text-right w-14 hidden md:table-cell">Tỷ trọng</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                  {topProducts.map((prod, index) => {
+                    const revenueShare =
+                      summary.totalRevenue > 0
+                        ? Math.round((prod.totalRevenue / summary.totalRevenue) * 100)
+                        : 0;
 
-                const isTop1 = index === 0;
-                const isTop2 = index === 1;
-                const isTop3 = index === 2;
+                    return (
+                      <tr
+                        key={prod.productSlug || index}
+                        className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors group align-middle"
+                      >
+                        <td className="py-2 px-2 text-center align-middle">
+                          {index === 0 ? (
+                            <span className="w-5 h-5 rounded-md bg-amber-500 text-white font-black text-[10px] inline-flex items-center justify-center shadow-2xs">
+                              1
+                            </span>
+                          ) : index === 1 ? (
+                            <span className="w-5 h-5 rounded-md bg-slate-400 text-white font-black text-[10px] inline-flex items-center justify-center shadow-2xs">
+                              2
+                            </span>
+                          ) : index === 2 ? (
+                            <span className="w-5 h-5 rounded-md bg-amber-700 text-white font-black text-[10px] inline-flex items-center justify-center shadow-2xs">
+                              3
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 font-bold text-[11px]">
+                              {index + 1}
+                            </span>
+                          )}
+                        </td>
 
-                return (
-                  <div
-                    key={prod.productSlug || index}
-                    className="group p-3 sm:p-3.5 rounded-2xl bg-slate-50/70 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800/90 border border-slate-200/60 dark:border-slate-700/60 hover:border-blue-300 dark:hover:border-blue-700/60 hover:shadow-md transition-all duration-200 flex items-center gap-3 sm:gap-4"
-                  >
-                    {/* Rank Medal */}
-                    <div className="shrink-0">
-                      {isTop1 ? (
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-600 text-white font-black text-xs shadow-md shadow-amber-500/25 flex items-center justify-center">
-                          #1
-                        </div>
-                      ) : isTop2 ? (
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-slate-300 via-slate-400 to-slate-500 text-white font-black text-xs shadow-md shadow-slate-400/20 flex items-center justify-center">
-                          #2
-                        </div>
-                      ) : isTop3 ? (
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-700 to-orange-800 text-white font-black text-xs shadow-md shadow-orange-700/20 flex items-center justify-center">
-                          #3
-                        </div>
-                      ) : (
-                        <div className="w-8 h-8 rounded-xl bg-slate-200/70 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 font-bold text-xs flex items-center justify-center">
-                          #{index + 1}
-                        </div>
-                      )}
-                    </div>
+                        <td className="py-2 px-2 align-middle">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className="w-8 h-8 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 relative overflow-hidden shrink-0 flex items-center justify-center">
+                              {prod.image ? (
+                                <img
+                                  src={prod.image}
+                                  alt={prod.productName}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <Package className="w-3.5 h-3.5 text-slate-400" />
+                              )}
+                            </div>
+                            <Link
+                              href={`/san-pham/${prod.productSlug}`}
+                              target="_blank"
+                              className="font-bold text-xs text-slate-800 dark:text-slate-200 group-hover:text-[#075FA8] dark:group-hover:text-blue-400 truncate flex-1 leading-snug !min-h-0 transition-colors"
+                            >
+                              {prod.productName}
+                            </Link>
+                          </div>
+                        </td>
 
-                    {/* Product Image */}
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700 relative overflow-hidden shrink-0 shadow-xs flex items-center justify-center group-hover:scale-105 transition-transform">
-                      {prod.image ? (
-                        <img
-                          src={prod.image}
-                          alt={prod.productName}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <Package className="w-6 h-6 text-slate-300 dark:text-slate-600" />
-                      )}
-                    </div>
+                        <td className="py-2 px-2 text-right font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap hidden sm:table-cell align-middle">
+                          {formatCurrency(prod.price)}
+                        </td>
 
-                    {/* Product Details & Contribution Bar */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <Link
-                          href={`/san-pham/${prod.productSlug}`}
-                          target="_blank"
-                          className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate block group-hover:text-[#075FA8] dark:group-hover:text-blue-400 transition-colors"
-                        >
-                          {prod.productName}
-                        </Link>
-                        <ArrowUpRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-[#075FA8] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-                      </div>
+                        <td className="py-2 px-2 text-center align-middle">
+                          <span className="px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-[#075FA8] dark:text-blue-300 font-mono font-bold text-[11px] inline-block">
+                            {prod.totalQty}
+                          </span>
+                        </td>
 
-                      <div className="flex flex-wrap items-center gap-2 mt-1">
-                        <span className="text-[11px] font-medium text-slate-400">
-                          Đơn giá: <span className="font-bold text-slate-700 dark:text-slate-300">{formatCurrency(prod.price)}</span>
-                        </span>
-                        <span className="text-[10px] font-black bg-blue-50 dark:bg-blue-950/80 text-[#075FA8] dark:text-blue-300 px-2 py-0.5 rounded-lg border border-blue-100 dark:border-blue-900/40">
-                          Đã xuất: {prod.totalQty} cái
-                        </span>
-                      </div>
+                        <td className="py-2 px-2 text-right font-black text-slate-900 dark:text-white whitespace-nowrap align-middle">
+                          {formatCurrency(prod.totalRevenue)}
+                        </td>
 
-                      {/* Revenue Share Progress Bar */}
-                      <div className="w-full bg-slate-200/70 dark:bg-slate-700/60 h-1.5 rounded-full overflow-hidden mt-2">
-                        <div
-                          className="h-full bg-gradient-to-r from-blue-500 to-[#075FA8] dark:from-blue-400 dark:to-blue-600 rounded-full transition-all duration-500"
-                          style={{ width: `${Math.max(revenueShare, 5)}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Revenue Metric */}
-                    <div className="text-right shrink-0 pl-1">
-                      <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white tracking-tight">
-                        {formatCurrency(prod.totalRevenue)}
-                      </div>
-                      <span className="inline-block mt-0.5 text-[10px] font-extrabold text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-blue-950/80 px-2 py-0.5 rounded-md border border-blue-100/80 dark:border-blue-900/40">
-                        {revenueShare}% doanh số
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+                        <td className="py-2 px-2 text-right hidden md:table-cell align-middle">
+                          <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400">
+                            {revenueShare}%
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
 
         {/* Right Column (1 col): Category Breakdown & Shipping */}
-        <div className="space-y-3.5">
+        <div className="space-y-3">
           {/* Category Breakdown */}
-          <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-              <h3 className="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
+          <div className="p-3 sm:p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-2.5">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-1.5">
+              <h3 className="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
                 <Layers className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
-                <span>Doanh Thu Theo Danh Mục</span>
+                <span>Theo Danh Mục</span>
               </h3>
             </div>
 
             {categoryBreakdown.length === 0 ? (
-              <div className="p-4 text-center text-xs text-slate-400">
+              <div className="p-3 text-center text-xs text-slate-400">
                 Chưa có dữ liệu danh mục.
               </div>
             ) : (
-              <div className="space-y-2.5">
+              <div className="space-y-2">
                 {categoryBreakdown.map((cat) => (
-                  <div key={cat.categoryName} className="space-y-1">
-                    <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
+                  <div key={cat.categoryName} className="space-y-0.5">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-700 dark:text-slate-300">
                       <span className="truncate pr-2">{cat.categoryName}</span>
                       <span className="shrink-0 text-slate-900 dark:text-white font-extrabold">
                         {formatCurrency(cat.revenue)}
                       </span>
                     </div>
                     {/* Progress Bar */}
-                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
                       <div
                         className="bg-[#075FA8] h-full rounded-full transition-all duration-500"
                         style={{ width: `${Math.min(100, Math.max(4, cat.percentage))}%` }}
                       />
                     </div>
-                    <div className="flex items-center justify-between text-[10px] text-slate-400">
-                      <span>{cat.itemCount} món đã bán</span>
+                    <div className="flex items-center justify-between text-[9.5px] text-slate-400">
+                      <span>{cat.itemCount} món</span>
                       <span>{cat.percentage}%</span>
                     </div>
                   </div>
@@ -525,9 +562,9 @@ export const AdminAnalyticsView: React.FC<AdminAnalyticsViewProps> = ({ initialD
           </div>
 
           {/* Shipping Method Distribution */}
-          <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2.5">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-              <h3 className="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
+          <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-2">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-1.5">
+              <h3 className="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
                 <Truck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 <span>Phương Thức Nhận Hàng</span>
               </h3>
@@ -535,29 +572,29 @@ export const AdminAnalyticsView: React.FC<AdminAnalyticsViewProps> = ({ initialD
 
             <div className="grid grid-cols-2 gap-2">
               {/* Delivery */}
-              <div className="p-2.5 rounded-xl bg-blue-50/50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 text-left space-y-1">
-                <div className="flex items-center gap-1 text-[11px] font-bold text-[#075FA8] dark:text-blue-300">
-                  <Truck className="w-3.5 h-3.5" />
+              <div className="p-2 rounded-lg bg-blue-50/50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 text-left space-y-0.5">
+                <div className="flex items-center gap-1 text-[10.5px] font-bold text-[#075FA8] dark:text-blue-300">
+                  <Truck className="w-3 h-3" />
                   <span>Giao Tận Nơi</span>
                 </div>
-                <div className="text-sm font-black text-slate-900 dark:text-white">
+                <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
                   {shippingBreakdown.deliveryCount} đơn
                 </div>
-                <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                <div className="text-[9.5px] text-slate-500 dark:text-slate-400 truncate">
                   {formatCurrency(shippingBreakdown.deliveryRevenue)}
                 </div>
               </div>
 
               {/* Store Pickup */}
-              <div className="p-2.5 rounded-xl bg-amber-50/50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/40 text-left space-y-1">
-                <div className="flex items-center gap-1 text-[11px] font-bold text-amber-700 dark:text-amber-300">
-                  <Store className="w-3.5 h-3.5" />
-                  <span>Lấy Tại Kho</span>
+              <div className="p-2 rounded-lg bg-amber-50/50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/40 text-left space-y-0.5">
+                <div className="flex items-center gap-1 text-[10.5px] font-bold text-amber-700 dark:text-amber-300">
+                  <Store className="w-3 h-3" />
+                  <span>Tại Kho</span>
                 </div>
-                <div className="text-sm font-black text-slate-900 dark:text-white">
+                <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
                   {shippingBreakdown.storePickupCount} đơn
                 </div>
-                <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                <div className="text-[9.5px] text-slate-500 dark:text-slate-400 truncate">
                   {formatCurrency(shippingBreakdown.storePickupRevenue)}
                 </div>
               </div>

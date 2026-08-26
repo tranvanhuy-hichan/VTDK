@@ -32,6 +32,8 @@ export interface CompanyContact {
   logoUrl: string;
   image: string;
   images: string[];
+  // POS Module Setting
+  enablePosModule?: boolean;
   // Theme & Styling Customization
   primaryColor?: string;
   primaryDark?: string;
@@ -74,6 +76,7 @@ const FALLBACK: CompanyContact = {
   logoUrl: COMPANY_DATA.logoUrl,
   image: COMPANY_DATA.storefrontUrl,
   images: [],
+  enablePosModule: true,
   primaryColor: "#075FA8",
   primaryDark: "#0B1F33",
   primaryLight: "#EBF3FA",
@@ -95,73 +98,80 @@ export function invalidateCompanyCache() {
   globalForCompany.__companyInfoBackup = null;
 }
 
-export const getCompanyInfo = unstable_cache(
-  async (): Promise<CompanyContact> => {
-    try {
-      const info = (await prisma.companyInfo.findFirst()) as any;
-      if (!info) {
-        return globalForCompany.__companyInfoBackup || FALLBACK;
-      }
+export function formatCompanyInfo(info: any): CompanyContact {
+  return {
+    id: info.id,
+    name: info.fullName || info.name || FALLBACK.fullName,
+    fullName: info.fullName || info.name || FALLBACK.fullName,
+    shortName: info.shortName || FALLBACK.shortName,
+    brandName: info.brandName || FALLBACK.brandName,
+    tagline: info.tagline || FALLBACK.tagline,
+    city: info.city || FALLBACK.city,
+    address: info.address || FALLBACK.address,
+    hotline: info.hotline || FALLBACK.hotline,
+    hotlineRaw: info.hotlineRaw || FALLBACK.hotlineRaw,
+    email: info.email ?? FALLBACK.email,
+    taxCode: info.taxCode ?? FALLBACK.taxCode,
+    zaloUrl: info.zaloUrl || FALLBACK.zaloUrl,
+    whatsAppUrl: info.whatsAppUrl || FALLBACK.whatsAppUrl,
+    facebookUrl: info.facebookUrl || FALLBACK.facebookUrl,
+    googleMapsUrl: info.googleMapsUrl || FALLBACK.googleMapsUrl,
+    googleMapsEmbed: info.googleMapsEmbed || FALLBACK.googleMapsEmbed,
+    workingHours: info.workingHours || FALLBACK.workingHours,
+    hasDelivery: typeof info.hasDelivery === "boolean" ? info.hasDelivery : true,
+    shippingFeeDanang:
+      typeof info.shippingFeeDanang === "number"
+        ? info.shippingFeeDanang
+        : FALLBACK.shippingFeeDanang,
+    shippingFeeProvince:
+      typeof info.shippingFeeProvince === "number"
+        ? info.shippingFeeProvince
+        : FALLBACK.shippingFeeProvince,
+    freeshipThreshold:
+      typeof info.freeshipThreshold === "number"
+        ? info.freeshipThreshold
+        : FALLBACK.freeshipThreshold,
+    freeshipProvinces:
+      Array.isArray(info.freeshipProvinces)
+        ? info.freeshipProvinces
+        : FALLBACK.freeshipProvinces,
+    shippingNote: info.shippingNote ?? FALLBACK.shippingNote,
+    logoUrl: info.logoUrl || FALLBACK.logoUrl,
+    image: info.image || FALLBACK.image,
+    images: Array.isArray(info.images) ? info.images : [],
+    enablePosModule: typeof info.enablePosModule === "boolean" ? info.enablePosModule : true,
+    primaryColor: info.primaryColor || FALLBACK.primaryColor,
+    primaryDark: info.primaryDark || FALLBACK.primaryDark,
+    primaryLight: info.primaryLight || FALLBACK.primaryLight,
+    accentColor: info.accentColor || FALLBACK.accentColor,
+    accentHover: info.accentHover || FALLBACK.accentHover,
+    fontFamily: info.fontFamily || FALLBACK.fontFamily,
+    borderRadius: info.borderRadius || FALLBACK.borderRadius,
+    headerStyle: info.headerStyle || FALLBACK.headerStyle,
+    themePreset: info.themePreset || FALLBACK.themePreset,
+    customCss: info.customCss ?? FALLBACK.customCss,
+    homepageSections: info.homepageSections ?? FALLBACK.homepageSections,
+  };
+}
 
-      const formatted: CompanyContact = {
-        id: info.id,
-        name: info.fullName || info.name || FALLBACK.fullName,
-        fullName: info.fullName || info.name || FALLBACK.fullName,
-        shortName: info.shortName || FALLBACK.shortName,
-        brandName: info.brandName || FALLBACK.brandName,
-        tagline: info.tagline || FALLBACK.tagline,
-        city: info.city || FALLBACK.city,
-        address: info.address || FALLBACK.address,
-        hotline: info.hotline || FALLBACK.hotline,
-        hotlineRaw: info.hotlineRaw || FALLBACK.hotlineRaw,
-        email: info.email ?? FALLBACK.email,
-        taxCode: info.taxCode ?? FALLBACK.taxCode,
-        zaloUrl: info.zaloUrl || FALLBACK.zaloUrl,
-        whatsAppUrl: info.whatsAppUrl || FALLBACK.whatsAppUrl,
-        facebookUrl: info.facebookUrl || FALLBACK.facebookUrl,
-        googleMapsUrl: info.googleMapsUrl || FALLBACK.googleMapsUrl,
-        googleMapsEmbed: info.googleMapsEmbed || FALLBACK.googleMapsEmbed,
-        workingHours: info.workingHours || FALLBACK.workingHours,
-        hasDelivery: typeof info.hasDelivery === "boolean" ? info.hasDelivery : true,
-        shippingFeeDanang:
-          typeof info.shippingFeeDanang === "number"
-            ? info.shippingFeeDanang
-            : FALLBACK.shippingFeeDanang,
-        shippingFeeProvince:
-          typeof info.shippingFeeProvince === "number"
-            ? info.shippingFeeProvince
-            : FALLBACK.shippingFeeProvince,
-        freeshipThreshold:
-          typeof info.freeshipThreshold === "number"
-            ? info.freeshipThreshold
-            : FALLBACK.freeshipThreshold,
-        freeshipProvinces:
-          Array.isArray(info.freeshipProvinces) && info.freeshipProvinces.length > 0
-            ? info.freeshipProvinces
-            : FALLBACK.freeshipProvinces,
-        shippingNote: info.shippingNote ?? FALLBACK.shippingNote,
-        logoUrl: info.logoUrl || FALLBACK.logoUrl,
-        image: info.image || FALLBACK.image,
-        images: Array.isArray(info.images) ? info.images : [],
-        primaryColor: info.primaryColor || FALLBACK.primaryColor,
-        primaryDark: info.primaryDark || FALLBACK.primaryDark,
-        primaryLight: info.primaryLight || FALLBACK.primaryLight,
-        accentColor: info.accentColor || FALLBACK.accentColor,
-        accentHover: info.accentHover || FALLBACK.accentHover,
-        fontFamily: info.fontFamily || FALLBACK.fontFamily,
-        borderRadius: info.borderRadius || FALLBACK.borderRadius,
-        headerStyle: info.headerStyle || FALLBACK.headerStyle,
-        themePreset: info.themePreset || FALLBACK.themePreset,
-        customCss: info.customCss ?? FALLBACK.customCss,
-        homepageSections: info.homepageSections ?? FALLBACK.homepageSections,
-      };
-
-      globalForCompany.__companyInfoBackup = formatted;
-      return formatted;
-    } catch (e) {
-      console.warn("getCompanyInfo database query failed, using memory backup or fallback:", e);
+export async function getFreshCompanyInfo(): Promise<CompanyContact> {
+  try {
+    const info = (await prisma.companyInfo.findFirst()) as any;
+    if (!info) {
       return globalForCompany.__companyInfoBackup || FALLBACK;
     }
+    const formatted = formatCompanyInfo(info);
+    globalForCompany.__companyInfoBackup = formatted;
+    return formatted;
+  } catch (e) {
+    console.warn("getFreshCompanyInfo database query failed, using fallback:", e);
+    return globalForCompany.__companyInfoBackup || FALLBACK;
+  }
+}
+
+export const getCompanyInfo = unstable_cache(
+  async (): Promise<CompanyContact> => {
+    return getFreshCompanyInfo();
   },
   ["company-info"],
   { revalidate: 300, tags: ["company-info"] }

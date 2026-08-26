@@ -18,6 +18,7 @@ import dynamic from "next/dynamic";
 import type { OrderDetail, OrderStatus } from "@/types/order";
 import { adminUpdateOrderStatusAction } from "@/actions/orderActions";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { OrderItemCard } from "@/components/ui";
 
 import { PrintableQuoteModal, type QuoteItem } from "@/components/quote/PrintableQuoteModal";
 import { FileText } from "lucide-react";
@@ -49,6 +50,7 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
+  const [mobileTab, setMobileTab] = useState<"items" | "customer">("items");
 
   const handleCopyAddress = () => {
     if (!order.address) return;
@@ -89,105 +91,132 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
   const totalQuantity = order.items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="w-full text-left max-w-7xl mx-auto space-y-3 pb-16 px-1 sm:px-2">
+    <div className="w-full text-left max-w-7xl mx-auto space-y-2.5 sm:space-y-4 pb-12 px-1 sm:px-2">
       {/* Compact order header */}
-      <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-        <div className="flex items-center gap-2 min-w-0 text-xs">
-          <div className="flex items-center gap-1 min-w-0">
-            <span className="font-mono text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">
-              #{order.orderCode}
-            </span>
+      <div className="rounded-xl border border-slate-200 bg-white p-2.5 sm:p-3.5 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0 text-xs">
+            <div className="flex items-center gap-1 min-w-0">
+              <span className="font-mono text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">
+                #{order.orderCode}
+              </span>
+            </div>
+            <span className="text-slate-300 dark:text-slate-700">•</span>
+            <span className="text-slate-500 dark:text-slate-400 whitespace-nowrap">{formatDate(order.createdAt)}</span>
           </div>
-          <span className="text-slate-300 dark:text-slate-700">•</span>
-          <span className="text-slate-500 dark:text-slate-400 whitespace-nowrap">{formatDate(order.createdAt)}</span>
-        </div>
 
-        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-          <PrintableOrderSlip order={order} company={company} />
+          <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
+            <PrintableOrderSlip order={order} company={company} />
 
-          <button
-            type="button"
-            onClick={() => setIsQuoteOpen(true)}
-            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-[#075FA8] dark:text-blue-300 hover:bg-blue-100 text-xs font-bold shadow-xs transition-colors shrink-0 whitespace-nowrap cursor-pointer !min-h-0"
-          >
-            <FileText className="w-3.5 h-3.5" />
-            <span>Báo giá PDF</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setIsQuoteOpen(true)}
+              className="inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-[#075FA8] dark:text-blue-300 hover:bg-blue-100 text-xs font-bold shadow-2xs transition-colors shrink-0 whitespace-nowrap cursor-pointer !min-h-0"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Báo giá PDF</span>
+            </button>
 
-          <a
-            href={`tel:${order.customerPhone}`}
-            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-colors shrink-0 whitespace-nowrap !min-h-0"
-          >
-            <Phone className="w-3 h-3" />
-            <span>Gọi khách</span>
-          </a>
-        </div>
+            <a
+              href={`tel:${order.customerPhone}`}
+              className="inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors shrink-0 whitespace-nowrap !min-h-0"
+            >
+              <Phone className="w-3 h-3" />
+              <span>Gọi khách</span>
+            </a>
+          </div>
         </div>
 
         {/* Forward-only order progress */}
-        <div className="mt-3 border-t border-slate-100 pt-3 dark:border-slate-800">
-        {currentStatus === "CANCELLED" ? (
-          <div className="rounded-lg bg-red-50 px-3 py-2 text-xs font-bold text-red-700 dark:bg-red-950/40 dark:text-red-300">
-            Đơn hàng đã hủy
-          </div>
-        ) : (
-          <div className="relative grid grid-cols-4">
-            <div className="absolute left-[12.5%] right-[12.5%] top-3 h-0.5 bg-slate-200 dark:bg-slate-700" />
-            <div
-              className="absolute left-[12.5%] top-3 h-0.5 bg-[#075FA8] transition-all duration-300"
-              style={{ width: `${(ORDER_FLOW.indexOf(currentStatus) / (ORDER_FLOW.length - 1)) * 75}%` }}
-            />
-            {ORDER_FLOW.map((status, index) => {
-              const currentIndex = ORDER_FLOW.indexOf(currentStatus);
-              const isReached = index <= currentIndex;
-              const isCurrent = index === currentIndex;
-              const canAdvance = index === currentIndex + 1 && !loading;
+        <div className="mt-2.5 border-t border-slate-100 pt-2.5 dark:border-slate-800">
+          {currentStatus === "CANCELLED" ? (
+            <div className="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-bold text-red-700 dark:bg-red-950/40 dark:text-red-300">
+              Đơn hàng đã hủy
+            </div>
+          ) : (
+            <div className="relative grid grid-cols-4">
+              <div className="absolute left-[12.5%] right-[12.5%] top-2.5 sm:top-3 h-0.5 bg-slate-200 dark:bg-slate-700" />
+              <div
+                className="absolute left-[12.5%] top-2.5 sm:top-3 h-0.5 bg-[#075FA8] transition-all duration-300"
+                style={{ width: `${(ORDER_FLOW.indexOf(currentStatus) / (ORDER_FLOW.length - 1)) * 75}%` }}
+              />
+              {ORDER_FLOW.map((status, index) => {
+                const currentIndex = ORDER_FLOW.indexOf(currentStatus);
+                const isReached = index <= currentIndex;
+                const isCurrent = index === currentIndex;
+                const canAdvance = index === currentIndex + 1 && !loading;
 
-              return (
-                <button
-                  key={status}
-                  type="button"
-                  disabled={!canAdvance}
-                  onClick={() => canAdvance && handleStatusChange(status)}
-                  className={`relative z-10 flex flex-col items-center gap-1 bg-transparent !min-h-0 ${
-                    canAdvance ? "cursor-pointer group" : "cursor-default"
-                  }`}
-                  title={canAdvance ? `Chuyển sang ${ORDER_STEP_LABELS[status]}` : undefined}
-                >
-                  <span
-                    className={`flex h-6 w-6 items-center justify-center rounded-full border-2 text-[10px] font-black transition-colors ${
-                      isReached
-                        ? "border-[#075FA8] bg-[#075FA8] text-white"
-                        : canAdvance
-                          ? "border-blue-300 bg-white text-[#075FA8] group-hover:bg-blue-50 dark:bg-slate-900"
-                          : "border-slate-300 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-900"
-                    } ${isCurrent ? "ring-4 ring-blue-100 dark:ring-blue-950" : ""}`}
+                return (
+                  <button
+                    key={status}
+                    type="button"
+                    disabled={!canAdvance}
+                    onClick={() => canAdvance && handleStatusChange(status)}
+                    className={`relative z-10 flex flex-col items-center gap-1 bg-transparent !min-h-0 ${
+                      canAdvance ? "cursor-pointer group" : "cursor-default"
+                    }`}
+                    title={canAdvance ? `Chuyển sang ${ORDER_STEP_LABELS[status]}` : undefined}
                   >
-                    {index < currentIndex || currentStatus === "COMPLETED" ? <Check className="w-3 h-3" /> : index + 1}
-                  </span>
-                  <span className={`text-[9px] sm:text-[10px] font-bold ${isReached ? "text-[#075FA8] dark:text-blue-400" : "text-slate-400"}`}>
-                    {ORDER_STEP_LABELS[status]}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        )}
+                    <span
+                      className={`flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full border-2 text-[9px] sm:text-[10px] font-black transition-colors ${
+                        isReached
+                          ? "border-[#075FA8] bg-[#075FA8] text-white"
+                          : canAdvance
+                            ? "border-blue-300 bg-white text-[#075FA8] group-hover:bg-blue-50 dark:bg-slate-900"
+                            : "border-slate-300 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-900"
+                      } ${isCurrent ? "ring-2 sm:ring-4 ring-blue-100 dark:ring-blue-950" : ""}`}
+                    >
+                      {index < currentIndex || currentStatus === "COMPLETED" ? <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> : index + 1}
+                    </span>
+                    <span className={`text-[9px] sm:text-[10px] font-bold ${isReached ? "text-[#075FA8] dark:text-blue-400" : "text-slate-400"}`}>
+                      {ORDER_STEP_LABELS[status]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-        {msg && (
-          <div className="mt-2 flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
-            <CheckCircle2 className="w-3 h-3 shrink-0" />
-            <span>{msg}</span>
-          </div>
-        )}
+          {msg && (
+            <div className="mt-2 flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+              <CheckCircle2 className="w-3 h-3 shrink-0" />
+              <span>{msg}</span>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Mobile Segmented Tab Switcher */}
+      <div className="lg:hidden flex items-center bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700 shrink-0">
+        <button
+          type="button"
+          onClick={() => setMobileTab("items")}
+          className={`flex-1 py-1 px-1.5 rounded-md text-[11px] font-bold flex items-center justify-center gap-1 transition-all ${
+            mobileTab === "items"
+              ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs"
+              : "text-slate-500 hover:text-slate-800 dark:text-slate-400"
+          }`}
+        >
+          <span>1. Sản phẩm ({order.items.length})</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileTab("customer")}
+          className={`flex-1 py-1 px-1.5 rounded-md text-[11px] font-bold flex items-center justify-center gap-1 transition-all ${
+            mobileTab === "customer"
+              ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs"
+              : "text-slate-500 hover:text-slate-800 dark:text-slate-400"
+          }`}
+        >
+          <span>2. Khách &amp; Giao nhận</span>
+        </button>
       </div>
+
       {/* Order details */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* LEFT: Products & Payment Summary (7 cols) */}
-        <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-          <div className="px-4 sm:px-5 py-4 bg-slate-50/80 dark:bg-slate-800/70 border-b border-slate-200/90 dark:border-slate-800 flex items-center justify-between">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-5 items-start">
+        {/* LEFT: Products & Payment Summary (8 cols) */}
+        <div className={`lg:col-span-8 bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-2xs ${mobileTab !== "items" ? "hidden lg:block" : "block"}`}>
+          <div className="px-3.5 sm:px-4 py-2.5 bg-slate-50/80 dark:bg-slate-800/70 border-b border-slate-200/90 dark:border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-200">
               <Package className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
               <span>Sản phẩm ({order.items.length})</span>
@@ -198,45 +227,27 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
           </div>
 
           {/* Product Items */}
-          <div className="divide-y divide-slate-100 dark:divide-slate-800">
+          <div className="p-2 sm:p-3 space-y-2">
             {order.items.map((item, idx) => (
-              <div key={item.id || idx} className="p-4 sm:p-5 flex items-center gap-3 sm:gap-4 hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors">
-                <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0 border border-slate-200 dark:border-slate-700">
-                  <Image src={item.image} alt={item.productName} fill sizes="64px" className="object-cover" />
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-extrabold text-slate-900 dark:text-white leading-snug line-clamp-2">
-                    {item.productName}
-                  </h4>
-                  {item.variantLabel && (
-                    <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-blue-50 dark:bg-blue-950 text-[#075FA8] dark:text-blue-300 text-[10px] font-bold rounded">
-                      {item.variantLabel}
-                    </span>
-                  )}
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    {formatCurrency(item.price)} × <strong className="text-slate-900 dark:text-white">{item.quantity}</strong>
-                  </p>
-                </div>
-
-                <div className="text-right shrink-0">
-                  <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
-                    {formatCurrency(item.price * item.quantity)}
-                  </span>
-                </div>
-              </div>
+              <OrderItemCard
+                key={item.id || idx}
+                title={item.productName}
+                variantTitle={item.variantLabel}
+                unitPrice={item.price}
+                quantity={item.quantity}
+                image={item.image}
+                readOnly={true}
+              />
             ))}
           </div>
 
-          {/* Financial summary footer */}
-          <div className="p-4 sm:p-5 bg-slate-50/70 dark:bg-slate-800/50 border-t border-slate-200/90 dark:border-slate-800 space-y-2.5 text-sm">
-            <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
-              <span>Tạm tính (Tiền hàng):</span>
-              <span className="font-semibold text-slate-800 dark:text-slate-200">
-                {formatCurrency(order.items.reduce((s, i) => s + i.price * i.quantity, 0))}
-              </span>
+          {/* Total calculation */}
+          <div className="border-t border-slate-200 bg-slate-50/50 p-3 sm:p-4 space-y-1.5 text-xs sm:text-sm dark:border-slate-800 dark:bg-slate-800/30">
+            <div className="flex justify-between text-slate-500 dark:text-slate-400 text-xs">
+              <span>Tạm tính tiền hàng:</span>
+              <span className="font-bold text-slate-900 dark:text-white">{formatCurrency(order.items.reduce((s, i) => s + i.price * i.quantity, 0))}</span>
             </div>
-            <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
+            <div className="flex justify-between text-slate-500 dark:text-slate-400 text-xs">
               <span>Phí vận chuyển:</span>
               <span
                 className={`font-semibold ${
@@ -251,16 +262,16 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
               </span>
             </div>
             <div className="pt-2 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
-              <span className="font-black text-slate-900 dark:text-white">Tổng tiền thanh toán:</span>
-              <span className="text-xl font-black text-orange-600 dark:text-orange-400">
+              <span className="font-black text-slate-900 dark:text-white text-xs sm:text-sm">Tổng tiền thanh toán:</span>
+              <span className="text-base sm:text-lg font-black text-orange-600 dark:text-orange-400">
                 {formatCurrency(order.totalAmount)}
               </span>
             </div>
           </div>
         </div>
 
-        {/* RIGHT: Customer & Shipping (5 cols) */}
-        <div className="lg:col-span-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        {/* RIGHT: Customer & Shipping (4 cols) */}
+        <div className={`lg:col-span-4 overflow-hidden rounded-xl sm:rounded-2xl border border-slate-200 bg-white shadow-2xs dark:border-slate-800 dark:bg-slate-900 ${mobileTab !== "customer" ? "hidden lg:block" : "block"}`}>
           {/* Customer info card */}
           <div className="p-4 sm:p-5 space-y-4 text-sm">
             <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-3">

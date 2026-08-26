@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import {
   Search,
@@ -21,6 +22,7 @@ import {
   Calculator,
   ChevronLeft,
   ChevronRight,
+  ArrowLeft,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import {
@@ -28,6 +30,7 @@ import {
   readVNDInWords,
   type QuoteItem,
 } from "@/components/quote/PrintableQuoteModal";
+import { OrderItemCard } from "@/components/ui";
 import type { Category, Product, ProductVariant } from "@prisma/client";
 
 interface ProductWithRelations extends Product {
@@ -144,38 +147,38 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
     quoteNote,
   ]);
 
-  // Filtered Products
+  // Filter products by category and search
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
       const matchCat =
         selectedCategory === "ALL" || p.categoryId === selectedCategory;
-      const q = searchQuery.toLowerCase().trim();
       const matchSearch =
-        !q ||
-        p.name.toLowerCase().includes(q) ||
-        p.category.name.toLowerCase().includes(q);
+        !searchQuery.trim() ||
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.category.name.toLowerCase().includes(searchQuery.toLowerCase());
       return matchCat && matchSearch;
     });
   }, [products, selectedCategory, searchQuery]);
 
-  // Reset to page 1 when filter changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, selectedCategory]);
-
-  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE) || 1;
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / ITEMS_PER_PAGE));
   const paginatedProducts = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     return filteredProducts.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredProducts, currentPage]);
 
-  // Calculations
+  // Reset page when category or search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, searchQuery]);
+
+  // Financial calculations
   const subtotal = useMemo(() => {
     return quoteItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   }, [quoteItems]);
 
   const vatAmount = useMemo(() => {
-    return Math.round(subtotal * (vatRate / 100));
+    if (vatRate <= 0) return 0;
+    return Math.round((subtotal * vatRate) / 100);
   }, [subtotal, vatRate]);
 
   const grandTotal = useMemo(() => {
@@ -185,15 +188,14 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
   // Add standard product to quote
   const handleAddProduct = (product: ProductWithRelations) => {
     const hasVariants = product.variants && product.variants.length > 0;
-    const selectedVariantId =
-      selectedVariants[product.id] || (hasVariants ? product.variants[0].id : undefined);
-    const variant = hasVariants
-      ? product.variants.find((v) => v.id === selectedVariantId) || product.variants[0]
-      : undefined;
+    const currentVariantId = selectedVariants[product.id] || (hasVariants ? product.variants[0].id : "");
+    const activeVariant = hasVariants
+      ? product.variants.find((v) => v.id === currentVariantId)
+      : null;
 
-    const price = variant ? variant.price : product.price;
-    const variantTitle = variant ? variant.label : undefined;
-    const itemId = variant ? `${product.id}-${variant.id}` : product.id;
+    const itemId = activeVariant ? `${product.id}-${activeVariant.id}` : product.id;
+    const itemPrice = activeVariant ? activeVariant.price : product.price;
+    const variantTitle = activeVariant ? activeVariant.label : undefined;
 
     setQuoteItems((prev) => {
       const existing = prev.find((i) => i.id === itemId);
@@ -208,9 +210,9 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
           id: itemId,
           name: product.name,
           variantTitle,
-          unit: "Cái",
+          price: itemPrice,
           quantity: 1,
-          price,
+          unit: "Cái",
           image: product.image,
           categoryName: product.category.name,
         },
@@ -221,26 +223,29 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
     setTimeout(() => setAddedAnimationId(null), 1200);
   };
 
-  // Add custom line item
+  // Add custom uncatalogued item
   const handleAddCustomItem = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customName.trim() || customPrice === "" || customPrice < 0) {
-      alert("Vui lòng nhập tên vật tư/dịch vụ và đơn giá hợp lệ.");
-      return;
-    }
+    if (!customName.trim()) return;
 
-    const newItem: QuoteDraftItem = {
-      id: `custom-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-      name: customName.trim(),
-      variantTitle: customVariant.trim() || undefined,
-      unit: customUnit.trim() || "Cái",
-      price: Number(customPrice),
-      quantity: Math.max(1, customQty),
-      isCustom: true,
-      categoryName: "Vật tư / Dịch vụ ngoài",
-    };
+    const parsedPrice = typeof customPrice === "number" ? customPrice : 0;
+    const newItemId = `custom-${Date.now()}`;
 
-    setQuoteItems((prev) => [...prev, newItem]);
+    setQuoteItems((prev) => [
+      ...prev,
+      {
+        id: newItemId,
+        name: customName.trim(),
+        variantTitle: customVariant.trim() || undefined,
+        price: parsedPrice,
+        quantity: Math.max(1, customQty),
+        unit: customUnit.trim() || "Cái",
+        isCustom: true,
+        categoryName: "Vật tư phụ / Dịch vụ",
+      },
+    ]);
+
+    // Reset inline custom form
     setCustomName("");
     setCustomVariant("");
     setCustomPrice("");
@@ -249,21 +254,24 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
   };
 
   // Update item quantity
-  const handleUpdateQty = (id: string, newQty: number) => {
-    if (newQty <= 0) {
-      handleRemoveItem(id);
-      return;
-    }
+  const handleUpdateQty = (id: string, delta: number) => {
     setQuoteItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, quantity: newQty } : i))
+      prev
+        .map((i) => {
+          if (i.id === id) {
+            const nextQty = Math.max(1, i.quantity + delta);
+            return { ...i, quantity: nextQty };
+          }
+          return i;
+        })
+        .filter((i) => i.quantity > 0)
     );
   };
 
-  // Update item unit price
+  // Update item custom price
   const handleUpdatePrice = (id: string, newPrice: number) => {
-    if (newPrice < 0) return;
     setQuoteItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, price: newPrice } : i))
+      prev.map((i) => (i.id === id ? { ...i, price: Math.max(0, newPrice) } : i))
     );
   };
 
@@ -296,63 +304,63 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
   };
 
   return (
-    <div className="h-[calc(100vh-80px)] flex flex-col space-y-3 overflow-hidden text-left pb-1">
-      {/* 1. Compact Header Banner (Fixed height) */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl p-2.5 sm:p-3.5 shadow-xs border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shrink-0">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#075FA8] to-[#0B3D66] text-white flex items-center justify-center shadow-xs shrink-0">
-            <FileSpreadsheet className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-sm font-black text-slate-900 dark:text-white tracking-tight">
-                Báo Giá B2B
-              </h1>
-              <span className="px-1.5 py-0.5 rounded-md bg-blue-100 dark:bg-blue-950 text-[#075FA8] dark:text-blue-300 text-[9px] font-black uppercase tracking-wider">
-                Quotation Studio
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
-              Chọn nhanh sản phẩm từ kho, tùy biến đơn giá chiết khấu, thông tin đối tác và xuất file báo giá chuẩn A4.
-            </p>
+    <div className="h-[calc(100vh-65px)] flex flex-col space-y-2 overflow-hidden text-left pb-1">
+      {/* 1. Ultra Slim Top Status Bar */}
+      <div className="h-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-2.5 flex items-center justify-between shrink-0 shadow-2xs rounded-lg">
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin"
+            className="w-6 h-6 !min-h-0 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors inline-flex items-center justify-center shrink-0"
+            title="Về trang quản trị"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+          </Link>
+          <div className="flex items-center gap-1.5 leading-none">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <h1 className="text-xs font-black text-slate-900 dark:text-white tracking-tight leading-none">
+              BÁO GIÁ B2B
+            </h1>
+            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-[#075FA8] dark:text-blue-300 border border-blue-100 dark:border-blue-800 hidden sm:inline-block leading-none">
+              QUOTATION STUDIO
+            </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={handleClearQuote}
-            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer !min-h-0"
+            className="h-6 !min-h-0 inline-flex items-center gap-1 text-[10px] font-extrabold px-2 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
             title="Làm mới toàn bộ bảng báo giá"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span>Làm mới</span>
+            <RefreshCw className="w-2.5 h-2.5" />
+            <span className="hidden sm:inline">Làm mới</span>
           </button>
 
           <button
             type="button"
             onClick={() => setIsPreviewOpen(true)}
             disabled={quoteItems.length === 0}
-            className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-[#075FA8] to-[#0a4d87] hover:from-[#0B3D66] hover:to-[#075FA8] text-white text-xs font-black shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer !min-h-0 active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+            className="h-6 !min-h-0 inline-flex items-center gap-1 text-[10px] font-black px-2.5 rounded-md bg-[#075FA8] hover:bg-[#0B3D66] text-white shadow-xs transition-colors cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
           >
-            <FileText className="w-3.5 h-3.5" />
-            <span>Xem &amp; Xuất Báo Giá A4 ({quoteItems.length})</span>
+            <FileText className="w-3 h-3" />
+            <span>Xuất Báo Giá A4 ({quoteItems.length})</span>
           </button>
         </div>
       </div>
 
       {/* 2. Main Two-Column Layout (Fills remaining height, 0 outer scroll) */}
-      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3.5 overflow-hidden">
+      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2 overflow-hidden">
         
         {/* LEFT COLUMN: Product Catalog Picker (7 cols) - Independent Scroll */}
-        <div className="lg:col-span-7 h-full flex flex-col bg-white dark:bg-slate-900 rounded-2xl p-3.5 shadow-xs border border-slate-200 dark:border-slate-800 space-y-2.5 overflow-hidden">
+        <div className="lg:col-span-7 h-full flex flex-col bg-white dark:bg-slate-900 rounded-xl p-2 sm:p-2.5 shadow-xs border border-slate-200 dark:border-slate-800 space-y-1.5 overflow-hidden">
           
           {/* Pinned Top Controls on Left Side */}
-          <div className="space-y-2.5 shrink-0">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <Layers className="w-4 h-4 text-[#075FA8] dark:text-blue-400" />
-                <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase tracking-wide">
+          <div className="space-y-1.5 shrink-0">
+            <div className="flex items-center justify-between gap-1.5">
+              <div className="flex items-center gap-1.5 leading-none">
+                <Layers className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
+                <h2 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight">
                   Kho Sản Phẩm &amp; Vật Tư
                 </h2>
               </div>
@@ -361,40 +369,40 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
               <button
                 type="button"
                 onClick={() => setIsAddingCustomItem(!isAddingCustomItem)}
-                className="px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer !min-h-0 self-start sm:self-auto"
+                className="px-2 py-0.5 rounded-md bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer !min-h-0"
               >
-                <PlusCircle className="w-3.5 h-3.5" />
-                <span>+ Thêm vật tư/dịch vụ ngoài</span>
+                <PlusCircle className="w-3 h-3" />
+                <span>+ Thêm ngoài</span>
               </button>
             </div>
 
             {/* Search Input */}
             <div className="relative">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Tìm kiếm sản phẩm theo tên, quy cách..."
-                className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#075FA8]/30 focus:border-[#075FA8]"
+                placeholder="Tìm kiếm theo tên, mã SKU, quy cách..."
+                className="w-full pl-8 pr-7 py-1 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#075FA8]"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="text-xs text-slate-400 hover:text-slate-600 absolute right-3 top-1/2 -translate-y-1/2"
+                  className="text-[11px] text-slate-400 hover:text-slate-600 absolute right-2.5 top-1/2 -translate-y-1/2"
                 >
-                  Xóa
+                  ✕
                 </button>
               )}
             </div>
 
             {/* Category Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+            <div className="flex items-center gap-1 overflow-x-auto pb-0.5 no-scrollbar">
               <button
                 type="button"
                 onClick={() => setSelectedCategory("ALL")}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0 transition-all cursor-pointer !min-h-0 ${
+                className={`px-2 py-0.5 rounded-md text-[10px] font-bold shrink-0 transition-all cursor-pointer !min-h-0 ${
                   selectedCategory === "ALL"
                     ? "bg-[#075FA8] text-white shadow-xs"
                     : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
@@ -407,7 +415,7 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0 transition-all cursor-pointer !min-h-0 ${
+                  className={`px-2 py-0.5 rounded-md text-[10px] font-bold shrink-0 transition-all cursor-pointer !min-h-0 ${
                     selectedCategory === cat.id
                       ? "bg-[#075FA8] text-white shadow-xs"
                       : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
@@ -422,17 +430,17 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
             {isAddingCustomItem && (
               <form
                 onSubmit={handleAddCustomItem}
-                className="p-3 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 space-y-2 animate-in fade-in"
+                className="p-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 space-y-1.5 animate-in fade-in"
               >
                 <div className="flex items-center justify-between">
-                  <div className="text-[11px] font-black text-emerald-800 dark:text-emerald-300 uppercase tracking-wide flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Thêm Hạng Mục / Dịch Vụ Ngoài Danh Mục</span>
+                  <div className="text-[10px] font-black text-emerald-800 dark:text-emerald-300 uppercase tracking-wide flex items-center gap-1">
+                    <Sparkles className="w-3 h-3" />
+                    <span>Thêm Hạng Mục Ngoài Kho</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setIsAddingCustomItem(false)}
-                    className="text-xs text-slate-400 hover:text-slate-600"
+                    className="text-[10px] text-slate-400 hover:text-slate-600"
                   >
                     Đóng
                   </button>
@@ -693,33 +701,33 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
         </div>
 
         {/* RIGHT COLUMN: Quotation Sheet & Partner Information (5 cols) - Tabbed Layout */}
-        <div className="lg:col-span-5 h-full flex flex-col bg-white dark:bg-slate-900 rounded-2xl p-3.5 shadow-xs border border-slate-200 dark:border-slate-800 space-y-3 overflow-hidden">
+        <div className="lg:col-span-5 h-full flex flex-col bg-white dark:bg-slate-900 rounded-xl p-2 sm:p-2.5 shadow-xs border border-slate-200 dark:border-slate-800 space-y-1.5 overflow-hidden">
           
           {/* Top Segmented Tab Switcher */}
-          <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-xl flex items-center gap-1 shrink-0 border border-slate-200/80 dark:border-slate-700/80">
+          <div className="bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg flex items-center gap-1 shrink-0 border border-slate-200/80 dark:border-slate-700/80">
             <button
               type="button"
               onClick={() => setRightTab("items")}
-              className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer !min-h-0 ${
+              className={`flex-1 py-1 px-2.5 rounded-md text-[11px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
                 rightTab === "items"
                   ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              <Calculator className="w-3.5 h-3.5" />
+              <Calculator className="w-3 h-3" />
               <span>Hàng Hóa ({quoteItems.length})</span>
             </button>
 
             <button
               type="button"
               onClick={() => setRightTab("customer")}
-              className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer !min-h-0 ${
+              className={`flex-1 py-1 px-2.5 rounded-md text-[11px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer !min-h-0 ${
                 rightTab === "customer"
                   ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              <Building2 className="w-3.5 h-3.5" />
+              <Building2 className="w-3 h-3" />
               <span>Đối Tác &amp; VAT</span>
               {Boolean(customerName || customerPhone) && (
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
@@ -731,16 +739,16 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
           <div className="flex-1 min-h-0 overflow-y-auto pr-1">
             {rightTab === "items" ? (
               /* TAB 1: ITEMS LIST */
-              <div className="space-y-2.5">
+              <div className="space-y-1.5">
                 <div className="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-800">
-                  <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">
                     Danh Sách Sản Phẩm Đã Chọn ({quoteItems.length})
                   </div>
                   {quoteItems.length > 0 && (
                     <button
                       type="button"
                       onClick={() => setQuoteItems([])}
-                      className="text-[11px] font-bold text-red-500 hover:text-red-700 cursor-pointer"
+                      className="text-[10px] font-bold text-red-500 hover:text-red-700 cursor-pointer"
                     >
                       Xóa tất cả
                     </button>
@@ -753,98 +761,34 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                   </div>
                 ) : (
                   quoteItems.map((item) => (
-                    <div
+                    <OrderItemCard
                       key={item.id}
-                      className="p-3 bg-slate-50/90 dark:bg-slate-800/70 hover:bg-slate-100/90 dark:hover:bg-slate-800/90 rounded-xl border border-slate-200/90 dark:border-slate-700/80 transition-all space-y-2.5 text-xs group shadow-2xs"
-                    >
-                      {/* Top Row: Thumbnail + Full Product Title + Delete Button */}
-                      <div className="flex items-start gap-3">
-                        {item.image ? (
-                          <div className="w-11 h-11 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 overflow-hidden relative shrink-0">
-                            <Image
-                              src={item.image}
-                              alt={item.name}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-11 h-11 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-400 font-bold text-[10px] flex items-center justify-center shrink-0">
-                            VTDK
-                          </div>
-                        )}
-
-                        <div className="min-w-0 flex-1">
-                          <div className="font-bold text-slate-900 dark:text-white line-clamp-2 text-xs leading-snug">
-                            {item.name}
-                          </div>
-                          {item.variantTitle && (
-                            <div className="mt-1">
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-300 font-semibold text-[10px] border border-blue-200/60 dark:border-blue-900/60">
-                                Quy cách: {item.variantTitle}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveItem(item.id)}
-                          className="text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 p-1.5 rounded-lg transition-colors shrink-0 cursor-pointer !min-h-0"
-                          title="Xóa sản phẩm"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-
-                      {/* Bottom Row: Unit Price on Left & Stepper + Line Total on Right */}
-                      <div className="flex items-center justify-between pt-2 border-t border-slate-200/70 dark:border-slate-700/60 text-xs">
-                        <div className="text-slate-500 dark:text-slate-400 font-mono text-[11px]">
-                          <span className="font-bold text-slate-700 dark:text-slate-300">{formatCurrency(item.price)}</span>
-                          {item.unit ? ` / ${item.unit}` : ""}
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                          {/* Stepper */}
-                          <div className="flex items-center h-7 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 overflow-hidden shadow-2xs">
-                            <button
-                              type="button"
-                              onClick={() => handleUpdateQty(item.id, item.quantity - 1)}
-                              className="w-7 h-full flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold transition-colors cursor-pointer text-xs"
-                              title="Giảm"
-                            >
-                              -
-                            </button>
-                            <span className="w-8 text-center font-mono font-bold text-xs text-slate-900 dark:text-white">
-                              {item.quantity}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => handleUpdateQty(item.id, item.quantity + 1)}
-                              className="w-7 h-full flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold transition-colors cursor-pointer text-xs"
-                              title="Tăng"
-                            >
-                              +
-                            </button>
-                          </div>
-
-                          {/* Line Total */}
-                          <div className="font-mono font-black text-xs sm:text-sm text-[#075FA8] dark:text-blue-400 min-w-[70px] text-right">
-                            {formatCurrency(item.price * item.quantity)}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                      title={item.name}
+                      variantTitle={item.variantTitle}
+                      unitPrice={item.price}
+                      quantity={item.quantity}
+                      unit={item.unit || "Cái"}
+                      allowPriceEdit={true}
+                      allowUnitEdit={true}
+                      onQuantityChange={(newQty) => handleUpdateQty(item.id, newQty - item.quantity)}
+                      onPriceChange={(newPrice) => handleUpdatePrice(item.id, newPrice)}
+                      onUnitChange={(newUnit) => handleUpdateUnit(item.id, newUnit)}
+                      onRemove={() => handleRemoveItem(item.id)}
+                    />
                   ))
                 )}
               </div>
             ) : (
-              /* TAB 2: CUSTOMER & QUOTE SETTINGS */
-              <div className="space-y-3 p-1">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+              /* TAB 2: CUSTOMER / PARTNER & TAX INFO */
+              <div className="space-y-2">
+                <div className="pb-1 border-b border-slate-100 dark:border-slate-800 text-[10px] font-bold text-slate-500 uppercase tracking-wide">
+                  Thông Tin Đối Tác &amp; Điều Khoản Báo Giá
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   <div>
-                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">
-                      Khách Hàng / Người Liên Hệ:
+                    <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 block mb-0.5">
+                      Tên Người Nhận:
                     </label>
                     <div className="relative">
                       <User className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
@@ -853,13 +797,13 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
                         placeholder="VD: Anh Minh..."
-                        className="w-full pl-8 pr-2.5 py-1.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl"
+                        className="w-full pl-8 pr-2 py-1 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-lg text-xs"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">
+                    <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 block mb-0.5">
                       Số Điện Thoại:
                     </label>
                     <div className="relative">
@@ -869,13 +813,13 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                         value={customerPhone}
                         onChange={(e) => setCustomerPhone(e.target.value)}
                         placeholder="0905.xxx.xxx"
-                        className="w-full pl-8 pr-2.5 py-1.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl font-mono"
+                        className="w-full pl-8 pr-2 py-1 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-lg font-mono text-xs"
                       />
                     </div>
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">
+                    <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 block mb-0.5">
                       Công Ty / Đơn Vị Mua Hàng:
                     </label>
                     <input
@@ -883,12 +827,12 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                       value={customerCompany}
                       onChange={(e) => setCustomerCompany(e.target.value)}
                       placeholder="Công ty Cổ Phần Cơ Điện & Lạnh Đà Nẵng"
-                      className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl"
+                      className="w-full px-2.5 py-1 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-lg text-xs"
                     />
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">
+                    <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 block mb-0.5">
                       Địa Chỉ Giao Hàng / Công Trình:
                     </label>
                     <div className="relative">
@@ -898,33 +842,33 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                         value={customerAddress}
                         onChange={(e) => setCustomerAddress(e.target.value)}
                         placeholder="Khu công nghiệp Hòa Cầm, Đà Nẵng..."
-                        className="w-full pl-8 pr-2.5 py-1.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl"
+                        className="w-full pl-8 pr-2 py-1 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-lg text-xs"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">
-                      Mã Số Thuế Khách (nếu có):
+                    <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 block mb-0.5">
+                      Mã Số Thuế:
                     </label>
                     <input
                       type="text"
                       value={customerTaxCode}
                       onChange={(e) => setCustomerTaxCode(e.target.value)}
                       placeholder="0400xxxxxx"
-                      className="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl font-mono"
+                      className="w-full px-2.5 py-1 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-lg font-mono text-xs"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">
+                      <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 block mb-0.5">
                         Thuế VAT:
                       </label>
                       <select
                         value={vatRate}
                         onChange={(e) => setVatRate(Number(e.target.value))}
-                        className="w-full px-2 py-1.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-800 dark:text-slate-200"
+                        className="w-full px-2 py-1 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-lg font-bold text-slate-800 dark:text-slate-200 text-xs"
                       >
                         <option value={0}>0% (Không VAT)</option>
                         <option value={8}>8% (VAT 8%)</option>
@@ -933,7 +877,7 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                     </div>
 
                     <div>
-                      <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">
+                      <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 block mb-0.5">
                         Hiệu Lực:
                       </label>
                       <div className="relative">
@@ -942,9 +886,9 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                           min={1}
                           value={validDays}
                           onChange={(e) => setValidDays(Math.max(1, Number(e.target.value)))}
-                          className="w-full px-2 py-1.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl font-bold"
+                          className="w-full px-2 py-1 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-lg font-bold text-xs"
                         />
-                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">
+                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-slate-400">
                           ngày
                         </span>
                       </div>
@@ -952,26 +896,26 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">
+                    <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 block mb-0.5">
                       Ghi chú &amp; Điều khoản bổ sung:
                     </label>
                     <textarea
-                      rows={3}
+                      rows={2}
                       value={quoteNote}
                       onChange={(e) => setQuoteNote(e.target.value)}
                       placeholder="Ghi chú thêm về vận chuyển, điều kiện thanh toán..."
-                      className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-xs resize-none"
+                      className="w-full px-2.5 py-1 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-lg text-xs resize-none"
                     />
                   </div>
 
-                  <div className="sm:col-span-2 pt-2">
+                  <div className="sm:col-span-2 pt-1">
                     <button
                       type="button"
                       onClick={() => setRightTab("items")}
-                      className="w-full py-2.5 rounded-xl bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+                      className="w-full py-1.5 rounded-lg bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs !min-h-0"
                     >
-                      <Check className="w-3.5 h-3.5" />
-                      <span>Lưu thông tin &amp; Quay lại danh sách hàng ({quoteItems.length})</span>
+                      <Check className="w-3 h-3" />
+                      <span>Quay lại danh sách hàng ({quoteItems.length})</span>
                     </button>
                   </div>
                 </div>
@@ -979,48 +923,27 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
             )}
           </div>
 
-          {/* Bottom Fixed Summary & Action Card (Only displayed in Items tab) */}
+          {/* Bottom Fixed Summary & Action Card (Single compact line) */}
           {rightTab === "items" && (
-            <div className="pt-2.5 border-t border-slate-200 dark:border-slate-700 space-y-2 shrink-0">
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                  <span>Cộng tiền hàng (Tạm tính):</span>
-                  <span className="font-mono font-bold text-slate-900 dark:text-white">
-                    {formatCurrency(subtotal)}
-                  </span>
-                </div>
-
-                {vatRate > 0 && (
-                  <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                    <span>Thuế GTGT / VAT ({vatRate}%):</span>
-                    <span className="font-mono font-bold text-[#075FA8] dark:text-blue-400">
-                      +{formatCurrency(vatAmount)}
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex justify-between items-center pt-1 border-t border-dashed border-slate-200 dark:border-slate-700 text-xs sm:text-sm">
-                  <span className="font-black text-slate-900 dark:text-white uppercase">
-                    Tổng Cộng:
-                  </span>
-                  <span className="font-mono font-black text-base text-red-600 dark:text-red-400">
-                    {formatCurrency(grandTotal)}
-                  </span>
-                </div>
-
-                <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/80 text-[10.5px] text-slate-600 dark:text-slate-400 italic line-clamp-1">
-                  <strong>Bằng chữ: </strong>{readVNDInWords(grandTotal)}
-                </div>
+            <div className="pt-1.5 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2 shrink-0">
+              <div className="min-w-0">
+                <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block leading-none mb-0.5">
+                  Tổng {vatRate > 0 ? `(VAT ${vatRate}%)` : ""}:
+                </span>
+                <span className="text-base sm:text-lg text-red-600 dark:text-red-400 font-mono font-black leading-tight">
+                  {grandTotal > 0 ? formatCurrency(grandTotal) : "Liên hệ"}
+                </span>
               </div>
 
+              {/* Action Button on the Right - Compact */}
               <button
                 type="button"
                 onClick={() => setIsPreviewOpen(true)}
                 disabled={quoteItems.length === 0}
-                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#075FA8] to-[#0a4d87] hover:from-[#0B3D66] hover:to-[#075FA8] text-white text-xs sm:text-sm font-black shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50 disabled:pointer-events-none !min-h-0"
+                className="py-1 px-2.5 rounded-lg bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold text-xs shadow-xs flex items-center justify-center gap-1 transition-all disabled:opacity-50 cursor-pointer !min-h-0"
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>Xem &amp; Xuất Bản In / PDF Báo Giá (A4)</span>
+                <span>Xuất PDF A4</span>
               </button>
             </div>
           )}

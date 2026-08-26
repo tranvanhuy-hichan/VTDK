@@ -11,7 +11,7 @@ import { ensureDefaultAdmin, DEFAULT_ADMIN_EMAIL } from "../lib/seedAdmin";
 import { checkRateLimit, resetRateLimit } from "../lib/rateLimit";
 
 import { invalidateMemoryCache } from "../lib/cachedData";
-import { invalidateCompanyCache } from "../lib/company";
+import { formatCompanyInfo, invalidateCompanyCache } from "../lib/company";
 
 const SESSION_COOKIE = "admin_session";
 const PLACEHOLDER_IMAGE = "/images/placeholder.svg";
@@ -56,17 +56,39 @@ function sanitizeFileName(fileName: string): string {
   return `${safeBase}${ext}`;
 }
 
-// Parse repeatable variant rows (label + price) from FormData
+// Parse repeatable variant rows (label + price + sku + barcode + stock) from FormData
 function parseVariants(formData: FormData) {
   const labels = formData.getAll("variantLabel") as string[];
   const prices = formData.getAll("variantPrice") as string[];
+  const skus = formData.getAll("variantSku") as string[];
+  const barcodes = formData.getAll("variantBarcode") as string[];
+  const stocks = formData.getAll("variantStock") as string[];
 
-  const variants: { label: string; price: number; sortOrder: number }[] = [];
+  const variants: {
+    label: string;
+    price: number;
+    sku?: string | null;
+    barcode?: string | null;
+    stock?: number;
+    sortOrder: number;
+  }[] = [];
+
   for (let i = 0; i < labels.length; i++) {
     const label = labels[i]?.trim();
     const price = parseInt(prices[i], 10);
+    const sku = (skus[i] as string)?.trim() || null;
+    const barcode = (barcodes[i] as string)?.trim() || null;
+    const stock = parseInt(stocks[i] as string, 10) || 100;
+
     if (label && !isNaN(price)) {
-      variants.push({ label, price, sortOrder: i });
+      variants.push({
+        label,
+        price,
+        sku,
+        barcode,
+        stock,
+        sortOrder: i,
+      });
     }
   }
   return variants;
@@ -223,6 +245,24 @@ export async function createProductAction(formData: FormData) {
       imagePath = mainImageUrl.trim();
     }
 
+    const sku = ((formData.get("sku") as string) || "").trim() || null;
+    const barcode = ((formData.get("barcode") as string) || "").trim() || null;
+    const stock = parseInt((formData.get("stock") as string) || "100", 10) || 0;
+
+    if (sku) {
+      const duplicateSku = await prisma.product.findUnique({ where: { sku } });
+      if (duplicateSku) {
+        return { error: `Mã SKU "${sku}" đã tồn tại trên sản phẩm "${duplicateSku.name}"!` };
+      }
+    }
+
+    if (barcode) {
+      const duplicateBarcode = await prisma.product.findUnique({ where: { barcode } });
+      if (duplicateBarcode) {
+        return { error: `Mã vạch "${barcode}" đã tồn tại trên sản phẩm "${duplicateBarcode.name}"!` };
+      }
+    }
+
     let baseSlug = slugify(name);
     let finalSlug = baseSlug;
     let count = 1;
@@ -238,19 +278,70 @@ export async function createProductAction(formData: FormData) {
       return { error: galleryResult.error };
     }
 
-    await prisma.product.create({
-      data: {
-        name,
-        slug: finalSlug,
-        price,
-        shortDesc: shortDesc || null,
-        image: imagePath,
-        images: galleryResult.images,
-        active,
-        categoryId,
-        variants: { create: variants },
-      },
-    });
+    const finalSku = variants.length > 0 ? null : sku;
+    const finalBarcode = variants.length > 0 ? null : barcode;
+    const finalStock = variants.length > 0
+      ? variants.reduce((sum, v) => sum + (v.stock ?? 0), 0)
+      : stock;
+
+    const productData: any = {
+      name,
+      slug: finalSlug,
+      sku: finalSku,
+      barcode: finalBarcode,
+      stock: finalStock,
+      price: variants.length > 0 ? variants[0].price : price,
+      shortDesc: shortDesc || null,
+      image: imagePath,
+      images: galleryResult.images,
+      active,
+      categoryId,
+    };
+
+    let createdProduct: any = null;
+    try {
+      createdProduct = await (prisma.product as any).create({ data: productData });
+    } catch (createErr: any) {
+      const { sku: s, barcode: b, stock: st, ...restData } = productData;
+      createdProduct = await prisma.product.create({ data: restData });
+      await prisma.$executeRawUnsafe(
+        `UPDATE "Product" SET sku = $1, barcode = $2, stock = $3 WHERE id = $4`,
+        finalSku,
+        finalBarcode,
+        finalStock,
+        createdProduct.id
+      );
+    }
+
+    // Insert variants
+    for (const v of variants) {
+      try {
+        await (prisma.productVariant as any).create({
+          data: {
+            productId: createdProduct.id,
+            label: v.label,
+            price: v.price,
+            sku: v.sku,
+            barcode: v.barcode,
+            stock: v.stock ?? 100,
+            sortOrder: v.sortOrder,
+          },
+        });
+      } catch {
+        const vId = crypto.randomUUID();
+        await prisma.$executeRawUnsafe(
+          `INSERT INTO "ProductVariant" ("id", "productId", "label", "price", "sku", "barcode", "stock", "sortOrder", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())`,
+          vId,
+          createdProduct.id,
+          v.label,
+          v.price,
+          v.sku || null,
+          v.barcode || null,
+          v.stock ?? 100,
+          v.sortOrder
+        );
+      }
+    }
 
     revalidateSiteData(["products", "categories"]);
     return { success: true };
@@ -268,16 +359,28 @@ export async function updateProductAction(
   if (!isAuth) return { error: "Chưa đăng nhập!" };
 
   try {
-    const formData = idOrFormData instanceof FormData ? idOrFormData : maybeFormData!;
-    const id = idOrFormData instanceof FormData ? (formData.get("id") as string) : (idOrFormData as string);
+    let id: string;
+    let formData: FormData;
 
-    if (!id) {
-      return { error: "Thiếu ID sản phẩm cần cập nhật!" };
+    if (typeof idOrFormData === "string" && maybeFormData) {
+      id = idOrFormData;
+      formData = maybeFormData;
+    } else if (idOrFormData instanceof FormData) {
+      formData = idOrFormData;
+      id = formData.get("id") as string;
+    } else {
+      return { error: "Dữ liệu gửi lên không hợp lệ!" };
     }
-    const name = formData.get("name") as string;
+
+    if (!id) return { error: "Thiếu ID sản phẩm cần sửa!" };
+
+    const existingProduct = await prisma.product.findUnique({ where: { id } });
+    if (!existingProduct) return { error: "Sản phẩm không tồn tại!" };
+
+    const name = (formData.get("name") as string)?.trim();
     const priceStr = formData.get("price") as string;
-    const shortDesc = formData.get("shortDesc") as string;
     const categoryId = formData.get("categoryId") as string;
+    const shortDesc = (formData.get("shortDesc") as string)?.trim();
     const active = formData.get("active") === "true";
     const imageFile = formData.get("image") as File | null;
 
@@ -290,12 +393,28 @@ export async function updateProductAction(
       return { error: "Giá sản phẩm phải là số hợp lệ!" };
     }
 
-    const existingProduct = await prisma.product.findUnique({
-      where: { id },
-    });
+    const sku = ((formData.get("sku") as string) || "").trim() || null;
+    const barcode = ((formData.get("barcode") as string) || "").trim() || null;
+    const stock = parseInt((formData.get("stock") as string) || "100", 10) || 0;
 
-    if (!existingProduct) {
-      return { error: "Sản phẩm không tồn tại!" };
+    const variants = parseVariants(formData);
+
+    if (variants.length === 0 && sku) {
+      const duplicateSku = await prisma.product.findFirst({
+        where: { sku, NOT: { id } },
+      });
+      if (duplicateSku) {
+        return { error: `Mã SKU "${sku}" đã tồn tại trên sản phẩm "${duplicateSku.name}"!` };
+      }
+    }
+
+    if (variants.length === 0 && barcode) {
+      const duplicateBarcode = await prisma.product.findFirst({
+        where: { barcode, NOT: { id } },
+      });
+      if (duplicateBarcode) {
+        return { error: `Mã vạch "${barcode}" đã tồn tại trên sản phẩm "${duplicateBarcode.name}"!` };
+      }
     }
 
     const mainImageUrl = formData.get("mainImageUrl") as string | null;
@@ -344,31 +463,82 @@ export async function updateProductAction(
       }
     }
 
-    const variants = parseVariants(formData);
-
     const galleryResult = await processGalleryImages(formData, "products");
     if ("error" in galleryResult) {
       return { error: galleryResult.error };
     }
     await deleteRemovedBlobImages(existingProduct.images, galleryResult.images);
 
-    await prisma.product.update({
-      where: { id },
-      data: {
-        name,
-        slug: finalSlug,
-        price,
-        shortDesc: shortDesc || null,
-        image: imagePath,
-        images: galleryResult.images,
-        active,
-        categoryId,
-        variants: {
-          deleteMany: {},
-          create: variants,
-        },
-      },
-    });
+    const finalSku = variants.length > 0 ? null : sku;
+    const finalBarcode = variants.length > 0 ? null : barcode;
+    const finalStock = variants.length > 0
+      ? variants.reduce((sum, v) => sum + (v.stock ?? 0), 0)
+      : stock;
+
+    const updateData: any = {
+      name,
+      slug: finalSlug,
+      sku: finalSku,
+      barcode: finalBarcode,
+      stock: finalStock,
+      price: variants.length > 0 ? variants[0].price : price,
+      shortDesc: shortDesc || null,
+      image: imagePath,
+      images: galleryResult.images,
+      active,
+      categoryId,
+    };
+
+    try {
+      await (prisma.product as any).update({
+        where: { id },
+        data: updateData,
+      });
+    } catch (updateErr: any) {
+      const { sku: s, barcode: b, stock: st, ...restData } = updateData;
+      await (prisma.product as any).update({
+        where: { id },
+        data: restData,
+      });
+      await prisma.$executeRawUnsafe(
+        `UPDATE "Product" SET sku = $1, barcode = $2, stock = $3 WHERE id = $4`,
+        sku,
+        barcode,
+        stock,
+        id
+      );
+    }
+
+    // Replace variants safely
+    await prisma.productVariant.deleteMany({ where: { productId: id } });
+    for (const v of variants) {
+      try {
+        await (prisma.productVariant as any).create({
+          data: {
+            productId: id,
+            label: v.label,
+            price: v.price,
+            sku: v.sku,
+            barcode: v.barcode,
+            stock: v.stock ?? 100,
+            sortOrder: v.sortOrder,
+          },
+        });
+      } catch {
+        const vId = crypto.randomUUID();
+        await prisma.$executeRawUnsafe(
+          `INSERT INTO "ProductVariant" ("id", "productId", "label", "price", "sku", "barcode", "stock", "sortOrder", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())`,
+          vId,
+          id,
+          v.label,
+          v.price,
+          v.sku || null,
+          v.barcode || null,
+          v.stock ?? 100,
+          v.sortOrder
+        );
+      }
+    }
 
     revalidateSiteData(["products", "categories"]);
     return { success: true };
@@ -546,7 +716,7 @@ export async function updateCompanyInfoAction(formData: FormData) {
     if (typeof rawFreeshipProvinces === "string" && rawFreeshipProvinces.trim()) {
       try {
         const parsed = JSON.parse(rawFreeshipProvinces);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           freeshipProvinces = parsed.map((p) => String(p).trim()).filter(Boolean);
         }
       } catch {
@@ -629,6 +799,8 @@ export async function updateCompanyInfoAction(formData: FormData) {
       await deleteRemovedBlobImages(existing.images, galleryResult.images);
     }
 
+    const enablePosModule = formData.get("enablePosModule") !== "false";
+
     const data = {
       name: fullName,
       fullName,
@@ -648,6 +820,7 @@ export async function updateCompanyInfoAction(formData: FormData) {
       googleMapsEmbed: googleMapsEmbed || "",
       workingHours,
       hasDelivery,
+      enablePosModule,
       shippingFeeDanang,
       shippingFeeProvince,
       freeshipThreshold,
@@ -662,12 +835,13 @@ export async function updateCompanyInfoAction(formData: FormData) {
       try {
         await (prisma.companyInfo as any).update({ where: { id: existing.id }, data });
       } catch (prismaUpdateErr: any) {
-        // Fallback if in-memory Prisma client schema validator hasn't refreshed freeshipProvinces yet
-        const { freeshipProvinces: fp, ...dataWithoutFp } = data as any;
-        await (prisma.companyInfo as any).update({ where: { id: existing.id }, data: dataWithoutFp });
+        // Fallback if in-memory Prisma client schema validator hasn't refreshed new columns yet
+        const { freeshipProvinces: fp, enablePosModule: epm, ...baseData } = data as any;
+        await (prisma.companyInfo as any).update({ where: { id: existing.id }, data: baseData });
         await prisma.$executeRawUnsafe(
-          `UPDATE "CompanyInfo" SET "freeshipProvinces" = $1 WHERE id = $2`,
+          `UPDATE "CompanyInfo" SET "freeshipProvinces" = $1, "enablePosModule" = $2 WHERE id = $3`,
           freeshipProvinces,
+          enablePosModule,
           existing.id
         );
       }
@@ -675,24 +849,74 @@ export async function updateCompanyInfoAction(formData: FormData) {
       try {
         await (prisma.companyInfo as any).create({ data });
       } catch (prismaCreateErr: any) {
-        const { freeshipProvinces: fp, ...dataWithoutFp } = data as any;
-        const created = await (prisma.companyInfo as any).create({ data: dataWithoutFp });
+        const { freeshipProvinces: fp, enablePosModule: epm, ...baseData } = data as any;
+        const created = await (prisma.companyInfo as any).create({ data: baseData });
         await prisma.$executeRawUnsafe(
-          `UPDATE "CompanyInfo" SET "freeshipProvinces" = $1 WHERE id = $2`,
+          `UPDATE "CompanyInfo" SET "freeshipProvinces" = $1, "enablePosModule" = $2 WHERE id = $3`,
           freeshipProvinces,
+          enablePosModule,
           created.id
         );
       }
     }
 
+    const savedCompany = existing
+      ? await prisma.companyInfo.findUnique({ where: { id: existing.id } })
+      : await prisma.companyInfo.findFirst({ orderBy: { updatedAt: "desc" } });
+
     revalidateSiteData(["company-info"]);
-    return { success: true };
+    return {
+      success: true,
+      company: savedCompany ? formatCompanyInfo(savedCompany) : undefined,
+    };
   } catch (err: any) {
     return { error: err.message || "Lỗi hệ thống khi cập nhật thông tin công ty!" };
   }
 }
 
-// 9b. Update Theme & Styling Settings
+// 9b. Update Shipping & Freeship Settings
+export async function updateCompanyShippingAction(input: {
+  hasDelivery: boolean;
+  shippingFeeDanang: number;
+  shippingFeeProvince: number;
+  freeshipThreshold: number;
+  freeshipProvinces: string[];
+  shippingNote?: string | null;
+  enablePosModule?: boolean;
+}) {
+  const isAuth = await isAdminAuthenticated();
+  if (!isAuth) return { error: "Chưa đăng nhập!" };
+
+  try {
+    const existing = await prisma.companyInfo.findFirst();
+    if (!existing) return { error: "Không tìm thấy thông tin doanh nghiệp!" };
+
+    const savedCompany = await prisma.companyInfo.update({
+      where: { id: existing.id },
+      data: {
+        hasDelivery: Boolean(input.hasDelivery),
+        shippingFeeDanang: Math.max(0, Math.trunc(Number(input.shippingFeeDanang) || 0)),
+        shippingFeeProvince: Math.max(0, Math.trunc(Number(input.shippingFeeProvince) || 0)),
+        freeshipThreshold: Math.max(0, Math.trunc(Number(input.freeshipThreshold) || 0)),
+        freeshipProvinces: Array.isArray(input.freeshipProvinces)
+          ? input.freeshipProvinces.map(String).map((code) => code.trim()).filter(Boolean)
+          : [],
+        shippingNote: input.shippingNote?.trim() || null,
+        enablePosModule: input.enablePosModule !== false,
+      },
+    });
+
+    invalidateCompanyCache();
+    invalidateMemoryCache(["company-info"]);
+    revalidateTag("company-info");
+
+    return { success: true, company: formatCompanyInfo(savedCompany) };
+  } catch (err: any) {
+    return { error: err.message || "Lỗi khi cập nhật cài đặt vận chuyển!" };
+  }
+}
+
+// 9c. Update Theme & Styling Settings
 export async function updateThemeSettingsAction(themeData: {
   primaryColor?: string;
   primaryDark?: string;
