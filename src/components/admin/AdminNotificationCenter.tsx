@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import {
   Bell,
@@ -89,9 +90,14 @@ export const AdminNotificationCenter: React.FC = () => {
   const [notifications, setNotifications] = useState<OrderNotification[]>([]);
   const [pendingCount, setPendingCount] = useState(0);
   const [activeAlert, setActiveAlert] = useState<OrderNotification | null>(null);
+  const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const lastKnownOrderIdRef = useRef<string | null>(null);
   const isInitialCheckRef = useRef(true);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -306,8 +312,8 @@ export const AdminNotificationCenter: React.FC = () => {
         </div>
       )}
 
-      {/* Floating In-App Toast When New Order Arrives */}
-      {activeAlert && (
+      {/* Floating In-App Toast When New Order Arrives (Mounted to document.body via Portal) */}
+      {activeAlert && mounted && typeof document !== "undefined" && createPortal(
         <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[99999] w-[calc(100vw-2rem)] sm:w-96 max-w-sm bg-white dark:bg-slate-900 rounded-2xl border-2 border-[#075FA8] shadow-2xl p-3.5 sm:p-4 animate-in slide-in-from-bottom-5 duration-300 text-left">
           <div className="flex items-start justify-between gap-3">
             <div className="p-2.5 rounded-xl bg-gradient-to-tr from-[#075FA8] to-cyan-500 text-white shadow-md animate-bounce shrink-0">
@@ -367,7 +373,8 @@ export const AdminNotificationCenter: React.FC = () => {
               <X className="w-4 h-4" />
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
