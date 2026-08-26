@@ -100,31 +100,33 @@ export async function createOrderAction(dto: CreateOrderDTO): Promise<{
 
     const orderCode = generateOrderCode();
 
-    const order = await prisma.order.create({
-      data: {
-        orderCode,
-        customerName,
-        customerPhone,
-        customerEmail: dto.customerEmail?.trim() || null,
-        shippingMethod,
-        shippingFee,
-        address: shippingMethod === "DELIVERY" ? address : null,
-        note: note || null,
-        totalAmount,
-        status: "PENDING",
-        userId: currentUser?.id || null,
-        items: {
-          create: dto.items.map((item) => ({
-            productId: item.productId || null,
-            productSlug: item.productSlug,
-            productName: item.productName,
-            variantLabel: item.variantLabel || null,
-            price: item.price,
-            quantity: item.quantity,
-            image: item.image,
-          })),
-        },
+    const orderData = {
+      orderCode,
+      customerName,
+      customerPhone,
+      customerEmail: dto.customerEmail?.trim() || null,
+      shippingMethod,
+      shippingFee,
+      address: shippingMethod === "DELIVERY" ? address : null,
+      note: note || null,
+      totalAmount,
+      status: "PENDING" as OrderStatus,
+      userId: currentUser?.id || null,
+      items: {
+        create: dto.items.map((item) => ({
+          productId: item.productId || null,
+          productSlug: item.productSlug,
+          productName: item.productName,
+          variantLabel: item.variantLabel || null,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+        })),
       },
+    };
+
+    const order = await (prisma.order.create as any)({
+      data: orderData,
     });
 
     revalidatePath("/admin");
