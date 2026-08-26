@@ -24,6 +24,8 @@ import {
   Clock,
   ChevronRight,
   Package,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import {
   PosProductItem,
@@ -47,27 +49,136 @@ interface PosTerminalProps {
   company: CompanyContact;
 }
 
-// Audio Beep for successful barcode scan using Web Audio API
-function playScanBeep() {
+let sharedPosAudioCtx: AudioContext | null = null;
+
+function getPosAudioContext(): AudioContext | null {
   try {
-    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContext) return;
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(1400, ctx.currentTime);
-    gain.gain.setValueAtTime(0.15, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.08);
-  } catch (e) {
-    // Ignore audio error if not permitted
+    if (typeof window === "undefined") return null;
+    const AudioContextClass =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextClass) return null;
+    if (!sharedPosAudioCtx) {
+      sharedPosAudioCtx = new AudioContextClass();
+    }
+    if (sharedPosAudioCtx.state === "suspended") {
+      sharedPosAudioCtx.resume().catch(() => {});
+    }
+    return sharedPosAudioCtx;
+  } catch {
+    return null;
   }
+}
+
+// Bíp thêm sản phẩm / Quét mã vạch thành công (Âm thanh máy tính tiền POS siêu nét)
+function playPosScanBeep(enabled = true) {
+  if (!enabled) return;
+  try {
+    const ctx = getPosAudioContext();
+    if (!ctx) return;
+
+    const playTone = () => {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(1760, now);
+      osc.frequency.exponentialRampToValueAtTime(2200, now + 0.08);
+
+      gain.gain.setValueAtTime(0.35, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.1);
+    };
+
+    if (ctx.state === "suspended") {
+      ctx.resume().then(playTone).catch(() => {});
+    } else {
+      playTone();
+    }
+  } catch (e) {
+    console.log("POS Audio error:", e);
+  }
+}
+
+// Âm thanh tăng/giảm số lượng
+function playPosQtyBeep(enabled = true) {
+  if (!enabled) return;
+  try {
+    const ctx = getPosAudioContext();
+    if (!ctx) return;
+
+    const playTone = () => {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(1300, now);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.06);
+    };
+
+    if (ctx.state === "suspended") {
+      ctx.resume().then(playTone).catch(() => {});
+    } else {
+      playTone();
+    }
+  } catch {}
+}
+
+// Âm thanh thanh toán hóa đơn thành công (Chime Ting-Ting)
+function playPosCheckoutSuccess(enabled = true) {
+  if (!enabled) return;
+  try {
+    const ctx = getPosAudioContext();
+    if (!ctx) return;
+
+    const playTone = () => {
+      const now = ctx.currentTime;
+
+      // Note 1: C6 (1046Hz)
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = "sine";
+      osc1.frequency.setValueAtTime(1046, now);
+      gain1.gain.setValueAtTime(0.3, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.3);
+
+      // Note 2: E6 (1318Hz)
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(1318, now + 0.1);
+      gain2.gain.setValueAtTime(0.35, now + 0.1);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(now + 0.1);
+      osc2.stop(now + 0.5);
+    };
+
+    if (ctx.state === "suspended") {
+      ctx.resume().then(playTone).catch(() => {});
+    } else {
+      playTone();
+    }
+  } catch {}
 }
 
 export const PosTerminal: React.FC<PosTerminalProps> = ({
@@ -149,10 +260,36 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
     }
   }, [totalAmount, paymentMethod]);
 
+  // Sound State
+  const [soundEnabled, setSoundEnabled] = useState(true);
+
+  // Initialize sound preference from localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("pos_sound_enabled");
+      if (saved !== null) {
+        setSoundEnabled(saved === "true");
+      }
+    } catch {}
+  }, []);
+
+  const toggleSound = () => {
+    setSoundEnabled((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem("pos_sound_enabled", String(next));
+      } catch {}
+      if (next) {
+        playPosScanBeep(true);
+      }
+      return next;
+    });
+  };
+
   // Add Item to Cart Helper
   const addItemToCart = useCallback(
     (product: PosProductItem, variant?: { id: string; label: string; price: number }) => {
-      playScanBeep();
+      playPosScanBeep(soundEnabled);
       setCart((prev) => {
         const existingIndex = prev.findIndex(
           (it) =>
@@ -181,7 +318,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
         return [newItem, ...prev];
       });
     },
-    []
+    [soundEnabled]
   );
 
   // Handle Barcode Scanner Form Submit (Enter key sent by Barcode reader)
@@ -221,6 +358,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
       removeItemFromCart(index);
       return;
     }
+    playPosQtyBeep(soundEnabled);
     setCart((prev) => {
       const updated = [...prev];
       updated[index].quantity = newQty;
@@ -270,6 +408,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
     if (res.error) {
       alert(res.error);
     } else if (res.order) {
+      playPosCheckoutSuccess(soundEnabled);
       setCompletedOrder(res.order as any);
       setCart([]);
       setDiscountAmount(0);
@@ -332,6 +471,25 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
 
         {/* Action Controls */}
         <div className="flex items-center gap-1.5">
+          {/* Sound Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleSound}
+            className={`h-6.5 !min-h-0 inline-flex items-center gap-1 text-[11px] font-extrabold px-2 rounded-md transition-colors cursor-pointer ${
+              soundEnabled
+                ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-slate-200"
+            }`}
+            title={soundEnabled ? "Âm thanh: Đang BẬT (Nhấn để tắt)" : "Âm thanh: Đang TẮT (Nhấn để bật)"}
+          >
+            {soundEnabled ? (
+              <Volume2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            ) : (
+              <VolumeX className="w-3.5 h-3.5 text-slate-400" />
+            )}
+            <span className="hidden sm:inline">{soundEnabled ? "Âm thanh" : "Tắt tiếng"}</span>
+          </button>
+
           <button
             type="button"
             onClick={handleNewOrder}
