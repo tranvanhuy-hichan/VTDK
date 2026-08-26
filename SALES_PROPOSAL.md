@@ -102,81 +102,108 @@ Khác biệt hoàn toàn với các website bán lẻ thông thường (chỉ bi
 
 ---
 
-## 💵 6. PHÂN TÍCH MẶT BẰNG THỊ TRƯỜNG THỜI KỲ AI & BẢNG GIÁ ĐỀ XUẤT
+## 💵 6. BẢNG BÁO GIÁ THEO TỪNG MODULE & CÁC GÓI COMBO TIẾT KIỆM
 
-### 🧠 1. THỰC TẾ THỊ TRƯỜNG PHẦN MỀM THỜI KỲ AI (2025 - 2026)
-Trong kỷ nguyên AI, chi phí nghiên cứu và thời gian lập trình đã được tối ưu từ **hàng tháng xuống còn vài ngày**. Doanh nghiệp SME ngày nay rất thông minh và thực dụng:
-- Họ **từ chối** các báo giá Agency truyền thống "hét giá" 60–100 triệu vì quá đắt đỏ và cồng kềnh.
-- Họ **ngán ngẩm** các nền tảng SaaS thuê bao (KiotViet, Sapo, Haravan) vì phải đóng tiền 300k–600k/tháng suốt đời (5 năm mất 20–35 triệu) mà **không được sở hữu hệ thống**, không thể xuất báo giá PDF chuyên sâu cho thầu công trình.
-
-👉 **Chiến lược giá của VTDK Platform**: Định vị là **"Giải Pháp Sở Hữu Trọn Đời - May Đo Chuyên Sâu - Giá Mềm Bằng 1/3 Agency"** nhờ tận dụng tối đa năng suất của AI và framework hiện đại.
+Hệ thống **VTDK Platform** được thiết kế theo kiến trúc module hóa hoàn toàn. Doanh nghiệp có thể **chọn mua từng phân hệ riêng lẻ** tùy theo nhu cầu thực tế hoặc **chọn mua các Gói Combo đóng gói sẵn** để tối ưu chi phí.
 
 ---
 
-### 💎 2. SO SÁNH CHI PHÍ VẬN HÀNH 3 NĂM (TCO - TOTAL COST OF OWNERSHIP)
+### 🧩 PHẦN A: BẢNG GIÁ THEO TỪNG MODULE RỜI (A LA CARTE)
 
-| Phương án | Chi phí ban đầu | Phí thuê bao hàng tháng | Tổng chi phí 3 năm | Khả năng sở hữu & Tùy biến |
-| :--- | :---: | :---: | :---: | :---: |
-| **SaaS (KiotViet / Sapo Web)** | 0 - 3.000.000đ | 450.000đ/tháng | **~19.200.000đ** | ❌ Không sở hữu mã nguồn, mẫu in cố định |
-| **Thuê Agency viết riêng** | 50.000.000đ - 80.000.000đ | 300.000đ/tháng (Hosting) | **~60.000.000đ - 90.000.000đ** | ⚠️ Đắt đỏ, bảo trì khó khăn, phụ thuộc |
-| **VTDK Enterprise Platform** | **18.500.000đ (Mua đứt)** | **0đ** *(Hosting riêng ~1.5tr/năm)* | **~21.500.000đ** | **✅ Sở hữu trọn đời, may đo 100% cho Vật tư** |
+| STT | Phân hệ Module | Chi tiết tính năng | Giá mua lẻ | Cờ biến môi trường (.env) |
+| :---: | :--- | :--- | :---: | :--- |
+| **00** | **Nền tảng Cốt lõi (Core Engine)** *(Bắt buộc)* | Website Bán hàng B2C siêu tốc, PWA App Mobile, Quản trị Sản phẩm & Đơn hàng | **6.500.000đ** | *Mặc định có sẵn* |
+| **01** | **Studio Báo Giá B2B A4** | Lập báo giá trong 30s, tự tính VAT, đọc tiền bằng chữ tiếng Việt, xuất PDF A4 Vector | **+ 3.500.000đ** | `NEXT_PUBLIC_FEATURE_B2B_QUOTATION` |
+| **02** | **B2B Self-Service & Share Cart** | Khách tự tải Báo Giá PDF từ giỏ hàng; Chia sẻ giỏ hàng 1-Click qua Link Zalo | **+ 2.500.000đ** | `NEXT_PUBLIC_FEATURE_SELF_SERVICE_QUOTE`<br>`NEXT_PUBLIC_FEATURE_SHARE_CART` |
+| **03** | **POS Barcode Tại Quầy** | Trạm bán hàng quét mã vạch, phím tắt F2/Enter, in bill nhiệt/A4, tối ưu iPad/Mobile | **+ 3.500.000đ** | `NEXT_PUBLIC_FEATURE_POS_TERMINAL` |
+| **04** | **Phiếu Xuất Kho 4 Chữ Ký** | In phiếu xuất kho kiêm giao hàng chuẩn kế toán đối soát 4 bên (Lập-Kho-Giao-Nhận) | **+ 2.000.000đ** | `NEXT_PUBLIC_FEATURE_DELIVERY_SLIP` |
+| **05** | **Cổng Thanh Toán VietQR** | Tự động sinh mã QR chuyển khoản đúng chính xác số tiền & nội dung đơn hàng | **+ 1.500.000đ** | `NEXT_PUBLIC_FEATURE_VIETQR_PAYMENT` |
+| **06** | **Theme Engine Không Code** | Tùy biến màu sắc chủ đạo, font chữ, banner theo thời gian thực (Real-time Preview) | **+ 2.000.000đ** | `NEXT_PUBLIC_FEATURE_THEME_CUSTOMIZER` |
+| **07** | **Báo Cáo Doanh Thu Analytics** | Biểu đồ doanh số trực quan theo ngày/tháng, sản phẩm bán chạy, tỷ lệ chuyển đổi | **+ 2.500.000đ** | `NEXT_PUBLIC_FEATURE_ANALYTICS` |
 
----
-
-### 💰 3. BẢNG GIÁ CÁC GÓI TRIỂN KHAI THỰC CHIẾN
-
-### 📦 GÓI 1: CỬA HÀNG KHỞI NGHIỆP (STARTER B2C/B2B)
-> Phù hợp: Cửa hàng bán lẻ, đại lý vật tư quy mô nhỏ mới bắt đầu số hóa.  
-> **💰 Giá trọn gói: 9.800.000 VNĐ** *(Thanh toán 01 lần duy nhất)*  
-> *(Phí duy trì tên miền & máy chủ Cloud từ năm 2: 1.500.000đ/năm)*
-
-- ✅ Trọn bộ Website Bán hàng Next.js 15 PWA (Cài được App trên iPhone/Android).
-- ✅ Trạm Bán Hàng Tại Quầy POS Barcode Terminal (Quét mã vạch, in bill).
-- ✅ Cổng quản trị Admin: Quản lý sản phẩm, danh mục, phân loại biến thể.
-- ✅ Tặng 01 năm Cloud Server tốc độ cao + Chứng chỉ bảo mật SSL.
-- ✅ Hỗ trợ nhập liệu 30 sản phẩm mẫu ban đầu.
-- ✅ Bảo hành & Hỗ trợ kỹ thuật 12 tháng.
+👉 *Khách hàng mua lẻ có thể ghép tự do bất kỳ module nào vào Nền tảng Cốt lõi.*
 
 ---
 
-### 🚀 GÓI 2: DOANH NGHIỆP PHÂN PHỐI (ENTERPRISE PRO) — ⭐ *GÓI BÁN CHẠY NHẤT*
-> Phù hợp: Công ty Phân phối, Đại lý cấp 1, Doanh nghiệp cung ứng công trình B2B.  
-> **💰 Giá trọn gói: 18.500.000 VNĐ** *(Mức giá vàng dễ chốt sale nhất cho doanh nghiệp SME)*  
-> *(Phí duy trì máy chủ & bảo trì từ năm 2: 2.200.000đ/năm)*
+### 🎁 PHẦN B: CÁC GÓI COMBO TIẾT KIỆM (PRE-PACKAGED COMBOS)
 
-- ⭐ **Toàn bộ quyền lợi của Gói 1**.
-- ⭐ **Trọn bộ tính năng B2B độc quyền giải quyết triệt để khâu chốt đơn**:
-  - **Studio Lập Báo Giá B2B A4 (`/admin/quote`)**: Tự tính VAT, đọc tiền bằng chữ tiếng Việt, xuất file PDF Vector trong 30s.
-  - **Khách hàng tự xuất Báo giá PDF** trực tiếp từ giỏ hàng để trình duyệt chi.
-  - **Chia sẻ giỏ hàng 1-Click** qua Link Zalo / Facebook / Messenger.
-  - **Hệ thống Phiếu Xuất Kho 4 Chữ Ký** chuẩn kế toán đối soát giao hàng công trình.
-- ⭐ **Tích hợp cổng thanh toán VietQR Pro**: Tự động sinh mã QR đúng số tiền & nội dung đơn hàng.
-- ⭐ Nhập liệu trọn gói **100 sản phẩm & biến thể quy cách**.
-- ⭐ Đào tạo hướng dẫn sử dụng trực tiếp qua Ultraviewer / Video cho toàn bộ nhân viên.
-- ⭐ Bảo hành & Cam kết bảo trì ưu tiên trong **18 tháng**.
+```
+                            BẢNG SO SÁNH CÁC GÓI COMBO
+  ┌────────────────────────┬────────────────────────┬────────────────────────┐
+  │   COMBO 1: BÁN LẺ      │   COMBO 2: THẦU THỢ    │   COMBO 3: TỔNG KHO    │
+  │     (RETAIL & POS)     │     (B2B CONTRACTOR)   │     (ALL-IN-ONE PRO)   │
+  │     9.800.000 VNĐ      │     14.500.000 VNĐ     │     18.500.000 VNĐ     │
+  │  (Tiết kiệm 27% mua lẻ)│  (Tiết kiệm 20% mua lẻ)│  (Tiết kiệm 23% mua lẻ)│
+  └────────────────────────┴────────────────────────┴────────────────────────┘
+```
 
----
+#### 📦 COMBO 1: BÁN LẺ & SHOWROOM (RETAIL & POS COMBO)
+> Phù hợp: Cửa hàng bán lẻ, đại lý phân phối trực tiếp tại quầy có nhu cầu quét mã vạch và in hóa đơn.  
+> **💰 Giá Combo: 9.800.000 VNĐ** *(Giá mua lẻ từng module: 13.500.000đ — Tiết kiệm 27%)*
 
-### 🏢 GÓI 3: TỔNG KHO TOÀN DIỆN (ALL-IN-ONE SUITE)
-> Phù hợp: Tổng kho Cơ điện lạnh, Chuỗi cửa hàng có nhu cầu tùy biến giao diện & quy trình riêng.  
-> **💰 Giá trọn gói: 29.500.000 VNĐ** *(Bảo hành 24 tháng)*
-
-- 🌟 **Toàn bộ quyền lợi của Gói 2**.
-- 🌟 **Thiết kế & Tùy biến mẫu Báo Giá / Phiếu Giao Hàng** chuẩn 100% theo form văn bản nhận diện riêng của công ty.
-- 🌟 Nhập liệu trọn gói **300 sản phẩm & biến thể quy cách**.
-- 🌟 Đào tạo trực tiếp tận nơi tại văn phòng doanh nghiệp (nội thành) hoặc qua Google Meet.
-- 🌟 Ưu tiên nâng cấp các module tính năng mới trong 24 tháng.
+- ✅ **Nền tảng Cốt lõi**: Website B2C + PWA App Mobile + Quản trị sản phẩm, đơn hàng.
+- ✅ **Module POS Barcode Tại Quầy**: Quét mã vạch siêu tốc, in hóa đơn bán hàng.
+- ✅ **Module Thanh Toán VietQR**: Tự sinh mã QR chuyển khoản theo từng đơn.
+- ✅ Tặng 01 năm Cloud Server tốc độ cao + SSL.
+- ✅ Nhập liệu 30 sản phẩm mẫu ban đầu.
+- ✅ Bảo hành 12 tháng.
 
 ---
 
-### 🔑 GÓI 4: CHUYỂN GIAO BẢN QUYỀN MÃ NGUỒN (WHITE-LABEL SOURCE CODE)
-> Phù hợp: Freelancer, Agency hoặc Doanh nghiệp có IT muốn mua mã nguồn sạch về tự phát triển/bán lại.  
+#### 🚀 COMBO 2: ĐẠI LÝ B2B & THẦU THỢ (B2B CONTRACTOR COMBO)
+> Phù hợp: Công ty vật tư cung ứng công trình, đại lý cấp 1 chuyên bán sỉ cho thợ thầu và dự án.  
+> **💰 Giá Combo: 14.500.000 VNĐ** *(Giá mua lẻ từng module: 18.000.000đ — Tiết kiệm 20%)*
+
+- ⭐ **Nền tảng Cốt lõi**: Website B2C/B2B + PWA App Mobile + Quản trị Admin.
+- ⭐ **Module Studio Báo Giá B2B A4**: Lập báo giá 30s, tự tính VAT, xuất PDF Vector.
+- ⭐ **Module B2B Self-Service**: Khách tự tải Báo Giá PDF từ giỏ hàng + Share giỏ hàng qua Zalo.
+- ⭐ **Module Phiếu Xuất Kho 4 Chữ Ký**: In phiếu giao hàng công trình chuẩn kế toán.
+- ⭐ **Module Thanh Toán VietQR**: Sinh mã QR động.
+- ⭐ Tặng 01 năm Cloud Server tốc độ cao + SSL.
+- ⭐ Nhập liệu 50 sản phẩm & quy cách ban đầu.
+- ⭐ Bảo hành 12 tháng.
+
+---
+
+#### 👑 COMBO 3: TỔNG KHO TOÀN NĂNG (ALL-IN-ONE ENTERPRISE PRO) — ⭐ *BÁN CHẠY NHẤT*
+> Phù hợp: Tổng kho phân phối, công ty Cơ điện lạnh quy mô lớn cần giải pháp trọn vẹn cả Bán lẻ tại quầy lẫn Bán sỉ B2B.  
+> **💰 Giá Combo: 18.500.000 VNĐ** *(Giá mua lẻ từng module: 24.000.000đ — Tiết kiệm 23%)*
+
+- 🌟 **SỞ HỮU TRỌN BỘ 100% TẤT CẢ 8 MODULES**:
+  1. *Nền tảng Cốt lõi Web B2C/B2B + PWA App Mobile*
+  2. *Studio Báo Giá B2B A4 PDF Vector trong 30s*
+  3. *Khách tự tải Báo Giá PDF từ Giỏ Hàng + Share Cart Zalo*
+  4. *Trạm Bán Hàng Tại Quầy POS Barcode Terminal*
+  5. *Hệ thống Phiếu Xuất Kho Kiêm Giao Hàng 4 Chữ Ký*
+  6. *Cổng Thanh Toán VietQR Tự Động*
+  7. *Bộ Tùy Biến Theme & Nhận Diện Không Cần Code*
+  8. *Báo Cáo Doanh Thu Analytics Chuyên Sâu*
+- 🌟 Nhập liệu trọn gói **100 sản phẩm & biến thể quy cách đầy đủ**.
+- 🌟 Đào tạo trực tiếp / Ultraviewer cho đội ngũ Sales, Kế toán và Thủ kho.
+- 🌟 Bảo hành & Cam kết bảo trì ưu tiên trong **18 tháng**.
+
+---
+
+#### 🏢 COMBO 4: TỔNG KHO TÙY BIẾN CAO CẤP (CUSTOM ENTERPRISE SUITE)
+> Phù hợp: Doanh nghiệp lớn có nhu cầu thiết kế mẫu Báo Giá / Phiếu Xuất Kho chuẩn nhận diện độc quyền và đào tạo tận nơi.  
+> **💰 Giá Combo: 29.500.000 VNĐ** *(Bảo hành & Bảo trì 24 tháng)*
+
+- 💎 **Toàn bộ quyền lợi của Combo 3 (All-in-One)**.
+- 💎 **May đo riêng mẫu in Báo Giá & Phiếu Xuất Kho** chuẩn 100% theo form văn bản của doanh nghiệp.
+- 💎 Nhập liệu trọn gói **300 sản phẩm & biến thể quy cách**.
+- 💎 Đào tạo hướng dẫn tận nơi tại văn phòng doanh nghiệp hoặc qua Google Meet.
+- 💎 Ưu tiên nâng cấp tính năng mới và hỗ trợ kỹ thuật 24/7 trong **24 tháng**.
+
+---
+
+#### 🔑 GÓI CHUYỂN GIAO BẢN QUYỀN MÃ NGUỒN (WHITE-LABEL SOURCE CODE)
+> Phù hợp: Freelancer, Agency, Software House hoặc Doanh nghiệp có IT muốn sở hữu mã nguồn sạch về tự phát triển hoặc bán lại cho khách hàng khác.  
 > **💰 Giá chuyển giao: 15.000.000 VNĐ** *(Thanh toán 01 lần duy nhất)*
 
-- 🔑 Bàn giao **100% Source Code sạch chuẩn Next.js 15, Prisma ORM, PostgreSQL**.
+- 🔑 Bàn giao **100% Source Code sạch** chuẩn Next.js 15 App Router, Prisma ORM, PostgreSQL.
+- 🔑 Tích hợp sẵn kiến trúc Feature Flags điều khiển module bằng file `.env`.
 - 🔑 Full tài liệu kỹ thuật & Hướng dẫn cài đặt deploy lên Vercel / VPS Docker.
-- 🔑 Hỗ trợ cấu hình setup chạy thực tế 01 lần.
-- 🔑 **Toàn quyền thương mại hóa**: Tùy ý đổi tên, đổi thương hiệu, bán lại cho không giới hạn khách hàng.
+- 🔑 **Toàn quyền thương mại hóa vĩnh viễn**: Tự do đổi thương hiệu, bán lại không giới hạn số lượng khách hàng.
 
 ---
 
