@@ -1,12 +1,17 @@
 import React from "react";
+import { notFound } from "next/navigation";
 import { prisma } from "../../../../lib/prisma";
 import { getCompanyInfo } from "../../../../lib/company";
 import { PosTerminal } from "../../../../components/admin/pos/PosTerminal";
 import { PosProductItem } from "../../../../actions/posActions";
+import { FEATURES } from "../../../../lib/features";
 
 export const revalidate = 0; // Fresh inventory and products on each load
 
 export default async function AdminPosPage() {
+  if (!FEATURES.posTerminal) {
+    notFound();
+  }
   const [categories, rawProducts, company] = await Promise.all([
     prisma.category.findMany({
       orderBy: { name: "asc" },

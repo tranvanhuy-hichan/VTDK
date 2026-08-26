@@ -23,6 +23,7 @@ import { PrintableQuoteModal, type QuoteItem } from "../quote/PrintableQuoteModa
 import { ShareCartModal, decodeCartFromSharing } from "./ShareCartModal";
 import type { CartItem } from "../../types/cart";
 import type { CompanyContact } from "../../lib/company";
+import { FEATURES } from "../../lib/features";
 
 interface CartPageViewProps {
   company?: CompanyContact;
@@ -280,23 +281,27 @@ export const CartPageView: React.FC<CartPageViewProps> = ({ company }) => {
                   <ArrowRight className="w-4 h-4" />
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => setIsShareModalOpen(true)}
-                  className="w-full inline-flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs sm:text-sm py-2.5 px-4 rounded-xl transition-all active:scale-98 cursor-pointer"
-                >
-                  <Share2 className="w-4 h-4 text-[#075FA8] dark:text-blue-400" />
-                  <span>Chia sẻ giỏ hàng qua Zalo / Link</span>
-                </button>
+                {FEATURES.shareCart && (
+                  <button
+                    type="button"
+                    onClick={() => setIsShareModalOpen(true)}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs sm:text-sm py-2.5 px-4 rounded-xl transition-all active:scale-98 cursor-pointer"
+                  >
+                    <Share2 className="w-4 h-4 text-[#075FA8] dark:text-blue-400" />
+                    <span>Chia sẻ giỏ hàng qua Zalo / Link</span>
+                  </button>
+                )}
 
-                <button
-                  type="button"
-                  onClick={() => setIsQuoteModalOpen(true)}
-                  className="w-full inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-[#075FA8] dark:text-blue-400 font-bold text-xs sm:text-sm py-2.5 px-4 rounded-xl border border-blue-200 dark:border-blue-800/80 shadow-xs transition-all active:scale-98 cursor-pointer"
-                >
-                  <FileText className="w-4 h-4 text-[#075FA8] dark:text-blue-400" />
-                  <span>Tải Báo Giá PDF (B2B)</span>
-                </button>
+                {FEATURES.selfServiceQuote && (
+                  <button
+                    type="button"
+                    onClick={() => setIsQuoteModalOpen(true)}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-[#075FA8] dark:text-blue-400 font-bold text-xs sm:text-sm py-2.5 px-4 rounded-xl border border-blue-200 dark:border-blue-800/80 shadow-xs transition-all active:scale-98 cursor-pointer"
+                  >
+                    <FileText className="w-4 h-4 text-[#075FA8] dark:text-blue-400" />
+                    <span>Tải Báo Giá PDF (B2B)</span>
+                  </button>
+                )}
 
                 <Link
                   href="/san-pham"
@@ -311,21 +316,25 @@ export const CartPageView: React.FC<CartPageViewProps> = ({ company }) => {
       </div>
 
       {/* Printable Quote Modal */}
-      <PrintableQuoteModal
-        isOpen={isQuoteModalOpen}
-        onClose={() => setIsQuoteModalOpen(false)}
-        items={quoteItems}
-        company={company}
-        initialCustomerName={user?.name || undefined}
-        initialCustomerPhone={user?.phone || undefined}
-      />
+      {FEATURES.selfServiceQuote && (
+        <PrintableQuoteModal
+          isOpen={isQuoteModalOpen}
+          onClose={() => setIsQuoteModalOpen(false)}
+          items={quoteItems}
+          company={company}
+          initialCustomerName={user?.name || undefined}
+          initialCustomerPhone={user?.phone || undefined}
+        />
+      )}
 
       {/* Share Cart Modal */}
-      <ShareCartModal
-        isOpen={isShareModalOpen}
-        onClose={() => setIsShareModalOpen(false)}
-        items={displayedItems}
-      />
+      {FEATURES.shareCart && (
+        <ShareCartModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          items={displayedItems}
+        />
+      )}
     </section>
   );
 };

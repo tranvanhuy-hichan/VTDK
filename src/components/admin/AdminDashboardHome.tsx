@@ -22,9 +22,10 @@ import {
 } from "lucide-react";
 import type { OrderStatus } from "../../types/order";
 import type { CompanyContact } from "../../lib/company";
+import { Button, Badge } from "@/components/ui";
 import { OrderStatusBadge } from "../order/OrderStatusBadge";
 import { formatCurrency, formatDate } from "../../lib/format";
-import { Button, Badge } from "@/components/ui";
+import { FEATURES } from "../../lib/features";
 
 interface DashboardStats {
   totalProducts: number;
@@ -79,8 +80,8 @@ export const AdminDashboardHome: React.FC<AdminDashboardHomeProps> = ({
             </h1>
           </div>
 
-          <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto custom-scrollbar flex-nowrap w-full sm:w-auto shrink-0 pb-0.5">
-            {company?.enablePosModule !== false && (
+          <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar flex-nowrap w-full sm:w-auto shrink-0 pb-0.5">
+            {FEATURES.posTerminal && company?.enablePosModule !== false && (
               <Button
                 variant="primary"
                 size="sm"
@@ -92,15 +93,17 @@ export const AdminDashboardHome: React.FC<AdminDashboardHomeProps> = ({
               </Button>
             )}
 
-            <Button
-              variant="success"
-              size="sm"
-              href="/admin/analytics"
-              leftIcon={<BarChart3 className="w-3.5 h-3.5" />}
-              className="bg-emerald-600 hover:bg-emerald-700 font-bold shrink-0"
-            >
-              Báo cáo
-            </Button>
+            {FEATURES.analytics && (
+              <Button
+                variant="success"
+                size="sm"
+                href="/admin/analytics"
+                leftIcon={<BarChart3 className="w-3.5 h-3.5" />}
+                className="bg-emerald-600 hover:bg-emerald-700 font-bold shrink-0"
+              >
+                Báo cáo
+              </Button>
+            )}
 
             <Button
               variant="secondary"

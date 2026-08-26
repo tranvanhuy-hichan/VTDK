@@ -22,6 +22,7 @@ import { OrderItemCard } from "@/components/ui";
 
 import { PrintableQuoteModal, type QuoteItem } from "@/components/quote/PrintableQuoteModal";
 import { FileText } from "lucide-react";
+import { FEATURES } from "@/lib/features";
 
 const PrintableOrderSlip = dynamic(
   () => import("./PrintableOrderSlip").then((mod) => mod.PrintableOrderSlip),
@@ -106,16 +107,20 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
           </div>
 
           <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
-            <PrintableOrderSlip order={order} company={company} />
+            {FEATURES.deliverySlip && (
+              <PrintableOrderSlip order={order} company={company} />
+            )}
 
-            <button
-              type="button"
-              onClick={() => setIsQuoteOpen(true)}
-              className="inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-[#075FA8] dark:text-blue-300 hover:bg-blue-100 text-xs font-bold shadow-2xs transition-colors shrink-0 whitespace-nowrap cursor-pointer !min-h-0"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>Báo giá PDF</span>
-            </button>
+            {FEATURES.b2bQuotation && (
+              <button
+                type="button"
+                onClick={() => setIsQuoteOpen(true)}
+                className="inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-[#075FA8] dark:text-blue-300 hover:bg-blue-100 text-xs font-bold shadow-2xs transition-colors shrink-0 whitespace-nowrap cursor-pointer !min-h-0"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Báo giá PDF</span>
+              </button>
+            )}
 
             <a
               href={`tel:${order.customerPhone}`}

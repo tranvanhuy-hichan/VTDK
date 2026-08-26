@@ -29,6 +29,7 @@ import { logoutAction } from "../../app/admin/actions";
 import { AdminNotificationCenter } from "./AdminNotificationCenter";
 import type { UserProfile } from "../../types/auth";
 import { COMPANY_DATA } from "../../data/company";
+import { FEATURES } from "../../lib/features";
 
 interface AdminShellProps {
   children: React.ReactNode;
@@ -95,10 +96,16 @@ export const AdminShell: React.FC<AdminShellProps> = ({
 
   const navSections = NAV_SECTIONS.map((section) => ({
     ...section,
-    items: section.items.filter(
-      (item) => item.href !== "/admin/pos" || enablePosModule !== false
-    ),
-  }));
+    items: section.items.filter((item) => {
+      if (item.href === "/admin/pos") return FEATURES.posTerminal && enablePosModule !== false;
+      if (item.href === "/admin/quote") return FEATURES.b2bQuotation;
+      if (item.href === "/admin/analytics") return FEATURES.analytics;
+      if (item.href === "/admin/theme") return FEATURES.themeCustomizer;
+      if (item.href === "/admin/gallery") return FEATURES.mediaGallery;
+      if (item.href === "/admin/services") return FEATURES.services;
+      return true;
+    }),
+  })).filter((section) => section.items.length > 0);
 
   const adminName = adminUser?.name || companyName || COMPANY_DATA.brandName || "Admin";
   const adminEmail = adminUser?.email || COMPANY_DATA.email || "admin@example.com";

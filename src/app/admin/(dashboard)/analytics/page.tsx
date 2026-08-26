@@ -1,8 +1,9 @@
 import React from "react";
 import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
 import { getAdminAnalyticsAction } from "../../../../actions/analyticsActions";
 import { AdminAnalyticsView } from "../../../../components/admin/AdminAnalyticsView";
-import { redirect } from "next/navigation";
+import { FEATURES } from "../../../../lib/features";
 
 export const metadata: Metadata = {
   title: "Báo Cáo & Thống Kê Doanh Thu - Admin",
@@ -12,6 +13,9 @@ export const metadata: Metadata = {
 export const revalidate = 0; // Fresh dynamic data
 
 export default async function AdminAnalyticsPage() {
+  if (!FEATURES.analytics) {
+    notFound();
+  }
   const result = await getAdminAnalyticsAction("30d");
 
   if (!result.success || !result.data) {
