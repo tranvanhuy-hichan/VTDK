@@ -135,7 +135,7 @@ export const OrderTotalCard: React.FC<OrderTotalCardProps> = ({
   title = "Tổng cộng",
   shippingFee,
   shippingLabel,
-  amountNeededForFreeship = 0,
+  amountNeededForFreeship,
   freeshipThreshold = 2000000,
   children,
 }) => {
@@ -144,38 +144,35 @@ export const OrderTotalCard: React.FC<OrderTotalCardProps> = ({
   const finalTotal = subtotal + actualShipping;
   const hasUnpriced = items.some((item) => item.price === 0);
 
-  const freeshipProgress = Math.min(100, Math.round((subtotal / (freeshipThreshold || 2000000)) * 100));
+  const threshold = typeof freeshipThreshold === "number" && freeshipThreshold > 0 ? freeshipThreshold : 2000000;
+  const needed =
+    typeof amountNeededForFreeship === "number"
+      ? amountNeededForFreeship
+      : Math.max(0, threshold - subtotal);
+
+  const isFreeshipQualified = needed <= 0 || subtotal >= threshold;
+  const freeshipProgress = Math.min(100, Math.round((subtotal / threshold) * 100));
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 space-y-3">
       <h2 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">{title}</h2>
 
-      {/* Freeship Progress Meter */}
-      {freeshipThreshold > 0 && (
+      {/* Freeship Progress Meter: Chỉ hiển thị khi CHƯA đủ điều kiện freeship để gợi ý mua thêm. Khi đủ điều kiện thì ẩn hoàn toàn. */}
+      {threshold > 0 && !isFreeshipQualified && needed > 0 && subtotal > 0 && (
         <div className="p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50 space-y-1.5">
           <div className="flex items-center justify-between text-[11px] font-bold">
-            {amountNeededForFreeship > 0 ? (
-              <span className="text-[#075FA8] dark:text-blue-300">
-                Mua thêm{" "}
-                <strong className="text-orange-600 dark:text-orange-400">
-                  {amountNeededForFreeship.toLocaleString("vi-VN")}đ
-                </strong>{" "}
-                để được <strong>FREESHIP</strong>
-              </span>
-            ) : (
-              <span className="text-emerald-700 dark:text-emerald-300 font-extrabold flex items-center gap-1">
-                <span>🎉</span> Đơn hàng đủ điều kiện MIỄN PHÍ SHIP!
-              </span>
-            )}
+            <span className="text-[#075FA8] dark:text-blue-300">
+              Mua thêm{" "}
+              <strong className="text-orange-600 dark:text-orange-400">
+                {needed.toLocaleString("vi-VN")}đ
+              </strong>{" "}
+              để được <strong>FREESHIP</strong>
+            </span>
             <span className="text-slate-500 dark:text-slate-400">{freeshipProgress}%</span>
           </div>
           <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
             <div
-              className={`h-full rounded-full transition-all duration-500 ${
-                amountNeededForFreeship === 0
-                  ? "bg-gradient-to-r from-emerald-500 to-teal-400"
-                  : "bg-gradient-to-r from-[#075FA8] to-cyan-400"
-              }`}
+              className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-[#075FA8] to-cyan-400"
               style={{ width: `${freeshipProgress}%` }}
             />
           </div>

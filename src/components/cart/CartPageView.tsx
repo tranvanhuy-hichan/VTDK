@@ -22,8 +22,13 @@ import { OrderItemsCard, OrderTotalCard, OrderRowSkeleton, OrderTotalSkeleton } 
 import { PrintableQuoteModal, type QuoteItem } from "../quote/PrintableQuoteModal";
 import { ShareCartModal, decodeCartFromSharing } from "./ShareCartModal";
 import type { CartItem } from "../../types/cart";
+import type { CompanyContact } from "../../lib/company";
 
-export const CartPageView: React.FC = () => {
+interface CartPageViewProps {
+  company?: CompanyContact;
+}
+
+export const CartPageView: React.FC<CartPageViewProps> = ({ company }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { items, hydrated, removeItem, updateQty, setCheckoutItems, clear, importItems } = useCart();
@@ -262,7 +267,10 @@ export const CartPageView: React.FC = () => {
             />
 
             <div className="lg:col-span-1 lg:h-full lg:overflow-y-auto space-y-3">
-              <OrderTotalCard items={displayedItems}>
+              <OrderTotalCard
+                items={displayedItems}
+                freeshipThreshold={company?.freeshipThreshold}
+              >
                 <button
                   type="button"
                   onClick={handleProceedToCheckout}
