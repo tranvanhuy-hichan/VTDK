@@ -23,14 +23,12 @@ interface ShareCartModalProps {
 export interface SharedCartPayload {
   items: {
     k: string; // key
-    id: string; // id
     n: string; // name
     s: string; // slug
     p: number; // price
     q: number; // quantity
     img: string; // image
     vl?: string; // variantLabel
-    vId?: string; // variantId
   }[];
   t: number; // timestamp
   by?: string; // sender note
@@ -44,14 +42,12 @@ export function encodeCartForSharing(items: CartItem[], senderName?: string): st
     const payload: SharedCartPayload = {
       items: items.map((i) => ({
         k: i.key,
-        id: i.id,
         n: i.name,
         s: i.slug,
         p: i.price,
         q: i.qty,
         img: i.image,
         vl: i.variantLabel || undefined,
-        vId: i.variantId || undefined,
       })),
       t: Date.now(),
       by: senderName || undefined,
@@ -74,15 +70,13 @@ export function decodeCartFromSharing(encodedStr: string): CartItem[] | null {
     if (!parsed || !Array.isArray(parsed.items)) return null;
 
     return parsed.items.map((i) => ({
-      key: i.k || `${i.id}-${i.vId || "default"}`,
-      id: i.id,
+      key: i.k || `${i.s}-${i.vl || "default"}`,
       name: i.n,
       slug: i.s,
       price: i.p,
       qty: Math.max(1, i.q || 1),
       image: i.img,
       variantLabel: i.vl,
-      variantId: i.vId,
     }));
   } catch (e) {
     console.error("Failed to decode cart from sharing:", e);
