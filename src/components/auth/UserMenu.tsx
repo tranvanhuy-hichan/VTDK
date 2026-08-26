@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { User, LogIn, ShoppingBag, ShieldCheck, LogOut, ChevronDown, Moon, Sun, Settings } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { PwaInstallMenuItem } from "../pwa/PwaInstallMenuItem";
 
 export const UserMenu: React.FC = () => {
   const { user, logout, isLoading } = useAuth();
@@ -122,6 +123,8 @@ export const UserMenu: React.FC = () => {
               <Settings className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
               <span>Cài đặt hệ thống</span>
             </Link>
+
+            <PwaInstallMenuItem onItemClick={() => setIsOpen(false)} />
 
             <div className="h-px bg-slate-100 dark:border-slate-800 my-1" />
 

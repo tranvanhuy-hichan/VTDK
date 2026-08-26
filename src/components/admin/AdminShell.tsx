@@ -30,6 +30,7 @@ import { AdminNotificationCenter } from "./AdminNotificationCenter";
 import type { UserProfile } from "../../types/auth";
 import { COMPANY_DATA } from "../../data/company";
 import { FEATURES } from "../../lib/features";
+import { PwaInstallMenuItem } from "../pwa/PwaInstallMenuItem";
 
 interface AdminShellProps {
   children: React.ReactNode;
@@ -379,6 +380,8 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                         <Palette className="w-3.5 h-3.5 text-purple-500" />
                         <span>Tùy chỉnh Giao diện</span>
                       </Link>
+
+                      <PwaInstallMenuItem onItemClick={() => setIsUserMenuOpen(false)} />
 
                       <div className="h-px bg-slate-100 dark:border-slate-800 my-1" />
 
