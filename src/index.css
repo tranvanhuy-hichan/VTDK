@@ -47,27 +47,35 @@
   }
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - Subtle & Clean */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F1F5F9;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #075FA8;
-  border-radius: 4px;
+  background: #CBD5E1;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #0B1F33;
+  background: #94A3B8;
 }
 
-.no-scrollbar {
+/* Hide scrollbar for touch tab lists and horizontal bars */
+.no-scrollbar,
+.scrollbar-none,
+.custom-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-.no-scrollbar::-webkit-scrollbar {
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar,
+.custom-scrollbar::-webkit-scrollbar {
   display: none;
+  width: 0;
+  height: 0;
 }
 
 /* iOS Safari auto-zooms the page when focusing an input/select/textarea
