@@ -21,6 +21,12 @@ import {
   Check,
   Copy,
   Lock,
+  Mail,
+  FileText,
+  Clock,
+  Globe,
+  MapPin,
+  Tag,
 } from "lucide-react";
 import {
   updateCompanyInfoAction,
@@ -34,7 +40,7 @@ import {
   REGION_PROVINCE_CODES,
 } from "../../lib/vietnamProvinces";
 import { MultiImageUpload } from "./MultiImageUpload";
-import { Button, Tabs, Badge, Card, CardHeader, CardTitle } from "@/components/ui";
+import { Button } from "@/components/ui";
 
 const PLACEHOLDER_IMAGE = "/images/placeholder.svg";
 
@@ -59,56 +65,58 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [removeImage, setRemoveImage] = useState(false);
 
-  // Brand Logo
+  // Logo
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   // Gallery
-  const [existingGalleryUrls, setExistingGalleryUrls] = useState<string[]>(initialCompany.images || []);
+  const [existingGalleryUrls, setExistingGalleryUrls] = useState<string[]>(
+    initialCompany.images || []
+  );
   const [newGalleryFiles, setNewGalleryFiles] = useState<File[]>([]);
 
-  // Freeship Provinces Selector State
-  const [provinceSearch, setProvinceSearch] = useState("");
+  // Province search filter for Freeship
+  const [provinceSearch, setProvinceSearch] = useState<string>("");
 
-  const freeshipList = Array.isArray(form.freeshipProvinces)
+  // Province Detection
+  const companyProvince = findProvinceByCity(form.city || form.address || "Đà Nẵng");
+  const companyProvinceCode = companyProvince ? String(companyProvince.code) : "48";
+  const companyProvinceName = companyProvince ? companyProvince.name : "Đà Nẵng";
+
+  // Freeship Helpers
+  const freeshipList: string[] = Array.isArray(form.freeshipProvinces)
     ? form.freeshipProvinces
-    : ["ALL"];
-  const isAllFreeship = freeshipList.includes("ALL");
+    : [];
+  const isAllFreeship =
+    freeshipList.length === 0 ||
+    freeshipList.includes("ALL") ||
+    freeshipList.length === VIETNAM_PROVINCES.length;
 
-  const isProvinceSelected = (code: string) => {
+  const isProvinceSelected = (code: string): boolean => {
     if (isAllFreeship) return true;
-    return freeshipList.includes(String(code).trim());
+    return freeshipList.includes(code);
   };
 
   const handleToggleProvince = (code: string) => {
     if (!isEditing) return;
-    const strCode = String(code).trim();
-    if (isAllFreeship) {
-      // Deselect this province, keeping all other 33 provinces
-      const rest = VIETNAM_PROVINCES.map((p) => String(p.code)).filter((c) => c !== strCode);
-      handleChange("freeshipProvinces", rest);
+    let current = isAllFreeship
+      ? VIETNAM_PROVINCES.map((p) => String(p.code))
+      : [...freeshipList.filter((c) => c !== "ALL")];
+
+    if (current.includes(code)) {
+      current = current.filter((c) => c !== code);
     } else {
-      if (freeshipList.includes(strCode)) {
-        const next = freeshipList.filter((c) => c !== strCode);
-        handleChange("freeshipProvinces", next);
-      } else {
-        const next = [...freeshipList, strCode];
-        if (next.length >= VIETNAM_PROVINCES.length) {
-          handleChange("freeshipProvinces", ["ALL"]);
-        } else {
-          handleChange("freeshipProvinces", next);
-        }
-      }
+      current.push(code);
+    }
+
+    if (current.length === VIETNAM_PROVINCES.length) {
+      handleChange("freeshipProvinces", ["ALL"]);
+    } else {
+      handleChange("freeshipProvinces", current);
     }
   };
 
-  const companyMatchedProvince = findProvinceByCity(form.city);
-  const companyProvinceCode = companyMatchedProvince ? String(companyMatchedProvince.code) : "48";
-  const companyProvinceName = companyMatchedProvince ? companyMatchedProvince.name : (form.city || "Trụ sở");
-
-  const handleSetPreset = (
-    preset: "ALL" | "LOCAL" | "BIG_CITIES" | "NORTH" | "CENTRAL" | "SOUTH" | "NONE"
-  ) => {
+  const handleSetPreset = (preset: "ALL" | "LOCAL" | "BIG_CITIES" | "NORTH" | "CENTRAL" | "SOUTH" | "NONE") => {
     if (!isEditing) return;
     switch (preset) {
       case "ALL":
@@ -177,25 +185,22 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
     setSavedSuccess(false);
     setErrorMessage(null);
   };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
+    const file = e.target.files?.[0];
+    if (file) {
       setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
       setRemoveImage(false);
-      const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result as string);
-      reader.readAsDataURL(file);
       setSavedSuccess(false);
     }
   };
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
+    const file = e.target.files?.[0];
+    if (file) {
       setLogoFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => setLogoPreview(reader.result as string);
-      reader.readAsDataURL(file);
+      setLogoPreview(URL.createObjectURL(file));
       setSavedSuccess(false);
     }
   };
@@ -300,30 +305,27 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
         setTimeout(() => setSavedSuccess(false), 5000);
       }
     } catch (err: any) {
-      setErrorMessage(err?.message || "Lỗi kết nối khi lưu thông tin doanh nghiệp!");
+      setErrorMessage(err?.message || "Có lỗi xảy ra khi lưu thông tin");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const currentLogo = logoPreview ?? form.logoUrl ?? savedData.logoUrl ?? "/images/logo.png";
+  const currentLogo = logoPreview || form.logoUrl || PLACEHOLDER_IMAGE;
   const currentCover = removeImage
     ? PLACEHOLDER_IMAGE
-    : imagePreview ?? form.image ?? savedData.image ?? "/images/storefront.png";
+    : imagePreview || form.image || PLACEHOLDER_IMAGE;
 
   return (
-    <div className="space-y-3 sm:space-y-4 text-left max-w-[1600px] mx-auto pb-12 animate-in fade-in duration-200">
-      {/* 1. TOP HERO BANNER: Brand Identity Showcase (Compact & Clean) */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#061A30] via-[#092B4D] to-[#0A1F33] text-white p-3.5 sm:p-5 border border-slate-800 shadow-lg">
-        {/* Glow ambient background */}
-        <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 -mb-16 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+    <div className="space-y-2.5 max-w-6xl mx-auto text-left pb-12 sm:pb-0 font-sans">
+      {/* 1. ULTRA COMPACT HERO BANNER */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#075FA8] via-[#08457A] to-[#0B2540] p-3 sm:p-4 text-white shadow-xs">
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
+          
           {/* Logo & Main Info */}
-          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
             <div className="relative group shrink-0">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-white dark:bg-slate-900 border border-white/20 p-1.5 shadow-md flex items-center justify-center overflow-hidden">
+              <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-xl bg-white dark:bg-slate-900 border border-white/20 p-1 shadow-sm flex items-center justify-center overflow-hidden">
                 <img
                   src={currentLogo}
                   alt="Logo công ty"
@@ -331,7 +333,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                 />
               </div>
               {isEditing && (
-                <label className="absolute inset-0 rounded-xl bg-slate-950/70 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer transition-opacity text-white text-[9px] font-bold gap-0.5">
+                <label className="absolute inset-0 rounded-xl bg-slate-950/70 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer transition-opacity text-white text-[8px] font-bold gap-0.5">
                   <Camera className="w-3 h-3" />
                   <span>Đổi Logo</span>
                   <input
@@ -344,46 +346,49 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
               )}
             </div>
 
-            <div className="min-w-0 space-y-0.5">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="inline-flex items-center gap-1 px-2 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[9px] font-bold uppercase tracking-wider">
+            <div className="min-w-0 space-y-0.5 flex-1">
+              <div className="flex items-center gap-1.5 flex-wrap leading-none">
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[8.5px] font-bold uppercase">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Online
+                  ONLINE
                 </span>
                 <span className="text-[10px] text-blue-200/80 font-mono">
                   MST: {form.taxCode || "Chưa thiết lập"}
                 </span>
                 {isEditing && (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-md bg-amber-400/20 text-amber-300 text-[9px] font-bold border border-amber-400/30">
+                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 text-[9px] font-bold border border-amber-400/30">
                     ✏️ Sửa
                   </span>
                 )}
               </div>
 
-              <h1 className="text-sm sm:text-lg font-black text-white tracking-tight truncate leading-tight">
+              <h1 className="text-xs sm:text-base font-black text-white tracking-tight truncate leading-snug">
                 {form.fullName || form.name || "Cấu hình Doanh nghiệp"}
               </h1>
 
-              <div className="flex items-center gap-2 text-[11px] text-blue-100/80 flex-wrap">
+              <div className="flex items-center gap-1.5 text-[10.5px] text-blue-100/80 truncate">
                 <span className="font-bold text-amber-300 truncate">
                   {form.shortName || form.brandName}
                 </span>
-                <span className="hidden sm:inline">•</span>
-                <span className="hidden sm:inline truncate max-w-xs">
-                  {form.address}
-                </span>
+                {form.address && (
+                  <>
+                    <span className="opacity-40">•</span>
+                    <span className="truncate opacity-80">{form.address}</span>
+                  </>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Top Action Buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto shrink-0 justify-end">
+          {/* Action Buttons Row */}
+          <div className="flex items-center gap-1.5 shrink-0 justify-end pt-1 sm:pt-0 border-t sm:border-t-0 border-white/10">
             <Button
               variant="outline"
+              size="sm"
               href="/"
               target="_blank"
               leftIcon={<ExternalLink className="w-3.5 h-3.5" />}
-              className="bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-md"
+              className="bg-white/10 hover:bg-white/20 text-white border-white/20 h-7 text-xs !min-h-0"
             >
               Xem Web
             </Button>
@@ -392,10 +397,11 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
               <>
                 <Button
                   variant="secondary"
+                  size="sm"
                   onClick={handleCancelEdit}
                   disabled={isSubmitting}
                   leftIcon={<X className="w-3.5 h-3.5" />}
-                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700"
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 h-7 text-xs !min-h-0"
                 >
                   Hủy
                 </Button>
@@ -403,17 +409,21 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                   type="submit"
                   form="company-form"
                   variant="success"
+                  size="sm"
                   isLoading={isSubmitting}
                   leftIcon={<Save className="w-3.5 h-3.5" />}
+                  className="h-7 text-xs !min-h-0 font-black"
                 >
-                  LƯU THAY ĐỔI
+                  LƯU
                 </Button>
               </>
             ) : (
               <Button
                 variant="primary"
+                size="sm"
                 onClick={handleStartEdit}
                 leftIcon={<Pencil className="w-3.5 h-3.5" />}
+                className="bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold h-7 text-xs !min-h-0 border-transparent shadow-xs"
               >
                 Chỉnh sửa
               </Button>
@@ -422,6 +432,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
         </div>
       </div>
 
+      {/* SUCCESS / ERROR ALERTS */}
       {savedSuccess && (
         <div className="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 rounded-xl p-2.5 text-xs text-emerald-800 dark:text-emerald-300 font-bold flex items-center gap-2 shadow-2xs animate-in fade-in duration-200">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -435,193 +446,226 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
         </div>
       )}
 
-      {/* 2. NAVIGATION SEGMENTED TABS */}
-      <Tabs
-        variant="segmented"
-        size="md"
-        activeKey={activeTab}
-        onChange={(key) => setActiveTab(key as TabType)}
-        tabs={[
-          { key: "brand", label: "Thương hiệu & Pháp lý", icon: <Sparkles className="w-3.5 h-3.5" /> },
-          { key: "contact", label: "Liên hệ & MXH", icon: <Phone className="w-3.5 h-3.5" /> },
-          { key: "location", label: "Địa chỉ & Bản đồ", icon: <MapPinned className="w-3.5 h-3.5" /> },
-          { key: "shipping", label: "Vận chuyển & Phí", icon: <Truck className="w-3.5 h-3.5" /> },
-          { key: "media", label: "Hình ảnh & Kho", icon: <Images className="w-3.5 h-3.5" /> },
-        ]}
-      />
+      {/* 2. CUSTOM RESPONSIVE NAVIGATION TABS */}
+      <div className="w-full overflow-x-auto custom-scrollbar pb-0.5">
+        <div className="inline-flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200/80 dark:border-slate-700/80 shrink-0 select-none min-w-full sm:min-w-0">
+          {[
+            { key: "brand", label: "Thương hiệu & Pháp lý", shortLabel: "Thương hiệu", icon: <Sparkles className="w-3.5 h-3.5" /> },
+            { key: "contact", label: "Liên hệ & MXH", shortLabel: "Liên hệ", icon: <Phone className="w-3.5 h-3.5" /> },
+            { key: "location", label: "Địa chỉ & Bản đồ", shortLabel: "Địa chỉ", icon: <MapPinned className="w-3.5 h-3.5" /> },
+            { key: "shipping", label: "Vận chuyển & Phí", shortLabel: "Giao hàng", icon: <Truck className="w-3.5 h-3.5" /> },
+            { key: "media", label: "Hình ảnh & Kho", shortLabel: "Hình ảnh", icon: <Images className="w-3.5 h-3.5" /> },
+          ].map((tab) => {
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setActiveTab(tab.key as TabType)}
+                className={`flex-1 sm:flex-initial h-7.5 px-2.5 sm:px-3.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer !min-h-0 ${
+                  isActive
+                    ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700/50"
+                }`}
+              >
+                <span className="shrink-0">{tab.icon}</span>
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.shortLabel}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* 3. MAIN FORM BODY */}
       <form id="company-form" onSubmit={handleSubmit}>
         {/* TAB 1: THƯƠNG HIỆU & PHÁP LÝ */}
         {activeTab === "brand" && (
-          <div className="animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400">
-                    <Building2 className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white uppercase tracking-tight">
-                      4 Cấp Độ Chuẩn Hóa Tên Doanh Nghiệp
-                    </h2>
-                    <p className="text-xs text-slate-400">
-                      Được tự động ánh xạ đến đúng vị trí hiển thị trên toàn bộ website.
-                    </p>
-                  </div>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3.5 sm:p-5 shadow-xs space-y-4 animate-in fade-in duration-200">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400">
+                  <Building2 className="w-4 h-4" />
                 </div>
-                {!isEditing && (
-                  <span className="inline-flex items-center gap-1 text-xs text-slate-400 font-medium">
-                    <Lock className="w-3.5 h-3.5" /> Chỉ xem (Bấm &quot;Chỉnh sửa&quot; ở trên để sửa)
+                <div>
+                  <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                    Chuẩn Hóa Danh Xưng Doanh Nghiệp
+                  </h2>
+                  <p className="text-[11px] text-slate-400">
+                    Ánh xạ chính xác vào Header, Footer, Zalo, Hóa đơn VAT và SEO.
+                  </p>
+                </div>
+              </div>
+              {!isEditing && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500">
+                  <Lock className="w-3 h-3" /> Chỉ xem
+                </span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {/* fullName */}
+              <div className="sm:col-span-2 space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                    <span>1. Tên đầy đủ pháp lý (fullName)</span>
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <span className="text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.2 rounded">
+                    Footer, VAT, Giấy tờ
                   </span>
-                )}
+                </div>
+                <input
+                  type="text"
+                  required
+                  disabled={!isEditing}
+                  value={form.fullName}
+                  onChange={(e) => handleChange("fullName", e.target.value)}
+                  placeholder="Công ty TNHH Vật Tư Đông Kha"
+                  className={`w-full text-xs sm:text-sm rounded-xl px-3 py-2 transition-all ${
+                    isEditing
+                      ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
+                      : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
+                  }`}
+                />
+                <p className="text-[10px] text-slate-400">Tên pháp nhân công ty trên giấy phép ĐKKD.</p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {/* fullName */}
-                <div className="sm:col-span-2 space-y-1.5">
-                  <label className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <span>1. Tên đầy đủ pháp lý (fullName) <span className="text-red-500">*</span></span>
-                    <span className="text-[10px] text-slate-400 font-normal">Footer, Hóa đơn VAT, Giấy tờ, SEO</span>
+              {/* shortName */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                    <span>2. Tên thương hiệu ngắn (shortName)</span>
+                    <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="text"
-                    required
-                    disabled={!isEditing}
-                    value={form.fullName}
-                    onChange={(e) => handleChange("fullName", e.target.value)}
-                    placeholder="Công ty TNHH Vật Tư Đông Kha"
-                    className={`w-full text-sm rounded-xl px-4 py-2.5 transition-colors ${
-                      isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
-                        : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
-                    }`}
-                  />
-                  <p className="text-[11px] text-slate-400">Tên pháp nhân công ty trên giấy phép ĐKKD.</p>
+                  <span className="text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.2 rounded">
+                    Header, Menu
+                  </span>
                 </div>
+                <input
+                  type="text"
+                  required
+                  disabled={!isEditing}
+                  value={form.shortName}
+                  onChange={(e) => handleChange("shortName", e.target.value)}
+                  placeholder="VẬT TƯ ĐÔNG KHA"
+                  className={`w-full text-xs sm:text-sm rounded-xl px-3 py-2 transition-all ${
+                    isEditing
+                      ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
+                      : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
+                  }`}
+                />
+                <p className="text-[10px] text-slate-400">Hiển thị nổi bật cạnh logo trên thanh Menu.</p>
+              </div>
 
-                {/* shortName */}
-                <div className="space-y-1.5">
-                  <label className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <span>2. Tên thương hiệu ngắn (shortName) <span className="text-red-500">*</span></span>
-                    <span className="text-[10px] text-slate-400 font-normal">Header, Mobile, Logo text</span>
+              {/* brandName */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                    <span>3. Tên gọi nhanh (brandName)</span>
+                    <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="text"
-                    required
-                    disabled={!isEditing}
-                    value={form.shortName}
-                    onChange={(e) => handleChange("shortName", e.target.value)}
-                    placeholder="VẬT TƯ ĐÔNG KHA"
-                    className={`w-full text-sm rounded-xl px-4 py-2.5 transition-colors ${
-                      isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
-                        : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
-                    }`}
-                  />
-                  <p className="text-[11px] text-slate-400">Hiển thị nổi bật cạnh logo trên thanh Menu.</p>
+                  <span className="text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.2 rounded">
+                    Zalo, Xưng hô
+                  </span>
                 </div>
+                <input
+                  type="text"
+                  required
+                  disabled={!isEditing}
+                  value={form.brandName}
+                  onChange={(e) => handleChange("brandName", e.target.value)}
+                  placeholder="Đông Kha"
+                  className={`w-full text-xs sm:text-sm rounded-xl px-3 py-2 transition-all ${
+                    isEditing
+                      ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
+                      : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
+                  }`}
+                />
+                <p className="text-[10px] text-slate-400">Ví dụ: &quot;Chào Đông Kha, tôi muốn hỏi giá...&quot;</p>
+              </div>
 
-                {/* brandName */}
-                <div className="space-y-1.5">
-                  <label className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <span>3. Tên gọi nhanh (brandName) <span className="text-red-500">*</span></span>
-                    <span className="text-[10px] text-slate-400 font-normal">Zalo chat, Xưng hô ngắn</span>
+              {/* tagline */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                    4. Khẩu hiệu / Slogan (tagline)
                   </label>
-                  <input
-                    type="text"
-                    required
-                    disabled={!isEditing}
-                    value={form.brandName}
-                    onChange={(e) => handleChange("brandName", e.target.value)}
-                    placeholder="Đông Kha"
-                    className={`w-full text-sm rounded-xl px-4 py-2.5 transition-colors ${
-                      isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
-                        : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
-                    }`}
-                  />
-                  <p className="text-[11px] text-slate-400">Ví dụ: &quot;Chào Đông Kha, tôi muốn hỏi giá...&quot;</p>
+                  <span className="text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.2 rounded">
+                    Dưới Logo
+                  </span>
                 </div>
+                <input
+                  type="text"
+                  disabled={!isEditing}
+                  value={form.tagline}
+                  onChange={(e) => handleChange("tagline", e.target.value)}
+                  placeholder="VẬT TƯ ĐIỆN LẠNH ĐÀ NẴNG"
+                  className={`w-full text-xs sm:text-sm rounded-xl px-3 py-2 transition-all ${
+                    isEditing
+                      ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
+                      : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
+                  }`}
+                />
+                <p className="text-[10px] text-slate-400">Chữ in hoa nhỏ nằm ngay dưới logo.</p>
+              </div>
 
-                {/* tagline */}
-                <div className="space-y-1.5">
-                  <label className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <span>4. Khẩu hiệu / Slogan phụ (tagline)</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Dưới Logo & Header</span>
-                  </label>
-                  <input
-                    type="text"
-                    disabled={!isEditing}
-                    value={form.tagline}
-                    onChange={(e) => handleChange("tagline", e.target.value)}
-                    placeholder="VẬT TƯ ĐIỆN LẠNH ĐÀ NẴNG"
-                    className={`w-full text-sm rounded-xl px-4 py-2.5 transition-colors ${
-                      isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
-                        : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
-                    }`}
-                  />
-                  <p className="text-[11px] text-slate-400">Chữ in hoa nhỏ nằm ngay dưới logo.</p>
-                </div>
+              {/* city */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                  Khu vực / Thành phố chính (city)
+                </label>
+                <input
+                  type="text"
+                  disabled={!isEditing}
+                  value={form.city}
+                  onChange={(e) => handleChange("city", e.target.value)}
+                  placeholder="Đà Nẵng & Miền Trung"
+                  className={`w-full text-xs sm:text-sm rounded-xl px-3 py-2 transition-all ${
+                    isEditing
+                      ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
+                      : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
+                  }`}
+                />
+                <p className="text-[10px] text-slate-400">Khu vực phục vụ khách hàng chính.</p>
+              </div>
 
-                {/* city */}
-                <div className="space-y-1.5">
-                  <label className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <span>Khu vực / Thành phố chính (city)</span>
-                  </label>
-                  <input
-                    type="text"
-                    disabled={!isEditing}
-                    value={form.city}
-                    onChange={(e) => handleChange("city", e.target.value)}
-                    placeholder="Đà Nẵng & Miền Trung"
-                    className={`w-full text-sm rounded-xl px-4 py-2.5 transition-colors ${
-                      isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
-                        : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
-                    }`}
-                  />
-                  <p className="text-[11px] text-slate-400">Khu vực phục vụ khách hàng chính.</p>
-                </div>
+              {/* taxCode */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                  Mã số thuế doanh nghiệp (taxCode)
+                </label>
+                <input
+                  type="text"
+                  disabled={!isEditing}
+                  value={form.taxCode || ""}
+                  onChange={(e) => handleChange("taxCode", e.target.value)}
+                  placeholder="0402123456"
+                  className={`w-full text-xs sm:text-sm rounded-xl px-3 py-2 font-mono transition-all ${
+                    isEditing
+                      ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
+                      : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
+                  }`}
+                />
+              </div>
 
-                {/* taxCode */}
-                <div className="space-y-1.5">
-                  <label className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <span>Mã số thuế (taxCode)</span>
-                  </label>
-                  <input
-                    type="text"
-                    disabled={!isEditing}
-                    value={form.taxCode || ""}
-                    onChange={(e) => handleChange("taxCode", e.target.value)}
-                    placeholder="0402123456"
-                    className={`w-full text-sm rounded-xl px-4 py-2.5 font-mono transition-colors ${
-                      isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
-                        : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
-                    }`}
-                  />
-                </div>
-
-                {/* email */}
-                <div className="space-y-1.5">
-                  <label className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <span>Email liên hệ chính thức (email)</span>
-                  </label>
-                  <input
-                    type="email"
-                    disabled={!isEditing}
-                    value={form.email || ""}
-                    onChange={(e) => handleChange("email", e.target.value)}
-                    placeholder="lienhe@vattudongkha.io.vn"
-                    className={`w-full text-sm rounded-xl px-4 py-2.5 transition-colors ${
-                      isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
-                        : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
-                    }`}
-                  />
-                </div>
+              {/* email */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                  Email liên hệ chính thức (email)
+                </label>
+                <input
+                  type="email"
+                  disabled={!isEditing}
+                  value={form.email || ""}
+                  onChange={(e) => handleChange("email", e.target.value)}
+                  placeholder="lienhe@vattudongkha.io.vn"
+                  className={`w-full text-xs sm:text-sm rounded-xl px-3 py-2 transition-all ${
+                    isEditing
+                      ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
+                      : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
+                  }`}
+                />
               </div>
             </div>
           </div>
@@ -629,26 +673,26 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
 
         {/* TAB 2: LIÊN HỆ & MẠNG XÃ HỘI */}
         {activeTab === "contact" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-in fade-in duration-200">
-            <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
-              <div className="flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-800 pb-4">
-                <div className="p-2 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-[#F47A20]">
-                  <Phone className="w-5 h-5" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start animate-in fade-in duration-200">
+            <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3.5 sm:p-5 shadow-xs space-y-3.5">
+              <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div className="p-1.5 rounded-lg bg-orange-50 dark:bg-orange-950/60 text-[#F47A20]">
+                  <Phone className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white uppercase tracking-tight">
-                    Kênh Hotline & Mạng Xã Hội
+                  <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                    Kênh Hotline &amp; Mạng Xã Hội
                   </h2>
-                  <p className="text-xs text-slate-400">
-                    Kết nối tức thì với khách hàng và thợ điện lạnh.
+                  <p className="text-[11px] text-slate-400">
+                    Kết nối trực tiếp với khách hàng và đối tác thợ điện lạnh.
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* hotline */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
                     Số điện thoại Hotline <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -658,18 +702,18 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                     value={form.hotline}
                     onChange={(e) => handleChange("hotline", e.target.value)}
                     placeholder="0905 487 441"
-                    className={`w-full text-sm rounded-xl px-4 py-2.5 font-mono font-bold transition-colors ${
+                    className={`w-full text-xs sm:text-sm rounded-xl px-3 py-2 font-mono font-bold transition-all ${
                       isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                        ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
                         : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-[#F47A20] cursor-default"
                     }`}
                   />
                 </div>
 
                 {/* zaloUrl */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
-                    Link Zalo cá nhân hoặc Zalo OA
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Link Zalo cá nhân / Zalo OA
                   </label>
                   <input
                     type="text"
@@ -677,17 +721,17 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                     value={form.zaloUrl}
                     onChange={(e) => handleChange("zaloUrl", e.target.value)}
                     placeholder="https://zalo.me/0905487441"
-                    className={`w-full text-sm rounded-xl px-4 py-2.5 transition-colors ${
+                    className={`w-full text-xs sm:text-sm rounded-xl px-3 py-2 transition-all ${
                       isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                        ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
                         : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-blue-600 dark:text-blue-400 cursor-default"
                     }`}
                   />
                 </div>
 
                 {/* whatsAppUrl */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
                     Link WhatsApp
                   </label>
                   <input
@@ -696,18 +740,18 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                     value={form.whatsAppUrl}
                     onChange={(e) => handleChange("whatsAppUrl", e.target.value)}
                     placeholder="https://wa.me/84905487441"
-                    className={`w-full text-sm rounded-xl px-4 py-2.5 transition-colors ${
+                    className={`w-full text-xs sm:text-sm rounded-xl px-3 py-2 transition-all ${
                       isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                        ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
                         : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-emerald-600 dark:text-emerald-400 cursor-default"
                     }`}
                   />
                 </div>
 
                 {/* facebookUrl */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
-                    Link Facebook Fanpage
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Link Fanpage Facebook
                   </label>
                   <input
                     type="text"
@@ -715,9 +759,9 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                     value={form.facebookUrl}
                     onChange={(e) => handleChange("facebookUrl", e.target.value)}
                     placeholder="https://www.facebook.com/..."
-                    className={`w-full text-sm rounded-xl px-4 py-2.5 transition-colors ${
+                    className={`w-full text-xs sm:text-sm rounded-xl px-3 py-2 transition-all ${
                       isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                        ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
                         : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-[#1877F2] cursor-default"
                     }`}
                   />
@@ -726,25 +770,25 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
             </div>
 
             {/* Delivery Toggle Card */}
-            <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-4">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400">
-                  <Truck className="w-5 h-5" />
+            <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3.5 sm:p-5 shadow-xs space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400">
+                  <Truck className="w-4 h-4" />
                 </div>
-                <h3 className="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-tight">
-                  Chính Sách Vận Chuyển
+                <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                  Chính Sách Giao Hàng
                 </h3>
               </div>
 
-              <label className={`flex items-start justify-between gap-4 p-4 rounded-2xl border transition-colors ${
+              <label className={`flex items-start justify-between gap-3 p-3 rounded-xl border transition-all ${
                 isEditing ? "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 cursor-pointer" : "bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 cursor-default"
               }`}>
                 <div>
-                  <span className="block text-sm font-bold text-slate-800 dark:text-slate-100">
+                  <span className="block text-xs font-bold text-slate-800 dark:text-slate-100">
                     Bật Giao Hàng Tận Nơi
                   </span>
-                  <span className="block text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                    Khách hàng có thể chọn nhận hàng tại nhà hoặc lấy tại kho khi đặt hàng.
+                  <span className="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
+                    Khách có thể chọn nhận hàng tại nhà hoặc lấy tại kho.
                   </span>
                 </div>
                 <input
@@ -752,7 +796,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                   disabled={!isEditing}
                   checked={form.hasDelivery}
                   onChange={(e) => handleChange("hasDelivery", e.target.checked)}
-                  className="w-5 h-5 mt-1 accent-[#075FA8] cursor-pointer disabled:cursor-default"
+                  className="w-4 h-4 mt-0.5 accent-[#075FA8] cursor-pointer disabled:cursor-default"
                 />
               </label>
             </div>
@@ -761,27 +805,27 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
 
         {/* TAB 3: ĐỊA CHỈ & BẢN ĐỒ */}
         {activeTab === "location" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-in fade-in duration-200">
-            <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
-              <div className="flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-800 pb-4">
-                <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600">
-                  <MapPinned className="w-5 h-5" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start animate-in fade-in duration-200">
+            <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3.5 sm:p-5 shadow-xs space-y-3.5">
+              <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600">
+                  <MapPinned className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white uppercase tracking-tight">
-                    Địa Chỉ Kho Hàng & Giờ Phục Vụ
+                  <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                    Địa Chỉ Kho &amp; Giờ Mở Cửa
                   </h2>
-                  <p className="text-xs text-slate-400">
-                    Giúp khách hàng dễ dàng tìm đường và ghé lấy hàng.
+                  <p className="text-[11px] text-slate-400">
+                    Chỉ đường cho khách hàng ghé lấy hàng trực tiếp.
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {/* address */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
-                    Địa chỉ kho / Cửa hàng trưng bày <span className="text-red-500">*</span>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Địa chỉ kho / Showroom <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -790,17 +834,17 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                     value={form.address}
                     onChange={(e) => handleChange("address", e.target.value)}
                     placeholder="400 Phạm Hùng, Phường Hòa Xuân, TP. Đà Nẵng"
-                    className={`w-full text-sm rounded-xl px-4 py-2.5 transition-colors ${
+                    className={`w-full text-xs sm:text-sm rounded-xl px-3 py-2 transition-all ${
                       isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                        ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
                         : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
                     }`}
                   />
                 </div>
 
                 {/* workingHours */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
                     Khung giờ mở cửa <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -810,18 +854,18 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                     value={form.workingHours}
                     onChange={(e) => handleChange("workingHours", e.target.value)}
                     placeholder="07:00 – 18:30 (Tất cả các ngày trong tuần)"
-                    className={`w-full text-sm rounded-xl px-4 py-2.5 transition-colors ${
+                    className={`w-full text-xs sm:text-sm rounded-xl px-3 py-2 transition-all ${
                       isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                        ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
                         : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
                     }`}
                   />
                 </div>
 
                 {/* googleMapsUrl */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
-                    Link mở ứng dụng Google Maps
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Link mở app Google Maps
                   </label>
                   <input
                     type="text"
@@ -829,28 +873,28 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                     value={form.googleMapsUrl}
                     onChange={(e) => handleChange("googleMapsUrl", e.target.value)}
                     placeholder="https://www.google.com/maps/..."
-                    className={`w-full text-sm rounded-xl px-4 py-2.5 transition-colors ${
+                    className={`w-full text-xs sm:text-sm rounded-xl px-3 py-2 transition-all ${
                       isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                        ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
                         : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
                     }`}
                   />
                 </div>
 
                 {/* googleMapsEmbed */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
                     Mã nhúng iframe Google Maps (Embed)
                   </label>
                   <textarea
-                    rows={3}
+                    rows={2}
                     disabled={!isEditing}
                     value={form.googleMapsEmbed}
                     onChange={(e) => handleChange("googleMapsEmbed", e.target.value)}
                     placeholder="https://www.google.com/maps/embed?pb=..."
-                    className={`w-full text-xs font-mono rounded-xl px-4 py-2.5 transition-colors ${
+                    className={`w-full text-xs font-mono rounded-xl px-3 py-2 transition-all ${
                       isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                        ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
                         : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 cursor-default"
                     }`}
                   />
@@ -859,11 +903,11 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
             </div>
 
             {/* Live Map Preview Card */}
-            <div className="lg:col-span-5 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-4">
-              <h3 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
-                Xem Trước Bản Đồ Nhúng
+            <div className="lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3.5 sm:p-5 shadow-xs space-y-2.5">
+              <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                Xem Trước Bản Đồ
               </h3>
-              <div className="aspect-[4/3] w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 relative shadow-inner">
+              <div className="aspect-[4/3] w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 relative shadow-inner">
                 {form.googleMapsEmbed ? (
                   <iframe
                     title="Map Preview"
@@ -883,40 +927,40 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
           </div>
         )}
 
-        {/* TAB 4: VẬN CHUYỂN & GIAO HÀNG (2 Cột) */}
+        {/* TAB 4: VẬN CHUYỂN & GIAO HÀNG */}
         {activeTab === "shipping" && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start animate-in fade-in duration-200">
-            {/* CỘT 1: CẤU HÌNH CƯỚC VẬN CHUYỂN & GIAO HÀNG */}
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
-              <div className="flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-800 pb-4">
-                <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400">
-                  <Truck className="w-5 h-5" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5 items-start animate-in fade-in duration-200">
+            {/* CỘT 1: CẤU HÌNH CƯỚC */}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3.5 sm:p-5 shadow-xs space-y-3.5">
+              <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400">
+                  <Truck className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white uppercase tracking-tight">
+                  <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">
                     Cước Phí Vận Chuyển
                   </h2>
-                  <p className="text-xs text-slate-400">
-                    Thiết lập mức cước tự động áp dụng khi khách hàng đặt hàng trực tuyến.
+                  <p className="text-[11px] text-slate-400">
+                    Áp dụng tự động khi khách đặt hàng online.
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {/* hasDelivery switch */}
                 <label
-                  className={`flex items-start justify-between gap-4 p-4 rounded-2xl border transition-colors ${
+                  className={`flex items-start justify-between gap-3 p-3 rounded-xl border transition-all ${
                     isEditing
                       ? "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 cursor-pointer"
                       : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 cursor-default"
                   }`}
                 >
                   <div>
-                    <span className="block text-sm font-bold text-slate-800 dark:text-slate-100">
-                      Bật Dịch Vụ Giao Hàng Tận Nơi
+                    <span className="block text-xs font-bold text-slate-800 dark:text-slate-100">
+                      Bật Giao Hàng Tận Nơi
                     </span>
-                    <span className="block text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                      Cho phép khách hàng lựa chọn &quot;Giao hàng tận nơi&quot; khi thanh toán giỏ hàng.
+                    <span className="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
+                      Cho phép khách hàng chọn &quot;Giao hàng tận nơi&quot; khi thanh toán.
                     </span>
                   </div>
                   <input
@@ -924,14 +968,14 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                     disabled={!isEditing}
                     checked={form.hasDelivery}
                     onChange={(e) => handleChange("hasDelivery", e.target.checked)}
-                    className="w-5 h-5 mt-1 accent-[#075FA8] cursor-pointer disabled:cursor-default"
+                    className="w-4 h-4 mt-0.5 accent-[#075FA8] cursor-pointer disabled:cursor-default"
                   />
                 </label>
 
-                {/* shippingFeeDanang (Nội tỉnh) */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
-                    Phí giao hàng nội tỉnh / Cùng địa bàn doanh nghiệp (VNĐ) <span className="text-red-500">*</span>
+                {/* shippingFeeDanang */}
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Phí giao nội tỉnh / Cùng địa bàn (VNĐ) <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input
@@ -945,25 +989,22 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                         handleChange("shippingFeeDanang", parseInt(e.target.value, 10) || 0)
                       }
                       placeholder="30000"
-                      className={`w-full text-sm font-bold rounded-xl px-4 py-2.5 transition-colors ${
+                      className={`w-full text-xs sm:text-sm font-bold rounded-xl px-3 py-2 pr-12 transition-all ${
                         isEditing
-                          ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                          ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
                           : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
                       }`}
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-slate-400">
                       VNĐ
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400">
-                    Áp dụng cho khách hàng cùng tỉnh/thành phố với doanh nghiệp (Hiện tại: <span className="font-semibold text-slate-600 dark:text-slate-300">{form.city || "Chưa đặt tỉnh thành"}</span>).
-                  </p>
                 </div>
 
-                {/* shippingFeeProvince (Liên tỉnh) */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
-                    Phí giao các tỉnh thành khác / Liên tỉnh / Xe chành (VNĐ) <span className="text-red-500">*</span>
+                {/* shippingFeeProvince */}
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Phí giao liên tỉnh / Xe chành (VNĐ) <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input
@@ -977,52 +1018,46 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                         handleChange("shippingFeeProvince", parseInt(e.target.value, 10) || 0)
                       }
                       placeholder="50000"
-                      className={`w-full text-sm font-bold rounded-xl px-4 py-2.5 transition-colors ${
+                      className={`w-full text-xs sm:text-sm font-bold rounded-xl px-3 py-2 pr-12 transition-all ${
                         isEditing
-                          ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                          ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
                           : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
                       }`}
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-slate-400">
                       VNĐ
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400">
-                    Phí đóng gói và cước vận chuyển / gửi chành xe đến các tỉnh thành khác.
-                  </p>
                 </div>
 
                 {/* shippingNote */}
-                <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
-                    Lời dặn &amp; Chính sách giao hàng (Hiển thị tại trang thanh toán)
+                <div className="space-y-1 pt-1 border-t border-slate-100 dark:border-slate-800">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Chính sách &amp; Lời dặn giao hàng
                   </label>
                   <textarea
-                    rows={3}
+                    rows={2}
                     disabled={!isEditing}
                     value={form.shippingNote || ""}
                     onChange={(e) => handleChange("shippingNote", e.target.value)}
-                    placeholder="Miễn phí giao hàng cho đơn đạt định mức tại các tỉnh thành áp dụng. Đơn dưới định mức áp dụng cước chuẩn nội tỉnh và liên tỉnh."
-                    className={`w-full text-xs rounded-xl px-4 py-2.5 transition-colors leading-relaxed ${
+                    placeholder="Miễn phí giao hàng cho đơn đạt định mức tại các tỉnh thành áp dụng..."
+                    className={`w-full text-xs rounded-xl px-3 py-2 transition-all leading-relaxed ${
                       isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                        ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
                         : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 cursor-default"
                     }`}
                   />
                 </div>
 
-                {/* enablePosModule (Bán hàng tại quầy POS) */}
-                <div className="space-y-1.5 pt-3 border-t border-slate-100 dark:border-slate-800">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
-                    Phân hệ Bán Hàng Tại Quầy (POS &amp; Quét Mã Vạch Barcode)
-                  </label>
-                  <label className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 cursor-pointer">
+                {/* enablePosModule */}
+                <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <label className="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 cursor-pointer">
                     <div className="space-y-0.5 pr-2">
                       <span className="text-xs font-bold text-slate-900 dark:text-white block">
-                        {form.enablePosModule ?? true ? "🟢 Đang Bật Module POS Bán Tại Quầy" : "⚪ Đã Tắt Module POS"}
+                        {form.enablePosModule ?? true ? "🟢 Module POS Bán Tại Quầy (Bật)" : "⚪ Module POS (Tắt)"}
                       </span>
-                      <span className="text-[11px] text-slate-400 block">
-                        Cho phép thu ngân quét mã vạch và tạo đơn hàng bán trực tiếp tại showroom.
+                      <span className="text-[10px] text-slate-400 block">
+                        Bán hàng quét mã vạch trực tiếp tại showroom.
                       </span>
                     </div>
                     <input
@@ -1030,55 +1065,46 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                       disabled={!isEditing}
                       checked={form.enablePosModule ?? true}
                       onChange={(e) => handleChange("enablePosModule", e.target.checked)}
-                      className="w-5 h-5 text-[#075FA8] border-slate-300 rounded focus:ring-[#075FA8]"
+                      className="w-4 h-4 text-[#075FA8] border-slate-300 rounded"
                     />
                   </label>
                 </div>
               </div>
             </div>
 
-            {/* CỘT 2: CHÍNH SÁCH FREESHIP & DANH SÁCH TỈNH THÀNH ÁP DỤNG */}
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
-                    <Sparkles className="w-5 h-5" />
+            {/* CỘT 2: FREESHIP POLICY */}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3.5 sm:p-5 shadow-xs space-y-3.5">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+                    <Sparkles className="w-4 h-4" />
                   </div>
                   <div>
-                    <h2 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white uppercase tracking-tight">
+                    <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">
                       Chính Sách Freeship
                     </h2>
-                    <p className="text-xs text-slate-400">
-                      Định mức và phạm vi tỉnh thành được hưởng miễn phí giao hàng.
+                    <p className="text-[11px] text-slate-400">
+                      Định mức miễn phí vận chuyển.
                     </p>
                   </div>
                 </div>
 
-                {/* Status Badge */}
-                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                <div className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                   {isAllFreeship ? (
-                    <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                      <CheckCircle2 className="w-4 h-4" />
-                      Toàn quốc ({VIETNAM_PROVINCES.length} tỉnh)
-                    </span>
+                    <span className="text-emerald-600 dark:text-emerald-400">Toàn quốc (63 tỉnh)</span>
                   ) : freeshipList.length > 0 ? (
-                    <span className="text-[#075FA8] dark:text-blue-400 flex items-center gap-1">
-                      <CheckCircle2 className="w-4 h-4" />
-                      Đã chọn {freeshipList.length}/{VIETNAM_PROVINCES.length} tỉnh
-                    </span>
+                    <span className="text-[#075FA8] dark:text-blue-400">{freeshipList.length} tỉnh</span>
                   ) : (
-                    <span className="text-amber-600 dark:text-amber-400">
-                      Chưa chọn (Tắt Freeship)
-                    </span>
+                    <span className="text-amber-600">Tắt Freeship</span>
                   )}
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {/* freeshipThreshold */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
-                    Định mức Đơn Hàng Để Được Miễn Phí Vận Chuyển - Freeship (VNĐ)
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Định mức Đơn Hàng Để Được Freeship (VNĐ)
                   </label>
                   <div className="relative">
                     <input
@@ -1091,167 +1117,122 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                         handleChange("freeshipThreshold", parseInt(e.target.value, 10) || 0)
                       }
                       placeholder="2000000"
-                      className={`w-full text-sm font-bold rounded-xl px-4 py-2.5 transition-colors ${
+                      className={`w-full text-xs sm:text-sm font-bold rounded-xl px-3 py-2 pr-12 transition-all ${
                         isEditing
-                          ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                          ? "bg-white dark:bg-slate-800 border border-[#075FA8] text-slate-900 dark:text-white shadow-xs focus:ring-1 focus:ring-[#075FA8]"
                           : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
                       }`}
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-slate-400">
                       VNĐ
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400">
-                    Đơn hàng có tổng tiền hàng đạt hoặc vượt mức này và thuộc các tỉnh thành được chọn bên dưới sẽ được Freeship 100%.
-                  </p>
                 </div>
 
-                {/* freeshipProvinces Multi-Selector */}
-                <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
-                      Tỉnh / Thành Phố Được Áp Dụng Freeship ({VIETNAM_PROVINCES.length} tỉnh thành)
-                    </label>
-                  </div>
-
-                  {/* Preset Buttons */}
-                  {isEditing && (
-                    <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                      <span className="text-[11px] text-slate-400 font-medium mr-1">Chọn nhanh:</span>
+                {/* Preset Buttons */}
+                {isEditing && (
+                  <div className="space-y-1.5 pt-1">
+                    <span className="text-[10px] text-slate-400 font-bold block">Chọn nhanh danh sách tỉnh:</span>
+                    <div className="flex flex-wrap items-center gap-1">
                       <button
                         type="button"
                         onClick={() => handleSetPreset("ALL")}
-                        className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                          isAllFreeship
-                            ? "bg-[#075FA8] text-white shadow-xs"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        className={`text-[10px] px-2 py-0.5 rounded-md font-bold transition-all cursor-pointer ${
+                          isAllFreeship ? "bg-[#075FA8] text-white shadow-xs" : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                         }`}
                       >
-                        Toàn quốc ({VIETNAM_PROVINCES.length} tỉnh)
+                        Toàn quốc
                       </button>
                       <button
                         type="button"
                         onClick={() => handleSetPreset("LOCAL")}
-                        className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                          !isAllFreeship && freeshipList.length === 1 && freeshipList.includes(companyProvinceCode)
-                            ? "bg-[#075FA8] text-white shadow-xs"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        className={`text-[10px] px-2 py-0.5 rounded-md font-bold transition-all cursor-pointer ${
+                          !isAllFreeship && freeshipList.length === 1 && freeshipList.includes(companyProvinceCode) ? "bg-[#075FA8] text-white shadow-xs" : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                         }`}
                       >
-                        Nội tỉnh ({companyProvinceName.replace(/^(Thành phố|Tỉnh|TP\.?)\s+/i, "")})
+                        Nội tỉnh
                       </button>
                       <button
                         type="button"
                         onClick={() => handleSetPreset("BIG_CITIES")}
-                        className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                          !isAllFreeship && freeshipList.length === REGION_PROVINCE_CODES.BIG_CITIES.length && REGION_PROVINCE_CODES.BIG_CITIES.every((c) => freeshipList.includes(c))
-                            ? "bg-[#075FA8] text-white shadow-xs"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        className={`text-[10px] px-2 py-0.5 rounded-md font-bold transition-all cursor-pointer ${
+                          !isAllFreeship && freeshipList.length === REGION_PROVINCE_CODES.BIG_CITIES.length ? "bg-[#075FA8] text-white shadow-xs" : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                         }`}
                       >
                         6 Đô thị lớn
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleSetPreset("NORTH")}
-                        className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                          !isAllFreeship && freeshipList.length === REGION_PROVINCE_CODES.NORTH.length && REGION_PROVINCE_CODES.NORTH.every((c) => freeshipList.includes(c))
-                            ? "bg-[#075FA8] text-white shadow-xs"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                        }`}
-                      >
-                        Miền Bắc ({REGION_PROVINCE_CODES.NORTH.length} tỉnh)
-                      </button>
-                      <button
-                        type="button"
                         onClick={() => handleSetPreset("CENTRAL")}
-                        className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                          !isAllFreeship && freeshipList.length === REGION_PROVINCE_CODES.CENTRAL.length && REGION_PROVINCE_CODES.CENTRAL.every((c) => freeshipList.includes(c))
-                            ? "bg-[#075FA8] text-white shadow-xs"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        className={`text-[10px] px-2 py-0.5 rounded-md font-bold transition-all cursor-pointer ${
+                          !isAllFreeship && freeshipList.length === REGION_PROVINCE_CODES.CENTRAL.length ? "bg-[#075FA8] text-white shadow-xs" : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                         }`}
                       >
-                        Miền Trung ({REGION_PROVINCE_CODES.CENTRAL.length} tỉnh)
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleSetPreset("SOUTH")}
-                        className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                          !isAllFreeship && freeshipList.length === REGION_PROVINCE_CODES.SOUTH.length && REGION_PROVINCE_CODES.SOUTH.every((c) => freeshipList.includes(c))
-                            ? "bg-[#075FA8] text-white shadow-xs"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                        }`}
-                      >
-                        Miền Nam ({REGION_PROVINCE_CODES.SOUTH.length} tỉnh)
+                        Miền Trung
                       </button>
                       <button
                         type="button"
                         onClick={() => handleSetPreset("NONE")}
-                        className="text-[11px] px-2 py-1 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all ml-auto cursor-pointer"
+                        className="text-[10px] px-2 py-0.5 rounded-md text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all ml-auto cursor-pointer"
                       >
-                        Bỏ chọn tất cả
+                        Bỏ chọn
                       </button>
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {/* Province Search & Grid */}
-                  <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 p-3 space-y-2.5">
-                    {/* Search box */}
-                    <div className="relative">
-                      <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="text"
-                        value={provinceSearch}
-                        onChange={(e) => setProvinceSearch(e.target.value)}
-                        placeholder="Tìm tỉnh / thành phố..."
-                        className="w-full pl-8 pr-7 py-1.5 text-xs rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#075FA8]"
-                      />
-                      {provinceSearch && (
-                        <button
-                          type="button"
-                          onClick={() => setProvinceSearch("")}
-                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs cursor-pointer"
+                {/* Province Search & Grid */}
+                <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 p-2.5 space-y-2">
+                  <div className="relative">
+                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={provinceSearch}
+                      onChange={(e) => setProvinceSearch(e.target.value)}
+                      placeholder="Tìm tỉnh thành..."
+                      className="w-full pl-8 pr-7 py-1 text-xs rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none"
+                    />
+                    {provinceSearch && (
+                      <button
+                        type="button"
+                        onClick={() => setProvinceSearch("")}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-56 overflow-y-auto pr-1">
+                    {filteredProvinces.map((prov) => {
+                      const code = String(prov.code);
+                      const selected = isProvinceSelected(code);
+                      const isCompanyHome = code === companyProvinceCode;
+                      return (
+                        <label
+                          key={code}
+                          className={`flex items-center gap-1.5 p-1.5 rounded-lg border text-xs cursor-pointer select-none transition-all ${
+                            selected
+                              ? "bg-blue-50/90 dark:bg-blue-950/40 border-[#075FA8]/40 dark:border-blue-700/60 text-[#075FA8] dark:text-blue-300 font-bold"
+                              : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300"
+                          } ${!isEditing ? "opacity-75 cursor-default pointer-events-none" : ""}`}
                         >
-                          ✕
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Province checkboxes grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-72 overflow-y-auto pr-1">
-                      {filteredProvinces.map((prov) => {
-                        const code = String(prov.code);
-                        const selected = isProvinceSelected(code);
-                        const isCompanyHome = code === companyProvinceCode;
-                        return (
-                          <label
-                            key={code}
-                            className={`flex items-center gap-2 p-2 rounded-xl border text-xs cursor-pointer select-none transition-all ${
-                              selected
-                                ? "bg-blue-50/80 dark:bg-blue-950/40 border-[#075FA8]/40 dark:border-blue-700/60 text-[#075FA8] dark:text-blue-300 font-bold"
-                                : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700"
-                            } ${!isEditing ? "opacity-75 cursor-default pointer-events-none" : ""}`}
-                          >
-                            <input
-                              type="checkbox"
-                              disabled={!isEditing}
-                              checked={selected}
-                              onChange={() => handleToggleProvince(code)}
-                              className="w-4 h-4 rounded accent-[#075FA8] cursor-pointer"
-                            />
-                            <span className="truncate flex-1">{prov.name}</span>
-                            {isCompanyHome && (
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900 text-[#075FA8] dark:text-blue-300">
-                                Trụ sở
-                              </span>
-                            )}
-                            <span className="text-[10px] text-slate-400 font-mono font-normal">
-                              {code}
+                          <input
+                            type="checkbox"
+                            disabled={!isEditing}
+                            checked={selected}
+                            onChange={() => handleToggleProvince(code)}
+                            className="w-3.5 h-3.5 rounded accent-[#075FA8] cursor-pointer"
+                          />
+                          <span className="truncate flex-1 text-[11px]">{prov.name}</span>
+                          {isCompanyHome && (
+                            <span className="text-[8px] font-bold px-1 rounded bg-blue-100 dark:bg-blue-900 text-[#075FA8] dark:text-blue-300">
+                              Trụ sở
                             </span>
-                          </label>
-                        );
-                      })}
-                    </div>
+                          )}
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -1261,22 +1242,22 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
 
         {/* TAB 5: HÌNH ẢNH & KHO BÃI */}
         {activeTab === "media" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-in fade-in duration-200">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start animate-in fade-in duration-200">
             {/* Storefront Cover */}
-            <div className="lg:col-span-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-4">
-              <div className="flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#075FA8]">
-                  <Images className="w-5 h-5" />
+            <div className="lg:col-span-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3.5 sm:p-5 shadow-xs space-y-3">
+              <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-[#075FA8]">
+                  <Images className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-tight">
-                    Ảnh Mặt Tiền & Kho Tổng
+                  <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                    Ảnh Mặt Tiền &amp; Kho Tổng
                   </h3>
-                  <p className="text-xs text-slate-400">Hiển thị nổi bật ở đầu trang chủ.</p>
+                  <p className="text-[11px] text-slate-400">Hiển thị ở đầu trang chủ.</p>
                 </div>
               </div>
 
-              <div className="aspect-[16/10] w-full rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden bg-slate-100 dark:bg-slate-800 shadow-inner">
+              <div className="aspect-[16/10] w-full rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden bg-slate-100 dark:bg-slate-800 shadow-inner">
                 <img
                   src={currentCover}
                   alt="Ảnh đại diện kho"
@@ -1285,9 +1266,9 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
               </div>
 
               {isEditing && (
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <div className="grid grid-cols-2 gap-2">
-                    <label className="inline-flex items-center justify-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 hover:border-[#075FA8] rounded-xl px-3 py-2 text-xs font-bold transition-colors">
+                    <label className="inline-flex items-center justify-center gap-1 cursor-pointer text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 hover:border-[#075FA8] rounded-xl px-2.5 py-1.5 text-xs font-bold transition-colors">
                       <Camera className="w-3.5 h-3.5" />
                       <span>Chụp ảnh mới</span>
                       <input
@@ -1298,7 +1279,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                         className="hidden"
                       />
                     </label>
-                    <label className="inline-flex items-center justify-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 hover:border-[#075FA8] rounded-xl px-3 py-2 text-xs font-bold transition-colors">
+                    <label className="inline-flex items-center justify-center gap-1 cursor-pointer text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 hover:border-[#075FA8] rounded-xl px-2.5 py-1.5 text-xs font-bold transition-colors">
                       <Upload className="w-3.5 h-3.5" />
                       <span>Tải ảnh từ máy</span>
                       <input
@@ -1313,7 +1294,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                     <button
                       type="button"
                       onClick={handleRemoveImage}
-                      className="w-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 border border-red-200 dark:border-red-800/80 rounded-xl py-2 text-xs font-bold transition-colors !min-h-0 cursor-pointer"
+                      className="w-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 border border-red-200 dark:border-red-800/80 rounded-xl py-1.5 text-xs font-bold transition-colors !min-h-0 cursor-pointer"
                     >
                       Xóa ảnh bìa
                     </button>
@@ -1323,16 +1304,16 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
             </div>
 
             {/* Gallery Upload */}
-            <div className="lg:col-span-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-4">
-              <div className="flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600">
-                  <Images className="w-5 h-5" />
+            <div className="lg:col-span-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3.5 sm:p-5 shadow-xs space-y-3">
+              <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div className="p-1.5 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600">
+                  <Images className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">
                     Thư Viện Ảnh Hoạt Động ({existingGalleryUrls.length + newGalleryFiles.length})
                   </h3>
-                  <p className="text-xs text-slate-400">Hình ảnh sản phẩm, bốc dỡ hàng, thử bo mạch.</p>
+                  <p className="text-[11px] text-slate-400">Hình ảnh hàng hóa, bo mạch, xe giao hàng.</p>
                 </div>
               </div>
 
@@ -1345,47 +1326,86 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                   label="Thêm ảnh vào thư viện"
                 />
               ) : existingGalleryUrls.length > 0 ? (
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-2">
                   {existingGalleryUrls.map((url, i) => (
                     <div
                       key={i}
-                      className="aspect-square rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden bg-slate-100 dark:bg-slate-800 shadow-xs"
+                      className="aspect-square rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden bg-slate-100 dark:bg-slate-800 shadow-xs"
                     >
                       <img src={url} alt="" className="w-full h-full object-cover" />
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-slate-400 italic py-8 text-center">Chưa có ảnh nào trong thư viện.</p>
+                <p className="text-xs text-slate-400 italic py-6 text-center">Chưa có ảnh nào trong thư viện.</p>
               )}
             </div>
           </div>
         )}
 
-        {/* BOTTOM SAVE ACTION BAR */}
-        {isEditing && <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm mt-6">
-          <div className="text-xs text-slate-500 dark:text-slate-400">
-            💡 Lưu ý: Các thay đổi về cước phí, tỉnh thành Freeship, module POS và thông tin doanh nghiệp sẽ có hiệu lực ngay lập tức khi bạn nhấn Lưu.
+        {/* BOTTOM SAVE ACTION BAR (Desktop) */}
+        {isEditing && (
+          <div className="hidden sm:flex items-center justify-between gap-3 p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs mt-4">
+            <div className="text-xs text-slate-500 dark:text-slate-400">
+              💡 Lưu ý: Các thông tin sau khi lưu sẽ có hiệu lực ngay lập tức trên toàn hệ thống website.
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleCancelEdit}
+                disabled={isSubmitting}
+                leftIcon={<X className="w-3.5 h-3.5" />}
+              >
+                Hủy
+              </Button>
+              <Button
+                type="submit"
+                variant="success"
+                size="sm"
+                isLoading={isSubmitting}
+                leftIcon={<Save className="w-3.5 h-3.5" />}
+                className="font-black bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                LƯU THAY ĐỔI CÀI ĐẶT
+              </Button>
+            </div>
           </div>
+        )}
+      </form>
+
+      {/* STICKY FLOATING BOTTOM BAR (Mobile - only when isEditing) */}
+      {isEditing && (
+        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-2.5 shadow-2xl flex items-center justify-between gap-2 sm:hidden">
+          <button
+            type="button"
+            onClick={handleCancelEdit}
+            disabled={isSubmitting}
+            className="flex-1 py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center justify-center gap-1 transition-all !min-h-0 cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+            <span>Hủy</span>
+          </button>
           <button
             type="submit"
+            form="company-form"
             disabled={isSubmitting}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-lg shadow-emerald-900/30 transition-all active:scale-98 cursor-pointer disabled:opacity-50 shrink-0"
+            className="flex-2 py-2 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-98 !min-h-0 cursor-pointer disabled:opacity-50"
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Đang lưu cài đặt...</span>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Đang lưu...</span>
               </>
             ) : (
               <>
-                <Save className="w-4 h-4" />
-                <span>LƯU THAY ĐỔI CÀI ĐẶT</span>
+                <Save className="w-3.5 h-3.5" />
+                <span>LƯU THAY ĐỔI</span>
               </>
             )}
           </button>
-        </div>}
-      </form>
+        </div>
+      )}
     </div>
   );
 };
