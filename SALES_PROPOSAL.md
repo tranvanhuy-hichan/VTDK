@@ -104,12 +104,31 @@ Khác biệt hoàn toàn với các website bán lẻ thông thường (chỉ bi
 
 ## 💵 6. BẢNG GIÁ & CÁC GÓI TRIỂN KHAI THƯƠNG MẠI
 
-### 📦 GÓI 1: DOANH NGHIỆP TIÊU CHUẨN (STANDARD B2B)
-> Phù hợp: Cửa hàng vật tư kỹ thuật, đại lý phân phối vừa và nhỏ.  
-> **💰 Giá trọn gói: 35.000.000 VNĐ** *(Phí duy trì máy chủ từ năm 2: 2.500.000đ/năm)*
+## 💵 6. BẢNG ĐỊNH GIÁ THƯƠNG MẠI & CÁC GÓI TRIỂN KHAI DOANH NGHIỆP
+
+### 💎 BẢNG ĐỊNH LƯỢNG GIÁ TRỊ TỪNG MODULE (MODULE VALUE BREAKDOWN)
+*Nếu doanh nghiệp thuê đơn vị ngoài phát triển riêng lẻ từng phân hệ:*
+
+| Phân hệ / Module chức năng | Mô tả giá trị kỹ thuật | Giá trị thị trường |
+| :--- | :--- | :---: |
+| **1. Cổng Thương Mại Điện Tử B2B/B2C** | Next.js 15 App Router, PWA App Mobile, Đa biến thể quy cách, SEO Top Google | 35.000.000đ |
+| **2. Studio Lập & Xuất Báo Giá B2B A4** | Tự tính VAT, đọc tiền bằng chữ tiếng Việt, xuất PDF A4 Vector chuẩn pháp lý trong 30s | 30.000.000đ |
+| **3. Trạm Bán Hàng POS Barcode Tại Quầy** | Quét mã vạch, phím tắt F2/Enter, in hóa đơn nhiệt/A4, tối ưu chạm vuốt iPad/Mobile | 25.000.000đ |
+| **4. B2B Self-Service & Share Cart Zalo** | Khách tự tải Báo Giá PDF từ giỏ hàng, nén & chia sẻ giỏ hàng 1-Click qua Link Zalo | 20.000.000đ |
+| **5. Quản Lý Đơn & Phiếu Xuất Kho 4 Chữ Ký** | Quản lý vòng đời đơn, in phiếu xuất kho kiêm giao hàng chuẩn kế toán đối soát 4 bên | 15.000.000đ |
+| **6. No-Code Theme & Brand Engine** | Tùy biến nhận diện, màu sắc, font chữ, banner theo thời gian thực không chạm code | 15.000.000đ |
+| **7. Analytics Doanh Thu & CSDL PostgreSQL** | Báo cáo doanh thu trực quan, CSDL quan hệ Prisma ORM chịu tải hàng triệu bản ghi | 15.000.000đ |
+| **TỔNG GIÁ TRỊ THỰC TẾ HỆ THỐNG:** | *(Nếu lập trình thuê riêng lẻ)* | **155.000.000 VNĐ** |
+
+---
+
+### 📦 GÓI 1: DOANH NGHIỆP TIÊU CHUẨN (STANDARD BUSINESS)
+> Phù hợp: Cửa hàng vật tư kỹ thuật, nhà phân phối đang bắt đầu chuyển đổi số.  
+> **💰 Giá trọn gói: 48.000.000 VNĐ** *(Tiết kiệm 68% so với tự phát triển)*  
+> *(Phí duy trì máy chủ & bảo trì từ năm thứ 2: 2.900.000đ/năm)*
 
 - ✅ Trọn bộ Website Bán hàng B2C + PWA cài đặt App di động.
-- ✅ Cổng quản trị Admin: Quản lý sản phẩm, danh mục, đơn hàng.
+- ✅ Cổng quản trị Admin: Quản lý sản phẩm, danh mục, biến thể quy cách.
 - ✅ Trạm Bán Hàng Tại Quầy POS Barcode Terminal.
 - ✅ Studio Lập Báo Giá B2B xuất PDF chuẩn A4.
 - ✅ Tặng 01 năm Cloud Server tốc độ cao + Chứng chỉ bảo mật SSL.
@@ -118,30 +137,44 @@ Khác biệt hoàn toàn với các website bán lẻ thông thường (chỉ bi
 
 ---
 
-### 🚀 GÓI 2: TỔNG KHO CHUYÊN NGHIỆP (ENTERPRISE PRO) — ⭐ *KHUYÊN DÙNG*
-> Phù hợp: Công ty Phân phối, Tổng kho Cơ điện lạnh, Doanh nghiệp B2B quy mô lớn.  
-> **💰 Giá trọn gói: 55.000.000 VNĐ** *(Phí duy trì máy chủ từ năm 2: 3.500.000đ/năm)*
+### 🚀 GÓI 2: TỔNG KHO CHUYÊN NGHIỆP (ENTERPRISE PRO) — ⭐ *GÓI BÁN CHẠY NHẤT*
+> Phù hợp: Công ty Phân phối, Tổng kho Cơ điện lạnh, Doanh nghiệp B2B quy mô lớn nhiều chi nhánh.  
+> **💰 Giá trọn gói: 78.000.000 VNĐ** *(Tiết kiệm 50% so với giá trị thực tế)*  
+> *(Phí duy trì máy chủ & bảo trì từ năm thứ 2: 4.500.000đ/năm)*
 
 - ⭐ **Toàn bộ quyền lợi của Gói 1**.
-- ⭐ **Mở rộng tính năng B2B nâng cao**:
-  - Khách hàng tự tải báo giá PDF từ giỏ hàng.
-  - Chia sẻ giỏ hàng đa kênh qua Link Zalo / Facebook.
-  - Tùy biến mẫu Báo giá & Phiếu xuất kho theo form mẫu riêng của doanh nghiệp.
+- ⭐ **Trọn bộ tính năng B2B nâng cao đột phá**:
+  - Khách hàng/đại lý tự tải báo giá PDF chính thức từ giỏ hàng.
+  - Chia sẻ giỏ hàng 1-Click qua Link Zalo / Facebook / Messenger.
+  - Hệ thống Phiếu Xuất Kho Kiêm Giao Hàng chuẩn nghiệp vụ kế toán có 4 chữ ký đối soát.
+  - Tùy chỉnh mẫu Báo giá & Phiếu xuất kho theo form mẫu riêng của doanh nghiệp.
 - ⭐ **Tích hợp cổng thanh toán VietQR Pro**: Tự động sinh mã QR đúng số tiền & nội dung chuyển khoản.
-- ⭐ Nhập liệu trọn gói **200 sản phẩm & biến thể quy cách**.
+- ⭐ Nhập liệu trọn gói **200 sản phẩm & biến thể quy cách đầy đủ**.
 - ⭐ Đào tạo trực tiếp / Ultraviewer cho đội ngũ Sales, Kế toán và Thủ kho.
 - ⭐ Bảo hành, bảo trì ưu tiên 24/7 trong **24 tháng**.
 
 ---
 
-### 🏢 GÓI 3: BẢN QUYỀN MÃ NGUỒN TOÀN QUYỀN (WHITE-LABEL SOURCE CODE)
-> Phù hợp: Doanh nghiệp có đội ngũ IT riêng, hoặc Đơn vị Agency / Phần mềm muốn kinh doanh lại.  
-> **💰 Giá chuyển giao: 30.000.000 VNĐ** *(Thanh toán 01 lần duy nhất)*
+### 👑 GÓI 3: GIẢI PHÁP TỔNG THỂ & MAY ĐO CAO CẤP (CUSTOM ERP SUITE)
+> Phù hợp: Doanh nghiệp Cơ điện quy mô lớn, chuỗi tổng kho liên tỉnh có yêu cầu tích hợp riêng.  
+> **💰 Giá trọn gói: 125.000.000 VNĐ** *(Kèm SLA cam kết dịch vụ 99.9%)*
+
+- 🌟 **Toàn bộ quyền lợi của Gói 2**.
+- 🌟 Tích hợp Hóa đơn điện tử VAT (VNPT, Viettel, MISA meInvoice...).
+- 🌟 Tích hợp đồng bộ dữ liệu tồn kho đa kho / đa chi nhánh.
+- 🌟 Tùy biến luồng duyệt đơn hàng đa cấp bậc (Trưởng phòng ➔ Kế toán ➔ Giám đốc).
+- 🌟 Đội ngũ kỹ sư túc trực hỗ trợ Onsite & Cam kết bảo trì độc quyền trong 36 tháng.
+
+---
+
+### 🏢 GÓI 4: CHUYỂN GIAO BẢN QUYỀN MÃ NGUỒN MASTER (WHITE-LABEL SOURCE CODE)
+> Phù hợp: Doanh nghiệp có đội ngũ IT nội bộ, hoặc Đơn vị Agency / Công ty phần mềm muốn kinh doanh lại.  
+> **💰 Giá chuyển giao: 65.000.000 VNĐ** *(Thanh toán 01 lần duy nhất - Sở hữu vĩnh viễn)*
 
 - 🔑 Bàn giao **100% Mã nguồn sạch** (Next.js 15, Prisma ORM, Full Database Schema).
-- 🔑 Tài liệu hướng dẫn cài đặt & triển khai hệ thống chi tiết (Architecture Docs).
+- 🔑 Tài liệu hướng dẫn cài đặt & triển khai hệ thống chi tiết (Architecture & Setup Docs).
 - 🔑 Hỗ trợ cấu hình và bàn giao lên máy chủ Cloud của khách hàng 01 lần.
-- 🔑 **Toàn quyền thương mại hóa**: Tự do đổi thương hiệu, tùy biến và triển khai cho không giới hạn khách hàng.
+- 🔑 **Toàn quyền thương mại hóa vĩnh viễn**: Tự do đổi thương hiệu, tùy biến và triển khai cho không giới hạn khách hàng mà không phải chia sẻ doanh thu.
 
 ---
 
