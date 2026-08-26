@@ -13,23 +13,17 @@ import {
   LogOut,
   Menu,
   X,
-  Sun,
-  Moon,
   User,
   ChevronDown,
   ExternalLink,
   ShieldCheck,
   ChevronRight,
-  Bell,
-  Volume2,
-  VolumeX,
-  Sparkles,
   ArrowLeft,
-  Globe,
   Settings,
+  Palette,
 } from "lucide-react";
 import { logoutAction } from "../../app/admin/actions";
-import { AdminNotificationCenter, playAdminChimeSound } from "./AdminNotificationCenter";
+import { AdminNotificationCenter } from "./AdminNotificationCenter";
 import type { UserProfile } from "../../types/auth";
 import { COMPANY_DATA } from "../../data/company";
 
@@ -66,10 +60,11 @@ const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    title: "Cài đặt & Cấu hình",
+    title: "Cài đặt & Nhận diện",
     items: [
+      { href: "/admin/theme", label: "Theme & Giao diện", icon: Palette, badge: "NEW" },
       { href: "/admin/company", label: "Doanh nghiệp", icon: Building2 },
-      { href: "/admin/settings", label: "Cấu hình PRO", icon: Settings },
+      { href: "/admin/settings", label: "Cấu hình hệ thống", icon: Settings },
     ],
   },
 ];
@@ -82,13 +77,10 @@ export const AdminShell: React.FC<AdminShellProps> = ({
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
-  const [permission, setPermission] = useState<NotificationPermission>("default");
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
-  const adminName = adminUser?.name || COMPANY_DATA.brandName || "Admin";
+  const adminName = adminUser?.name || companyName || COMPANY_DATA.brandName || "Admin";
   const adminEmail = adminUser?.email || COMPANY_DATA.email || "admin@example.com";
   const initials = adminName
     .split(" ")
@@ -96,19 +88,6 @@ export const AdminShell: React.FC<AdminShellProps> = ({
     .join("")
     .slice(0, 2)
     .toUpperCase();
-
-  useEffect(() => {
-    try {
-      setIsDarkMode(document.documentElement.classList.contains("dark"));
-      const soundPref = localStorage.getItem("admin_order_sound");
-      if (soundPref === "false") {
-        setIsSoundEnabled(false);
-      }
-      if (typeof window !== "undefined" && "Notification" in window && Notification.permission) {
-        setPermission(Notification.permission);
-      }
-    } catch {}
-  }, []);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -120,40 +99,6 @@ export const AdminShell: React.FC<AdminShellProps> = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const toggleDarkMode = () => {
-    const nextIsDark = !isDarkMode;
-    setIsDarkMode(nextIsDark);
-    if (nextIsDark) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  };
-
-  const toggleSound = () => {
-    const next = !isSoundEnabled;
-    setIsSoundEnabled(next);
-    localStorage.setItem("admin_order_sound", next ? "true" : "false");
-    if (next) {
-      playAdminChimeSound();
-    }
-  };
-
-  const handleRequestPermission = async () => {
-    if (typeof window === "undefined" || !("Notification" in window)) return;
-    try {
-      const perm = await Notification.requestPermission();
-      setPermission(perm);
-      if (perm === "granted") {
-        playAdminChimeSound();
-      }
-    } catch (e) {
-      console.log("Permission error:", e);
-    }
-  };
 
   const handleLogout = async () => {
     try {
@@ -445,8 +390,8 @@ export const AdminShell: React.FC<AdminShellProps> = ({
           </div>
         </header>
 
-        {/* Main Dashboard Workspace Content - Compact & Clean */}
-        <main className="flex-1 p-3 sm:p-4 lg:p-5 max-w-7xl w-full mx-auto animate-in fade-in duration-200">
+        {/* Main Dashboard Workspace Content - Full Width & Clean */}
+        <main className="flex-1 p-3 sm:p-4 lg:p-5 w-full mx-auto animate-in fade-in duration-200">
           {children}
         </main>
       </div>

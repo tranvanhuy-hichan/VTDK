@@ -27,6 +27,17 @@ export interface CompanyContact {
   logoUrl: string;
   image: string;
   images: string[];
+  // Theme & Styling Customization
+  primaryColor?: string;
+  primaryDark?: string;
+  primaryLight?: string;
+  accentColor?: string;
+  accentHover?: string;
+  fontFamily?: string;
+  borderRadius?: string;
+  headerStyle?: string;
+  themePreset?: string;
+  customCss?: string | null;
 }
 
 const FALLBACK: CompanyContact = {
@@ -51,6 +62,16 @@ const FALLBACK: CompanyContact = {
   logoUrl: COMPANY_DATA.logoUrl,
   image: COMPANY_DATA.storefrontUrl,
   images: [],
+  primaryColor: "#075FA8",
+  primaryDark: "#0B1F33",
+  primaryLight: "#EBF3FA",
+  accentColor: "#F47A20",
+  accentHover: "#E06912",
+  fontFamily: "Be Vietnam Pro",
+  borderRadius: "rounded-xl",
+  headerStyle: "standard",
+  themePreset: "ocean-blue",
+  customCss: null,
 };
 
 const globalForCompany = globalThis as unknown as {
@@ -92,6 +113,16 @@ export const getCompanyInfo = unstable_cache(
         logoUrl: info.logoUrl || FALLBACK.logoUrl,
         image: info.image || FALLBACK.image,
         images: Array.isArray(info.images) ? info.images : [],
+        primaryColor: info.primaryColor || FALLBACK.primaryColor,
+        primaryDark: info.primaryDark || FALLBACK.primaryDark,
+        primaryLight: info.primaryLight || FALLBACK.primaryLight,
+        accentColor: info.accentColor || FALLBACK.accentColor,
+        accentHover: info.accentHover || FALLBACK.accentHover,
+        fontFamily: info.fontFamily || FALLBACK.fontFamily,
+        borderRadius: info.borderRadius || FALLBACK.borderRadius,
+        headerStyle: info.headerStyle || FALLBACK.headerStyle,
+        themePreset: info.themePreset || FALLBACK.themePreset,
+        customCss: info.customCss ?? FALLBACK.customCss,
       };
 
       globalForCompany.__companyInfoBackup = formatted;

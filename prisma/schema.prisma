@@ -102,6 +102,19 @@ model CompanyInfo {
   logoUrl         String   @default("/images/logo.png")
   image           String   @default("/images/storefront.png") // cover image
   images          String[] @default([]) // additional gallery images
+  
+  // Theme & Styling Customization (White-Label Dynamic Theming)
+  primaryColor    String   @default("#075FA8")
+  primaryDark     String   @default("#0B1F33")
+  primaryLight    String   @default("#EBF3FA")
+  accentColor     String   @default("#F47A20")
+  accentHover     String   @default("#E06912")
+  fontFamily      String   @default("Be Vietnam Pro")
+  borderRadius    String   @default("rounded-xl")
+  headerStyle     String   @default("standard")
+  themePreset     String   @default("ocean-blue")
+  customCss       String?
+
   updatedAt       DateTime @updatedAt
 }
 

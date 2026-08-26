@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   Settings,
   Volume2,
@@ -16,11 +17,15 @@ import {
   Database,
   Globe,
   Zap,
+  Palette,
+  ChevronRight,
+  Type,
 } from "lucide-react";
 import { playAdminChimeSound } from "./AdminNotificationCenter";
 
 export const AdminSettingsManager: React.FC = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [fontSizeChoice, setFontSizeChoice] = useState<string>("normal");
   const [isSoundEnabled, setIsSoundEnabled] = useState(true);
   const [permission, setPermission] = useState<NotificationPermission>("default");
   const [isTestingSound, setIsTestingSound] = useState(false);
@@ -30,6 +35,9 @@ export const AdminSettingsManager: React.FC = () => {
     try {
       const isDark = document.documentElement.classList.contains("dark");
       setTheme(isDark ? "dark" : "light");
+
+      const savedFontSize = localStorage.getItem("app_font_size_choice") || "normal";
+      setFontSizeChoice(savedFontSize);
 
       const soundPref = localStorage.getItem("admin_order_sound");
       if (soundPref === "false") {
@@ -41,6 +49,15 @@ export const AdminSettingsManager: React.FC = () => {
       }
     } catch {}
   }, []);
+
+  const handleSelectFontSize = (id: string, size: string) => {
+    setFontSizeChoice(id);
+    try {
+      localStorage.setItem("app_font_size_choice", id);
+      localStorage.setItem("app_font_size", size);
+      document.documentElement.style.fontSize = size;
+    } catch {}
+  };
 
   const handleToggleTheme = (nextTheme: "light" | "dark") => {
     setTheme(nextTheme);
@@ -101,7 +118,7 @@ export const AdminSettingsManager: React.FC = () => {
   };
 
   return (
-    <div className="space-y-3.5 sm:space-y-4 text-left animate-in fade-in duration-200 max-w-4xl">
+    <div className="space-y-3.5 sm:space-y-4 text-left animate-in fade-in duration-200 w-full">
       {/* Header Banner - Compact */}
       <div className="bg-gradient-to-r from-[#075FA8] to-[#043E70] rounded-2xl p-4 sm:p-5 text-white shadow-md relative overflow-hidden">
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -118,10 +135,42 @@ export const AdminSettingsManager: React.FC = () => {
 
           <div className="hidden sm:flex items-center gap-1.5 bg-white/10 backdrop-blur-xs px-2.5 py-1 rounded-xl border border-white/10 text-xs font-bold shrink-0">
             <ShieldCheck className="w-3.5 h-3.5 text-cyan-300" />
-            <span>Đông Kha PRO Engine</span>
+            <span>White-label PRO Engine</span>
           </div>
         </div>
       </div>
+
+      {/* Feature Showcase Card: Theme & Style Customizer */}
+      <Link
+        href="/admin/theme"
+        className="block bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 rounded-2xl p-4 sm:p-5 text-white shadow-md border border-indigo-500/30 hover:border-indigo-400 transition-all group relative overflow-hidden"
+      >
+        <div className="flex items-center justify-between gap-4 relative z-10">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+              <Palette className="w-5 h-5 text-indigo-300" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-extrabold text-sm sm:text-base text-white group-hover:text-indigo-200 transition-colors">
+                  Tùy Biến Theme &amp; Phong Cách Giao Diện
+                </h3>
+                <span className="text-[10px] font-black uppercase bg-indigo-500 text-white px-2 py-0.5 rounded-full shadow-xs">
+                  Mới
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 mt-0.5">
+                Đổi màu chủ đạo (Primary), màu điểm nhấn (Accent), phông chữ, bo góc và áp dụng các mẫu giao diện dựng sẵn.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1 text-xs font-bold text-indigo-300 group-hover:text-white shrink-0 group-hover:translate-x-1 transition-all">
+            <span className="hidden sm:inline">Mở Studio</span>
+            <ChevronRight className="w-4 h-4" />
+          </div>
+        </div>
+      </Link>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
         {/* Card 1: Âm thanh & Thông báo đơn */}
@@ -307,6 +356,47 @@ export const AdminSettingsManager: React.FC = () => {
                 <p className="text-[10px] text-slate-400">Dịu mắt ban đêm</p>
               </div>
             </button>
+          </div>
+
+          {/* Font Size Configuration */}
+          <div className="pt-2.5 border-t border-slate-100 dark:border-slate-800 space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <Type className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
+                  <span>Cỡ Chữ Hiển Thị (Font Size)</span>
+                </div>
+                <p className="text-[10px] text-slate-400">
+                  Tùy chỉnh độ lớn chữ trên toàn bộ giao diện
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+              {[
+                { id: "compact", label: "Nhỏ (90%)", size: "14.4px", desc: "Gọn gàng" },
+                { id: "normal", label: "Chuẩn (100%)", size: "16px", desc: "Mặc định" },
+                { id: "large", label: "Lớn (110%)", size: "17.6px", desc: "Dễ đọc" },
+                { id: "huge", label: "Rất lớn (120%)", size: "19.2px", desc: "Rõ nét" },
+              ].map((item) => {
+                const isSelected = fontSizeChoice === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleSelectFontSize(item.id, item.size)}
+                    className={`p-2 rounded-xl border-2 text-center transition-all cursor-pointer !min-h-0 flex flex-col items-center justify-center gap-0.5 ${
+                      isSelected
+                        ? "border-[#075FA8] bg-blue-50/60 dark:bg-blue-950/40 text-[#075FA8] dark:text-blue-400 font-black shadow-2xs"
+                        : "border-slate-200 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-800/30 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 font-bold"
+                    }`}
+                  >
+                    <span className="text-[11px] block">{item.label}</span>
+                    <span className="text-[9px] text-slate-400 font-normal">{item.desc}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

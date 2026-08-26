@@ -640,6 +640,74 @@ export async function updateCompanyInfoAction(formData: FormData) {
   }
 }
 
+// 9b. Update Theme & Styling Settings
+export async function updateThemeSettingsAction(themeData: {
+  primaryColor?: string;
+  primaryDark?: string;
+  primaryLight?: string;
+  accentColor?: string;
+  accentHover?: string;
+  fontFamily?: string;
+  borderRadius?: string;
+  headerStyle?: string;
+  themePreset?: string;
+  customCss?: string | null;
+}) {
+  const isAuth = await isAdminAuthenticated();
+  if (!isAuth) return { error: "Chưa đăng nhập!" };
+
+  try {
+    const existing = (await prisma.companyInfo.findFirst()) as any;
+
+    const data = {
+      primaryColor: themeData.primaryColor?.trim() || "#075FA8",
+      primaryDark: themeData.primaryDark?.trim() || "#0B1F33",
+      primaryLight: themeData.primaryLight?.trim() || "#EBF3FA",
+      accentColor: themeData.accentColor?.trim() || "#F47A20",
+      accentHover: themeData.accentHover?.trim() || "#E06912",
+      fontFamily: themeData.fontFamily?.trim() || "Be Vietnam Pro",
+      borderRadius: themeData.borderRadius?.trim() || "rounded-xl",
+      headerStyle: themeData.headerStyle?.trim() || "standard",
+      themePreset: themeData.themePreset?.trim() || "ocean-blue",
+      customCss: themeData.customCss ? themeData.customCss.trim() : null,
+    };
+
+    if (existing) {
+      await (prisma.companyInfo as any).update({
+        where: { id: existing.id },
+        data,
+      });
+    } else {
+      await (prisma.companyInfo as any).create({
+        data: {
+          name: "Doanh Nghiệp Mới",
+          fullName: "Doanh Nghiệp Mới",
+          shortName: "DOANH NGHIỆP",
+          brandName: "Thương Hiệu",
+          tagline: "Cung cấp sản phẩm chính hãng",
+          city: "Việt Nam",
+          address: "Địa chỉ doanh nghiệp",
+          hotline: "0900000000",
+          hotlineRaw: "0900000000",
+          zaloUrl: "https://zalo.me/0900000000",
+          whatsAppUrl: "https://wa.me/84900000000",
+          facebookUrl: "",
+          googleMapsUrl: "",
+          googleMapsEmbed: "",
+          workingHours: "07:30 - 18:00",
+          ...data,
+        },
+      });
+    }
+
+    revalidateSiteData(["company-info", "theme"]);
+    return { success: true };
+  } catch (err: any) {
+    console.error("updateThemeSettingsAction error:", err);
+    return { error: err.message || "Lỗi hệ thống khi cập nhật theme!" };
+  }
+}
+
 const SERVICE_ICONS = ["Building2", "Fan", "Wind", "ThermometerSun"];
 
 // 10. Create Service

@@ -4,6 +4,7 @@ import { Be_Vietnam_Pro, Inter } from "next/font/google";
 import "../index.css";
 import { SITE_URL } from "../lib/site";
 import { getCompanyInfo } from "../lib/company";
+import { generateThemeCss } from "../lib/theme";
 
 const beVietnamPro = Be_Vietnam_Pro({
   subsets: ["latin", "vietnamese"],
@@ -133,6 +134,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const company = await getCompanyInfo();
+  const themeCss = generateThemeCss(company);
 
   const logoUrl = company.logoUrl?.startsWith("http")
     ? company.logoUrl
@@ -213,6 +215,12 @@ export default async function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning className={`${beVietnamPro.variable} ${inter.variable}`}>
       <head>
+        <style
+          id="dynamic-theme-vars"
+          dangerouslySetInnerHTML={{
+            __html: themeCss,
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -223,6 +231,11 @@ export default async function RootLayout({
                     document.documentElement.classList.add('dark');
                   } else {
                     document.documentElement.classList.remove('dark');
+                  }
+
+                  const fontSize = localStorage.getItem('app_font_size');
+                  if (fontSize) {
+                    document.documentElement.style.fontSize = fontSize;
                   }
                 } catch (_) {}
               })()
@@ -236,7 +249,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className="bg-[#F6F8FA] dark:bg-[#0F172A] text-slate-800 dark:text-slate-100 antialiased selection:bg-[#075FA8] selection:text-white transition-colors duration-300">
+      <body className="bg-[#F6F8FA] dark:bg-[#0F172A] text-slate-800 dark:text-slate-100 antialiased selection:bg-primary selection:text-white transition-colors duration-300">
         {children}
       </body>
     </html>

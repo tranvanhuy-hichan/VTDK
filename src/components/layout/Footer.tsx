@@ -18,7 +18,7 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
   return (
-    <footer className="bg-[#0B1F33] text-slate-200 pt-5 sm:pt-7 pb-4 sm:pb-5 border-t border-slate-800/90 transition-colors duration-300">
+    <footer className="bg-primary-dark text-slate-200 pt-5 sm:pt-7 pb-4 sm:pb-5 border-t border-slate-800/90 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3 sm:space-y-4 text-left">
         
         {/* Top Grid: Info & Contact */}
@@ -113,14 +113,14 @@ export const Footer: React.FC<FooterProps> = ({ company, categories = [] }) => {
 
               {/* Hotline & Zalo */}
               <div className="flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded-full bg-orange-500/20 text-[#F47A20] flex items-center justify-center shrink-0 border border-orange-400/30">
+                <div className="w-6 h-6 rounded-full bg-orange-500/20 text-accent flex items-center justify-center shrink-0 border border-orange-400/30">
                   <Phone className="w-3.5 h-3.5" />
                 </div>
                 <p className="text-slate-300 leading-snug">
                   <strong className="text-white">Hotline &amp; Zalo: </strong>
                   <a
                     href={`tel:${company.hotlineRaw}`}
-                    className="font-bold text-[#F47A20] hover:underline whitespace-nowrap"
+                    className="font-bold text-accent hover:underline whitespace-nowrap"
                   >
                     {company.hotline}
                   </a>

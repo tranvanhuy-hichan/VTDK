@@ -39,7 +39,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
       } ${
         inCart
           ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400"
-          : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-[#075FA8] hover:text-[#075FA8] dark:hover:text-blue-400"
+          : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-primary hover:text-primary dark:hover:text-blue-400"
       }`}
     >
       {inCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}

@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: var(--color-primary, #075FA8);
+  --color-primary-dark: var(--color-primary-dark, #0B1F33);
+  --color-primary-light: var(--color-primary-light, #EBF3FA);
+  --color-accent: var(--color-accent, #F47A20);
+  --color-accent-hover: var(--color-accent-hover, #E06912);
+  --color-zalo: #0068FF;
+  --color-whatsapp: #25D366;
+  --color-maps: #EA4335;
+  --color-bg-light: #F6F8FA;
+  --radius-theme: var(--theme-border-radius, 0.75rem);
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
@@ -13,6 +26,7 @@
     --color-whatsapp: #25D366;
     --color-maps: #EA4335;
     --color-bg-light: #F6F8FA;
+    --theme-border-radius: 0.75rem;
   }
 
   html {

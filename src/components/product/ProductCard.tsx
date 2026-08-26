@@ -92,7 +92,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           className="w-full h-full"
           imgClassName="group-hover:scale-105 transition-transform duration-500"
         />
-        <span className="hidden sm:inline absolute top-2.5 left-2.5 bg-[#075FA8]/90 backdrop-blur-xs text-white text-[9px] font-extrabold px-2 py-0.5 rounded-md shadow uppercase tracking-wider pointer-events-none">
+        <span className="hidden sm:inline absolute top-2.5 left-2.5 bg-primary/90 backdrop-blur-xs text-white text-[9px] font-extrabold px-2 py-0.5 rounded-md shadow uppercase tracking-wider pointer-events-none">
           {product.category.name}
         </span>
       </div>
@@ -100,7 +100,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       {/* Card Body */}
       <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
         <div>
-          <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug mb-2 sm:mb-2.5 line-clamp-2 group-hover:text-[#075FA8] dark:group-hover:text-blue-400 transition-colors">
+          <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug mb-2 sm:mb-2.5 line-clamp-2 group-hover:text-primary dark:group-hover:text-blue-400 transition-colors">
             {product.name}
           </h3>
         </div>
@@ -110,7 +110,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <span className="text-[9px] text-slate-400 dark:text-slate-500 block font-bold uppercase tracking-wider mb-0.5">
             {product.variants.length > 0 ? "Giá bán lẻ (Theo quy cách)" : "Giá bán lẻ"}
           </span>
-          <span className="text-sm sm:text-base font-black text-orange-600 dark:text-orange-400 tracking-tight block truncate">
+          <span className="text-sm sm:text-base font-black text-accent dark:text-accent tracking-tight block truncate">
             {priceDisplay}
           </span>
         </div>
