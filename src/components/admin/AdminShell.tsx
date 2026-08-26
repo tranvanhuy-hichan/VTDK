@@ -18,9 +18,6 @@ import {
   ExternalLink,
   ShieldCheck,
   ChevronRight,
-  ChevronLeft,
-  PanelLeftClose,
-  PanelLeftOpen,
   ArrowLeft,
   Settings,
   Palette,
@@ -96,17 +93,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({
   const router = useRouter();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
-
-  // Auto collapse sidebar to icon-only mode when on POS terminal
-  useEffect(() => {
-    if (pathname === "/admin/pos") {
-      setIsSidebarCollapsed(true);
-    } else {
-      setIsSidebarCollapsed(false);
-    }
-  }, [pathname]);
 
   const navSections = NAV_SECTIONS.map((section) => ({
     ...section,
@@ -155,57 +142,39 @@ export const AdminShell: React.FC<AdminShellProps> = ({
   const currentActiveItem = allItems.find((item) => isActive(item.href));
   const currentTitle = currentActiveItem?.label || "Tổng quan";
 
-  const renderSidebar = (collapsed: boolean) => (
+  const sidebarContent = (
     <div className="flex flex-col h-full bg-[#081524] text-slate-300 select-none">
       {/* Brand Header */}
-      <div className={`p-3 border-b border-slate-800/90 bg-[#06101c]/80 flex items-center ${collapsed ? "justify-center" : "justify-between"}`}>
-        <Link href="/admin" className={`flex items-center ${collapsed ? "justify-center" : "gap-2.5"} group min-w-0`} title="Trang tổng quan Admin">
+      <div className="p-3.5 border-b border-slate-800/90 bg-[#06101c]/80 flex items-center justify-between">
+        <Link href="/admin" className="flex items-center gap-2.5 group min-w-0 flex-1">
           <div className="w-9 h-9 rounded-xl bg-white p-1 shadow-sm border border-slate-700/60 flex items-center justify-center shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
             <img src={COMPANY_DATA.logoUrl} alt="Logo" className="w-full h-full object-contain rounded-lg" />
           </div>
-          {!collapsed && (
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 leading-none">
-                <span className="text-xs font-black tracking-tight text-white uppercase truncate">
-                  {COMPANY_DATA.shortName || "HỆ THỐNG"}
-                </span>
-                <span className="text-[8px] font-black uppercase text-cyan-400 bg-cyan-950/80 px-1 py-0.2 rounded border border-cyan-800/60 shrink-0">
-                  PRO
-                </span>
-              </div>
-              <p className="text-[10px] text-slate-400 font-medium truncate mt-1 leading-none">
-                Quản trị Doanh nghiệp
-              </p>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 leading-tight">
+              <span className="text-xs font-black tracking-tight text-white uppercase whitespace-nowrap">
+                {COMPANY_DATA.shortName || "VẬT TƯ ĐÔNG KHA"}
+              </span>
+              <span className="text-[8px] font-black uppercase text-cyan-400 bg-cyan-950/80 px-1.5 py-0.2 rounded border border-cyan-800/60 shrink-0">
+                PRO
+              </span>
             </div>
-          )}
+            <p className="text-[10px] text-slate-400 font-medium truncate mt-0.5 leading-none">
+              Quản trị Doanh nghiệp
+            </p>
+          </div>
         </Link>
-
-        {/* Collapse Button for Desktop */}
-        {!collapsed && (
-          <button
-            type="button"
-            onClick={() => setIsSidebarCollapsed(true)}
-            className="hidden lg:flex p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer !min-h-0 shrink-0"
-            title="Thu gọn thanh điều hướng (Chỉ hiện Icon)"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-        )}
       </div>
 
       {/* Navigation Sections */}
-      <div className={`flex-1 ${collapsed ? "px-1.5 py-2 space-y-3" : "px-2.5 py-3 space-y-5"} overflow-y-auto custom-scrollbar`}>
+      <div className="flex-1 px-2.5 py-3 space-y-5 overflow-y-auto custom-scrollbar">
         {navSections.map((section, sIdx) => (
           <div key={sIdx} className="space-y-1">
-            {!collapsed ? (
-              <div className="px-2.5 text-[9px] font-black tracking-wider uppercase text-slate-400">
-                {section.title}
-              </div>
-            ) : sIdx > 0 ? (
-              <div className="h-px bg-slate-800/60 my-2 mx-1.5" />
-            ) : null}
+            <div className="px-2.5 text-[9px] font-black tracking-wider uppercase text-slate-400">
+              {section.title}
+            </div>
 
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {section.items.map(({ href, label, icon: Icon, badge }) => {
                 const active = isActive(href);
                 return (
@@ -213,8 +182,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                     key={href}
                     href={href}
                     onClick={() => setIsMobileNavOpen(false)}
-                    title={collapsed ? label : undefined}
-                    className={`relative flex items-center ${collapsed ? "justify-center p-2.5" : "justify-between px-3 py-2"} rounded-xl text-xs font-bold transition-all duration-150 group ${
+                    className={`relative flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all duration-150 group ${
                       active
                         ? "bg-gradient-to-r from-[#075FA8] to-[#0B3D66] text-white shadow-md shadow-blue-900/30 font-extrabold"
                         : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
@@ -224,23 +192,19 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                       <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-cyan-400 rounded-r-full shadow-sm shadow-cyan-400" />
                     )}
 
-                    <div className={`flex items-center ${collapsed ? "justify-center" : "gap-2.5"} min-w-0`}>
+                    <div className="flex items-center gap-2.5 min-w-0">
                       <Icon
-                        className={`${collapsed ? "w-5 h-5" : "w-4 h-4"} shrink-0 transition-transform group-hover:scale-110 ${
+                        className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${
                           active ? "text-cyan-300" : "text-slate-400 group-hover:text-slate-200"
                         }`}
                       />
-                      {!collapsed && <span className="truncate">{label}</span>}
+                      <span className="truncate">{label}</span>
                     </div>
 
-                    {!collapsed && badge && (
+                    {badge && (
                       <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
                         {badge}
                       </span>
-                    )}
-
-                    {collapsed && badge && (
-                      <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
                     )}
                   </Link>
                 );
@@ -250,51 +214,31 @@ export const AdminShell: React.FC<AdminShellProps> = ({
         ))}
       </div>
 
-      {/* Footer Controls */}
-      <div className={`p-2 border-t border-slate-800/80 bg-[#06101c]/60 space-y-1.5`}>
+      <div className="p-2.5 border-t border-slate-800/80 bg-[#06101c]/60 space-y-2">
         <a
           href="/"
-          title="Xem Web Khách Hàng"
-          className={`w-full flex items-center justify-center gap-1.5 ${collapsed ? "p-2" : "px-3 py-2"} rounded-xl bg-slate-800/80 hover:bg-[#075FA8] text-cyan-300 hover:text-white font-bold text-xs transition-all shadow-xs`}
+          className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-[#075FA8] text-cyan-300 hover:text-white font-bold text-xs transition-all shadow-xs"
         >
-          <ExternalLink className="w-4 h-4 shrink-0" />
-          {!collapsed && <span>Xem Web Khách Hàng</span>}
+          <ExternalLink className="w-3.5 h-3.5" />
+          <span>Xem Web Khách Hàng</span>
         </a>
-
-        {collapsed ? (
-          <button
-            type="button"
-            onClick={() => setIsSidebarCollapsed(false)}
-            className="hidden lg:flex w-full items-center justify-center p-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/80 text-slate-400 hover:text-cyan-300 transition-colors cursor-pointer !min-h-0"
-            title="Mở rộng Sidebar"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        ) : (
-          <p className="text-[10px] font-bold text-slate-400 tracking-wide truncate text-center">
-            {companyName || COMPANY_DATA.brandName || COMPANY_DATA.name}
-          </p>
-        )}
+        <p className="text-[10px] font-bold text-slate-400 tracking-wide truncate text-center">
+          {companyName || COMPANY_DATA.brandName || COMPANY_DATA.name}
+        </p>
       </div>
     </div>
   );
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200">
-      {/* Desktop Sidebar (Collapsible) */}
-      <aside
-        className={`hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 ${
-          isSidebarCollapsed ? "lg:w-16" : "lg:w-56"
-        } border-r border-slate-800/80 z-30 shadow-xl transition-all duration-300 ease-in-out`}
-      >
-        {renderSidebar(isSidebarCollapsed)}
+      <aside className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-60 border-r border-slate-800/80 z-30 shadow-xl">
+        {sidebarContent}
       </aside>
 
-      {/* Mobile Drawer (Always full width) */}
       {isMobileNavOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex animate-in fade-in duration-200">
           <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs" onClick={() => setIsMobileNavOpen(false)} />
-          <aside className="relative flex flex-col w-56 h-full shadow-2xl animate-in slide-in-from-left duration-200 z-10">
+          <aside className="relative flex flex-col w-60 h-full shadow-2xl animate-in slide-in-from-left duration-200 z-10">
             <button
               onClick={() => setIsMobileNavOpen(false)}
               aria-label="Đóng menu"
@@ -302,17 +246,12 @@ export const AdminShell: React.FC<AdminShellProps> = ({
             >
               <X className="w-5 h-5" />
             </button>
-            {renderSidebar(false)}
+            {sidebarContent}
           </aside>
         </div>
       )}
 
-      {/* Main Content Area */}
-      <div
-        className={`${
-          isSidebarCollapsed ? "lg:pl-16" : "lg:pl-56"
-        } flex flex-col min-h-screen transition-all duration-300 ease-in-out`}
-      >
+      <div className="lg:pl-60 flex flex-col min-h-screen">
         <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
           <div className="flex items-center justify-between gap-2.5 px-2.5 sm:px-4 py-1.5">
             <div className="flex items-center gap-2 min-w-0">
@@ -322,20 +261,6 @@ export const AdminShell: React.FC<AdminShellProps> = ({
                 className="lg:hidden p-1.5 -ml-1 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer !min-h-0"
               >
                 <Menu className="w-5 h-5" />
-              </button>
-
-              {/* Desktop Toggle Button */}
-              <button
-                type="button"
-                onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                title={isSidebarCollapsed ? "Mở rộng thanh điều hướng (Sidebar)" : "Thu gọn thanh điều hướng (Icon Only)"}
-                className="hidden lg:inline-flex p-1.5 -ml-1 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer !min-h-0"
-              >
-                {isSidebarCollapsed ? (
-                  <PanelLeftOpen className="w-4.5 h-4.5 text-[#075FA8] dark:text-cyan-400" />
-                ) : (
-                  <PanelLeftClose className="w-4.5 h-4.5 text-slate-500" />
-                )}
               </button>
 
               <div className="flex items-center gap-1.5 text-xs">
