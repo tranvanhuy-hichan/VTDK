@@ -32,6 +32,7 @@ import {
 } from "@/components/quote/PrintableQuoteModal";
 import { OrderItemCard } from "@/components/ui";
 import type { Category, Product, ProductVariant } from "@prisma/client";
+import type { CompanyContact } from "@/lib/company";
 
 interface ProductWithRelations extends Product {
   category: Category;
@@ -41,6 +42,7 @@ interface ProductWithRelations extends Product {
 interface AdminQuotationBuilderProps {
   products: ProductWithRelations[];
   categories: Category[];
+  company?: CompanyContact;
 }
 
 interface QuoteDraftItem extends QuoteItem {
@@ -54,6 +56,7 @@ const ITEMS_PER_PAGE = 10;
 export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
   products,
   categories,
+  company,
 }) => {
   // 1. Search, Filter & Pagination State
   const [searchQuery, setSearchQuery] = useState("");
@@ -1034,6 +1037,7 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
         items={quoteItems}
+        company={company}
         mode="quote"
         initialCustomerName={customerName}
         initialCustomerCompany={customerCompany}

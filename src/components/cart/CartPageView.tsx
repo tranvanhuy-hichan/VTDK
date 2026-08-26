@@ -315,6 +315,7 @@ export const CartPageView: React.FC<CartPageViewProps> = ({ company }) => {
         isOpen={isQuoteModalOpen}
         onClose={() => setIsQuoteModalOpen(false)}
         items={quoteItems}
+        company={company}
         initialCustomerName={user?.name || undefined}
         initialCustomerPhone={user?.phone || undefined}
       />

@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { AdminQuotationBuilder } from "@/components/admin/quote/AdminQuotationBuilder";
 
+import { getFreshCompanyInfo } from "@/lib/company";
+
 export const revalidate = 0; // Disable caching on admin quote page
 
 export const metadata: Metadata = {
@@ -11,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminQuotePage() {
-  const [categories, products] = await Promise.all([
+  const [categories, products, company] = await Promise.all([
     prisma.category.findMany({
       orderBy: { name: "asc" },
     }),
@@ -24,7 +26,14 @@ export default async function AdminQuotePage() {
       },
       orderBy: { createdAt: "desc" },
     }),
+    getFreshCompanyInfo(),
   ]);
 
-  return <AdminQuotationBuilder categories={categories} products={products} />;
+  return (
+    <AdminQuotationBuilder
+      categories={categories}
+      products={products}
+      company={company}
+    />
+  );
 }

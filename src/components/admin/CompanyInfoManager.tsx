@@ -318,117 +318,113 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
 
   return (
     <div className="space-y-2.5 max-w-6xl mx-auto text-left pb-12 sm:pb-0 font-sans">
-      {/* 1. ULTRA COMPACT HERO BANNER */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#075FA8] via-[#08457A] to-[#0B2540] p-3 sm:p-4 text-white shadow-xs">
-        <div className="relative z-10 flex flex-col gap-2">
-          {/* Top Row: Logo + Status + Action Buttons */}
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="relative group shrink-0">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white dark:bg-slate-900 border border-white/20 p-1 shadow-sm flex items-center justify-center overflow-hidden">
-                  <img
-                    src={currentLogo}
-                    alt="Logo công ty"
-                    className="max-w-full max-h-full object-contain"
+      {/* 1. ULTRA SLEEK HERO BANNER */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#075FA8] via-[#08457A] to-[#0B2540] p-3.5 sm:p-4 text-white shadow-xs">
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          
+          {/* Company Profile Branding */}
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Logo */}
+            <div className="relative group shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-white p-1 shadow-md flex items-center justify-center overflow-hidden border border-white/20">
+                <img
+                  src={currentLogo}
+                  alt="Logo công ty"
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
+              {isEditing && (
+                <label className="absolute inset-0 rounded-xl bg-slate-950/75 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer transition-opacity text-white text-[8px] font-bold gap-0.5">
+                  <Camera className="w-3.5 h-3.5" />
+                  <span>Đổi</span>
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                    onChange={handleLogoChange}
+                    className="hidden"
                   />
-                </div>
+                </label>
+              )}
+            </div>
+
+            {/* Titles & Meta */}
+            <div className="min-w-0 space-y-1">
+              <div className="flex items-center gap-1.5 flex-nowrap min-w-0">
+                <h1 className="text-xs sm:text-base font-black text-white tracking-tight leading-tight whitespace-nowrap truncate">
+                  {form.fullName || form.name || "Cấu hình Doanh nghiệp"}
+                </h1>
                 {isEditing && (
-                  <label className="absolute inset-0 rounded-xl bg-slate-950/70 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer transition-opacity text-white text-[8px] font-bold gap-0.5">
-                    <Camera className="w-3 h-3" />
-                    <span>Đổi</span>
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                      onChange={handleLogoChange}
-                      className="hidden"
-                    />
-                  </label>
+                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 text-[9px] font-bold border border-amber-400/30 shrink-0">
+                    ✏️ Sửa
+                  </span>
                 )}
               </div>
 
-              <div className="min-w-0 space-y-0.5">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[8.5px] font-bold uppercase">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    ONLINE
-                  </span>
-                  <span className="text-[10px] text-blue-200/80 font-mono">
-                    MST: {form.taxCode || "Chưa thiết lập"}
-                  </span>
-                  {isEditing && (
-                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 text-[9px] font-bold border border-amber-400/30">
-                      ✏️ Sửa
-                    </span>
-                  )}
-                </div>
-
-                <div className="text-xs sm:text-sm font-extrabold text-amber-300 leading-tight">
-                  {form.shortName || form.brandName}
-                </div>
+              <div className="flex items-center gap-2 text-xs text-blue-100/90 flex-wrap">
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[9px] font-bold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  ONLINE
+                </span>
+                <span className="text-[11px] font-mono opacity-80">
+                  MST: {form.taxCode || "Chưa thiết lập"}
+                </span>
+                {form.city && (
+                  <>
+                    <span className="opacity-40">•</span>
+                    <span className="text-[11px] text-cyan-200">{form.city}</span>
+                  </>
+                )}
               </div>
-            </div>
-
-            {/* Action Buttons Right-Aligned */}
-            <div className="flex items-center gap-1.5 shrink-0">
-              <Button
-                variant="outline"
-                size="sm"
-                href="/"
-                target="_blank"
-                leftIcon={<ExternalLink className="w-3 h-3" />}
-                className="bg-white/10 hover:bg-white/20 text-white border-white/20 h-7 text-[11px] px-2 !min-h-0"
-              >
-                Xem Web
-              </Button>
-
-              {isEditing ? (
-                <>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={handleCancelEdit}
-                    disabled={isSubmitting}
-                    leftIcon={<X className="w-3 h-3" />}
-                    className="bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 h-7 text-[11px] px-2 !min-h-0"
-                  >
-                    Hủy
-                  </Button>
-                  <Button
-                    type="submit"
-                    form="company-form"
-                    variant="success"
-                    size="sm"
-                    isLoading={isSubmitting}
-                    leftIcon={<Save className="w-3 h-3" />}
-                    className="h-7 text-[11px] px-2.5 !min-h-0 font-black"
-                  >
-                    LƯU
-                  </Button>
-                </>
-              ) : (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={handleStartEdit}
-                  leftIcon={<Pencil className="w-3 h-3 text-slate-900" />}
-                  className="bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold h-7 text-[11px] px-2.5 !min-h-0 border-transparent shadow-xs"
-                >
-                  Chỉnh sửa
-                </Button>
-              )}
             </div>
           </div>
 
-          {/* Full Details: Legal Name & Address without truncation */}
-          <div className="pt-1.5 border-t border-white/10 space-y-0.5">
-            <h1 className="text-xs sm:text-sm font-black text-white tracking-tight leading-snug">
-              {form.fullName || form.name || "Cấu hình Doanh nghiệp"}
-            </h1>
-            {form.address && (
-              <div className="flex items-center gap-1 text-[10.5px] text-blue-100/80 leading-snug">
-                <MapPin className="w-3 h-3 text-cyan-300 shrink-0" />
-                <span>{form.address}</span>
-              </div>
+          {/* Action Buttons Row */}
+          <div className="flex items-center gap-1.5 shrink-0 justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-white/10">
+            <Button
+              variant="outline"
+              size="sm"
+              href="/"
+              target="_blank"
+              leftIcon={<ExternalLink className="w-3.5 h-3.5" />}
+              className="bg-white/10 hover:bg-white/20 text-white border-white/20 h-8 text-xs font-bold"
+            >
+              Xem Web
+            </Button>
+
+            {isEditing ? (
+              <>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleCancelEdit}
+                  disabled={isSubmitting}
+                  leftIcon={<X className="w-3.5 h-3.5" />}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 h-8 text-xs"
+                >
+                  Hủy
+                </Button>
+                <Button
+                  type="submit"
+                  form="company-form"
+                  variant="success"
+                  size="sm"
+                  isLoading={isSubmitting}
+                  leftIcon={<Save className="w-3.5 h-3.5" />}
+                  className="h-8 text-xs font-black bg-emerald-500 hover:bg-emerald-600 text-white"
+                >
+                  LƯU THAY ĐỔI
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleStartEdit}
+                leftIcon={<Pencil className="w-3.5 h-3.5 text-slate-900" />}
+                className="bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold h-8 text-xs border-transparent shadow-xs"
+              >
+                Chỉnh sửa
+              </Button>
             )}
           </div>
         </div>
