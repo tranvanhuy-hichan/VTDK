@@ -19,6 +19,9 @@ import type { OrderDetail, OrderStatus } from "@/types/order";
 import { adminUpdateOrderStatusAction } from "@/actions/orderActions";
 import { formatCurrency, formatDate } from "@/lib/format";
 
+import { PrintableQuoteModal, type QuoteItem } from "@/components/quote/PrintableQuoteModal";
+import { FileText } from "lucide-react";
+
 const PrintableOrderSlip = dynamic(
   () => import("./PrintableOrderSlip").then((mod) => mod.PrintableOrderSlip),
   { ssr: false }
@@ -45,6 +48,7 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
   const [loading, setLoading] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [isQuoteOpen, setIsQuoteOpen] = useState(false);
 
   const handleCopyAddress = () => {
     if (!order.address) return;
@@ -73,6 +77,15 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
     }
   };
 
+  const quoteItems: QuoteItem[] = order.items.map((i) => ({
+    id: i.id,
+    name: i.productName,
+    variantTitle: i.variantLabel || undefined,
+    quantity: i.quantity,
+    price: i.price,
+    image: i.image,
+  }));
+
   const totalQuantity = order.items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
@@ -90,8 +103,18 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
           <span className="text-slate-500 dark:text-slate-400 whitespace-nowrap">{formatDate(order.createdAt)}</span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
           <PrintableOrderSlip order={order} company={company} />
+
+          <button
+            type="button"
+            onClick={() => setIsQuoteOpen(true)}
+            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-[#075FA8] dark:text-blue-300 hover:bg-blue-100 text-xs font-bold shadow-xs transition-colors shrink-0 whitespace-nowrap cursor-pointer !min-h-0"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Báo giá PDF</span>
+          </button>
+
           <a
             href={`tel:${order.customerPhone}`}
             className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-colors shrink-0 whitespace-nowrap !min-h-0"
@@ -311,6 +334,17 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
           </div>
         </div>
       </div>
+
+      {/* Printable Quote Modal */}
+      <PrintableQuoteModal
+        isOpen={isQuoteOpen}
+        onClose={() => setIsQuoteOpen(false)}
+        items={quoteItems}
+        company={company}
+        initialCustomerName={order.customerName}
+        initialCustomerPhone={order.customerPhone}
+        initialCustomerAddress={order.address || undefined}
+      />
     </div>
   );
 };

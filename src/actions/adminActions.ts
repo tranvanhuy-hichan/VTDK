@@ -652,6 +652,7 @@ export async function updateThemeSettingsAction(themeData: {
   headerStyle?: string;
   themePreset?: string;
   customCss?: string | null;
+  homepageSections?: string | null;
 }) {
   const isAuth = await isAdminAuthenticated();
   if (!isAuth) return { error: "Chưa đăng nhập!" };
@@ -670,6 +671,7 @@ export async function updateThemeSettingsAction(themeData: {
       headerStyle: themeData.headerStyle?.trim() || "standard",
       themePreset: themeData.themePreset?.trim() || "ocean-blue",
       customCss: themeData.customCss ? themeData.customCss.trim() : null,
+      homepageSections: themeData.homepageSections ?? undefined,
     };
 
     if (existing) {

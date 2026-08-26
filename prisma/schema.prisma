@@ -114,6 +114,7 @@ model CompanyInfo {
   headerStyle     String   @default("standard")
   themePreset     String   @default("ocean-blue")
   customCss       String?
+  homepageSections String?
 
   updatedAt       DateTime @updatedAt
 }

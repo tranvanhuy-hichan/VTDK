@@ -21,6 +21,7 @@ import {
   ArrowLeft,
   Settings,
   Palette,
+  FileSpreadsheet,
 } from "lucide-react";
 import { logoutAction } from "../../app/admin/actions";
 import { AdminNotificationCenter } from "./AdminNotificationCenter";
@@ -29,7 +30,7 @@ import { COMPANY_DATA } from "../../data/company";
 
 interface AdminShellProps {
   children: React.ReactNode;
-  companyName: string;
+  companyName?: string;
   adminUser?: UserProfile | null;
 }
 
@@ -49,6 +50,7 @@ const NAV_SECTIONS: NavSection[] = [
     items: [
       { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
       { href: "/admin/orders", label: "Đơn hàng", icon: ShoppingBag },
+      { href: "/admin/quote", label: "Tạo Báo Giá", icon: FileSpreadsheet, badge: "B2B" },
     ],
   },
   {

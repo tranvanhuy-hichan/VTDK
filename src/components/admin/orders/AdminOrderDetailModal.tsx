@@ -21,6 +21,7 @@ import type { OrderDetail, OrderStatus } from "../../../types/order";
 import { OrderStatusBadge } from "../../order/OrderStatusBadge";
 import { adminUpdateOrderStatusAction } from "../../../actions/orderActions";
 import { formatCurrency, formatDate } from "../../../lib/format";
+import { PrintableQuoteModal, type QuoteItem } from "@/components/quote/PrintableQuoteModal";
 
 const PrintableOrderSlip = dynamic(
   () => import("./PrintableOrderSlip").then((mod) => mod.PrintableOrderSlip),
@@ -50,6 +51,7 @@ export const AdminOrderDetailModal: React.FC<AdminOrderDetailModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [isQuoteOpen, setIsQuoteOpen] = useState(false);
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(order.orderCode);
@@ -87,10 +89,11 @@ export const AdminOrderDetailModal: React.FC<AdminOrderDetailModalProps> = ({
     .slice(-2);
 
   return (
-    <div
-      className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-0 sm:p-4 text-left overflow-y-auto animate-in fade-in"
-      onClick={onClose}
-    >
+    <>
+      <div
+        className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-0 sm:p-4 text-left overflow-y-auto animate-in fade-in"
+        onClick={onClose}
+      >
       <div
         className="bg-white dark:bg-slate-900 w-full h-full sm:h-auto sm:max-h-[92vh] sm:max-w-4xl sm:rounded-3xl shadow-2xl border-0 sm:border border-slate-200 dark:border-slate-800 text-left relative overflow-hidden flex flex-col my-auto"
         onClick={(e) => e.stopPropagation()}
@@ -112,7 +115,6 @@ export const AdminOrderDetailModal: React.FC<AdminOrderDetailModalProps> = ({
             <OrderStatusBadge status={currentStatus} />
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
             <PrintableOrderSlip
               order={order}
               triggerButton={
@@ -126,6 +128,17 @@ export const AdminOrderDetailModal: React.FC<AdminOrderDetailModalProps> = ({
                 </button>
               }
             />
+
+            <button
+              type="button"
+              onClick={() => setIsQuoteOpen(true)}
+              className="p-1.5 sm:px-2.5 sm:py-1 rounded-lg bg-blue-900/60 hover:bg-blue-900 text-blue-200 transition-colors cursor-pointer !min-h-0 flex items-center gap-1 text-xs font-bold border border-blue-800"
+              title="Xuất bảng báo giá A4"
+            >
+              <FileText className="w-3.5 h-3.5 text-blue-400" />
+              <span className="hidden sm:inline">Báo giá PDF</span>
+            </button>
+
             <button
               type="button"
               onClick={onClose}
@@ -334,6 +347,26 @@ export const AdminOrderDetailModal: React.FC<AdminOrderDetailModalProps> = ({
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Printable Quote Modal */}
+      <PrintableQuoteModal
+        isOpen={isQuoteOpen}
+        onClose={() => setIsQuoteOpen(false)}
+        items={order.items.map((i) => ({
+          id: i.id,
+          name: i.productName,
+          variantTitle: i.variantLabel || undefined,
+          quantity: i.quantity,
+          price: i.price,
+          image: i.image,
+        }))}
+        mode="quote"
+        orderCode={order.orderCode}
+        initialCustomerName={order.customerName}
+        initialCustomerPhone={order.customerPhone}
+        initialCustomerAddress={order.address || undefined}
+        initialNote={order.note || undefined}
+      />
+    </>
   );
 };

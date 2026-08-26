@@ -38,6 +38,7 @@ export interface CompanyContact {
   headerStyle?: string;
   themePreset?: string;
   customCss?: string | null;
+  homepageSections?: string | null;
 }
 
 const FALLBACK: CompanyContact = {
@@ -72,6 +73,7 @@ const FALLBACK: CompanyContact = {
   headerStyle: "standard",
   themePreset: "ocean-blue",
   customCss: null,
+  homepageSections: null,
 };
 
 const globalForCompany = globalThis as unknown as {
@@ -123,6 +125,7 @@ export const getCompanyInfo = unstable_cache(
         headerStyle: info.headerStyle || FALLBACK.headerStyle,
         themePreset: info.themePreset || FALLBACK.themePreset,
         customCss: info.customCss ?? FALLBACK.customCss,
+        homepageSections: info.homepageSections ?? FALLBACK.homepageSections,
       };
 
       globalForCompany.__companyInfoBackup = formatted;

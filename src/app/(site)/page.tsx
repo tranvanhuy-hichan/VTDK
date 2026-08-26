@@ -6,6 +6,7 @@ import {
   getCachedServices,
   getCachedGalleryImages,
 } from "../../lib/cachedData";
+import { parseHomepageSections } from "../../lib/sections";
 import { Hero } from "../../components/home/Hero";
 import { BrandSlider } from "../../components/home/BrandSlider";
 import { ProductList } from "../../components/product/ProductList";
@@ -27,17 +28,42 @@ export default async function HomePage() {
     getCachedGalleryImages(),
   ]);
 
+  const configuredSections = parseHomepageSections(company.homepageSections);
+
   return (
     <>
-      <Hero company={company} />
-      <BrandSlider />
-      {/* Render the dynamic product catalog */}
-      <ProductList initialCategories={categories} initialProducts={products} company={company} />
-      <CustomerTypes company={company} />
-      <Services company={company} services={services} />
-      <WhyChooseUs company={company} />
-      <Gallery items={galleryImages} company={company} />
-      <Location company={company} />
+      {configuredSections.map((sec) => {
+        if (!sec.enabled) return null;
+
+        switch (sec.id) {
+          case "hero":
+            return <Hero key="hero" company={company} />;
+          case "brands":
+            return <BrandSlider key="brands" />;
+          case "products":
+            return (
+              <ProductList
+                key="products"
+                initialCategories={categories}
+                initialProducts={products}
+                company={company}
+              />
+            );
+          case "customerTypes":
+            return <CustomerTypes key="customerTypes" company={company} />;
+          case "services":
+            return <Services key="services" company={company} services={services} />;
+          case "whyChooseUs":
+            return <WhyChooseUs key="whyChooseUs" company={company} />;
+          case "gallery":
+            return <Gallery key="gallery" items={galleryImages} company={company} />;
+          case "location":
+            return <Location key="location" company={company} />;
+          default:
+            return null;
+        }
+      })}
     </>
   );
 }
+

@@ -1,18 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, Trash2, ArrowRight, ShieldCheck } from "lucide-react";
+import { ShoppingCart, Trash2, ArrowRight, ShieldCheck, FileText } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { ProductDetailHeader } from "../product/ProductDetailHeader";
 import { OrderItemsCard, OrderTotalCard, OrderRowSkeleton, OrderTotalSkeleton } from "./OrderSummary";
+import { PrintableQuoteModal, type QuoteItem } from "../quote/PrintableQuoteModal";
 
 export const CartPageView: React.FC = () => {
   const router = useRouter();
   const { items, hydrated, removeItem, updateQty, setCheckoutItems, clear } = useCart();
-  const { user, openAuthModal } = useAuth();
+  const { user } = useAuth();
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 
   const handleClearAll = () => {
     if (window.confirm("Xoá toàn bộ sản phẩm trong giỏ hàng?")) {
@@ -32,6 +34,15 @@ export const CartPageView: React.FC = () => {
       router.push("/thanh-toan");
     }
   };
+
+  const quoteItems: QuoteItem[] = items.map((i) => ({
+    id: i.key,
+    name: i.name,
+    variantTitle: i.variantLabel,
+    quantity: i.qty,
+    price: i.price,
+    image: i.image,
+  }));
 
   return (
     <section className="pt-0 pb-10 bg-[#F6F8FA] dark:bg-[#0F172A] min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
@@ -72,7 +83,6 @@ export const CartPageView: React.FC = () => {
             </div>
           </div>
         ) : !hydrated ? (
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 lg:h-[calc(100vh-11rem)]">
             <div className="lg:col-span-2 lg:h-full lg:overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
               <OrderRowSkeleton />
@@ -120,9 +130,19 @@ export const CartPageView: React.FC = () => {
                   <span>Tiến hành đặt hàng</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsQuoteModalOpen(true)}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-[#075FA8] dark:text-blue-400 font-bold text-xs sm:text-sm py-3 px-4 rounded-xl border border-blue-200 dark:border-blue-800/80 shadow-xs transition-all active:scale-98 cursor-pointer"
+                >
+                  <FileText className="w-4 h-4 text-[#075FA8] dark:text-blue-400" />
+                  <span>Tải Báo Giá PDF (B2B)</span>
+                </button>
+
                 <Link
                   href="/san-pham"
-                  className="w-full inline-flex items-center justify-center gap-1.5 text-xs font-bold text-[#075FA8] dark:text-blue-400 hover:underline py-1"
+                  className="w-full inline-flex items-center justify-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white py-1"
                 >
                   ← Tiếp tục mua sắm
                 </Link>
@@ -131,6 +151,15 @@ export const CartPageView: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Printable Quote Modal */}
+      <PrintableQuoteModal
+        isOpen={isQuoteModalOpen}
+        onClose={() => setIsQuoteModalOpen(false)}
+        items={quoteItems}
+        initialCustomerName={user?.name || undefined}
+        initialCustomerPhone={user?.phone || undefined}
+      />
     </section>
   );
 };
