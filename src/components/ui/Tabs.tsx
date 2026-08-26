@@ -35,52 +35,54 @@ export function Tabs<T extends string = string>({
   }[size];
 
   return (
-    <div
-      className={`flex items-center gap-1 overflow-x-auto no-scrollbar shrink-0 ${
-        isSegmented
-          ? "bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200/80 dark:border-slate-700/80"
-          : "pb-0.5"
-      } ${className}`}
-    >
-      {tabs.map((tab) => {
-        const isActive = activeKey === tab.key;
+    <div className="w-full max-w-full overflow-x-auto custom-scrollbar py-0.5">
+      <div
+        className={`inline-flex items-center gap-1 flex-nowrap min-w-full sm:min-w-0 ${
+          isSegmented
+            ? "bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200/80 dark:border-slate-700/80"
+            : "pb-0.5"
+        } ${className}`}
+      >
+        {tabs.map((tab) => {
+          const isActive = activeKey === tab.key;
 
-        return (
-          <button
-            key={tab.key}
-            type="button"
-            onClick={() => onChange(tab.key)}
-            className={`font-bold transition-all inline-flex items-center justify-center cursor-pointer select-none shrink-0 !min-h-0 ${sizeClasses} ${
-              isActive
-                ? isSegmented
-                  ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-2xs font-black"
-                  : "bg-[#075FA8] text-white shadow-xs"
-                : isSegmented
-                ? "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-            }`}
-          >
-            {tab.icon && <span className="shrink-0">{tab.icon}</span>}
-            <span>{tab.label}</span>
-            {typeof tab.count === "number" && (
-              <span
-                className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold ${
-                  isActive
-                    ? isSegmented
-                      ? "bg-blue-50 dark:bg-blue-950 text-[#075FA8] dark:text-blue-300"
-                      : "bg-white/20 text-white"
-                    : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-                }`}
-              >
-                {tab.count}
-              </span>
-            )}
-            {tab.dot && (
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-            )}
-          </button>
-        );
-      })}
+          return (
+            <button
+              key={tab.key}
+              type="button"
+              onClick={() => onChange(tab.key)}
+              className={`font-bold transition-all inline-flex items-center justify-center cursor-pointer select-none shrink-0 whitespace-nowrap !min-h-0 ${sizeClasses} ${
+                isActive
+                  ? isSegmented
+                    ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-2xs font-black"
+                    : "bg-[#075FA8] text-white shadow-xs"
+                  : isSegmented
+                  ? "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+              }`}
+            >
+              {tab.icon && <span className="shrink-0">{tab.icon}</span>}
+              <span>{tab.label}</span>
+              {typeof tab.count === "number" && (
+                <span
+                  className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold ${
+                    isActive
+                      ? isSegmented
+                        ? "bg-blue-50 dark:bg-blue-950 text-[#075FA8] dark:text-blue-300"
+                        : "bg-white/20 text-white"
+                      : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              )}
+              {tab.dot && (
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+              )}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -303,8 +303,10 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
     setCustomerTaxCode("");
   };
 
+  const [mobileTab, setMobileTab] = useState<"catalog" | "quote" | "customer">("catalog");
+
   return (
-    <div className="h-[calc(100vh-65px)] flex flex-col space-y-2 overflow-hidden text-left pb-1">
+    <div className="h-[calc(100vh-60px)] flex flex-col space-y-1.5 overflow-hidden text-left pb-0.5">
       {/* 1. Ultra Slim Top Status Bar */}
       <div className="h-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-2.5 flex items-center justify-between shrink-0 shadow-2xs rounded-lg">
         <div className="flex items-center gap-2">
@@ -349,11 +351,62 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
         </div>
       </div>
 
+      {/* Mobile Tab Switcher (Visible only on mobile/tablet < lg) */}
+      <div className="lg:hidden bg-slate-100 dark:bg-slate-800 p-1 rounded-lg flex items-center gap-1 shrink-0 border border-slate-200 dark:border-slate-700 select-none">
+        <button
+          type="button"
+          onClick={() => setMobileTab("catalog")}
+          className={`flex-1 py-1 px-1.5 rounded-md text-xs font-bold flex items-center justify-center gap-1 transition-all !min-h-0 ${
+            mobileTab === "catalog"
+              ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+          }`}
+        >
+          <Layers className="w-3.5 h-3.5" />
+          <span>1. Kho ({filteredProducts.length})</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setMobileTab("quote");
+            setRightTab("items");
+          }}
+          className={`flex-1 py-1 px-1.5 rounded-md text-xs font-bold flex items-center justify-center gap-1 transition-all !min-h-0 ${
+            mobileTab === "quote"
+              ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+          }`}
+        >
+          <FileSpreadsheet className="w-3.5 h-3.5" />
+          <span>2. Báo Giá ({quoteItems.length})</span>
+          {quoteItems.length > 0 && (
+            <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0 animate-pulse" />
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setMobileTab("customer");
+            setRightTab("customer");
+          }}
+          className={`flex-1 py-1 px-1.5 rounded-md text-xs font-bold flex items-center justify-center gap-1 transition-all !min-h-0 ${
+            mobileTab === "customer"
+              ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+          }`}
+        >
+          <Building2 className="w-3.5 h-3.5" />
+          <span>3. Khách hàng</span>
+        </button>
+      </div>
+
       {/* 2. Main Two-Column Layout (Fills remaining height, 0 outer scroll) */}
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2 overflow-hidden">
         
         {/* LEFT COLUMN: Product Catalog Picker (7 cols) - Independent Scroll */}
-        <div className="lg:col-span-7 h-full flex flex-col bg-white dark:bg-slate-900 rounded-xl p-2 sm:p-2.5 shadow-xs border border-slate-200 dark:border-slate-800 space-y-1.5 overflow-hidden">
+        <div className={`lg:col-span-7 h-full flex flex-col bg-white dark:bg-slate-900 rounded-xl p-2 sm:p-2.5 shadow-xs border border-slate-200 dark:border-slate-800 space-y-1.5 overflow-hidden ${mobileTab !== 'catalog' ? 'hidden lg:flex' : 'flex'}`}>
           
           {/* Pinned Top Controls on Left Side */}
           <div className="space-y-1.5 shrink-0">
@@ -698,10 +751,36 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
               </div>
             </div>
           )}
+
+          {/* Floating Mobile Quote Sticky Bottom Bar */}
+          {quoteItems.length > 0 && (
+            <div className="lg:hidden p-2 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-lg shrink-0 flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <div className="text-[11px] font-bold text-slate-500">
+                  Báo giá: <span className="text-slate-900 dark:text-white font-black">{quoteItems.length} món</span>
+                </div>
+                <div className="text-xs font-black text-[#075FA8] dark:text-blue-400 truncate">
+                  {formatCurrency(grandTotal)}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileTab("quote");
+                  setRightTab("items");
+                }}
+                className="px-3.5 py-1.5 rounded-xl bg-[#075FA8] hover:bg-[#0B3D66] text-white text-xs font-black flex items-center gap-1 shadow-md cursor-pointer !min-h-0 active:scale-98"
+              >
+                <span>Xem Báo Giá ({quoteItems.length})</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* RIGHT COLUMN: Quotation Sheet & Partner Information (5 cols) - Tabbed Layout */}
-        <div className="lg:col-span-5 h-full flex flex-col bg-white dark:bg-slate-900 rounded-xl p-2 sm:p-2.5 shadow-xs border border-slate-200 dark:border-slate-800 space-y-1.5 overflow-hidden">
+        <div className={`lg:col-span-5 h-full flex flex-col bg-white dark:bg-slate-900 rounded-xl p-2 sm:p-2.5 shadow-xs border border-slate-200 dark:border-slate-800 space-y-1.5 overflow-hidden ${mobileTab === 'catalog' ? 'hidden lg:flex' : 'flex'}`}>
           
           {/* Top Segmented Tab Switcher */}
           <div className="bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg flex items-center gap-1 shrink-0 border border-slate-200/80 dark:border-slate-700/80">

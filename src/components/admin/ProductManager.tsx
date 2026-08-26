@@ -230,10 +230,10 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
               <Link
                 key={product.id}
                 href={`/admin/products/${product.id}`}
-                className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col justify-between hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-md transition-all cursor-pointer group"
+                className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col justify-between hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-md transition-all cursor-pointer group !min-h-0"
               >
-                <div className="relative aspect-[4/3] bg-slate-50 dark:bg-slate-800">
-                  <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                <div className="relative w-full aspect-square bg-slate-50 dark:bg-slate-800 overflow-hidden">
+                  <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                   <button
                     type="button"
                     onClick={(e) => {

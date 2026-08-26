@@ -107,6 +107,9 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
   // Invoice Receipt Modal
   const [completedOrder, setCompletedOrder] = useState<PosInvoiceData | null>(null);
 
+  // Mobile navigation tab
+  const [mobileTab, setMobileTab] = useState<"catalog" | "cart">("catalog");
+
   // Keep barcode input focused for physical USB/Bluetooth handheld barcode scanner
   useEffect(() => {
     barcodeInputRef.current?.focus();
@@ -341,11 +344,43 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
         </div>
       </div>
 
+      {/* Mobile Tab Switcher (Visible only on mobile/tablet < lg) */}
+      <div className="lg:hidden bg-slate-100 dark:bg-slate-800 p-1 rounded-lg flex items-center gap-1 shrink-0 border border-slate-200 dark:border-slate-700 select-none">
+        <button
+          type="button"
+          onClick={() => setMobileTab("catalog")}
+          className={`flex-1 py-1 px-2 rounded-md text-xs font-bold flex items-center justify-center gap-1.5 transition-all !min-h-0 ${
+            mobileTab === "catalog"
+              ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+          }`}
+        >
+          <Layers className="w-3.5 h-3.5" />
+          <span>1. Chọn hàng ({filteredProducts.length})</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setMobileTab("cart")}
+          className={`flex-1 py-1 px-2 rounded-md text-xs font-bold flex items-center justify-center gap-1.5 transition-all !min-h-0 ${
+            mobileTab === "cart"
+              ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+          }`}
+        >
+          <ShoppingBag className="w-3.5 h-3.5" />
+          <span>2. Hóa đơn ({cart.reduce((s, it) => s + it.quantity, 0)})</span>
+          {cart.length > 0 && (
+            <span className="w-2 h-2 rounded-full bg-red-500 shrink-0 animate-pulse" />
+          )}
+        </button>
+      </div>
+
       {/* Main Terminal Layout: Left (Catalog & Barcode Scan) - Right (Live Cashier Cart) */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden gap-0">
         
         {/* LEFT COLUMN (7 Cols): BARCODE SCANNER & PRODUCT CATALOG */}
-        <div className="lg:col-span-7 flex flex-col h-full border-r border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-50/50 dark:bg-slate-900/50">
+        <div className={`lg:col-span-7 flex flex-col h-full border-r border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-50/50 dark:bg-slate-900/50 ${mobileTab === 'cart' ? 'hidden lg:flex' : 'flex'}`}>
           
           {/* Barcode & Search Controls - Ultra Compact */}
           <div className="p-2 sm:p-2.5 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 space-y-1.5 shrink-0">
@@ -483,10 +518,33 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
               </div>
             )}
           </div>
+
+          {/* Floating Mobile Cart Sticky Bottom Bar */}
+          {cart.length > 0 && (
+            <div className="lg:hidden p-2 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-lg shrink-0 flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <div className="text-[11px] font-bold text-slate-500">
+                  Đã chọn: <span className="text-slate-900 dark:text-white font-black">{cart.reduce((s, it) => s + it.quantity, 0)} món</span>
+                </div>
+                <div className="text-xs font-black text-[#075FA8] dark:text-blue-400 truncate">
+                  {cart.reduce((s, it) => s + it.price * it.quantity, 0).toLocaleString("vi-VN")}đ
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setMobileTab("cart")}
+                className="px-3.5 py-1.5 rounded-xl bg-[#075FA8] hover:bg-[#0B1F33] text-white text-xs font-black flex items-center gap-1 shadow-md cursor-pointer !min-h-0 active:scale-98"
+              >
+                <span>Xem Hóa Đơn ({cart.reduce((s, it) => s + it.quantity, 0)})</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* RIGHT COLUMN (5 Cols): CASHIER CART & PAYMENT */}
-        <div className="lg:col-span-5 flex flex-col h-full bg-white dark:bg-slate-900 overflow-hidden">
+        <div className={`lg:col-span-5 flex flex-col h-full bg-white dark:bg-slate-900 overflow-hidden ${mobileTab === 'catalog' ? 'hidden lg:flex' : 'flex'}`}>
           
           {/* Cart Header */}
           <div className="px-3 py-1.5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-slate-800/30">
