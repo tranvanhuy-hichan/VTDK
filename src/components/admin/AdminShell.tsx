@@ -50,7 +50,7 @@ const NAV_SECTIONS: NavSection[] = [
     items: [
       { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
       { href: "/admin/orders", label: "Đơn hàng", icon: ShoppingBag },
-      { href: "/admin/quote", label: "Tạo Báo Giá", icon: FileSpreadsheet, badge: "B2B" },
+      { href: "/admin/quote", label: "Báo Giá", icon: FileSpreadsheet, badge: "B2B" },
     ],
   },
   {

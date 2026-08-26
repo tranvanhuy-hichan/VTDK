@@ -6,8 +6,8 @@ import { AdminQuotationBuilder } from "@/components/admin/quote/AdminQuotationBu
 export const revalidate = 0; // Disable caching on admin quote page
 
 export const metadata: Metadata = {
-  title: "Tạo Báo Giá B2B | Admin Studio",
-  description: "Lập bảng báo giá chuyên nghiệp cho đối tác và khách hàng B2B",
+  title: "Báo Giá B2B | Admin Studio",
+  description: "Hệ thống tạo và xuất bản in báo giá B2B chuyên nghiệp",
 };
 
 export default async function AdminQuotePage() {

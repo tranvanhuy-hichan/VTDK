@@ -306,7 +306,7 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-sm font-black text-slate-900 dark:text-white tracking-tight">
-                Tạo Báo Giá B2B
+                Báo Giá B2B
               </h1>
               <span className="px-1.5 py-0.5 rounded-md bg-blue-100 dark:bg-blue-950 text-[#075FA8] dark:text-blue-300 text-[9px] font-black uppercase tracking-wider">
                 Quotation Studio
