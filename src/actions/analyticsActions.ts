@@ -205,10 +205,27 @@ export async function getAdminAnalyticsAction(
       };
     });
 
-    // 4. Sort Top Products
-    const topProducts: TopProductItem[] = Array.from(productMap.values())
+    // 4. Sort Top Products & Fetch High-Res Images from Product table
+    const topProductsRaw = Array.from(productMap.values())
       .sort((a, b) => b.totalRevenue - a.totalRevenue)
       .slice(0, 10);
+
+    const slugs = topProductsRaw.map((p) => p.productSlug).filter(Boolean);
+    const dbProducts =
+      slugs.length > 0
+        ? await prisma.product.findMany({
+            where: { slug: { in: slugs } },
+            select: { slug: true, image: true, images: true },
+          })
+        : [];
+    const dbProdMap = new Map(
+      dbProducts.map((p) => [p.slug, p.image || (p.images && p.images[0]) || ""])
+    );
+
+    const topProducts: TopProductItem[] = topProductsRaw.map((p) => ({
+      ...p,
+      image: dbProdMap.get(p.productSlug) || p.image || "/images/placeholder.svg",
+    }));
 
     // 5. Fetch Categories for breakdown estimate
     const categories = await prisma.category.findMany({

@@ -17,17 +17,20 @@ import {
   Truck,
   Sparkles,
   CheckCircle2,
-  Globe,
   ExternalLink,
   Search,
-  MessageCircle,
-  Eye,
   Check,
   Copy,
   Lock,
 } from "lucide-react";
 import { updateCompanyInfoAction } from "../../app/admin/actions";
 import type { CompanyContact } from "../../lib/company";
+import {
+  VIETNAM_PROVINCES,
+  isSameProvince,
+  findProvinceByCity,
+  REGION_PROVINCE_CODES,
+} from "../../lib/vietnamProvinces";
 import { MultiImageUpload } from "./MultiImageUpload";
 
 const PLACEHOLDER_IMAGE = "/images/placeholder.svg";
@@ -36,7 +39,7 @@ interface CompanyInfoManagerProps {
   initialCompany: CompanyContact;
 }
 
-type TabType = "brand" | "contact" | "location" | "shipping" | "media" | "preview";
+type TabType = "brand" | "contact" | "location" | "shipping" | "media";
 
 export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialCompany }) => {
   const router = useRouter();
@@ -61,6 +64,84 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
   // Gallery
   const [existingGalleryUrls, setExistingGalleryUrls] = useState<string[]>(initialCompany.images || []);
   const [newGalleryFiles, setNewGalleryFiles] = useState<File[]>([]);
+
+  // Freeship Provinces Selector State
+  const [provinceSearch, setProvinceSearch] = useState("");
+
+  const freeshipList = Array.isArray(form.freeshipProvinces) && form.freeshipProvinces.length > 0
+    ? form.freeshipProvinces
+    : ["ALL"];
+  const isAllFreeship = freeshipList.includes("ALL");
+
+  const isProvinceSelected = (code: string) => {
+    if (isAllFreeship) return true;
+    return freeshipList.includes(String(code).trim());
+  };
+
+  const handleToggleProvince = (code: string) => {
+    if (!isEditing) return;
+    const strCode = String(code).trim();
+    if (isAllFreeship) {
+      // Deselect this province, keeping all other 33 provinces
+      const rest = VIETNAM_PROVINCES.map((p) => String(p.code)).filter((c) => c !== strCode);
+      handleChange("freeshipProvinces", rest);
+    } else {
+      if (freeshipList.includes(strCode)) {
+        const next = freeshipList.filter((c) => c !== strCode);
+        handleChange("freeshipProvinces", next);
+      } else {
+        const next = [...freeshipList, strCode];
+        if (next.length >= VIETNAM_PROVINCES.length) {
+          handleChange("freeshipProvinces", ["ALL"]);
+        } else {
+          handleChange("freeshipProvinces", next);
+        }
+      }
+    }
+  };
+
+  const companyMatchedProvince = findProvinceByCity(form.city);
+  const companyProvinceCode = companyMatchedProvince ? String(companyMatchedProvince.code) : "48";
+  const companyProvinceName = companyMatchedProvince ? companyMatchedProvince.name : (form.city || "Trụ sở");
+
+  const handleSetPreset = (
+    preset: "ALL" | "LOCAL" | "BIG_CITIES" | "NORTH" | "CENTRAL" | "SOUTH" | "NONE"
+  ) => {
+    if (!isEditing) return;
+    switch (preset) {
+      case "ALL":
+        handleChange("freeshipProvinces", ["ALL"]);
+        break;
+      case "LOCAL":
+        handleChange("freeshipProvinces", [companyProvinceCode]);
+        break;
+      case "BIG_CITIES":
+        handleChange("freeshipProvinces", REGION_PROVINCE_CODES.BIG_CITIES);
+        break;
+      case "NORTH":
+        handleChange("freeshipProvinces", REGION_PROVINCE_CODES.NORTH);
+        break;
+      case "CENTRAL":
+        handleChange("freeshipProvinces", REGION_PROVINCE_CODES.CENTRAL);
+        break;
+      case "SOUTH":
+        handleChange("freeshipProvinces", REGION_PROVINCE_CODES.SOUTH);
+        break;
+      case "NONE":
+        handleChange("freeshipProvinces", []);
+        break;
+    }
+  };
+
+  const filteredProvinces = VIETNAM_PROVINCES.filter((p) => {
+    if (!provinceSearch.trim()) return true;
+    const q = provinceSearch.toLowerCase().trim();
+    return (
+      p.name.toLowerCase().includes(q) ||
+      String(p.code).includes(q) ||
+      (p.englishName && p.englishName.toLowerCase().includes(q))
+    );
+  });
 
   const handleChange = (field: keyof CompanyContact, value: any) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -170,6 +251,14 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
 
     formData.set("hotlineRaw", hotlineRaw);
     formData.set("hasDelivery", String(form.hasDelivery));
+    formData.append(
+      "freeshipProvinces",
+      JSON.stringify(
+        Array.isArray(form.freeshipProvinces) && form.freeshipProvinces.length > 0
+          ? form.freeshipProvinces
+          : ["ALL"]
+      )
+    );
 
     if (imageFile) {
       formData.append("image", imageFile);
@@ -357,7 +446,6 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
           { id: "location", label: "Địa chỉ & Bản đồ", icon: MapPinned },
           { id: "shipping", label: "Vận chuyển & Phí ship", icon: Truck },
           { id: "media", label: "Hình ảnh & Kho bãi", icon: Images },
-          { id: "preview", label: "Xem trước giao diện", icon: Eye },
         ].map((t) => {
           const Icon = t.icon;
           const isActive = activeTab === t.id;
@@ -812,18 +900,18 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
           </div>
         )}
 
-        {/* TAB 4: VẬN CHUYỂN & PHÍ SHIP */}
+        {/* TAB 4: VẬN CHUYỂN & GIAO HÀNG (2 Cột) */}
         {activeTab === "shipping" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-in fade-in duration-200">
-            {/* Shipping Config Form */}
-            <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start animate-in fade-in duration-200">
+            {/* CỘT 1: CẤU HÌNH CƯỚC VẬN CHUYỂN & GIAO HÀNG */}
+            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
               <div className="flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400">
                   <Truck className="w-5 h-5" />
                 </div>
                 <div>
                   <h2 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white uppercase tracking-tight">
-                    Cấu Hình Phí Vận Chuyển &amp; Freeship
+                    Cước Phí Vận Chuyển
                   </h2>
                   <p className="text-xs text-slate-400">
                     Thiết lập mức cước tự động áp dụng khi khách hàng đặt hàng trực tuyến.
@@ -857,10 +945,10 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                   />
                 </label>
 
-                {/* shippingFeeDanang */}
+                {/* shippingFeeDanang (Nội tỉnh) */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
-                    Phí giao hàng nội thành Đà Nẵng (VNĐ) <span className="text-red-500">*</span>
+                    Phí giao hàng nội tỉnh / Cùng địa bàn doanh nghiệp (VNĐ) <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input
@@ -885,14 +973,14 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-400">
-                    Áp dụng cho các địa chỉ nhận hàng thuộc địa phận TP. Đà Nẵng.
+                    Áp dụng cho khách hàng cùng tỉnh/thành phố với doanh nghiệp (Hiện tại: <span className="font-semibold text-slate-600 dark:text-slate-300">{form.city || "Chưa đặt tỉnh thành"}</span>).
                   </p>
                 </div>
 
-                {/* shippingFeeProvince */}
+                {/* shippingFeeProvince (Liên tỉnh) */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
-                    Phí giao các tỉnh thành khác / Gửi xe chành (VNĐ) <span className="text-red-500">*</span>
+                    Phí giao các tỉnh thành khác / Liên tỉnh / Xe chành (VNĐ) <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input
@@ -917,14 +1005,73 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-400">
-                    Phí đóng gói và cước chuyển phát / đưa ra chành xe cho khách tỉnh.
+                    Phí đóng gói và cước vận chuyển / gửi chành xe đến các tỉnh thành khác.
                   </p>
                 </div>
 
+                {/* shippingNote */}
+                <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
+                    Lời dặn &amp; Chính sách giao hàng (Hiển thị tại trang thanh toán)
+                  </label>
+                  <textarea
+                    rows={3}
+                    disabled={!isEditing}
+                    value={form.shippingNote || ""}
+                    onChange={(e) => handleChange("shippingNote", e.target.value)}
+                    placeholder="Miễn phí giao hàng cho đơn đạt định mức tại các tỉnh thành áp dụng. Đơn dưới định mức áp dụng cước chuẩn nội tỉnh và liên tỉnh."
+                    className={`w-full text-xs rounded-xl px-4 py-2.5 transition-colors leading-relaxed ${
+                      isEditing
+                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                        : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 cursor-default"
+                    }`}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* CỘT 2: CHÍNH SÁCH FREESHIP & DANH SÁCH TỈNH THÀNH ÁP DỤNG */}
+            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white uppercase tracking-tight">
+                      Chính Sách Freeship
+                    </h2>
+                    <p className="text-xs text-slate-400">
+                      Định mức và phạm vi tỉnh thành được hưởng miễn phí giao hàng.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Status Badge */}
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                  {isAllFreeship ? (
+                    <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                      <CheckCircle2 className="w-4 h-4" />
+                      Toàn quốc ({VIETNAM_PROVINCES.length} tỉnh)
+                    </span>
+                  ) : freeshipList.length > 0 ? (
+                    <span className="text-[#075FA8] dark:text-blue-400 flex items-center gap-1">
+                      <CheckCircle2 className="w-4 h-4" />
+                      Đã chọn {freeshipList.length}/{VIETNAM_PROVINCES.length} tỉnh
+                    </span>
+                  ) : (
+                    <span className="text-amber-600 dark:text-amber-400">
+                      Chưa chọn (Tắt Freeship)
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-4">
                 {/* freeshipThreshold */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
-                    Định mức Miễn Phí Vận Chuyển toàn quốc - Freeship (VNĐ)
+                    Định mức Đơn Hàng Để Được Miễn Phí Vận Chuyển - Freeship (VNĐ)
                   </label>
                   <div className="relative">
                     <input
@@ -948,82 +1095,156 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-400">
-                    Đơn hàng có tổng tiền hàng đạt hoặc vượt mức này sẽ được miễn phí vận chuyển 100%.
+                    Đơn hàng có tổng tiền hàng đạt hoặc vượt mức này và thuộc các tỉnh thành được chọn bên dưới sẽ được Freeship 100%.
                   </p>
                 </div>
 
-                {/* shippingNote */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
-                    Lời dặn &amp; Chính sách giao hàng (Hiển thị tại trang thanh toán)
-                  </label>
-                  <textarea
-                    rows={3}
-                    disabled={!isEditing}
-                    value={form.shippingNote || ""}
-                    onChange={(e) => handleChange("shippingNote", e.target.value)}
-                    placeholder="Miễn phí giao hàng toàn quốc cho đơn từ 2.000.000đ. Đơn dưới 2.000.000đ áp dụng cước chuẩn: Đà Nẵng 30.000đ, tỉnh khác 50.000đ."
-                    className={`w-full text-xs rounded-xl px-4 py-2.5 transition-colors leading-relaxed ${
-                      isEditing
-                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
-                        : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 cursor-default"
-                    }`}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Live Preview Card */}
-            <div className="lg:col-span-5 space-y-4">
-              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-4">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-amber-500" />
-                  <h3 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
-                    Mô Phỏng Tính Phí Thực Tế
-                  </h3>
-                </div>
-
-                <div className="space-y-3 text-xs">
-                  {/* Case 1: Store pickup */}
-                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1">
-                    <div className="flex items-center justify-between font-bold text-slate-800 dark:text-slate-200">
-                      <span>1. Lấy hàng tại kho:</span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-black">0đ (Miễn phí)</span>
-                    </div>
-                    <p className="text-[11px] text-slate-400">Khách nhận trực tiếp tại 400 Phạm Hùng, Đà Nẵng</p>
+                {/* freeshipProvinces Multi-Selector */}
+                <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
+                      Tỉnh / Thành Phố Được Áp Dụng Freeship ({VIETNAM_PROVINCES.length} tỉnh thành)
+                    </label>
                   </div>
 
-                  {/* Case 2: Danang */}
-                  <div className="p-3 rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 space-y-1">
-                    <div className="flex items-center justify-between font-bold text-slate-800 dark:text-slate-200">
-                      <span>2. Giao nội thành Đà Nẵng (Đơn &lt; {(form.freeshipThreshold || 2000000).toLocaleString("vi-VN")}đ):</span>
-                      <span className="text-[#075FA8] dark:text-blue-400 font-black">
-                        {(form.shippingFeeDanang || 30000).toLocaleString("vi-VN")}đ
-                      </span>
+                  {/* Preset Buttons */}
+                  {isEditing && (
+                    <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                      <span className="text-[11px] text-slate-400 font-medium mr-1">Chọn nhanh:</span>
+                      <button
+                        type="button"
+                        onClick={() => handleSetPreset("ALL")}
+                        className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                          isAllFreeship
+                            ? "bg-[#075FA8] text-white shadow-xs"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        }`}
+                      >
+                        Toàn quốc ({VIETNAM_PROVINCES.length} tỉnh)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSetPreset("LOCAL")}
+                        className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                          !isAllFreeship && freeshipList.length === 1 && freeshipList.includes(companyProvinceCode)
+                            ? "bg-[#075FA8] text-white shadow-xs"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        }`}
+                      >
+                        Nội tỉnh ({companyProvinceName.replace(/^(Thành phố|Tỉnh|TP\.?)\s+/i, "")})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSetPreset("BIG_CITIES")}
+                        className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                          !isAllFreeship && freeshipList.length === REGION_PROVINCE_CODES.BIG_CITIES.length && REGION_PROVINCE_CODES.BIG_CITIES.every((c) => freeshipList.includes(c))
+                            ? "bg-[#075FA8] text-white shadow-xs"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        }`}
+                      >
+                        6 Đô thị lớn
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSetPreset("NORTH")}
+                        className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                          !isAllFreeship && freeshipList.length === REGION_PROVINCE_CODES.NORTH.length && REGION_PROVINCE_CODES.NORTH.every((c) => freeshipList.includes(c))
+                            ? "bg-[#075FA8] text-white shadow-xs"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        }`}
+                      >
+                        Miền Bắc ({REGION_PROVINCE_CODES.NORTH.length} tỉnh)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSetPreset("CENTRAL")}
+                        className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                          !isAllFreeship && freeshipList.length === REGION_PROVINCE_CODES.CENTRAL.length && REGION_PROVINCE_CODES.CENTRAL.every((c) => freeshipList.includes(c))
+                            ? "bg-[#075FA8] text-white shadow-xs"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        }`}
+                      >
+                        Miền Trung ({REGION_PROVINCE_CODES.CENTRAL.length} tỉnh)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSetPreset("SOUTH")}
+                        className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                          !isAllFreeship && freeshipList.length === REGION_PROVINCE_CODES.SOUTH.length && REGION_PROVINCE_CODES.SOUTH.every((c) => freeshipList.includes(c))
+                            ? "bg-[#075FA8] text-white shadow-xs"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        }`}
+                      >
+                        Miền Nam ({REGION_PROVINCE_CODES.SOUTH.length} tỉnh)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSetPreset("NONE")}
+                        className="text-[11px] px-2 py-1 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all ml-auto cursor-pointer"
+                      >
+                        Bỏ chọn tất cả
+                      </button>
                     </div>
-                    <p className="text-[11px] text-slate-400">Giao hỏa tốc trong 1-2h</p>
-                  </div>
+                  )}
 
-                  {/* Case 3: Province */}
-                  <div className="p-3 rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/40 space-y-1">
-                    <div className="flex items-center justify-between font-bold text-slate-800 dark:text-slate-200">
-                      <span>3. Giao tỉnh khác (Đơn &lt; {(form.freeshipThreshold || 2000000).toLocaleString("vi-VN")}đ):</span>
-                      <span className="text-amber-700 dark:text-amber-400 font-black">
-                        {(form.shippingFeeProvince || 50000).toLocaleString("vi-VN")}đ
-                      </span>
+                  {/* Province Search & Grid */}
+                  <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 p-3 space-y-2.5">
+                    {/* Search box */}
+                    <div className="relative">
+                      <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        value={provinceSearch}
+                        onChange={(e) => setProvinceSearch(e.target.value)}
+                        placeholder="Tìm tỉnh / thành phố..."
+                        className="w-full pl-8 pr-7 py-1.5 text-xs rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#075FA8]"
+                      />
+                      {provinceSearch && (
+                        <button
+                          type="button"
+                          onClick={() => setProvinceSearch("")}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs cursor-pointer"
+                        >
+                          ✕
+                        </button>
+                      )}
                     </div>
-                    <p className="text-[11px] text-slate-400">Chuyển phát bưu điện / Chành xe</p>
-                  </div>
 
-                  {/* Case 4: Freeship */}
-                  <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-1">
-                    <div className="flex items-center justify-between font-bold text-emerald-900 dark:text-emerald-200">
-                      <span>4. Đơn hàng $\ge$ {(form.freeshipThreshold || 2000000).toLocaleString("vi-VN")}đ:</span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-black">0đ (FREESHIP)</span>
+                    {/* Province checkboxes grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-72 overflow-y-auto pr-1">
+                      {filteredProvinces.map((prov) => {
+                        const code = String(prov.code);
+                        const selected = isProvinceSelected(code);
+                        const isCompanyHome = code === companyProvinceCode;
+                        return (
+                          <label
+                            key={code}
+                            className={`flex items-center gap-2 p-2 rounded-xl border text-xs cursor-pointer select-none transition-all ${
+                              selected
+                                ? "bg-blue-50/80 dark:bg-blue-950/40 border-[#075FA8]/40 dark:border-blue-700/60 text-[#075FA8] dark:text-blue-300 font-bold"
+                                : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700"
+                            } ${!isEditing ? "opacity-75 cursor-default pointer-events-none" : ""}`}
+                          >
+                            <input
+                              type="checkbox"
+                              disabled={!isEditing}
+                              checked={selected}
+                              onChange={() => handleToggleProvince(code)}
+                              className="w-4 h-4 rounded accent-[#075FA8] cursor-pointer"
+                            />
+                            <span className="truncate flex-1">{prov.name}</span>
+                            {isCompanyHome && (
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900 text-[#075FA8] dark:text-blue-300">
+                                Trụ sở
+                              </span>
+                            )}
+                            <span className="text-[10px] text-slate-400 font-mono font-normal">
+                              {code}
+                            </span>
+                          </label>
+                        );
+                      })}
                     </div>
-                    <p className="text-[11px] text-emerald-700/80 dark:text-emerald-300/80">
-                      Tự động miễn phí vận chuyển toàn quốc
-                    </p>
                   </div>
                 </div>
               </div>
@@ -1130,84 +1351,6 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
               ) : (
                 <p className="text-xs text-slate-400 italic py-8 text-center">Chưa có ảnh nào trong thư viện.</p>
               )}
-            </div>
-          </div>
-        )}
-
-        {/* TAB 5: XEM TRƯỚC TRỰC QUAN (LIVE MOCKUP PREVIEWS) */}
-        {activeTab === "preview" && (
-          <div className="space-y-6 animate-in fade-in duration-200">
-            {/* 1. Header Bar Preview */}
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-4">
-              <h3 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                <Globe className="w-4 h-4 text-[#075FA8]" />
-                <span>1. Xem Trước Thanh Header Trên Website</span>
-              </h3>
-
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-700 p-4 bg-white dark:bg-slate-950 flex items-center justify-between shadow-inner">
-                <div className="flex items-center gap-3">
-                  <img src={currentLogo} alt="Logo" className="h-9 w-auto object-contain rounded-lg" />
-                  <div>
-                    <span className="font-black text-sm sm:text-base text-slate-900 dark:text-white block leading-tight">
-                      {form.shortName || form.fullName}
-                    </span>
-                    <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block mt-0.5">
-                      {form.tagline || "KHẨU HIỆU DOANH NGHIỆP"}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="hidden sm:flex items-center gap-4 text-xs font-bold text-slate-600 dark:text-slate-300">
-                  <span className="text-[#075FA8] dark:text-blue-400">Trang chủ</span>
-                  <span>Sản phẩm</span>
-                  <span>Đơn hàng</span>
-                  <span>Liên hệ</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 2. Google Search SERP Preview */}
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-4">
-              <h3 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                <Search className="w-4 h-4 text-[#1877F2]" />
-                <span>2. Xem Trước Kết Quả Tìm Kiếm Google (SEO Preview)</span>
-              </h3>
-
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-700 p-5 bg-white dark:bg-slate-950 space-y-1.5 shadow-inner">
-                <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
-                  <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center p-0.5">
-                    <img src={currentLogo} alt="" className="max-w-full max-h-full object-contain" />
-                  </div>
-                  <span>https://vattudongkha.io.vn</span>
-                </div>
-                <h4 className="text-base sm:text-lg font-bold text-[#1a0dab] dark:text-[#8ab4f8] hover:underline cursor-pointer">
-                  {form.shortName || form.fullName} {form.city || "Đà Nẵng"} | Sỉ &amp; Lẻ Chính Hãng Giá Tốt
-                </h4>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
-                  Đại lý vật tư điện lạnh {form.city || "Đà Nẵng"} - {form.brandName}: sỉ &amp; lẻ ống đồng, gas lạnh, linh kiện điều hòa, tủ lạnh, máy giặt chính hãng. Hàng sẵn kho {form.address}.
-                </p>
-              </div>
-            </div>
-
-            {/* 3. Zalo Message Preview */}
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-4">
-              <h3 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                <MessageCircle className="w-4 h-4 text-[#0068FF]" />
-                <span>3. Xem Trước Tin Nhắn Mẫu Gửi Qua Zalo</span>
-              </h3>
-
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-700 p-4 bg-[#E5EBF5] dark:bg-slate-950 space-y-2 shadow-inner max-w-lg">
-                <div className="bg-white dark:bg-slate-900 p-3.5 rounded-2xl rounded-tl-xs shadow-xs text-xs space-y-1.5 text-slate-800 dark:text-slate-100">
-                  <p className="font-bold text-[#0068FF]">
-                    Chào {form.brandName}, tôi muốn hỏi mua sản phẩm:
-                  </p>
-                  <p>Ống đồng cuộn Hailiang 6.35mm x 15m x1 — 450.000đ</p>
-                  <p className="text-[11px] text-slate-400">https://vattudongkha.io.vn/san-pham/ong-dong-hailiang-6</p>
-                  <p className="italic text-slate-500 text-[11px] pt-1">
-                    Nhờ shop tư vấn và kiểm tra tình trạng hàng giúp tôi.
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
         )}

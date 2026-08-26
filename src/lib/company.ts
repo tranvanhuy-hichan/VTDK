@@ -27,6 +27,7 @@ export interface CompanyContact {
   shippingFeeDanang: number;
   shippingFeeProvince: number;
   freeshipThreshold: number;
+  freeshipProvinces?: string[];
   shippingNote?: string | null;
   logoUrl: string;
   image: string;
@@ -67,6 +68,7 @@ const FALLBACK: CompanyContact = {
   shippingFeeDanang: 30000,
   shippingFeeProvince: 50000,
   freeshipThreshold: 2000000,
+  freeshipProvinces: ["ALL"],
   shippingNote:
     "Miễn phí giao hàng toàn quốc cho đơn từ 2.000.000đ. Đơn dưới 2.000.000đ áp dụng cước chuẩn: Đà Nẵng 30.000đ, tỉnh khác 50.000đ.",
   logoUrl: COMPANY_DATA.logoUrl,
@@ -133,6 +135,10 @@ export const getCompanyInfo = unstable_cache(
           typeof info.freeshipThreshold === "number"
             ? info.freeshipThreshold
             : FALLBACK.freeshipThreshold,
+        freeshipProvinces:
+          Array.isArray(info.freeshipProvinces) && info.freeshipProvinces.length > 0
+            ? info.freeshipProvinces
+            : FALLBACK.freeshipProvinces,
         shippingNote: info.shippingNote ?? FALLBACK.shippingNote,
         logoUrl: info.logoUrl || FALLBACK.logoUrl,
         image: info.image || FALLBACK.image,

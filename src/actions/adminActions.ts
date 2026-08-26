@@ -541,6 +541,19 @@ export async function updateCompanyInfoAction(formData: FormData) {
       0,
       parseInt((formData.get("freeshipThreshold") as string) || "2000000", 10) || 0
     );
+    let freeshipProvinces: string[] = ["ALL"];
+    const rawFreeshipProvinces = formData.get("freeshipProvinces");
+    if (typeof rawFreeshipProvinces === "string" && rawFreeshipProvinces.trim()) {
+      try {
+        const parsed = JSON.parse(rawFreeshipProvinces);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          freeshipProvinces = parsed.map((p) => String(p).trim()).filter(Boolean);
+        }
+      } catch {
+        const split = rawFreeshipProvinces.split(",").map((p) => p.trim()).filter(Boolean);
+        if (split.length > 0) freeshipProvinces = split;
+      }
+    }
     const shippingNote = (formData.get("shippingNote") as string)?.trim() || null;
     const imageFile = formData.get("image") as File | null;
     const logoFile = formData.get("logo") as File | null;
@@ -638,6 +651,7 @@ export async function updateCompanyInfoAction(formData: FormData) {
       shippingFeeDanang,
       shippingFeeProvince,
       freeshipThreshold,
+      freeshipProvinces,
       shippingNote,
       logoUrl: logoPath,
       image: imagePath,
@@ -645,9 +659,30 @@ export async function updateCompanyInfoAction(formData: FormData) {
     };
 
     if (existing) {
-      await (prisma.companyInfo as any).update({ where: { id: existing.id }, data });
+      try {
+        await (prisma.companyInfo as any).update({ where: { id: existing.id }, data });
+      } catch (prismaUpdateErr: any) {
+        // Fallback if in-memory Prisma client schema validator hasn't refreshed freeshipProvinces yet
+        const { freeshipProvinces: fp, ...dataWithoutFp } = data as any;
+        await (prisma.companyInfo as any).update({ where: { id: existing.id }, data: dataWithoutFp });
+        await prisma.$executeRawUnsafe(
+          `UPDATE "CompanyInfo" SET "freeshipProvinces" = $1 WHERE id = $2`,
+          freeshipProvinces,
+          existing.id
+        );
+      }
     } else {
-      await (prisma.companyInfo as any).create({ data });
+      try {
+        await (prisma.companyInfo as any).create({ data });
+      } catch (prismaCreateErr: any) {
+        const { freeshipProvinces: fp, ...dataWithoutFp } = data as any;
+        const created = await (prisma.companyInfo as any).create({ data: dataWithoutFp });
+        await prisma.$executeRawUnsafe(
+          `UPDATE "CompanyInfo" SET "freeshipProvinces" = $1 WHERE id = $2`,
+          freeshipProvinces,
+          created.id
+        );
+      }
     }
 
     revalidateSiteData(["company-info"]);

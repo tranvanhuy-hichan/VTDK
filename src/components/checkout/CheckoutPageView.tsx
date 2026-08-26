@@ -28,6 +28,7 @@ import { ProductDetailHeader } from "../product/ProductDetailHeader";
 import { OrderItemsCard, OrderTotalCard, OrderRowSkeleton, OrderTotalSkeleton } from "../cart/OrderSummary";
 import { VietnamAddressSelector } from "../address/VietnamAddressSelector";
 import { calculateShippingFee } from "../../lib/shipping";
+import { findProvinceByCity } from "../../lib/vietnamProvinces";
 
 interface CheckoutPageViewProps {
   company: CompanyContact;
@@ -39,7 +40,9 @@ export const CheckoutPageView: React.FC<CheckoutPageViewProps> = ({ company }) =
   const { user, openAuthModal } = useAuth();
 
   const [shippingMethod, setShippingMethod] = useState<ShippingMethod>("DELIVERY");
-  const [provinceCode, setProvinceCode] = useState<string>("48"); // Default Đà Nẵng
+  const [provinceCode, setProvinceCode] = useState<string>(
+    () => String(findProvinceByCity(company?.city)?.code || "48")
+  );
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");

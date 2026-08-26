@@ -107,6 +107,7 @@ model CompanyInfo {
   shippingFeeDanang   Int      @default(30000)
   shippingFeeProvince Int      @default(50000)
   freeshipThreshold   Int      @default(2000000)
+  freeshipProvinces   String[] @default(["ALL"])
   shippingNote        String?  @default("Miễn phí giao hàng toàn quốc cho đơn từ 2.000.000đ. Đơn dưới 2.000.000đ áp dụng cước chuẩn: Đà Nẵng 30.000đ, tỉnh khác 50.000đ.")
 
   // Theme & Styling Customization (White-Label Dynamic Theming)

@@ -355,93 +355,125 @@ export const AdminAnalyticsView: React.FC<AdminAnalyticsViewProps> = ({ initialD
       {/* 4. Two Columns: Top 10 Best Sellers & Category/Shipping Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3.5 sm:gap-4">
         {/* Left Column (2 cols): Top 10 Best Selling Products */}
-        <div className="lg:col-span-2 p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
-            <div>
-              <h3 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white flex items-center gap-2">
-                <Award className="w-4 h-4 text-amber-500" />
-                <span>Top Mặt Hàng Bán Chạy Nhất</span>
-              </h3>
-              <p className="text-[11px] text-slate-400">
-                Xếp hạng theo tổng doanh thu và số lượng xuất kho
-              </p>
+        <div className="lg:col-span-2 p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-md shadow-amber-500/20">
+                <Award className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">
+                  Top Mặt Hàng Bán Chạy Nhất
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Xếp hạng theo tổng doanh thu &amp; sản lượng xuất kho
+                </p>
+              </div>
             </div>
-            <span className="text-xs font-bold text-slate-400">
+            <span className="text-xs font-extrabold px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
               {topProducts.length} sản phẩm
             </span>
           </div>
 
           {topProducts.length === 0 ? (
-            <div className="p-8 text-center text-xs text-slate-400">
-              Chưa có mặt hàng nào được bán trong giai đoạn này.
+            <div className="py-12 text-center space-y-2">
+              <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mx-auto">
+                <Package className="w-6 h-6" />
+              </div>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                Chưa có mặt hàng nào được bán trong giai đoạn này.
+              </p>
             </div>
           ) : (
-            <div className="space-y-2 max-h-[460px] overflow-y-auto pr-1 divide-y divide-slate-100 dark:divide-slate-800/60">
+            <div className="space-y-2.5 max-h-[520px] overflow-y-auto pr-1">
               {topProducts.map((prod, index) => {
-                const rankColor =
-                  index === 0
-                    ? "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border-amber-300"
-                    : index === 1
-                    ? "bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border-slate-300"
-                    : index === 2
-                    ? "bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300 border-orange-300"
-                    : "bg-slate-100 text-slate-600 dark:bg-slate-800/60 dark:text-slate-400 border-slate-200";
-
                 const revenueShare =
                   summary.totalRevenue > 0
                     ? Math.round((prod.totalRevenue / summary.totalRevenue) * 100)
                     : 0;
 
+                const isTop1 = index === 0;
+                const isTop2 = index === 1;
+                const isTop3 = index === 2;
+
                 return (
                   <div
                     key={prod.productSlug || index}
-                    className="pt-2.5 first:pt-0 flex items-center justify-between gap-3 text-left"
+                    className="group p-3 sm:p-3.5 rounded-2xl bg-slate-50/70 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800/90 border border-slate-200/60 dark:border-slate-700/60 hover:border-blue-300 dark:hover:border-blue-700/60 hover:shadow-md transition-all duration-200 flex items-center gap-3 sm:gap-4"
                   >
-                    {/* Rank Badge */}
-                    <div
-                      className={`w-6 h-6 rounded-lg border flex items-center justify-center text-[10px] font-black shrink-0 ${rankColor}`}
-                    >
-                      #{index + 1}
+                    {/* Rank Medal */}
+                    <div className="shrink-0">
+                      {isTop1 ? (
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-600 text-white font-black text-xs shadow-md shadow-amber-500/25 flex items-center justify-center">
+                          #1
+                        </div>
+                      ) : isTop2 ? (
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-slate-300 via-slate-400 to-slate-500 text-white font-black text-xs shadow-md shadow-slate-400/20 flex items-center justify-center">
+                          #2
+                        </div>
+                      ) : isTop3 ? (
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-700 to-orange-800 text-white font-black text-xs shadow-md shadow-orange-700/20 flex items-center justify-center">
+                          #3
+                        </div>
+                      ) : (
+                        <div className="w-8 h-8 rounded-xl bg-slate-200/70 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 font-bold text-xs flex items-center justify-center">
+                          #{index + 1}
+                        </div>
+                      )}
                     </div>
 
-                    {/* Image */}
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 relative overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700">
-                      <Image
-                        src={prod.image || "/images/storefront.png"}
-                        alt={prod.productName}
-                        fill
-                        className="object-cover"
-                        sizes="40px"
-                      />
+                    {/* Product Image */}
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700 relative overflow-hidden shrink-0 shadow-xs flex items-center justify-center group-hover:scale-105 transition-transform">
+                      {prod.image ? (
+                        <img
+                          src={prod.image}
+                          alt={prod.productName}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Package className="w-6 h-6 text-slate-300 dark:text-slate-600" />
+                      )}
                     </div>
 
-                    {/* Info */}
+                    {/* Product Details & Contribution Bar */}
                     <div className="flex-1 min-w-0">
-                      <Link
-                        href={`/san-pham/${prod.productSlug}`}
-                        target="_blank"
-                        className="text-xs font-bold text-slate-900 dark:text-white truncate block hover:text-[#075FA8] dark:hover:text-blue-400 transition-colors"
-                      >
-                        {prod.productName}
-                      </Link>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[11px] text-slate-400">
-                          Đơn giá: {formatCurrency(prod.price)}
+                      <div className="flex items-center gap-1.5">
+                        <Link
+                          href={`/san-pham/${prod.productSlug}`}
+                          target="_blank"
+                          className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate block group-hover:text-[#075FA8] dark:group-hover:text-blue-400 transition-colors"
+                        >
+                          {prod.productName}
+                        </Link>
+                        <ArrowUpRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-[#075FA8] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 mt-1">
+                        <span className="text-[11px] font-medium text-slate-400">
+                          Đơn giá: <span className="font-bold text-slate-700 dark:text-slate-300">{formatCurrency(prod.price)}</span>
                         </span>
-                        <span className="text-[10px] font-black bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400 px-1.5 py-0.2 rounded">
-                          Đã bán: {prod.totalQty}
+                        <span className="text-[10px] font-black bg-blue-50 dark:bg-blue-950/80 text-[#075FA8] dark:text-blue-300 px-2 py-0.5 rounded-lg border border-blue-100 dark:border-blue-900/40">
+                          Đã xuất: {prod.totalQty} cái
                         </span>
+                      </div>
+
+                      {/* Revenue Share Progress Bar */}
+                      <div className="w-full bg-slate-200/70 dark:bg-slate-700/60 h-1.5 rounded-full overflow-hidden mt-2">
+                        <div
+                          className="h-full bg-gradient-to-r from-blue-500 to-[#075FA8] dark:from-blue-400 dark:to-blue-600 rounded-full transition-all duration-500"
+                          style={{ width: `${Math.max(revenueShare, 5)}%` }}
+                        />
                       </div>
                     </div>
 
-                    {/* Revenue & Share */}
-                    <div className="text-right shrink-0">
-                      <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
+                    {/* Revenue Metric */}
+                    <div className="text-right shrink-0 pl-1">
+                      <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white tracking-tight">
                         {formatCurrency(prod.totalRevenue)}
                       </div>
-                      <div className="text-[10px] text-slate-400 font-bold">
+                      <span className="inline-block mt-0.5 text-[10px] font-extrabold text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-blue-950/80 px-2 py-0.5 rounded-md border border-blue-100/80 dark:border-blue-900/40">
                         {revenueShare}% doanh số
-                      </div>
+                      </span>
                     </div>
                   </div>
                 );

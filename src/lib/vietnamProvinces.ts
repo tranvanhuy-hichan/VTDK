@@ -128,3 +128,54 @@ export async function fetchWardsByProvince(provinceCode: number | string): Promi
   return wardCache[normCode] || [];
 }
 
+// Helper to normalize Vietnamese text for comparisons
+function removeVietnameseTones(str: string): string {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase()
+    .trim();
+}
+
+// Find province item by city name or province name (e.g. "Đà Nẵng", "Hà Nội", "TP. Hồ Chí Minh")
+export function findProvinceByCity(cityOrName?: string): ProvinceItem | undefined {
+  if (!cityOrName || !cityOrName.trim()) return undefined;
+  const clean = removeVietnameseTones(cityOrName)
+    .replace(/^(thanh pho|tinh|tp\.?)\s+/i, "")
+    .trim();
+
+  return VIETNAM_PROVINCES.find((p) => {
+    const pClean = removeVietnameseTones(p.name)
+      .replace(/^(thanh pho|tinh|tp\.?)\s+/i, "")
+      .trim();
+    return (
+      pClean === clean ||
+      pClean.includes(clean) ||
+      clean.includes(pClean) ||
+      String(p.code) === cityOrName.trim()
+    );
+  });
+}
+
+// Check if customer destination province is the same province as the company's location
+export function isSameProvince(customerProvinceCode?: string, companyCityOrProvince?: string): boolean {
+  if (!customerProvinceCode || !companyCityOrProvince) return false;
+  const matched = findProvinceByCity(companyCityOrProvince);
+  if (!matched) return false;
+  return String(customerProvinceCode).trim() === String(matched.code).trim();
+}
+
+// Regional Groups for Quick Selection
+export const REGION_PROVINCE_CODES = {
+  // 6 Centrally-governed Municipalities
+  BIG_CITIES: ["01", "79", "48", "31", "92", "46"],
+  // Miền Bắc
+  NORTH: ["01", "31", "04", "08", "11", "12", "14", "15", "19", "20", "22", "24", "25", "33", "37"],
+  // Miền Trung & Tây Nguyên
+  CENTRAL: ["38", "40", "42", "44", "46", "48", "51", "52", "56", "66", "68"],
+  // Miền Nam
+  SOUTH: ["75", "79", "80", "82", "86", "91", "92", "96"],
+};
+
