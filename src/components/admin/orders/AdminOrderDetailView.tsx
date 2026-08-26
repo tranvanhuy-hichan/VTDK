@@ -231,17 +231,27 @@ export const AdminOrderDetailView: React.FC<AdminOrderDetailViewProps> = ({ init
           {/* Financial summary footer */}
           <div className="p-4 sm:p-5 bg-slate-50/70 dark:bg-slate-800/50 border-t border-slate-200/90 dark:border-slate-800 space-y-2.5 text-sm">
             <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
-              <span>Tạm tính:</span>
-              <span className="font-semibold text-slate-800 dark:text-slate-200">{formatCurrency(order.totalAmount)}</span>
+              <span>Tạm tính (Tiền hàng):</span>
+              <span className="font-semibold text-slate-800 dark:text-slate-200">
+                {formatCurrency(order.items.reduce((s, i) => s + i.price * i.quantity, 0))}
+              </span>
             </div>
             <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
               <span>Phí vận chuyển:</span>
-              <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                {order.shippingMethod === "STORE_PICKUP" ? "0 ₫ (Lấy tại kho)" : "Miễn phí / Thỏa thuận"}
+              <span
+                className={`font-semibold ${
+                  order.shippingFee === 0
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : "text-slate-800 dark:text-slate-200"
+                }`}
+              >
+                {order.shippingFee === 0
+                  ? "0 ₫ (Miễn phí / Lấy tại kho)"
+                  : formatCurrency(order.shippingFee)}
               </span>
             </div>
             <div className="pt-2 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
-              <span className="font-black text-slate-900 dark:text-white">Tổng tiền:</span>
+              <span className="font-black text-slate-900 dark:text-white">Tổng tiền thanh toán:</span>
               <span className="text-xl font-black text-orange-600 dark:text-orange-400">
                 {formatCurrency(order.totalAmount)}
               </span>

@@ -223,14 +223,28 @@ export const OrderSuccessView: React.FC<OrderSuccessViewProps> = ({ order, compa
             <div className="pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800 space-y-1.5 sm:space-y-2 bg-slate-50/60 dark:bg-slate-850/40 p-3 sm:p-4 rounded-xl sm:rounded-2xl">
               <div className="flex items-center justify-between text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                 <span>Tạm tính ({order.items.reduce((acc, cur) => acc + cur.quantity, 0)} món)</span>
-                <span className="font-bold text-slate-900 dark:text-white">{formatCurrency(order.totalAmount)}</span>
+                <span className="font-bold text-slate-900 dark:text-white">
+                  {formatCurrency(order.items.reduce((acc, cur) => acc + cur.price * cur.quantity, 0))}
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                 <span>Phí vận chuyển</span>
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">Miễn phí / Báo theo km</span>
+                <span
+                  className={`font-black ${
+                    order.shippingFee === 0
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-slate-900 dark:text-white"
+                  }`}
+                >
+                  {order.shippingFee === 0
+                    ? "0đ (Miễn phí)"
+                    : formatCurrency(order.shippingFee)}
+                </span>
               </div>
               <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-700 pt-2 sm:pt-3">
-                <span className="text-xs sm:text-base font-black text-slate-900 dark:text-white">Tổng thanh toán</span>
+                <span className="text-xs sm:text-base font-black text-slate-900 dark:text-white">
+                  Tổng thanh toán
+                </span>
                 <span className="text-base sm:text-2xl font-black text-orange-600 dark:text-orange-400">
                   {formatCurrency(order.totalAmount)}
                 </span>

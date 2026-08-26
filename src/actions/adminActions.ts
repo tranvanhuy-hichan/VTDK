@@ -529,6 +529,19 @@ export async function updateCompanyInfoAction(formData: FormData) {
     const googleMapsEmbed = (formData.get("googleMapsEmbed") as string)?.trim();
     const workingHours = (formData.get("workingHours") as string)?.trim();
     const hasDelivery = formData.get("hasDelivery") === "true";
+    const shippingFeeDanang = Math.max(
+      0,
+      parseInt((formData.get("shippingFeeDanang") as string) || "30000", 10) || 0
+    );
+    const shippingFeeProvince = Math.max(
+      0,
+      parseInt((formData.get("shippingFeeProvince") as string) || "50000", 10) || 0
+    );
+    const freeshipThreshold = Math.max(
+      0,
+      parseInt((formData.get("freeshipThreshold") as string) || "2000000", 10) || 0
+    );
+    const shippingNote = (formData.get("shippingNote") as string)?.trim() || null;
     const imageFile = formData.get("image") as File | null;
     const logoFile = formData.get("logo") as File | null;
 
@@ -622,6 +635,10 @@ export async function updateCompanyInfoAction(formData: FormData) {
       googleMapsEmbed: googleMapsEmbed || "",
       workingHours,
       hasDelivery,
+      shippingFeeDanang,
+      shippingFeeProvince,
+      freeshipThreshold,
+      shippingNote,
       logoUrl: logoPath,
       image: imagePath,
       images: galleryResult.images,

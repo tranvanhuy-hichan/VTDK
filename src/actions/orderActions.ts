@@ -82,11 +82,21 @@ export async function createOrderAction(dto: CreateOrderDTO): Promise<{
       }
     }
 
-    // Calculate total
-    const totalAmount = dto.items.reduce(
+    // Calculate items subtotal
+    const subtotalAmount = dto.items.reduce(
       (sum, item) => sum + (item.price || 0) * item.quantity,
       0
     );
+
+    // Calculate or validate shipping fee
+    const shippingFee =
+      dto.shippingFee !== undefined && !isNaN(dto.shippingFee)
+        ? Math.max(0, dto.shippingFee)
+        : shippingMethod === "STORE_PICKUP"
+        ? 0
+        : 30000;
+
+    const totalAmount = subtotalAmount + shippingFee;
 
     const orderCode = generateOrderCode();
 
@@ -95,7 +105,9 @@ export async function createOrderAction(dto: CreateOrderDTO): Promise<{
         orderCode,
         customerName,
         customerPhone,
+        customerEmail: dto.customerEmail?.trim() || null,
         shippingMethod,
+        shippingFee,
         address: shippingMethod === "DELIVERY" ? address : null,
         note: note || null,
         totalAmount,
@@ -147,6 +159,7 @@ export async function getOrderByCodeAction(orderCode: string): Promise<OrderDeta
 
     return {
       ...order,
+      shippingFee: (order as any).shippingFee ?? 0,
       createdAt: order.createdAt.toISOString(),
       updatedAt: order.updatedAt.toISOString(),
     };
@@ -170,6 +183,7 @@ export async function getMyOrdersAction(): Promise<OrderDetail[]> {
 
     return orders.map((o) => ({
       ...o,
+      shippingFee: (o as any).shippingFee ?? 0,
       createdAt: o.createdAt.toISOString(),
       updatedAt: o.updatedAt.toISOString(),
     }));
@@ -199,6 +213,7 @@ export async function adminGetOrdersAction(statusFilter?: string): Promise<Order
 
     return orders.map((o) => ({
       ...o,
+      shippingFee: (o as any).shippingFee ?? 0,
       createdAt: o.createdAt.toISOString(),
       updatedAt: o.updatedAt.toISOString(),
     }));

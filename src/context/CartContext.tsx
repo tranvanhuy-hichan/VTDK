@@ -12,6 +12,7 @@ interface CartContextValue {
   updateQty: (key: string, qty: number) => void;
   isInCart: (key: string) => boolean;
   clear: () => void;
+  importItems: (newItems: CartItem[], mode?: "merge" | "replace") => void;
   checkoutItems: CartItem[];
   setCheckoutItems: (items: CartItem[]) => void;
   updateCheckoutQty: (key: string, qty: number) => void;
@@ -61,6 +62,31 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   }, []);
 
+  const importItems = useCallback((newItems: CartItem[], mode: "merge" | "replace" = "replace") => {
+    if (!newItems || newItems.length === 0) return;
+    const sanitized = newItems.map((it) => ({
+      ...it,
+      qty: Math.max(1, Math.floor(it.qty || 1)),
+    }));
+
+    if (mode === "replace") {
+      setItems(sanitized);
+    } else {
+      setItems((prev) => {
+        const merged = [...prev];
+        for (const item of sanitized) {
+          const idx = merged.findIndex((i) => i.key === item.key);
+          if (idx >= 0) {
+            merged[idx] = { ...merged[idx], qty: merged[idx].qty + item.qty };
+          } else {
+            merged.push(item);
+          }
+        }
+        return merged;
+      });
+    }
+  }, []);
+
   const removeItem = useCallback((key: string) => {
     setItems((prev) => prev.filter((i) => i.key !== key));
   }, []);
@@ -98,6 +124,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         items,
         hydrated,
         addItem,
+        importItems,
         removeItem,
         updateQty,
         isInCart,

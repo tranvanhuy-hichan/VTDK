@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -27,6 +27,7 @@ import type { ShippingMethod } from "../../types/order";
 import { ProductDetailHeader } from "../product/ProductDetailHeader";
 import { OrderItemsCard, OrderTotalCard, OrderRowSkeleton, OrderTotalSkeleton } from "../cart/OrderSummary";
 import { VietnamAddressSelector } from "../address/VietnamAddressSelector";
+import { calculateShippingFee } from "../../lib/shipping";
 
 interface CheckoutPageViewProps {
   company: CompanyContact;
@@ -38,6 +39,7 @@ export const CheckoutPageView: React.FC<CheckoutPageViewProps> = ({ company }) =
   const { user, openAuthModal } = useAuth();
 
   const [shippingMethod, setShippingMethod] = useState<ShippingMethod>("DELIVERY");
+  const [provinceCode, setProvinceCode] = useState<string>("48"); // Default Đà Nẵng
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -55,6 +57,24 @@ export const CheckoutPageView: React.FC<CheckoutPageViewProps> = ({ company }) =
       if (user.address) setAddress(user.address);
     }
   }, [user]);
+
+  // Calculate subtotal
+  const subtotal = useMemo(
+    () => checkoutItems.reduce((sum, item) => sum + item.price * item.qty, 0),
+    [checkoutItems]
+  );
+
+  // Dynamic shipping calculation based on Admin settings
+  const shippingCalculation = useMemo(
+    () =>
+      calculateShippingFee({
+        shippingMethod,
+        provinceCode,
+        subtotal,
+        company,
+      }),
+    [shippingMethod, provinceCode, subtotal, company]
+  );
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,6 +108,7 @@ export const CheckoutPageView: React.FC<CheckoutPageViewProps> = ({ company }) =
       customerPhone: phone.trim(),
       customerEmail: email.trim() || undefined,
       shippingMethod,
+      shippingFee: shippingCalculation.shippingFee,
       address: shippingMethod === "DELIVERY" ? address.trim() : undefined,
       note: note.trim() || undefined,
       items: checkoutItems.map((item) => ({
@@ -123,7 +144,7 @@ export const CheckoutPageView: React.FC<CheckoutPageViewProps> = ({ company }) =
               </div>
               <OrderTotalSkeleton />
             </div>
-            <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 space-y-4 animate-pulse">
+            <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4 animate-pulse">
               <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded-md w-1/3" />
               <div className="h-10 bg-slate-100 dark:bg-slate-800/60 rounded-xl" />
               <div className="h-10 bg-slate-100 dark:bg-slate-800/60 rounded-xl" />
@@ -194,7 +215,13 @@ export const CheckoutPageView: React.FC<CheckoutPageViewProps> = ({ company }) =
               </div>
 
               {/* Total Card */}
-              <OrderTotalCard items={checkoutItems} title="Tổng thanh toán" />
+              <OrderTotalCard
+                items={checkoutItems}
+                shippingFee={shippingCalculation.shippingFee}
+                shippingLabel={shippingCalculation.label}
+                amountNeededForFreeship={shippingCalculation.amountNeededForFreeship}
+                freeshipThreshold={company.freeshipThreshold}
+              />
             </div>
 
             {/* Right Column on Desktop, Bottom Order on Mobile: Customer & Shipping Details Form */}
@@ -237,16 +264,26 @@ export const CheckoutPageView: React.FC<CheckoutPageViewProps> = ({ company }) =
                         : "bg-slate-50 dark:bg-slate-850 border-slate-200 dark:border-slate-700 hover:border-slate-300"
                     }`}
                   >
-                    <div className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl shrink-0 ${shippingMethod === "DELIVERY" ? "bg-[#075FA8] text-white" : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"}`}>
+                    <div
+                      className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl shrink-0 ${
+                        shippingMethod === "DELIVERY"
+                          ? "bg-[#075FA8] text-white"
+                          : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                      }`}
+                    >
                       <Truck className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">Giao hàng tận nơi</span>
-                        {shippingMethod === "DELIVERY" && <CheckCircle2 className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />}
+                        <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
+                          Giao hàng tận nơi
+                        </span>
+                        {shippingMethod === "DELIVERY" && (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
+                        )}
                       </div>
                       <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        Giao hỏa tốc tại Đà Nẵng &amp; ship toàn quốc
+                        {shippingCalculation.label}
                       </p>
                     </div>
                   </button>
@@ -261,22 +298,32 @@ export const CheckoutPageView: React.FC<CheckoutPageViewProps> = ({ company }) =
                         : "bg-slate-50 dark:bg-slate-850 border-slate-200 dark:border-slate-700 hover:border-slate-300"
                     }`}
                   >
-                    <div className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl shrink-0 ${shippingMethod === "STORE_PICKUP" ? "bg-[#075FA8] text-white" : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"}`}>
+                    <div
+                      className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl shrink-0 ${
+                        shippingMethod === "STORE_PICKUP"
+                          ? "bg-[#075FA8] text-white"
+                          : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                      }`}
+                    >
                       <Store className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">Lấy tại cửa hàng</span>
-                        {shippingMethod === "STORE_PICKUP" && <CheckCircle2 className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />}
+                        <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
+                          Lấy tại cửa hàng
+                        </span>
+                        {shippingMethod === "STORE_PICKUP" && (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
+                        )}
                       </div>
                       <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        Không cần nhập địa chỉ giao hàng
+                        Miễn phí (Lấy tại kho Phạm Hùng)
                       </p>
                     </div>
                   </button>
                 </div>
 
-                {shippingMethod === "STORE_PICKUP" && (
+                {shippingMethod === "STORE_PICKUP" ? (
                   <div className="mt-2.5 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-xl sm:rounded-2xl flex items-start gap-2 text-xs text-amber-800 dark:text-amber-300">
                     <MapPin className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
                     <div>
@@ -286,6 +333,13 @@ export const CheckoutPageView: React.FC<CheckoutPageViewProps> = ({ company }) =
                       </p>
                     </div>
                   </div>
+                ) : (
+                  company.shippingNote && (
+                    <div className="mt-2.5 p-2.5 bg-blue-50/50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 rounded-xl text-[11px] text-slate-600 dark:text-slate-300 flex items-start gap-2">
+                      <Truck className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400 shrink-0 mt-0.5" />
+                      <span>{company.shippingNote}</span>
+                    </div>
+                  )
                 )}
               </div>
 
@@ -352,7 +406,12 @@ export const CheckoutPageView: React.FC<CheckoutPageViewProps> = ({ company }) =
                   <div className="space-y-1.5 pt-1 border-t border-slate-100 dark:border-slate-800">
                     <VietnamAddressSelector
                       initialAddress={address}
-                      onChange={(full) => setAddress(full)}
+                      onChange={(full, detail) => {
+                        setAddress(full);
+                        if (detail?.provinceCode) {
+                          setProvinceCode(detail.provinceCode);
+                        }
+                      }}
                       required={shippingMethod === "DELIVERY"}
                     />
                     {user && (

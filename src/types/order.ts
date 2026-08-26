@@ -17,6 +17,7 @@ export interface CreateOrderDTO {
   customerPhone: string;
   customerEmail?: string;
   shippingMethod: ShippingMethod;
+  shippingFee?: number;
   address?: string;
   note?: string;
   items: OrderItemDTO[];
@@ -30,6 +31,7 @@ export interface OrderDetail {
   customerPhone: string;
   customerEmail?: string | null;
   shippingMethod: ShippingMethod;
+  shippingFee: number;
   address?: string | null;
   note?: string | null;
   totalAmount: number;

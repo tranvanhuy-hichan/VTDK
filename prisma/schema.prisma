@@ -98,11 +98,17 @@ model CompanyInfo {
   googleMapsUrl   String
   googleMapsEmbed String
   workingHours    String
-  hasDelivery     Boolean  @default(false)
+  hasDelivery     Boolean  @default(true)
   logoUrl         String   @default("/images/logo.png")
   image           String   @default("/images/storefront.png") // cover image
   images          String[] @default([]) // additional gallery images
   
+  // Shipping Settings (Cấu hình phí vận chuyển do Admin quản lý)
+  shippingFeeDanang   Int      @default(30000)
+  shippingFeeProvince Int      @default(50000)
+  freeshipThreshold   Int      @default(2000000)
+  shippingNote        String?  @default("Miễn phí giao hàng toàn quốc cho đơn từ 2.000.000đ. Đơn dưới 2.000.000đ áp dụng cước chuẩn: Đà Nẵng 30.000đ, tỉnh khác 50.000đ.")
+
   // Theme & Styling Customization (White-Label Dynamic Theming)
   primaryColor    String   @default("#075FA8")
   primaryDark     String   @default("#0B1F33")
@@ -163,6 +169,7 @@ model Order {
   customerPhone  String
   customerEmail  String?
   shippingMethod ShippingMethod @default(DELIVERY)
+  shippingFee    Int            @default(0) // Phí vận chuyển
   address        String?        // Bắt buộc nếu là DELIVERY, null nếu là STORE_PICKUP
   note           String?
   totalAmount    Int

@@ -24,6 +24,10 @@ export interface CompanyContact {
   googleMapsEmbed: string;
   workingHours: string;
   hasDelivery: boolean;
+  shippingFeeDanang: number;
+  shippingFeeProvince: number;
+  freeshipThreshold: number;
+  shippingNote?: string | null;
   logoUrl: string;
   image: string;
   images: string[];
@@ -59,7 +63,12 @@ const FALLBACK: CompanyContact = {
   googleMapsUrl: COMPANY_DATA.googleMapsUrl,
   googleMapsEmbed: COMPANY_DATA.googleMapsEmbed,
   workingHours: COMPANY_DATA.workingHours,
-  hasDelivery: false,
+  hasDelivery: true,
+  shippingFeeDanang: 30000,
+  shippingFeeProvince: 50000,
+  freeshipThreshold: 2000000,
+  shippingNote:
+    "Miễn phí giao hàng toàn quốc cho đơn từ 2.000.000đ. Đơn dưới 2.000.000đ áp dụng cước chuẩn: Đà Nẵng 30.000đ, tỉnh khác 50.000đ.",
   logoUrl: COMPANY_DATA.logoUrl,
   image: COMPANY_DATA.storefrontUrl,
   images: [],
@@ -111,7 +120,20 @@ export const getCompanyInfo = unstable_cache(
         googleMapsUrl: info.googleMapsUrl || FALLBACK.googleMapsUrl,
         googleMapsEmbed: info.googleMapsEmbed || FALLBACK.googleMapsEmbed,
         workingHours: info.workingHours || FALLBACK.workingHours,
-        hasDelivery: Boolean(info.hasDelivery),
+        hasDelivery: typeof info.hasDelivery === "boolean" ? info.hasDelivery : true,
+        shippingFeeDanang:
+          typeof info.shippingFeeDanang === "number"
+            ? info.shippingFeeDanang
+            : FALLBACK.shippingFeeDanang,
+        shippingFeeProvince:
+          typeof info.shippingFeeProvince === "number"
+            ? info.shippingFeeProvince
+            : FALLBACK.shippingFeeProvince,
+        freeshipThreshold:
+          typeof info.freeshipThreshold === "number"
+            ? info.freeshipThreshold
+            : FALLBACK.freeshipThreshold,
+        shippingNote: info.shippingNote ?? FALLBACK.shippingNote,
         logoUrl: info.logoUrl || FALLBACK.logoUrl,
         image: info.image || FALLBACK.image,
         images: Array.isArray(info.images) ? info.images : [],

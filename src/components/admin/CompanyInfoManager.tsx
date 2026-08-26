@@ -36,7 +36,7 @@ interface CompanyInfoManagerProps {
   initialCompany: CompanyContact;
 }
 
-type TabType = "brand" | "contact" | "location" | "media" | "preview";
+type TabType = "brand" | "contact" | "location" | "shipping" | "media" | "preview";
 
 export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialCompany }) => {
   const router = useRouter();
@@ -62,9 +62,10 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
   const [existingGalleryUrls, setExistingGalleryUrls] = useState<string[]>(initialCompany.images || []);
   const [newGalleryFiles, setNewGalleryFiles] = useState<File[]>([]);
 
-  const handleChange = (key: keyof CompanyContact, value: string | boolean) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
+  const handleChange = (field: keyof CompanyContact, value: any) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
     setSavedSuccess(false);
+    setErrorMessage(null);
   };
 
   const handleCopy = (text: string, fieldKey: string) => {
@@ -76,6 +77,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
   const handleStartEdit = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    setForm(savedData);
     setIsEditing(true);
     setSavedSuccess(false);
     setErrorMessage(null);
@@ -154,6 +156,10 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
       "googleMapsUrl",
       "googleMapsEmbed",
       "workingHours",
+      "shippingFeeDanang",
+      "shippingFeeProvince",
+      "freeshipThreshold",
+      "shippingNote",
     ];
 
     keys.forEach((k) => {
@@ -349,6 +355,7 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
           { id: "brand", label: "Thương hiệu & Pháp lý", icon: Sparkles },
           { id: "contact", label: "Liên hệ & Mạng xã hội", icon: Phone },
           { id: "location", label: "Địa chỉ & Bản đồ", icon: MapPinned },
+          { id: "shipping", label: "Vận chuyển & Phí ship", icon: Truck },
           { id: "media", label: "Hình ảnh & Kho bãi", icon: Images },
           { id: "preview", label: "Xem trước giao diện", icon: Eye },
         ].map((t) => {
@@ -805,7 +812,226 @@ export const CompanyInfoManager: React.FC<CompanyInfoManagerProps> = ({ initialC
           </div>
         )}
 
-        {/* TAB 4: HÌNH ẢNH & KHO BÃI */}
+        {/* TAB 4: VẬN CHUYỂN & PHÍ SHIP */}
+        {activeTab === "shipping" && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-in fade-in duration-200">
+            {/* Shipping Config Form */}
+            <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+              <div className="flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400">
+                  <Truck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white uppercase tracking-tight">
+                    Cấu Hình Phí Vận Chuyển &amp; Freeship
+                  </h2>
+                  <p className="text-xs text-slate-400">
+                    Thiết lập mức cước tự động áp dụng khi khách hàng đặt hàng trực tuyến.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {/* hasDelivery switch */}
+                <label
+                  className={`flex items-start justify-between gap-4 p-4 rounded-2xl border transition-colors ${
+                    isEditing
+                      ? "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 cursor-pointer"
+                      : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 cursor-default"
+                  }`}
+                >
+                  <div>
+                    <span className="block text-sm font-bold text-slate-800 dark:text-slate-100">
+                      Bật Dịch Vụ Giao Hàng Tận Nơi
+                    </span>
+                    <span className="block text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                      Cho phép khách hàng lựa chọn &quot;Giao hàng tận nơi&quot; khi thanh toán giỏ hàng.
+                    </span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    disabled={!isEditing}
+                    checked={form.hasDelivery}
+                    onChange={(e) => handleChange("hasDelivery", e.target.checked)}
+                    className="w-5 h-5 mt-1 accent-[#075FA8] cursor-pointer disabled:cursor-default"
+                  />
+                </label>
+
+                {/* shippingFeeDanang */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
+                    Phí giao hàng nội thành Đà Nẵng (VNĐ) <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min={0}
+                      step={5000}
+                      required
+                      disabled={!isEditing}
+                      value={form.shippingFeeDanang ?? 30000}
+                      onChange={(e) =>
+                        handleChange("shippingFeeDanang", parseInt(e.target.value, 10) || 0)
+                      }
+                      placeholder="30000"
+                      className={`w-full text-sm font-bold rounded-xl px-4 py-2.5 transition-colors ${
+                        isEditing
+                          ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                          : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
+                      }`}
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                      VNĐ
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    Áp dụng cho các địa chỉ nhận hàng thuộc địa phận TP. Đà Nẵng.
+                  </p>
+                </div>
+
+                {/* shippingFeeProvince */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
+                    Phí giao các tỉnh thành khác / Gửi xe chành (VNĐ) <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min={0}
+                      step={5000}
+                      required
+                      disabled={!isEditing}
+                      value={form.shippingFeeProvince ?? 50000}
+                      onChange={(e) =>
+                        handleChange("shippingFeeProvince", parseInt(e.target.value, 10) || 0)
+                      }
+                      placeholder="50000"
+                      className={`w-full text-sm font-bold rounded-xl px-4 py-2.5 transition-colors ${
+                        isEditing
+                          ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                          : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
+                      }`}
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                      VNĐ
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    Phí đóng gói và cước chuyển phát / đưa ra chành xe cho khách tỉnh.
+                  </p>
+                </div>
+
+                {/* freeshipThreshold */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
+                    Định mức Miễn Phí Vận Chuyển toàn quốc - Freeship (VNĐ)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min={0}
+                      step={100000}
+                      disabled={!isEditing}
+                      value={form.freeshipThreshold ?? 2000000}
+                      onChange={(e) =>
+                        handleChange("freeshipThreshold", parseInt(e.target.value, 10) || 0)
+                      }
+                      placeholder="2000000"
+                      className={`w-full text-sm font-bold rounded-xl px-4 py-2.5 transition-colors ${
+                        isEditing
+                          ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                          : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 cursor-default"
+                      }`}
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                      VNĐ
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    Đơn hàng có tổng tiền hàng đạt hoặc vượt mức này sẽ được miễn phí vận chuyển 100%.
+                  </p>
+                </div>
+
+                {/* shippingNote */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">
+                    Lời dặn &amp; Chính sách giao hàng (Hiển thị tại trang thanh toán)
+                  </label>
+                  <textarea
+                    rows={3}
+                    disabled={!isEditing}
+                    value={form.shippingNote || ""}
+                    onChange={(e) => handleChange("shippingNote", e.target.value)}
+                    placeholder="Miễn phí giao hàng toàn quốc cho đơn từ 2.000.000đ. Đơn dưới 2.000.000đ áp dụng cước chuẩn: Đà Nẵng 30.000đ, tỉnh khác 50.000đ."
+                    className={`w-full text-xs rounded-xl px-4 py-2.5 transition-colors leading-relaxed ${
+                      isEditing
+                        ? "bg-white dark:bg-slate-800 border-2 border-[#075FA8] text-slate-900 dark:text-white shadow-sm focus:outline-none"
+                        : "bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 cursor-default"
+                    }`}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Live Preview Card */}
+            <div className="lg:col-span-5 space-y-4">
+              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-4">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-500" />
+                  <h3 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
+                    Mô Phỏng Tính Phí Thực Tế
+                  </h3>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  {/* Case 1: Store pickup */}
+                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1">
+                    <div className="flex items-center justify-between font-bold text-slate-800 dark:text-slate-200">
+                      <span>1. Lấy hàng tại kho:</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-black">0đ (Miễn phí)</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400">Khách nhận trực tiếp tại 400 Phạm Hùng, Đà Nẵng</p>
+                  </div>
+
+                  {/* Case 2: Danang */}
+                  <div className="p-3 rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 space-y-1">
+                    <div className="flex items-center justify-between font-bold text-slate-800 dark:text-slate-200">
+                      <span>2. Giao nội thành Đà Nẵng (Đơn &lt; {(form.freeshipThreshold || 2000000).toLocaleString("vi-VN")}đ):</span>
+                      <span className="text-[#075FA8] dark:text-blue-400 font-black">
+                        {(form.shippingFeeDanang || 30000).toLocaleString("vi-VN")}đ
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400">Giao hỏa tốc trong 1-2h</p>
+                  </div>
+
+                  {/* Case 3: Province */}
+                  <div className="p-3 rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/40 space-y-1">
+                    <div className="flex items-center justify-between font-bold text-slate-800 dark:text-slate-200">
+                      <span>3. Giao tỉnh khác (Đơn &lt; {(form.freeshipThreshold || 2000000).toLocaleString("vi-VN")}đ):</span>
+                      <span className="text-amber-700 dark:text-amber-400 font-black">
+                        {(form.shippingFeeProvince || 50000).toLocaleString("vi-VN")}đ
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400">Chuyển phát bưu điện / Chành xe</p>
+                  </div>
+
+                  {/* Case 4: Freeship */}
+                  <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-1">
+                    <div className="flex items-center justify-between font-bold text-emerald-900 dark:text-emerald-200">
+                      <span>4. Đơn hàng $\ge$ {(form.freeshipThreshold || 2000000).toLocaleString("vi-VN")}đ:</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-black">0đ (FREESHIP)</span>
+                    </div>
+                    <p className="text-[11px] text-emerald-700/80 dark:text-emerald-300/80">
+                      Tự động miễn phí vận chuyển toàn quốc
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 5: HÌNH ẢNH & KHO BÃI */}
         {activeTab === "media" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-in fade-in duration-200">
             {/* Storefront Cover */}

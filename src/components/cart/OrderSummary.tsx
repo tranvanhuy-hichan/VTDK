@@ -123,27 +123,108 @@ export const OrderItemsCard: React.FC<OrderItemsCardProps> = ({
 interface OrderTotalCardProps {
   items: CartItem[];
   title?: string;
+  shippingFee?: number;
+  shippingLabel?: string;
+  amountNeededForFreeship?: number;
+  freeshipThreshold?: number;
   children?: React.ReactNode;
 }
 
-export const OrderTotalCard: React.FC<OrderTotalCardProps> = ({ items, title = "Tổng cộng", children }) => {
-  const total = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+export const OrderTotalCard: React.FC<OrderTotalCardProps> = ({
+  items,
+  title = "Tổng cộng",
+  shippingFee,
+  shippingLabel,
+  amountNeededForFreeship = 0,
+  freeshipThreshold = 2000000,
+  children,
+}) => {
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const actualShipping = typeof shippingFee === "number" ? shippingFee : 0;
+  const finalTotal = subtotal + actualShipping;
   const hasUnpriced = items.some((item) => item.price === 0);
+
+  const freeshipProgress = Math.min(100, Math.round((subtotal / (freeshipThreshold || 2000000)) * 100));
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 space-y-3">
       <h2 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">{title}</h2>
-      <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3">
-        <span className="text-sm font-bold text-slate-600 dark:text-slate-300">Tạm tính</span>
-        <span className="text-lg sm:text-xl font-black text-orange-600 dark:text-orange-400">
-          {total.toLocaleString("vi-VN")}đ
-        </span>
+
+      {/* Freeship Progress Meter */}
+      {freeshipThreshold > 0 && (
+        <div className="p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50 space-y-1.5">
+          <div className="flex items-center justify-between text-[11px] font-bold">
+            {amountNeededForFreeship > 0 ? (
+              <span className="text-[#075FA8] dark:text-blue-300">
+                Mua thêm{" "}
+                <strong className="text-orange-600 dark:text-orange-400">
+                  {amountNeededForFreeship.toLocaleString("vi-VN")}đ
+                </strong>{" "}
+                để được <strong>FREESHIP</strong>
+              </span>
+            ) : (
+              <span className="text-emerald-700 dark:text-emerald-300 font-extrabold flex items-center gap-1">
+                <span>🎉</span> Đơn hàng đủ điều kiện MIỄN PHÍ SHIP!
+              </span>
+            )}
+            <span className="text-slate-500 dark:text-slate-400">{freeshipProgress}%</span>
+          </div>
+          <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${
+                amountNeededForFreeship === 0
+                  ? "bg-gradient-to-r from-emerald-500 to-teal-400"
+                  : "bg-gradient-to-r from-[#075FA8] to-cyan-400"
+              }`}
+              style={{ width: `${freeshipProgress}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Breakdown Rows */}
+      <div className="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3 text-xs sm:text-sm">
+        <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
+          <span>Tiền hàng (Tạm tính)</span>
+          <span className="font-bold text-slate-900 dark:text-slate-200">
+            {subtotal.toLocaleString("vi-VN")}đ
+          </span>
+        </div>
+
+        {typeof shippingFee === "number" && (
+          <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
+            <span className="flex items-center gap-1">
+              <span>Phí vận chuyển</span>
+              {shippingLabel && <span className="text-[11px] text-slate-400">({shippingLabel})</span>}
+            </span>
+            <span
+              className={`font-black ${
+                shippingFee === 0
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-slate-900 dark:text-slate-200"
+              }`}
+            >
+              {shippingFee === 0 ? "Miễn phí" : `${shippingFee.toLocaleString("vi-VN")}đ`}
+            </span>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+          <span className="text-sm font-extrabold text-slate-800 dark:text-slate-100">
+            {typeof shippingFee === "number" ? "Tổng thanh toán" : "Tạm tính"}
+          </span>
+          <span className="text-lg sm:text-xl font-black text-orange-600 dark:text-orange-400">
+            {finalTotal.toLocaleString("vi-VN")}đ
+          </span>
+        </div>
       </div>
+
       {hasUnpriced && (
         <p className="text-xs text-slate-500 dark:text-slate-400">
           Chưa gồm các sản phẩm cần liên hệ báo giá — shop sẽ tư vấn giá cụ thể qua Zalo.
         </p>
       )}
+
       {children}
     </div>
   );

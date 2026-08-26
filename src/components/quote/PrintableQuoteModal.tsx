@@ -47,6 +47,7 @@ export interface PrintableQuoteModalProps {
   initialVatRate?: number;
   initialValidDays?: number;
   initialNote?: string;
+  initialShippingFee?: number;
 }
 
 // Convert amount in VND to Vietnamese words
@@ -122,6 +123,7 @@ export const PrintableQuoteModal: React.FC<PrintableQuoteModalProps> = ({
   initialVatRate = 0,
   initialValidDays = 15,
   initialNote = "",
+  initialShippingFee = 0,
 }) => {
   const [customerName, setCustomerName] = useState(initialCustomerName);
   const [customerPhone, setCustomerPhone] = useState(initialCustomerPhone);
@@ -136,6 +138,7 @@ export const PrintableQuoteModal: React.FC<PrintableQuoteModalProps> = ({
   );
   const [vatRate, setVatRate] = useState<number>(initialVatRate);
   const [validDays, setValidDays] = useState<number>(initialValidDays);
+  const [shippingFee, setShippingFee] = useState<number>(initialShippingFee);
   const [isEditingInfo, setIsEditingInfo] = useState(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
@@ -158,7 +161,7 @@ export const PrintableQuoteModal: React.FC<PrintableQuoteModalProps> = ({
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const vatAmount = Math.round(subtotal * (vatRate / 100));
-  const totalAmount = subtotal + vatAmount;
+  const totalAmount = subtotal + vatAmount + (mode === "delivery" ? shippingFee : 0);
 
   const today = new Date();
   const documentNumber =
@@ -260,19 +263,23 @@ export const PrintableQuoteModal: React.FC<PrintableQuoteModalProps> = ({
               ${itemsRows}
             </tbody>
             <tfoot>
+              <tr style="background:#f9fafb;font-weight:700;">
+                <td colspan="${colSpanTotal}" style="text-align:right;border:1px solid #9ca3af;padding:6px 8px;">Cộng tiền hàng (Tạm tính):</td>
+                <td style="text-align:right;font-size:12px;font-family:monospace;border:1px solid #9ca3af;padding:6px 8px;font-weight:700;">${formatCurrency(subtotal)}</td>
+              </tr>
+              <tr style="background:#f9fafb;font-weight:700;">
+                <td colspan="${colSpanTotal}" style="text-align:right;border:1px solid #9ca3af;padding:6px 8px;">Phí vận chuyển:</td>
+                <td style="text-align:right;font-size:12px;font-family:monospace;border:1px solid #9ca3af;padding:6px 8px;font-weight:700;">${formatCurrency(shippingFee)}</td>
+              </tr>
               ${
                 hasVat
                   ? `
-                    <tr style="background:#f9fafb;font-weight:700;">
-                      <td colspan="${colSpanTotal}" style="text-align:right;border:1px solid #9ca3af;padding:6px 8px;">Cộng tiền hàng (Tạm tính):</td>
-                      <td style="text-align:right;font-size:12px;font-family:monospace;border:1px solid #9ca3af;padding:6px 8px;font-weight:700;">${formatCurrency(subtotal)}</td>
-                    </tr>
                     <tr style="background:#f9fafb;font-weight:700;">
                       <td colspan="${colSpanTotal}" style="text-align:right;border:1px solid #9ca3af;padding:6px 8px;">Tiền thuế GTGT / VAT (${vatRate}%):</td>
                       <td style="text-align:right;font-size:12px;font-family:monospace;border:1px solid #9ca3af;padding:6px 8px;color:#075FA8;font-weight:700;">+${formatCurrency(vatAmount)}</td>
                     </tr>
                     <tr style="background:#eff6ff;font-weight:900;">
-                      <td colspan="${colSpanTotal}" style="text-align:right;text-transform:uppercase;border:1px solid #9ca3af;padding:8px;color:#075FA8;">Tổng cộng tiền thanh toán (Đã gồm VAT):</td>
+                      <td colspan="${colSpanTotal}" style="text-align:right;text-transform:uppercase;border:1px solid #9ca3af;padding:8px;color:#075FA8;">Tổng cộng tiền thanh toán (Đã gồm VAT &amp; Phí ship):</td>
                       <td style="text-align:right;font-size:13px;font-family:monospace;border:1px solid #9ca3af;padding:8px;font-weight:900;color:#dc2626;">${formatCurrency(totalAmount)}</td>
                     </tr>
                   `

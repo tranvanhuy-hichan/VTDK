@@ -54,6 +54,7 @@ export const PrintableOrderSlip: React.FC<PrintableOrderSlipProps> = ({
         company={company}
         mode="delivery"
         orderCode={order.orderCode}
+        initialShippingFee={order.shippingFee}
         initialCustomerName={order.customerName}
         initialCustomerPhone={order.customerPhone}
         initialCustomerAddress={order.address || undefined}

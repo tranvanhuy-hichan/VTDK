@@ -22,6 +22,7 @@ import {
   Settings,
   Palette,
   FileSpreadsheet,
+  BarChart3,
 } from "lucide-react";
 import { logoutAction } from "../../app/admin/actions";
 import { AdminNotificationCenter } from "./AdminNotificationCenter";
@@ -49,6 +50,7 @@ const NAV_SECTIONS: NavSection[] = [
     title: "Tổng quan",
     items: [
       { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/admin/analytics", label: "Báo cáo doanh thu", icon: BarChart3, badge: "PRO" },
       { href: "/admin/orders", label: "Đơn hàng", icon: ShoppingBag },
       { href: "/admin/quote", label: "Báo Giá", icon: FileSpreadsheet, badge: "B2B" },
     ],

@@ -12,7 +12,9 @@ import {
 
 export interface AddressDetailData {
   province: string;
+  provinceCode: string;
   ward: string;
+  wardCode?: string;
   street: string;
   fullAddress: string;
 }
@@ -141,7 +143,9 @@ export const VietnamAddressSelector: React.FC<VietnamAddressSelectorProps> = ({
       const full = addressParts.join(", ");
       onChange(full, {
         province: provName,
+        provinceCode: provCode,
         ward: wardName,
+        wardCode,
         street: street.trim(),
         fullAddress: full,
       });
