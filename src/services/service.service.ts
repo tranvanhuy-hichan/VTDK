@@ -7,19 +7,12 @@ import {
   isBlobUrl,
   PLACEHOLDER_IMAGE,
 } from "./media.service";
-import { invalidateMemoryCache } from "../lib/cachedData";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateDomain } from "./cache.service";
 
 export const SERVICE_ICONS = ["Building2", "Fan", "Wind", "ThermometerSun"];
 
 function revalidateServiceData() {
-  revalidatePath("/", "layout");
-  revalidatePath("/giai-phap");
-  revalidatePath("/admin/services");
-  invalidateMemoryCache(["services"]);
-  try {
-    revalidateTag("services");
-  } catch {}
+  revalidateDomain(["services"]);
 }
 
 export function parseFeatures(formData: FormData): string[] {

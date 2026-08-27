@@ -1,17 +1,10 @@
 import { prisma } from "../lib/prisma";
 import { formatCompanyInfo, invalidateCompanyCache } from "../lib/company";
-import { invalidateMemoryCache } from "../lib/cachedData";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateDomain } from "./cache.service";
 
 function revalidateCompanyData() {
   invalidateCompanyCache();
-  invalidateMemoryCache(["company-info", "theme"]);
-  revalidatePath("/", "layout");
-  revalidatePath("/admin/settings");
-  try {
-    revalidateTag("company-info");
-    revalidateTag("theme");
-  } catch {}
+  revalidateDomain(["company-info", "theme"]);
 }
 
 export async function getCompanyInfo() {

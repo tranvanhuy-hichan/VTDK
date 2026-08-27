@@ -8,18 +8,10 @@ import {
   slugify,
   PLACEHOLDER_IMAGE,
 } from "./media.service";
-import { invalidateMemoryCache } from "../lib/cachedData";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateDomain } from "./cache.service";
 
 function revalidateProductData() {
-  revalidatePath("/", "layout");
-  revalidatePath("/san-pham");
-  revalidatePath("/admin/products");
-  invalidateMemoryCache(["products", "categories"]);
-  try {
-    revalidateTag("products");
-    revalidateTag("categories");
-  } catch {}
+  revalidateDomain(["products", "categories"]);
 }
 
 export function parseProductVariants(formData: FormData) {

@@ -1,15 +1,9 @@
 import { prisma } from "../lib/prisma";
 import { uploadMediaFile, deleteMediaUrl } from "./media.service";
-import { invalidateMemoryCache } from "../lib/cachedData";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateDomain } from "./cache.service";
 
 function revalidateGalleryData() {
-  revalidatePath("/", "layout");
-  revalidatePath("/admin/gallery");
-  invalidateMemoryCache(["gallery"]);
-  try {
-    revalidateTag("gallery");
-  } catch {}
+  revalidateDomain(["gallery"]);
 }
 
 export async function getGalleryImages() {

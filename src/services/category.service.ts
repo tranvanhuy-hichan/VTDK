@@ -1,18 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { slugify } from "./media.service";
-import { invalidateMemoryCache } from "../lib/cachedData";
-import { revalidatePath, revalidateTag } from "next/cache";
-
-function revalidateCategoryData() {
-  revalidatePath("/", "layout");
-  revalidatePath("/san-pham");
-  revalidatePath("/admin/products");
-  invalidateMemoryCache(["categories", "products"]);
-  try {
-    revalidateTag("categories");
-    revalidateTag("products");
-  } catch {}
-}
+import { revalidateDomain } from "./cache.service";
 
 export async function getCategories() {
   return prisma.category.findMany({
@@ -46,7 +34,7 @@ export async function createCategory(name: string) {
     data: { name: cleanName, slug },
   });
 
-  revalidateCategoryData();
+  revalidateDomain(["categories", "products"]);
   return category;
 }
 
@@ -72,7 +60,7 @@ export async function updateCategory(id: string, name: string) {
     data: { name: cleanName, slug },
   });
 
-  revalidateCategoryData();
+  revalidateDomain(["categories", "products"]);
   return updated;
 }
 
@@ -89,6 +77,6 @@ export async function deleteCategory(id: string) {
   }
 
   const deleted = await prisma.category.delete({ where: { id } });
-  revalidateCategoryData();
+  revalidateDomain(["categories", "products"]);
   return deleted;
 }
