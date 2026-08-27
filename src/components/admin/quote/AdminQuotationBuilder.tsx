@@ -21,6 +21,8 @@ import {
   Calculator,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  Package,
   ArrowLeft,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
@@ -356,18 +358,18 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
       </div>
 
       {/* Mobile Tab Switcher (Visible only on mobile/tablet < lg) */}
-      <div className="lg:hidden bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl flex items-center gap-1.5 shrink-0 border border-slate-200 dark:border-slate-700 select-none mx-2">
+      <div className="lg:hidden bg-slate-100 dark:bg-slate-800 p-1 rounded-xl grid grid-cols-3 gap-1 shrink-0 border border-slate-200 dark:border-slate-700 select-none mx-2">
         <button
           type="button"
           onClick={() => setMobileTab("catalog")}
-          className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all !min-h-0 ${
+          className={`py-1.5 px-1.5 sm:px-2 rounded-lg text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1 sm:gap-1.5 transition-all !min-h-0 whitespace-nowrap ${
             mobileTab === "catalog"
               ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
-              : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
           }`}
         >
-          <Layers className="w-3.5 h-3.5" />
-          <span>1. Kho ({filteredProducts.length})</span>
+          <Layers className="w-3.5 h-3.5 shrink-0" />
+          <span>Kho ({filteredProducts.length})</span>
         </button>
 
         <button
@@ -376,16 +378,16 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
             setMobileTab("quote");
             setRightTab("items");
           }}
-          className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all !min-h-0 ${
+          className={`py-1.5 px-1.5 sm:px-2 rounded-lg text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1 sm:gap-1.5 transition-all !min-h-0 whitespace-nowrap ${
             mobileTab === "quote"
               ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
-              : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
           }`}
         >
-          <FileSpreadsheet className="w-3.5 h-3.5" />
-          <span>2. Báo Giá ({quoteItems.length})</span>
+          <FileSpreadsheet className="w-3.5 h-3.5 shrink-0" />
+          <span>Báo giá ({quoteItems.length})</span>
           {quoteItems.length > 0 && (
-            <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#075FA8] dark:bg-blue-400 shrink-0" />
           )}
         </button>
 
@@ -395,14 +397,14 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
             setMobileTab("customer");
             setRightTab("customer");
           }}
-          className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all !min-h-0 ${
+          className={`py-1.5 px-1.5 sm:px-2 rounded-lg text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1 sm:gap-1.5 transition-all !min-h-0 whitespace-nowrap ${
             mobileTab === "customer"
               ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 shadow-xs font-black"
-              : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
           }`}
         >
-          <Building2 className="w-3.5 h-3.5" />
-          <span>3. Khách hàng</span>
+          <Building2 className="w-3.5 h-3.5 shrink-0" />
+          <span>Khách hàng</span>
         </button>
       </div>
 
@@ -616,128 +618,140 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                 return (
                   <div
                     key={p.id}
-                    className={`p-2.5 rounded-xl transition-all flex items-center justify-between gap-2.5 group relative ${
+                    className={`p-2.5 rounded-xl transition-all flex flex-col gap-2 group relative ${
                       isSelected
                         ? "bg-blue-50/70 dark:bg-blue-950/40 border-2 border-[#075FA8] dark:border-blue-500 shadow-xs ring-1 ring-[#075FA8]/20"
                         : "bg-slate-50/70 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      {p.image ? (
-                        <div className="w-11 h-11 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 overflow-hidden relative shrink-0">
-                          <Image
-                            src={p.image}
-                            alt={p.name}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform"
-                          />
-                          {isSelected && (
-                            <div className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-[#075FA8] dark:bg-blue-600 text-white flex items-center justify-center shadow-xs">
-                              <Check className="w-2.5 h-2.5 stroke-[3]" />
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="w-11 h-11 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-[10px] font-bold shrink-0 relative">
-                          VTDK
-                          {isSelected && (
-                            <div className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-[#075FA8] dark:bg-blue-600 text-white flex items-center justify-center shadow-xs">
-                              <Check className="w-2.5 h-2.5 stroke-[3]" />
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      <div className="min-w-0 space-y-0.5">
-                        <div className={`text-xs font-bold truncate transition-colors ${
-                          isSelected
-                            ? "text-[#075FA8] dark:text-blue-400 font-extrabold"
-                            : "text-slate-900 dark:text-white"
-                        }`}>
-                          {p.name}
-                        </div>
-                        <div className="flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400">
-                          <span className="px-1.5 py-0.2 rounded bg-slate-200 dark:bg-slate-700 font-medium">
-                            {p.category.name}
-                          </span>
-                          {isSelected && (
-                            <span className="px-1.5 py-0.2 rounded bg-blue-100 dark:bg-blue-900/80 text-[#075FA8] dark:text-blue-300 font-black text-[9px] flex items-center gap-0.5">
-                              <Check className="w-2.5 h-2.5" />
-                              <span>Đã chọn ({totalQtyInQuote})</span>
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Variant Selector */}
-                        {hasVariants && (
-                          <div className="pt-0.5">
-                            <select
-                              value={currentVariantId}
-                              onChange={(e) =>
-                                setSelectedVariants((prev) => ({
-                                  ...prev,
-                                  [p.id]: e.target.value,
-                                }))
-                              }
-                              className={`px-1.5 py-0.5 rounded-md text-[10px] font-medium border ${
-                                isSelected
-                                  ? "bg-white dark:bg-slate-900 border-blue-300 dark:border-blue-700 text-slate-900 dark:text-white"
-                                  : "bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600"
-                              }`}
-                            >
-                              {p.variants.map((v) => {
-                                const vItemId = `${p.id}-${v.id}`;
-                                const vQty = quoteItems.find((i) => i.id === vItemId)?.quantity || 0;
-                                return (
-                                  <option key={v.id} value={v.id}>
-                                    {v.label} — {formatCurrency(v.price)}
-                                    {vQty > 0 ? ` (Đã chọn: ${vQty})` : ""}
-                                  </option>
-                                );
-                              })}
-                            </select>
+                    {/* Main Row: Thumbnail + Info + Price & Action */}
+                    <div className="flex items-start justify-between gap-2.5">
+                      <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                        {p.image ? (
+                          <div className="w-11 h-11 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 overflow-hidden relative shrink-0">
+                            <Image
+                              src={p.image}
+                              alt={p.name}
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform"
+                            />
+                            {isSelected && (
+                              <div className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-[#075FA8] dark:bg-blue-600 text-white flex items-center justify-center shadow-xs">
+                                <Check className="w-2.5 h-2.5 stroke-[3]" />
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="w-11 h-11 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 shrink-0 relative">
+                            <Package className="w-5 h-5 opacity-60" />
+                            {isSelected && (
+                              <div className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-[#075FA8] dark:bg-blue-600 text-white flex items-center justify-center shadow-xs">
+                                <Check className="w-2.5 h-2.5 stroke-[3]" />
+                              </div>
+                            )}
                           </div>
                         )}
-                      </div>
-                    </div>
 
-                    <div className="flex items-center gap-2.5 shrink-0">
-                      <div className="text-right">
-                        <div className="font-mono font-black text-xs text-[#075FA8] dark:text-blue-400">
-                          {formatCurrency(displayPrice)}
+                        <div className="min-w-0 flex-1 space-y-1">
+                          <div
+                            className={`text-xs font-bold line-clamp-2 leading-snug transition-colors ${
+                              isSelected
+                                ? "text-[#075FA8] dark:text-blue-400 font-extrabold"
+                                : "text-slate-900 dark:text-white"
+                            }`}
+                            title={p.name}
+                          >
+                            {p.name}
+                          </div>
+                          <div className="flex items-center flex-wrap gap-1.5 text-[10px] text-slate-500 dark:text-slate-400">
+                            <span className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 font-medium">
+                              {p.category.name}
+                            </span>
+                            {isSelected && (
+                              <span className="px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/80 text-[#075FA8] dark:text-blue-300 font-bold text-[10px] flex items-center gap-0.5">
+                                <Check className="w-2.5 h-2.5" />
+                                <span>Đã chọn ({totalQtyInQuote})</span>
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <div className="text-[9px] text-slate-400">Đơn giá gốc</div>
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() => handleAddProduct(p)}
-                        className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer !min-h-0 ${
-                          isJustAdded
-                            ? "bg-emerald-600 text-white"
-                            : isSelected
-                            ? "bg-[#075FA8] hover:bg-[#0B3D66] text-white shadow-xs active:scale-95 ring-2 ring-blue-300 dark:ring-blue-800"
-                            : "bg-[#075FA8] hover:bg-[#0B3D66] text-white shadow-xs active:scale-95"
-                        }`}
-                      >
-                        {isJustAdded ? (
-                          <>
-                            <Check className="w-3 h-3" />
-                            <span>Đã thêm</span>
-                          </>
-                        ) : isSelected ? (
-                          <>
-                            <Plus className="w-3 h-3" />
-                            <span>Thêm ({currentVariantItem ? currentVariantItem.quantity : totalQtyInQuote})</span>
-                          </>
-                        ) : (
-                          <>
-                            <Plus className="w-3 h-3" />
-                            <span>Thêm</span>
-                          </>
-                        )}
-                      </button>
+                      <div className="flex flex-col items-end gap-1.5 shrink-0">
+                        <div className="text-right">
+                          <div className="font-mono font-black text-xs text-[#075FA8] dark:text-blue-400">
+                            {formatCurrency(displayPrice)}
+                          </div>
+                          <div className="text-[9px] text-slate-400">Đơn giá gốc</div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleAddProduct(p)}
+                          className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer !min-h-0 ${
+                            isJustAdded
+                              ? "bg-emerald-600 text-white"
+                              : isSelected
+                              ? "bg-[#075FA8] hover:bg-[#0B3D66] text-white shadow-xs active:scale-95 ring-2 ring-blue-300 dark:ring-blue-800"
+                              : "bg-[#075FA8] hover:bg-[#0B3D66] text-white shadow-xs active:scale-95"
+                          }`}
+                        >
+                          {isJustAdded ? (
+                            <>
+                              <Check className="w-3 h-3" />
+                              <span>Đã thêm</span>
+                            </>
+                          ) : isSelected ? (
+                            <>
+                              <Plus className="w-3 h-3" />
+                              <span>Thêm ({currentVariantItem ? currentVariantItem.quantity : totalQtyInQuote})</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="w-3 h-3" />
+                              <span>Thêm</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
+
+                    {/* Dedicated Variant Selector */}
+                    {hasVariants && (
+                      <div className="pt-1.5 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center gap-2">
+                        <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 shrink-0">
+                          Quy cách:
+                        </span>
+                        <div className="relative flex-1 min-w-0">
+                          <select
+                            value={currentVariantId}
+                            onChange={(e) =>
+                              setSelectedVariants((prev) => ({
+                                ...prev,
+                                [p.id]: e.target.value,
+                              }))
+                            }
+                            className={`w-full px-2 py-1 rounded-lg text-xs font-medium border appearance-none transition-colors pr-6 cursor-pointer ${
+                              isSelected
+                                ? "bg-white dark:bg-slate-900 border-blue-300 dark:border-blue-700 text-slate-900 dark:text-white"
+                                : "bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200"
+                            }`}
+                          >
+                            {p.variants.map((v) => {
+                              const vItemId = `${p.id}-${v.id}`;
+                              const vQty = quoteItems.find((i) => i.id === vItemId)?.quantity || 0;
+                              return (
+                                <option key={v.id} value={v.id}>
+                                  {v.label} — {formatCurrency(v.price)}
+                                  {vQty > 0 ? ` (Đã chọn: ${vQty})` : ""}
+                                </option>
+                              );
+                            })}
+                          </select>
+                          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })
