@@ -4,28 +4,23 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import {
   Barcode,
-  Search,
   Plus,
-  Minus,
   Trash2,
   Printer,
   CreditCard,
   Banknote,
   QrCode,
-  Sparkles,
   ShoppingBag,
   ArrowLeft,
   RefreshCw,
   Layers,
   User,
   Phone,
-  CheckCircle2,
-  AlertCircle,
-  Clock,
   ChevronRight,
   Package,
   Volume2,
   VolumeX,
+  X,
 } from "lucide-react";
 import {
   PosProductItem,
@@ -189,28 +184,144 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
   // Products state
   const [products, setProducts] = useState<PosProductItem[]>(initialProducts);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearching, setIsSearching] = useState(false);
 
   // Barcode Scanner Input state
   const [barcodeInput, setBarcodeInput] = useState<string>("");
   const barcodeInputRef = useRef<HTMLInputElement>(null);
 
-  // Cart state
-  const [cart, setCart] = useState<PosCartItem[]>([]);
-  const [discountAmount, setDiscountAmount] = useState<number>(0);
-  const [discountPercent, setDiscountPercent] = useState<number>(0);
-  const [discountType, setDiscountType] = useState<"fixed" | "percent">("fixed");
+  // Multi-Order Tab state
+  const [tabs, setTabs] = useState<
+    Array<{
+      id: string;
+      label: string;
+      cart: PosCartItem[];
+      discountAmount: number;
+      discountPercent: number;
+      discountType: "fixed" | "percent";
+      customerName: string;
+      customerPhone: string;
+      orderNote: string;
+      paymentMethod: "CASH" | "VIETQR" | "CARD" | "OTHER";
+      cashReceived: number;
+    }>
+  >([
+    {
+      id: "tab-1",
+      label: "Đơn 1",
+      cart: [],
+      discountAmount: 0,
+      discountPercent: 0,
+      discountType: "fixed",
+      customerName: "",
+      customerPhone: "",
+      orderNote: "",
+      paymentMethod: "CASH",
+      cashReceived: 0,
+    },
+  ]);
+  const [activeTabId, setActiveTabId] = useState<string>("tab-1");
+  const activeTab = tabs.find((t) => t.id === activeTabId) || tabs[0];
 
-  // Customer info
-  const [customerName, setCustomerName] = useState<string>("");
-  const [customerPhone, setCustomerPhone] = useState<string>("");
-  const [orderNote, setOrderNote] = useState<string>("");
+  const updateActiveTab = useCallback(
+    (updater: Partial<(typeof tabs)[0]> | ((prevTab: (typeof tabs)[0]) => (typeof tabs)[0])) => {
+      setTabs((prevTabs) =>
+        prevTabs.map((t) => {
+          if (t.id === activeTabId) {
+            return typeof updater === "function" ? updater(t) : { ...t, ...updater };
+          }
+          return t;
+        })
+      );
+    },
+    [activeTabId]
+  );
 
-  // Payment state
-  const [paymentMethod, setPaymentMethod] = useState<"CASH" | "VIETQR" | "CARD" | "OTHER">("CASH");
-  const [cashReceived, setCashReceived] = useState<number>(0);
+  // Active Tab Derived Fields
+  const cart = activeTab.cart;
+  const discountAmount = activeTab.discountAmount;
+  const discountPercent = activeTab.discountPercent;
+  const discountType = activeTab.discountType;
+  const customerName = activeTab.customerName;
+  const customerPhone = activeTab.customerPhone;
+  const orderNote = activeTab.orderNote;
+  const paymentMethod = activeTab.paymentMethod;
+  const cashReceived = activeTab.cashReceived;
+
+  // Setters for Active Tab
+  const setCart = useCallback(
+    (action: PosCartItem[] | ((prev: PosCartItem[]) => PosCartItem[])) => {
+      updateActiveTab((tab) => ({
+        ...tab,
+        cart: typeof action === "function" ? action(tab.cart) : action,
+      }));
+    },
+    [updateActiveTab]
+  );
+
+  const setDiscountAmount = (val: number) => updateActiveTab({ discountAmount: val });
+  const setDiscountPercent = (val: number) => updateActiveTab({ discountPercent: val });
+  const setCustomerName = (val: string) => updateActiveTab({ customerName: val });
+  const setCustomerPhone = (val: string) => updateActiveTab({ customerPhone: val });
+  const setOrderNote = (val: string) => updateActiveTab({ orderNote: val });
+  const setPaymentMethod = (val: "CASH" | "VIETQR" | "CARD" | "OTHER") => updateActiveTab({ paymentMethod: val });
+  const setCashReceived = useCallback(
+    (val: number) => updateActiveTab({ cashReceived: val }),
+    [updateActiveTab]
+  );
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Add / Switch / Close Tabs
+  const addNewTab = useCallback(() => {
+    if (tabs.length >= 5) {
+      alert("Đã mở tối đa 5 đơn hàng tạm!");
+      return;
+    }
+    const newIdx = tabs.length;
+    const newId = `tab-${Date.now()}`;
+    setTabs((prev) => [
+      ...prev,
+      {
+        id: newId,
+        label: `Đơn ${newIdx + 1}`,
+        cart: [],
+        discountAmount: 0,
+        discountPercent: 0,
+        discountType: "fixed",
+        customerName: "",
+        customerPhone: "",
+        orderNote: "",
+        paymentMethod: "CASH",
+        cashReceived: 0,
+      },
+    ]);
+    setActiveTabId(newId);
+  }, [tabs.length]);
+
+  const closeTab = useCallback(
+    (tabIdToClose: string) => {
+      if (tabs.length <= 1) {
+        // Clear active tab
+        updateActiveTab({
+          cart: [],
+          discountAmount: 0,
+          discountPercent: 0,
+          customerName: "",
+          customerPhone: "",
+          orderNote: "",
+          cashReceived: 0,
+        });
+        return;
+      }
+      const remaining = tabs.filter((t) => t.id !== tabIdToClose);
+      setTabs(remaining);
+      if (activeTabId === tabIdToClose) {
+        setActiveTabId(remaining[0].id);
+      }
+    },
+    [tabs, activeTabId, updateActiveTab]
+  );
 
   // Variant Modal
   const [selectedVariantProduct, setSelectedVariantProduct] = useState<PosProductItem | null>(null);
@@ -226,15 +337,15 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
     barcodeInputRef.current?.focus();
   }, []);
 
-  // Search debounce
+  // Search debounce based on input
   useEffect(() => {
     const timer = setTimeout(async () => {
-      if (!searchTerm.trim()) {
+      if (!barcodeInput.trim()) {
         setProducts(initialProducts);
         return;
       }
       setIsSearching(true);
-      const res = await searchPosProductsAction(searchTerm);
+      const res = await searchPosProductsAction(barcodeInput);
       setIsSearching(false);
       if (res.products) {
         setProducts(res.products);
@@ -242,7 +353,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
     }, 250);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, initialProducts]);
+  }, [barcodeInput, initialProducts]);
 
   // Cart Calculations
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -258,7 +369,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
     if (paymentMethod === "CASH" && (cashReceived === 0 || cashReceived < totalAmount)) {
       setCashReceived(totalAmount);
     }
-  }, [totalAmount, paymentMethod]);
+  }, [totalAmount, paymentMethod, cashReceived, setCashReceived]);
 
   // Sound State
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -318,7 +429,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
         return [newItem, ...prev];
       });
     },
-    [soundEnabled]
+    [soundEnabled, setCart]
   );
 
   // Handle Barcode Scanner Form Submit (Enter key sent by Barcode reader)
@@ -420,12 +531,20 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
     }
   };
 
-  // Keyboard Shortcuts (F2: New Order, F9: Checkout)
+  // Keyboard Shortcuts (F1-F5: Tabs, F6: Scan, F9: Checkout)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "F2") {
+      if (["F1", "F2", "F3", "F4", "F5"].includes(e.key)) {
         e.preventDefault();
-        handleNewOrder();
+        const tabIdx = parseInt(e.key.replace("F", ""), 10) - 1;
+        if (tabs[tabIdx]) {
+          setActiveTabId(tabs[tabIdx].id);
+        } else if (tabIdx === tabs.length && tabs.length < 5) {
+          addNewTab();
+        }
+      } else if (e.key === "F6") {
+        e.preventDefault();
+        barcodeInputRef.current?.focus();
       } else if (e.key === "F9") {
         e.preventDefault();
         if (cart.length > 0 && !isSubmitting) {
@@ -435,7 +554,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [cart, isSubmitting, totalAmount]);
+  }, [tabs, cart, isSubmitting, totalAmount, addNewTab, handleCheckout]);
 
   // Filter products by selected category
   const filteredProducts = products.filter((p) => {
@@ -447,61 +566,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
   });
 
   return (
-    <div className="w-full flex flex-col h-auto lg:h-[calc(100dvh-4.5rem)] pb-16 lg:pb-0 overflow-hidden text-left bg-slate-100 dark:bg-slate-950 font-sans space-y-2">
-      {/* Top POS Status Bar */}
-      <div className="h-9 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3 flex items-center justify-between shrink-0 shadow-2xs">
-        <div className="flex items-center gap-2.5">
-          <Link
-            href="/admin"
-            className="w-6.5 h-6.5 !min-h-0 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors inline-flex items-center justify-center shrink-0"
-            title="Về trang quản trị"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-          </Link>
-          <div className="flex items-center gap-2 leading-none">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-            <h1 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white tracking-tight leading-none">
-              BÁN HÀNG TẠI QUẦY (POS)
-            </h1>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#075FA8] dark:text-blue-300 border border-blue-100 dark:border-blue-800 hidden sm:inline-block leading-none">
-              {company.brandName}
-            </span>
-          </div>
-        </div>
-
-        {/* Action Controls */}
-        <div className="flex items-center gap-1.5">
-          {/* Sound Toggle Button */}
-          <button
-            type="button"
-            onClick={toggleSound}
-            className={`h-6.5 !min-h-0 inline-flex items-center gap-1 text-[11px] font-extrabold px-2 rounded-md transition-colors cursor-pointer ${
-              soundEnabled
-                ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-slate-200"
-            }`}
-            title={soundEnabled ? "Âm thanh: Đang BẬT (Nhấn để tắt)" : "Âm thanh: Đang TẮT (Nhấn để bật)"}
-          >
-            {soundEnabled ? (
-              <Volume2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            ) : (
-              <VolumeX className="w-3.5 h-3.5 text-slate-400" />
-            )}
-            <span className="hidden sm:inline">{soundEnabled ? "Âm thanh" : "Tắt tiếng"}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handleNewOrder}
-            className="h-6.5 !min-h-0 inline-flex items-center gap-1.5 text-[11px] font-extrabold px-2.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
-            title="Phím tắt: F2"
-          >
-            <RefreshCw className="w-3 h-3" />
-            <span className="hidden sm:inline">Đơn mới</span> <kbd className="text-[9px] font-mono opacity-60">F2</kbd>
-          </button>
-        </div>
-      </div>
-
+    <div className="w-full flex flex-col h-auto lg:h-[calc(100dvh-4.5rem)] pb-16 lg:pb-0 overflow-hidden text-left bg-slate-100 dark:bg-slate-950 font-sans space-y-2 pt-1 lg:pt-0">
       {/* Mobile Tab Switcher (Visible only on mobile/tablet < lg) */}
       <div className="lg:hidden bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl flex items-center gap-1.5 shrink-0 border border-slate-200 dark:border-slate-700 select-none mx-2">
         <button
@@ -542,28 +607,39 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
           
           {/* Barcode & Search Controls */}
           <div className="p-2.5 sm:p-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 space-y-2 shrink-0">
-            {/* Primary Barcode Scan Form */}
-            <form onSubmit={handleBarcodeSubmit} className="relative">
-              <div className="relative flex items-center">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[#075FA8] dark:text-blue-400">
-                  <Barcode className="w-4 h-4 animate-pulse" />
-                </span>
-                <input
-                  ref={barcodeInputRef}
-                  type="text"
-                  value={barcodeInput}
-                  onChange={(e) => setBarcodeInput(e.target.value)}
-                  placeholder="Quét mã vạch hoặc nhập Barcode / SKU rồi nhấn Enter..."
-                  className="w-full text-xs font-mono font-bold bg-blue-50/50 dark:bg-slate-800 border border-blue-200 dark:border-blue-900/60 rounded-lg pl-9.5 pr-20 py-2 text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-blue-200 transition-all"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-1 px-3 py-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white text-[11px] font-bold rounded-md shadow-xs transition-all cursor-pointer !min-h-0"
-                >
-                  Thêm (Enter)
-                </button>
-              </div>
-            </form>
+            {/* Primary Barcode Scan Form with Exit Button */}
+            <div className="flex items-center gap-2">
+              <Link
+                href="/admin"
+                className="h-8.5 px-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors inline-flex items-center gap-1 shrink-0 !min-h-0"
+                title="Về trang quản trị"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Quản trị</span>
+              </Link>
+
+              <form onSubmit={handleBarcodeSubmit} className="relative flex-1">
+                <div className="relative flex items-center">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[#075FA8] dark:text-blue-400">
+                    <Barcode className="w-4 h-4 animate-pulse" />
+                  </span>
+                  <input
+                    ref={barcodeInputRef}
+                    type="text"
+                    value={barcodeInput}
+                    onChange={(e) => setBarcodeInput(e.target.value)}
+                    placeholder="Quét mã vạch hoặc nhập Barcode / SKU rồi nhấn Enter..."
+                    className="w-full text-xs font-mono font-bold bg-blue-50/50 dark:bg-slate-800 border border-blue-200 dark:border-blue-900/60 rounded-lg pl-9.5 pr-20 py-2 text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-[#075FA8] focus:ring-1 focus:ring-blue-200 transition-all"
+                  />
+                  <button
+                    type="submit"
+                    className="absolute right-1 px-3 py-1.5 bg-[#075FA8] hover:bg-[#0B1F33] text-white text-[11px] font-bold rounded-md shadow-xs transition-all cursor-pointer !min-h-0"
+                  >
+                    Thêm (Enter)
+                  </button>
+                </div>
+              </form>
+            </div>
 
             {/* Filter Row: Category Tabs & Search input */}
             <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
@@ -704,6 +780,85 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
         {/* RIGHT COLUMN (5 Cols): CASHIER CART & PAYMENT */}
         <div className={`lg:col-span-5 flex flex-col h-full bg-white dark:bg-slate-900 rounded-none lg:rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs ${mobileTab === 'catalog' ? 'hidden lg:flex' : 'flex'}`}>
           
+          {/* Multi-Order Tabs Bar (F1-F5) */}
+          <div className="flex items-center justify-between gap-1.5 bg-slate-100 dark:bg-slate-800/90 px-2 pt-1.5 pb-0 border-b border-slate-200 dark:border-slate-700/80 shrink-0">
+            <div className="flex items-end gap-1 overflow-x-auto scrollbar-none flex-1">
+              {tabs.map((tab, idx) => {
+                const isActive = tab.id === activeTab.id;
+                const count = tab.cart.reduce((s, it) => s + it.quantity, 0);
+                return (
+                  <div
+                    key={tab.id}
+                    onClick={() => setActiveTabId(tab.id)}
+                    className={`group flex items-center gap-1.5 px-3 h-8 rounded-t-lg text-xs transition-all cursor-pointer select-none shrink-0 border-t border-x ${
+                      isActive
+                        ? "bg-white dark:bg-slate-900 text-[#075FA8] dark:text-blue-400 border-slate-200 dark:border-slate-700 font-black shadow-xs relative -mb-[1px] z-10"
+                        : "bg-slate-200/60 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold border-transparent hover:bg-white/60 dark:hover:bg-slate-700/60"
+                    }`}
+                  >
+                    <span>{tab.label || `Đơn ${idx + 1}`}</span>
+                    <kbd className="text-[9px] font-mono opacity-50 font-normal">F{idx + 1}</kbd>
+                    {count > 0 && (
+                      <span
+                        className={`text-[10px] min-w-[18px] h-4 px-1 rounded-full flex items-center justify-center font-black ${
+                          isActive
+                            ? "bg-[#075FA8] text-white"
+                            : "bg-slate-300 dark:bg-slate-600 text-slate-700 dark:text-slate-200"
+                        }`}
+                      >
+                        {count}
+                      </span>
+                    )}
+                    {tabs.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          closeTab(tab.id);
+                        }}
+                        className="w-4 h-4 rounded-full flex items-center justify-center hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-950/60 transition-colors p-0 ml-0.5 text-slate-400"
+                        title="Đóng đơn này"
+                      >
+                        <X className="w-2.5 h-2.5" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+              {tabs.length < 5 && (
+                <button
+                  type="button"
+                  onClick={addNewTab}
+                  className="h-8 px-2.5 rounded-t-lg text-slate-600 dark:text-slate-300 hover:text-[#075FA8] hover:bg-white/80 dark:hover:bg-slate-700/80 text-xs font-bold flex items-center gap-1 transition-all cursor-pointer !min-h-0 shrink-0 mb-[1px]"
+                  title="Mở thêm đơn tạm (Tối đa 5 đơn)"
+                >
+                  <Plus className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />
+                  <span>Đơn mới</span>
+                </button>
+              )}
+            </div>
+
+            {/* Sound Toggle Button (Icon Only) */}
+            <div className="pb-1.5">
+              <button
+                type="button"
+                onClick={toggleSound}
+                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors cursor-pointer !min-h-0 shrink-0 border ${
+                  soundEnabled
+                    ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100"
+                    : "bg-slate-200/70 dark:bg-slate-800 text-slate-400 border-slate-300 dark:border-slate-700 hover:bg-slate-300"
+                }`}
+                title={soundEnabled ? "Âm thanh: Đang BẬT (Nhấn để tắt)" : "Âm thanh: Đang TẮT (Nhấn để bật)"}
+              >
+                {soundEnabled ? (
+                  <Volume2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                ) : (
+                  <VolumeX className="w-3.5 h-3.5 text-slate-400" />
+                )}
+              </button>
+            </div>
+          </div>
+
           {/* Cart Header */}
           <div className="px-3.5 py-2 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-slate-800/30">
             <div className="flex items-center gap-2">
@@ -712,16 +867,27 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
                 HÓA ĐƠN ({cart.reduce((sum, it) => sum + it.quantity, 0)} MÓN)
               </h2>
             </div>
-            {cart.length > 0 && (
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setCart([])}
-                className="text-[11px] font-bold text-red-600 hover:text-red-700 flex items-center gap-1 cursor-pointer !min-h-0"
+                onClick={handleNewOrder}
+                className="text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-[#075FA8] flex items-center gap-1 cursor-pointer !min-h-0"
+                title="Làm mới giỏ hàng hiện tại"
               >
-                <Trash2 className="w-3 h-3" />
-                <span>Xóa hết</span>
+                <RefreshCw className="w-3 h-3" />
+                <span>Làm mới đơn</span>
               </button>
-            )}
+              {cart.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setCart([])}
+                  className="text-[11px] font-bold text-red-600 hover:text-red-700 flex items-center gap-1 cursor-pointer !min-h-0 ml-1"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  <span>Xóa hết</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Cart Items Scroll Area */}

@@ -1,7 +1,6 @@
 // Service Worker for Dong Kha Admin Web Push Notifications & PWA
-const CACHE_NAME = "vtdk-cache-v1";
 
-self.addEventListener("install", (event) => {
+self.addEventListener("install", () => {
   self.skipWaiting();
 });
 

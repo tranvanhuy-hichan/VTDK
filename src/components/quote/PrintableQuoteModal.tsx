@@ -6,30 +6,28 @@ import {
   Printer,
   Download,
   X,
-  Building2,
-  Phone,
-  Mail,
-  MapPin,
-  Calendar,
-  CheckCircle2,
-  ShieldCheck,
-  User,
-  Edit3,
   Loader2,
   Truck,
+  Edit3,
 } from "lucide-react";
 import type { CompanyContact } from "../../lib/company";
 import { COMPANY_DATA } from "../../data/company";
 import { formatCurrency, formatDate } from "../../lib/format";
+import { readVNDInWords } from "../../utils/numberToWords";
+export { readVNDInWords };
 
 export interface QuoteItem {
-  id: string;
+  id?: string;
+  productId?: string;
   name: string;
-  variantTitle?: string;
+  variantTitle?: string | null;
+  sku?: string | null;
+  barcode?: string | null;
   unit?: string;
-  quantity: number;
   price: number;
-  image?: string;
+  quantity: number;
+  categoryName?: string;
+  isCustom?: boolean;
 }
 
 export interface PrintableQuoteModalProps {
@@ -37,7 +35,7 @@ export interface PrintableQuoteModalProps {
   onClose: () => void;
   items: QuoteItem[];
   company?: CompanyContact;
-  mode?: "quote" | "delivery"; // 'quote' = Báo giá, 'delivery' = Phiếu xuất kho giao hàng
+  mode?: "quote" | "invoice" | "order_slip" | "delivery";
   orderCode?: string;
   initialCustomerName?: string;
   initialCustomerPhone?: string;
@@ -48,64 +46,6 @@ export interface PrintableQuoteModalProps {
   initialValidDays?: number;
   initialNote?: string;
   initialShippingFee?: number;
-}
-
-// Convert amount in VND to Vietnamese words
-export function readVNDInWords(amount: number): string {
-  if (!amount || amount <= 0) return "Không đồng";
-  const defaultNumbers = ["không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"];
-  const units = ["", "nghìn", "triệu", "tỷ", "nghìn tỷ", "triệu tỷ"];
-
-  const readThreeDigits = (n: number, isLastGroup: boolean): string => {
-    const hundreds = Math.floor(n / 100);
-    const tens = Math.floor((n % 100) / 10);
-    const ones = n % 10;
-    let result = "";
-
-    if (hundreds > 0 || !isLastGroup) {
-      result += defaultNumbers[hundreds] + " trăm ";
-    }
-
-    if (tens > 1) {
-      result += defaultNumbers[tens] + " mươi ";
-    } else if (tens === 1) {
-      result += "mười ";
-    } else if (hundreds > 0 && ones > 0) {
-      result += "lẻ ";
-    }
-
-    if (tens > 1 && ones === 1) {
-      result += "mốt";
-    } else if (tens > 0 && ones === 5) {
-      result += "lăm";
-    } else if (ones > 0) {
-      result += defaultNumbers[ones];
-    }
-
-    return result.trim();
-  };
-
-  let numStr = Math.round(amount).toString();
-  const groups: string[] = [];
-  while (numStr.length > 0) {
-    groups.unshift(numStr.slice(Math.max(0, numStr.length - 3)));
-    numStr = numStr.slice(0, Math.max(0, numStr.length - 3));
-  }
-
-  let words = "";
-  for (let i = 0; i < groups.length; i++) {
-    const groupNum = parseInt(groups[i], 10);
-    if (groupNum > 0) {
-      const isLastGroup = i === 0;
-      const groupWords = readThreeDigits(groupNum, isLastGroup);
-      const unit = units[groups.length - 1 - i];
-      words += (groupWords + " " + unit + " ").trim() + " ";
-    }
-  }
-
-  words = words.trim();
-  if (!words) return "Không đồng";
-  return words.charAt(0).toUpperCase() + words.slice(1) + " đồng chẵn.";
 }
 
 export const PrintableQuoteModal: React.FC<PrintableQuoteModalProps> = ({

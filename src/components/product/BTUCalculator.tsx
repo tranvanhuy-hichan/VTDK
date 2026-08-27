@@ -12,6 +12,13 @@ interface PipeRecommendation {
   insulation: string;
 }
 
+const ROOM_TYPES = [
+  { id: "bedroom", label: "Phòng Ngủ", factorArea: 600, factorVolume: 200, desc: "Ít tỏa nhiệt, yêu cầu yên tĩnh." },
+  { id: "living", label: "Phòng Khách", factorArea: 700, factorVolume: 230, desc: "Tỏa nhiệt trung bình, đông người." },
+  { id: "office", label: "Văn Phòng", factorArea: 800, factorVolume: 270, desc: "Nhiều máy móc thiết bị vận hành." },
+  { id: "restaurant", label: "Nhà Hàng / Cafe", factorArea: 1000, factorVolume: 330, desc: "Mật độ người cao, tỏa nhiệt lớn." },
+];
+
 export const BTUCalculatorBox: React.FC = () => {
   const [calcMode, setCalcMode] = useState<CalcMode>("area");
   const [sizeValue, setSizeValue] = useState<number>(15); // Default to 15 m2
@@ -25,12 +32,7 @@ export const BTUCalculatorBox: React.FC = () => {
     insulation: "Ống đơn dày 10mm - 19mm"
   });
 
-  const roomTypes = [
-    { id: "bedroom", label: "Phòng Ngủ", factorArea: 600, factorVolume: 200, desc: "Ít tỏa nhiệt, yêu cầu yên tĩnh." },
-    { id: "living", label: "Phòng Khách", factorArea: 700, factorVolume: 230, desc: "Tỏa nhiệt trung bình, đông người." },
-    { id: "office", label: "Văn Phòng", factorArea: 800, factorVolume: 270, desc: "Nhiều máy móc thiết bị vận hành." },
-    { id: "restaurant", label: "Nhà Hàng / Cafe", factorArea: 1000, factorVolume: 330, desc: "Mật độ người cao, tỏa nhiệt lớn." },
-  ];
+  const roomTypes = ROOM_TYPES;
 
   // Adjust default size when switching modes
   useEffect(() => {
@@ -43,7 +45,7 @@ export const BTUCalculatorBox: React.FC = () => {
 
   // Recalculate BTU and recommend pipe
   useEffect(() => {
-    const selectedType = roomTypes.find((t) => t.id === roomType);
+    const selectedType = ROOM_TYPES.find((t) => t.id === roomType);
     if (!selectedType) return;
 
     let btu = 9000;

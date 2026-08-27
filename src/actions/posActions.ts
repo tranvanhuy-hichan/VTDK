@@ -250,15 +250,26 @@ export async function createPosOrderAction(payload: CreatePosOrderPayload) {
       );
     }
 
-    // 2. Auto-subtract inventory stock
+    // 2. Auto-subtract inventory stock (both Product and ProductVariant if applicable)
     for (const item of payload.items) {
       if (item.productId) {
         try {
+          // Subtract product general stock
           await prisma.$executeRawUnsafe(
             `UPDATE "Product" SET stock = GREATEST(0, stock - $1) WHERE id = $2`,
             item.quantity,
             item.productId
           );
+
+          // If item is a specific variant, also subtract variant stock
+          if (item.variantLabel) {
+            await prisma.$executeRawUnsafe(
+              `UPDATE "ProductVariant" SET stock = GREATEST(0, COALESCE(stock, 100) - $1) WHERE "productId" = $2 AND label = $3`,
+              item.quantity,
+              item.productId,
+              item.variantLabel
+            );
+          }
         } catch (stockErr) {
           console.warn(`Failed to subtract stock for product ${item.productId}:`, stockErr);
         }

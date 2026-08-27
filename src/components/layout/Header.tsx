@@ -127,7 +127,7 @@ export const Header: React.FC<HeaderProps> = ({ company }) => {
   const rawNavLinks = [
     { name: "Trang chủ", href: "/", hash: "#trang-chu", icon: Home },
     { name: "Sản phẩm", href: "/san-pham", hash: "#san-pham", icon: Package },
-    { name: "Đơn hàng", href: "/tai-khoan/don-hang", hash: "#don-hang", icon: ShoppingBag },
+    { name: "Đơn hàng", href: user ? "/tai-khoan/don-hang" : "/don-hang", hash: "#don-hang", icon: ShoppingBag },
     { name: "Giải pháp", href: "/giai-phap", hash: "#dich-vu", icon: Wrench },
     { name: "Liên hệ", href: "/lien-he", hash: "#lien-he", icon: Phone },
   ];

@@ -11,20 +11,13 @@ import {
   Camera,
   Loader2,
   Star,
-  Lock,
   ImageIcon,
-  AlertCircle,
-  CheckCircle2,
-  Layers,
   Barcode,
   Sparkles,
-  Printer,
-  Package,
   RefreshCw,
   Pencil,
-  Eye,
   ExternalLink,
-  Check,
+  CheckCircle2,
 } from "lucide-react";
 import {
   createProductAction,
@@ -800,11 +793,11 @@ export function ProductForm({ categories, initialProduct }: ProductFormProps) {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4 items-start">
                     {/* Giá bán lẻ */}
                     <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <label className="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      <div className="flex items-center justify-between min-h-[22px]">
+                        <label className="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider truncate">
                           Giá bán lẻ (VND) <span className="text-red-500">*</span>
                         </label>
-                        <span className="text-[10px] font-semibold text-slate-400">Đơn vị: VNĐ</span>
+                        <span className="text-[10px] font-semibold text-slate-400 shrink-0 ml-1">Đơn vị: VNĐ</span>
                       </div>
                       <input
                         type="number"
@@ -822,11 +815,11 @@ export function ProductForm({ categories, initialProduct }: ProductFormProps) {
 
                     {/* Số lượng tồn kho */}
                     <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <label className="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider">
-                          Số lượng tồn kho (Stock)
+                      <div className="flex items-center justify-between min-h-[22px]">
+                        <label className="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider truncate">
+                          Tồn kho (Stock)
                         </label>
-                        <span className="text-[10px] font-semibold text-slate-400">Đơn vị: Sản phẩm</span>
+                        <span className="text-[10px] font-semibold text-slate-400 shrink-0 ml-1">Đơn vị: Sản phẩm</span>
                       </div>
                       <input
                         type="number"
@@ -847,15 +840,15 @@ export function ProductForm({ categories, initialProduct }: ProductFormProps) {
                   <div className="pt-2 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4 items-start">
                     {/* Mã SKU */}
                     <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <label className="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      <div className="flex items-center justify-between min-h-[22px]">
+                        <label className="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider truncate">
                           Mã SKU Sản Phẩm
                         </label>
                         {!isReadOnly && (
                           <button
                             type="button"
                             onClick={handleGenerateSku}
-                            className="text-[10px] font-bold text-[#075FA8] hover:text-[#064B85] hover:underline flex items-center gap-1 cursor-pointer transition-colors"
+                            className="text-[10px] font-bold text-[#075FA8] hover:text-[#064B85] hover:underline flex items-center gap-1 cursor-pointer transition-colors shrink-0 ml-1"
                             title="Tạo lại mã SKU mới"
                           >
                             <RefreshCw className="w-2.5 h-2.5" />
@@ -878,16 +871,16 @@ export function ProductForm({ categories, initialProduct }: ProductFormProps) {
 
                     {/* Mã vạch Barcode */}
                     <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <label className="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1">
-                          <Barcode className="w-3 h-3 text-[#075FA8]" />
-                          <span>Mã Vạch Barcode</span>
+                      <div className="flex items-center justify-between min-h-[22px]">
+                        <label className="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1 truncate">
+                          <Barcode className="w-3 h-3 text-[#075FA8] shrink-0" />
+                          <span className="truncate">Mã Vạch Barcode</span>
                         </label>
                         {!isReadOnly && (
                           <button
                             type="button"
                             onClick={handleGenerateBarcode}
-                            className="text-[10px] font-bold text-[#075FA8] hover:text-[#064B85] hover:underline flex items-center gap-1 cursor-pointer transition-colors"
+                            className="text-[10px] font-bold text-[#075FA8] hover:text-[#064B85] hover:underline flex items-center gap-1 cursor-pointer transition-colors shrink-0 ml-1"
                             title="Tạo lại mã vạch EAN-13 mới"
                           >
                             <RefreshCw className="w-2.5 h-2.5" />

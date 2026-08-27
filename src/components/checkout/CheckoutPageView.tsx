@@ -81,15 +81,6 @@ export const CheckoutPageView: React.FC<CheckoutPageViewProps> = ({ company }) =
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-
-    // Require user login before placing order
-    if (!user) {
-      setError("Vui lòng đăng nhập hoặc tạo tài khoản để hoàn tất đặt hàng.");
-      openAuthModal("login");
-      return;
-    }
-
     if (!name.trim() || !phone.trim()) {
       setError("Vui lòng nhập đầy đủ họ tên và số điện thoại người nhận.");
       return;

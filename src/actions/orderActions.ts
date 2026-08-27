@@ -153,7 +153,7 @@ export async function createOrderAction(dto: CreateOrderDTO): Promise<{
 export async function getOrderByCodeAction(orderCode: string): Promise<OrderDetail | null> {
   try {
     const order = await prisma.order.findUnique({
-      where: { orderCode },
+      where: { orderCode: orderCode.trim().toUpperCase() },
       include: { items: true },
     });
 
@@ -168,6 +168,73 @@ export async function getOrderByCodeAction(orderCode: string): Promise<OrderDeta
   } catch (err) {
     console.error("getOrderByCodeAction error:", err);
     return null;
+  }
+}
+
+// User / Guest: Public order lookup by orderCode or customerPhone
+export async function lookupOrderAction(query: string): Promise<{
+  success: boolean;
+  orders?: OrderDetail[];
+  error?: string;
+}> {
+  try {
+    const q = query.trim();
+    if (!q) {
+      return { success: false, error: "Vui lòng nhập mã đơn hàng (ví dụ: DK-...) hoặc số điện thoại." };
+    }
+
+    // Try finding by exact orderCode
+    const exactOrder = await prisma.order.findUnique({
+      where: { orderCode: q.toUpperCase() },
+      include: { items: true },
+    });
+
+    if (exactOrder) {
+      return {
+        success: true,
+        orders: [
+          {
+            ...exactOrder,
+            shippingFee: (exactOrder as any).shippingFee ?? 0,
+            createdAt: exactOrder.createdAt.toISOString(),
+            updatedAt: exactOrder.updatedAt.toISOString(),
+          },
+        ],
+      };
+    }
+
+    // Try finding by phone number (if digits)
+    const phoneClean = q.replace(/[^0-9+]/g, "");
+    if (phoneClean.length >= 8) {
+      const phoneOrders = await prisma.order.findMany({
+        where: {
+          customerPhone: { contains: phoneClean },
+        },
+        include: { items: true },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+      });
+
+      if (phoneOrders.length > 0) {
+        return {
+          success: true,
+          orders: phoneOrders.map((o) => ({
+            ...o,
+            shippingFee: (o as any).shippingFee ?? 0,
+            createdAt: o.createdAt.toISOString(),
+            updatedAt: o.updatedAt.toISOString(),
+          })),
+        };
+      }
+    }
+
+    return {
+      success: false,
+      error: `Không tìm thấy đơn hàng nào khớp với thông tin "${q}". Vui lòng kiểm tra lại mã đơn hoặc số điện thoại.`,
+    };
+  } catch (err) {
+    console.error("lookupOrderAction error:", err);
+    return { success: false, error: "Đã xảy ra lỗi khi tra cứu đơn hàng." };
   }
 }
 
@@ -238,7 +305,7 @@ export async function adminUpdateOrderStatusAction(
 
     const currentOrder = await prisma.order.findUnique({
       where: { id: orderId },
-      select: { status: true },
+      include: { items: true },
     });
 
     if (!currentOrder) {
@@ -264,7 +331,68 @@ export async function adminUpdateOrderStatusAction(
       return { success: false, error: "Trạng thái đơn hàng vừa thay đổi. Vui lòng tải lại trang." };
     }
 
+    // Bidirectional Inventory Stock Sync
+    // 1. If transitioning from PENDING -> CONFIRMED / SHIPPING / COMPLETED: Deduct stock
+    if (
+      currentOrder.status === "PENDING" &&
+      (status === "CONFIRMED" || status === "SHIPPING" || status === "COMPLETED")
+    ) {
+      for (const item of currentOrder.items) {
+        if (item.productId) {
+          try {
+            await prisma.$executeRawUnsafe(
+              `UPDATE "Product" SET stock = GREATEST(0, stock - $1) WHERE id = $2`,
+              item.quantity,
+              item.productId
+            );
+            if (item.variantLabel) {
+              await prisma.$executeRawUnsafe(
+                `UPDATE "ProductVariant" SET stock = GREATEST(0, COALESCE(stock, 100) - $1) WHERE "productId" = $2 AND label = $3`,
+                item.quantity,
+                item.productId,
+                item.variantLabel
+              );
+            }
+          } catch (stockErr) {
+            console.warn(`Could not deduct stock for product ${item.productId}:`, stockErr);
+          }
+        }
+      }
+    }
+
+    // 2. If transitioning from CONFIRMED / SHIPPING / COMPLETED -> CANCELLED: Restore stock
+    if (
+      (currentOrder.status === "CONFIRMED" ||
+        currentOrder.status === "SHIPPING" ||
+        currentOrder.status === "COMPLETED") &&
+      status === "CANCELLED"
+    ) {
+      for (const item of currentOrder.items) {
+        if (item.productId) {
+          try {
+            await prisma.$executeRawUnsafe(
+              `UPDATE "Product" SET stock = stock + $1 WHERE id = $2`,
+              item.quantity,
+              item.productId
+            );
+            if (item.variantLabel) {
+              await prisma.$executeRawUnsafe(
+                `UPDATE "ProductVariant" SET stock = COALESCE(stock, 100) + $1 WHERE "productId" = $2 AND label = $3`,
+                item.quantity,
+                item.productId,
+                item.variantLabel
+              );
+            }
+          } catch (stockErr) {
+            console.warn(`Could not restore stock for product ${item.productId}:`, stockErr);
+          }
+        }
+      }
+    }
+
     revalidatePath("/admin");
+    revalidatePath("/admin/products");
+    revalidatePath("/san-pham");
     revalidatePath("/tai-khoan/don-hang");
     return { success: true };
   } catch (err) {

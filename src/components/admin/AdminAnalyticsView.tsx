@@ -20,6 +20,7 @@ import {
   Award,
   Sparkles,
   ArrowUpRight,
+  AlertTriangle,
 } from "lucide-react";
 import { formatCurrency, formatDate } from "../../lib/format";
 import {
@@ -600,6 +601,51 @@ export const AdminAnalyticsView: React.FC<AdminAnalyticsViewProps> = ({ initialD
               </div>
             </div>
           </div>
+
+          {/* Low Stock Alert Widget */}
+          {data.lowStockProducts && data.lowStockProducts.length > 0 && (
+            <div className="p-3 rounded-xl bg-amber-50/60 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 shadow-2xs space-y-2 text-left">
+              <div className="flex items-center justify-between border-b border-amber-200/60 dark:border-amber-900/60 pb-1.5">
+                <h3 className="font-bold text-xs text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Cảnh Báo Tồn Kho Thấp ({data.lowStockProducts.length})</span>
+                </h3>
+                <Link
+                  href="/admin/products"
+                  className="text-[10px] font-bold text-[#075FA8] dark:text-blue-400 hover:underline"
+                >
+                  Quản lý kho →
+                </Link>
+              </div>
+
+              <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                {data.lowStockProducts.map((p) => (
+                  <div
+                    key={p.id}
+                    className="p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-amber-100 dark:border-amber-900/40 flex items-center justify-between text-xs gap-2"
+                  >
+                    <div className="min-w-0">
+                      <div className="font-bold text-slate-800 dark:text-slate-200 truncate text-[11px]">
+                        {p.name}
+                      </div>
+                      <div className="text-[10px] text-slate-400 font-mono">
+                        {p.sku || p.categoryName}
+                      </div>
+                    </div>
+                    <span
+                      className={`text-[10px] font-black px-1.5 py-0.5 rounded shrink-0 ${
+                        p.stock <= 0
+                          ? "bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800"
+                          : "bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
+                      }`}
+                    >
+                      {p.stock <= 0 ? "Hết hàng" : `Còn ${p.stock}`}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

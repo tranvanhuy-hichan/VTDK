@@ -95,31 +95,37 @@ export function encodeCode128B(text: string): string {
 }
 
 /**
- * Render pure SVG Barcode string for high-speed vector display
+ * Render high-precision SVG Barcode string for 100% laser & CCD scanner compatibility
  */
-export function getBarcodeSvgDataUrl(barcodeText: string, height = 44): string {
+export function getBarcodeSvgDataUrl(barcodeText: string, height = 48, includeText = true): string {
   if (!barcodeText || !barcodeText.trim()) return "";
   const pattern = encodeCode128B(barcodeText.trim());
   if (!pattern) return "";
 
-  let x = 10;
+  let x = 12; // Quiet zone left (crucial for 1D optical scanners)
   const barWidth = 2;
   const bars: string[] = [];
 
   for (let i = 0; i < pattern.length; i++) {
     const width = parseInt(pattern[i], 10) * barWidth;
     if (i % 2 === 0) {
-      // Black bar
-      bars.push(`<rect x="${x}" y="4" width="${width}" height="${height}" fill="#000000" />`);
+      // High-contrast black bar
+      bars.push(`<rect x="${x}" y="2" width="${width}" height="${height}" fill="#000000" />`);
     }
     x += width;
   }
 
-  const totalWidth = x + 10;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${height + 22}" viewBox="0 0 ${totalWidth} ${height + 22}">
-    <rect width="100%" height="100%" fill="#ffffff" rx="6" />
+  const totalWidth = x + 12; // Quiet zone right
+  const totalHeight = includeText ? height + 18 : height + 4;
+  
+  const textSvg = includeText
+    ? `<text x="${totalWidth / 2}" y="${height + 15}" text-anchor="middle" font-family="'Courier New', Courier, monospace, sans-serif" font-size="13" font-weight="bold" letter-spacing="1.5" fill="#000000">${barcodeText.trim()}</text>`
+    : "";
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${totalHeight}" viewBox="0 0 ${totalWidth} ${totalHeight}" shape-rendering="crispEdges">
+    <rect width="100%" height="100%" fill="#ffffff" />
     ${bars.join("")}
-    <text x="${totalWidth / 2}" y="${height + 18}" text-anchor="middle" font-family="monospace, sans-serif" font-size="12" font-weight="bold" fill="#334155">${barcodeText.trim()}</text>
+    ${textSvg}
   </svg>`;
 
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;

@@ -6,7 +6,6 @@ import Image from "next/image";
 import {
   Search,
   Plus,
-  Trash2,
   FileText,
   Printer,
   Building2,
@@ -27,7 +26,6 @@ import {
 import { formatCurrency } from "@/lib/format";
 import {
   PrintableQuoteModal,
-  readVNDInWords,
   type QuoteItem,
 } from "@/components/quote/PrintableQuoteModal";
 import { OrderItemCard } from "@/components/ui";
@@ -46,6 +44,7 @@ interface AdminQuotationBuilderProps {
 }
 
 interface QuoteDraftItem extends QuoteItem {
+  id: string;
   categoryName?: string;
   isCustom?: boolean;
 }

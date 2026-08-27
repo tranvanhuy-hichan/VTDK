@@ -14,6 +14,9 @@ import {
   Loader2,
   PackageOpen,
   Layers,
+  Printer,
+  Tag,
+  AlertTriangle,
 } from "lucide-react";
 import {
   deleteProductAction,
@@ -24,6 +27,7 @@ import {
 } from "../../app/admin/actions";
 import { Pagination } from "../product/Pagination";
 import { Button, Input, Select } from "@/components/ui";
+import { BarcodePrintModal } from "./BarcodePrintModal";
 
 const PAGE_SIZE = 10;
 
@@ -37,6 +41,9 @@ interface ProductVariant {
   id: string;
   label: string;
   price: number;
+  sku?: string | null;
+  barcode?: string | null;
+  stock?: number | null;
   sortOrder: number;
 }
 
@@ -69,6 +76,8 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [stockFilter, setStockFilter] = useState<string>("all");
+  const [isBarcodeModalOpen, setIsBarcodeModalOpen] = useState(false);
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
 
   const handleProductClick = (id: string) => {
@@ -147,7 +156,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
     }
   };
 
-  // Filter products by search and category
+  // Filter products by search, category and stock status
   const filteredProducts = initialProducts.filter((product) => {
     const q = searchTerm.toLowerCase().trim();
     const matchesSearch =
@@ -157,7 +166,18 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
       (product.barcode && product.barcode.includes(q)) ||
       (product.shortDesc && product.shortDesc.toLowerCase().includes(q));
     const matchesCategory = selectedCategory === "all" || product.category.slug === selectedCategory;
-    return matchesSearch && matchesCategory;
+
+    const currentStock = product.stock ?? 100;
+    let matchesStock = true;
+    if (stockFilter === "low_stock") {
+      matchesStock = currentStock > 0 && currentStock <= 5;
+    } else if (stockFilter === "out_of_stock") {
+      matchesStock = currentStock <= 0;
+    } else if (stockFilter === "in_stock") {
+      matchesStock = currentStock > 5;
+    }
+
+    return matchesSearch && matchesCategory && matchesStock;
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -169,7 +189,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, stockFilter]);
 
   return (
     <>
@@ -177,7 +197,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 p-2 sm:p-2.5 shadow-2xs mb-2.5 flex flex-col md:flex-row items-center justify-between gap-2 text-left transition-colors">
         {/* Left Side: Filter & Search Inputs */}
         <div className="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto flex-1">
-          <div className="w-full sm:w-52 shrink-0">
+          <div className="w-full sm:w-44 shrink-0">
             <Select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
@@ -191,24 +211,44 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
             </Select>
           </div>
 
-          <div className="w-full sm:w-72 flex-1">
+          <div className="w-full sm:w-40 shrink-0">
+            <Select
+              value={stockFilter}
+              onChange={(e) => setStockFilter(e.target.value)}
+            >
+              <option value="all">Tất cả tồn kho</option>
+              <option value="low_stock">⚠️ Sắp hết hàng (≤ 5)</option>
+              <option value="out_of_stock">❌ Hết hàng (= 0)</option>
+              <option value="in_stock">✅ Còn hàng dồi dào</option>
+            </Select>
+          </div>
+
+          <div className="w-full sm:w-64 flex-1">
             <Input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Tìm kiếm sản phẩm theo tên, SKU..."
+              placeholder="Tìm theo tên, SKU, mã vạch..."
               leftIcon={<Search className="w-3.5 h-3.5" />}
             />
           </div>
         </div>
 
         {/* Right Side: Action Buttons */}
-        <div className="flex items-center gap-1.5 w-full md:w-auto shrink-0 justify-end">
+        <div className="flex items-center gap-1.5 w-full md:w-auto shrink-0 justify-end flex-wrap">
+          <Button
+            variant="secondary"
+            onClick={() => setIsBarcodeModalOpen(true)}
+            leftIcon={<Printer className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />}
+          >
+            In tem mã vạch
+          </Button>
+
           <Button
             variant="secondary"
             onClick={() => setIsCategoryModalOpen(true)}
             leftIcon={<Layers className="w-3.5 h-3.5 text-[#075FA8] dark:text-blue-400" />}
           >
-            Quản lý danh mục
+            Danh mục
           </Button>
 
           <Button
@@ -259,22 +299,33 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                     {product.name}
                   </h4>
                   <div className="flex flex-wrap items-center gap-1 mb-1">
-                    {product.variants.length > 0 ? (
-                      <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400">
-                        Tổng kho: {product.stock ?? 100}
+                    {product.variants.length > 0 && (
+                      <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-blue-50 dark:bg-blue-950 text-[#075FA8] dark:text-blue-300">
+                        {product.variants.length} quy cách
                       </span>
-                    ) : (
-                      <>
-                        {product.sku && (
-                          <span className="text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                            {product.sku}
-                          </span>
-                        )}
-                        <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400">
-                          Kho: {product.stock ?? 100}
-                        </span>
-                      </>
                     )}
+                    {(() => {
+                      const stk = product.stock ?? 100;
+                      if (stk <= 0) {
+                        return (
+                          <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800">
+                            ❌ Hết hàng (0)
+                          </span>
+                        );
+                      }
+                      if (stk <= 5) {
+                        return (
+                          <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                            ⚠️ Sắp hết ({stk})
+                          </span>
+                        );
+                      }
+                      return (
+                        <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400">
+                          Kho: {stk}
+                        </span>
+                      );
+                    })()}
                   </div>
                   <div className="mt-auto pt-1">
                     <div className="text-xs font-black text-slate-900 dark:text-white">
@@ -346,33 +397,44 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                         {product.name}
                       </div>
                       <div className="flex flex-wrap items-center gap-1 mt-0.5">
-                        {product.variants.length > 0 ? (
-                          <>
-                            <span className="text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-300 border border-blue-200 dark:border-blue-800 flex items-center gap-1">
-                              <Layers className="w-2.5 h-2.5" />
-                              <span>{product.variants.length} quy cách</span>
-                            </span>
-                            <span className="text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-900/40">
-                              Tổng kho: {product.stock ?? 100}
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            {product.sku && (
-                              <span className="text-[9.5px] font-mono font-bold px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700">
-                                SKU: {product.sku}
-                              </span>
-                            )}
-                            {product.barcode && (
-                              <span className="text-[9.5px] font-mono font-bold px-1.5 py-0.2 rounded bg-blue-50/80 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-300 border border-blue-100 dark:border-blue-900/40">
-                                Mã: {product.barcode}
-                              </span>
-                            )}
-                            <span className="text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-900/40">
-                              Kho: {product.stock ?? 100}
-                            </span>
-                          </>
+                        {product.variants.length > 0 && (
+                          <span className="text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-300 border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                            <Layers className="w-2.5 h-2.5" />
+                            <span>{product.variants.length} quy cách</span>
+                          </span>
                         )}
+                        {product.sku && (
+                          <span className="text-[9.5px] font-mono font-bold px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700">
+                            SKU: {product.sku}
+                          </span>
+                        )}
+                        {product.barcode && (
+                          <span className="text-[9.5px] font-mono font-bold px-1.5 py-0.2 rounded bg-blue-50/80 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-300 border border-blue-100 dark:border-blue-900/40">
+                            Mã: {product.barcode}
+                          </span>
+                        )}
+                        {(() => {
+                          const stk = product.stock ?? 100;
+                          if (stk <= 0) {
+                            return (
+                              <span className="text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800">
+                                ❌ Hết hàng (0)
+                              </span>
+                            );
+                          }
+                          if (stk <= 5) {
+                            return (
+                              <span className="text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800 flex items-center gap-0.5">
+                                <span>⚠️ Sắp hết ({stk})</span>
+                              </span>
+                            );
+                          }
+                          return (
+                            <span className="text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-900/40">
+                              {product.variants.length > 0 ? `Tổng kho: ${stk}` : `Kho: ${stk}`}
+                            </span>
+                          );
+                        })()}
                       </div>
                       {product.shortDesc && (
                         <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-xs mt-0.5">
@@ -609,6 +671,44 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
           </div>
         </div>
       )}
+
+      {/* Barcode Decal Label Print Modal */}
+      <BarcodePrintModal
+        isOpen={isBarcodeModalOpen}
+        onClose={() => setIsBarcodeModalOpen(false)}
+        products={filteredProducts.flatMap((p): Array<{
+          id: string;
+          name: string;
+          sku?: string | null;
+          barcode?: string | null;
+          price: number;
+          stock?: number | null;
+          variantLabel?: string | null;
+        }> => {
+          if (p.variants && p.variants.length > 0) {
+            return p.variants.map((v) => ({
+              id: `${p.id}-var-${v.id}`,
+              name: p.name,
+              sku: v.sku || p.sku,
+              barcode: v.barcode || p.barcode,
+              price: v.price || p.price,
+              stock: v.stock ?? p.stock ?? 1,
+              variantLabel: v.label,
+            }));
+          }
+          return [
+            {
+              id: p.id,
+              name: p.name,
+              sku: p.sku,
+              barcode: p.barcode,
+              price: p.price,
+              stock: p.stock ?? 1,
+              variantLabel: null,
+            },
+          ];
+        })}
+      />
     </>
   );
 };

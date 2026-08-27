@@ -50,6 +50,17 @@ export interface ShippingBreakdown {
   storePickupRevenue: number;
 }
 
+export interface LowStockProductItem {
+  id: string;
+  name: string;
+  slug: string;
+  sku: string | null;
+  stock: number;
+  price: number;
+  categoryName: string;
+  variantCount: number;
+}
+
 export interface AnalyticsData {
   timeRange: string;
   summary: AnalyticsSummary;
@@ -57,6 +68,7 @@ export interface AnalyticsData {
   topProducts: TopProductItem[];
   categoryBreakdown: CategoryRevenueItem[];
   shippingBreakdown: ShippingBreakdown;
+  lowStockProducts?: LowStockProductItem[];
   recentOrders: {
     id: string;
     orderCode: string;
@@ -157,11 +169,12 @@ export async function getAdminAnalyticsAction(
       if (order.status === "COMPLETED") {
         completedOrders++;
         completedRevenue += order.totalAmount;
-      } else if (order.status === "PENDING") {
-        pendingOrders++;
-        pendingRevenue += order.totalAmount;
       } else if (order.status === "CANCELLED") {
         cancelledOrders++;
+      } else {
+        // PENDING, CONFIRMED, SHIPPING (đang xử lý / giao hàng)
+        pendingOrders++;
+        pendingRevenue += order.totalAmount;
       }
 
       if (order.shippingMethod === "STORE_PICKUP") {
@@ -290,6 +303,33 @@ export async function getAdminAnalyticsAction(
         createdAt: o.createdAt.toISOString(),
       }));
 
+    // 7. Fetch Low Stock Products (stock <= 5)
+    let lowStockProducts: LowStockProductItem[] = [];
+    try {
+      const lowStockRaw = await prisma.product.findMany({
+        where: { active: true, stock: { lte: 5 } },
+        include: {
+          category: { select: { name: true } },
+          variants: { select: { id: true } },
+        },
+        orderBy: { stock: "asc" },
+        take: 12,
+      });
+
+      lowStockProducts = lowStockRaw.map((p) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        sku: p.sku || null,
+        stock: p.stock ?? 0,
+        price: p.price,
+        categoryName: p.category?.name || "Khác",
+        variantCount: p.variants?.length || 0,
+      }));
+    } catch (stockErr) {
+      console.warn("Could not query low stock products:", stockErr);
+    }
+
     return {
       success: true,
       data: {
@@ -319,6 +359,7 @@ export async function getAdminAnalyticsAction(
           storePickupCount,
           storePickupRevenue,
         },
+        lowStockProducts,
         recentOrders,
       },
     };
