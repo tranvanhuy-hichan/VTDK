@@ -319,9 +319,8 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                   <th className="py-2.5 px-4 w-14">Ảnh</th>
                   <th className="py-2.5 px-4">Tên sản phẩm &amp; Mã tra cứu</th>
                   <th className="py-2.5 px-4 w-36">Danh mục</th>
-                  <th className="py-2.5 px-4 w-32 text-center">Tồn kho</th>
-                  <th className="py-2.5 px-4 w-40">Giá bán lẻ</th>
-                  <th className="py-2.5 px-4 w-20 text-center">Hiển thị</th>
+                  <th className="py-2.5 px-4 w-28 text-center">Tồn kho</th>
+                  <th className="py-2.5 px-4 text-right whitespace-nowrap">Giá bán lẻ</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -394,54 +393,32 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                       </td>
 
                       {/* Price */}
-                      <td className="py-2.5 px-4 text-left font-black text-slate-900 dark:text-white">
-                        {(() => {
-                          if (product.variants && product.variants.length > 0) {
-                            const prices = product.variants
-                              .map((v) => v.price)
-                              .filter((p) => typeof p === "number" && p > 0);
-                            if (prices.length > 0) {
-                              const min = Math.min(...prices);
-                              const max = Math.max(...prices);
-                              return min === max
-                                ? `${min.toLocaleString("vi-VN")}đ`
-                                : `${min.toLocaleString("vi-VN")}đ - ${max.toLocaleString("vi-VN")}đ`;
+                      <td className="py-2.5 px-4 text-right whitespace-nowrap font-black text-slate-900 dark:text-white">
+                        <div>
+                          {(() => {
+                            if (product.variants && product.variants.length > 0) {
+                              const prices = product.variants
+                                .map((v) => v.price)
+                                .filter((p) => typeof p === "number" && p > 0);
+                              if (prices.length > 0) {
+                                const min = Math.min(...prices);
+                                const max = Math.max(...prices);
+                                return min === max
+                                  ? `${min.toLocaleString("vi-VN")}đ`
+                                  : `${min.toLocaleString("vi-VN")}đ - ${max.toLocaleString("vi-VN")}đ`;
+                              }
                             }
-                          }
-                          return product.price > 0
-                            ? `${product.price.toLocaleString("vi-VN")}đ`
-                            : "Liên hệ";
-                        })()}
+                            return product.price > 0
+                              ? `${product.price.toLocaleString("vi-VN")}đ`
+                              : "Liên hệ";
+                          })()}
+                        </div>
                         {product.variants.length > 0 && (
-                          <div className="text-[10px] font-bold text-blue-600 dark:text-blue-400 mt-0.5 flex items-center gap-1">
+                          <div className="text-[10px] font-bold text-blue-600 dark:text-blue-400 mt-0.5 flex items-center justify-end gap-1">
                             <Layers className="w-2.5 h-2.5" />
                             <span>{product.variants.length} phân loại</span>
                           </div>
                         )}
-                      </td>
-
-                      {/* Active Status Switch */}
-                      <td className="py-2.5 px-4 text-center">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleToggleActive(product);
-                          }}
-                          aria-label={product.active ? "Đang hiển thị (Nhấp để ẩn)" : "Đã ẩn (Nhấp để hiển thị)"}
-                          title={product.active ? "Đang hiển thị (Nhấp để ẩn)" : "Đã ẩn (Nhấp để hiển thị)"}
-                          className={`!min-h-0 w-7 h-7 rounded-lg border transition-all cursor-pointer inline-flex items-center justify-center ${
-                            product.active
-                              ? "bg-emerald-50 dark:bg-emerald-950 border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100"
-                              : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-slate-200"
-                          }`}
-                        >
-                          {product.active ? (
-                            <Eye className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                          ) : (
-                            <EyeOff className="w-3.5 h-3.5 text-slate-400" />
-                          )}
-                        </button>
                       </td>
                     </tr>
                   );
