@@ -20,6 +20,7 @@ import {
 import type { CompanyContact } from "../../lib/company";
 import { ImageCarousel } from "../product/ImageCarousel";
 import { Breadcrumb } from "../common/Breadcrumb";
+import { Pagination } from "../product/Pagination";
 
 export interface ServiceItem {
   id: string;
@@ -36,7 +37,12 @@ interface SolutionsViewProps {
   services: ServiceItem[];
 }
 
+const PAGE_SIZE = 6;
+
 export const SolutionsView: React.FC<SolutionsViewProps> = ({ company, services }) => {
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const totalPages = Math.max(1, Math.ceil(services.length / PAGE_SIZE));
+  const pagedServices = services.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
   const getServiceIcon = (iconName: string) => {
     const iconClass = "w-6 h-6 sm:w-7 sm:h-7";
     switch (iconName) {
@@ -100,9 +106,9 @@ export const SolutionsView: React.FC<SolutionsViewProps> = ({ company, services 
             <p className="text-sm font-medium">Dữ liệu giải pháp kỹ thuật đang được cập nhật.</p>
           </div>
         ) : (
-          services.map((service, index) => {
+          pagedServices.map((service, index) => {
             const isEven = index % 2 === 0;
-            const itemNumber = (index + 1).toString().padStart(2, "0");
+            const itemNumber = ((currentPage - 1) * PAGE_SIZE + index + 1).toString().padStart(2, "0");
 
             return (
               <div
@@ -198,6 +204,17 @@ export const SolutionsView: React.FC<SolutionsViewProps> = ({ company, services 
               </div>
             );
           })
+        )}
+
+        {/* Solutions Pagination */}
+        {totalPages > 1 && (
+          <div className="pt-2">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         )}
 
         {/* 3. Bottom Project Quote CTA Banner */}

@@ -20,11 +20,15 @@ import { OrderStatusBadge } from "./OrderStatusBadge";
 import { formatCurrency, formatDate } from "../../lib/format";
 import { ProductDetailHeader } from "../product/ProductDetailHeader";
 import { CustomerOrderHistorySkeleton } from "../home/CustomerSkeleton";
+import { Pagination } from "../product/Pagination";
+
+const PAGE_SIZE = 8;
 
 export const OrderHistoryView: React.FC = () => {
   const { user, isLoading: isAuthLoading, openAuthModal } = useAuth();
   const [orders, setOrders] = useState<OrderDetail[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     if (!isAuthLoading) {
@@ -38,6 +42,9 @@ export const OrderHistoryView: React.FC = () => {
       }
     }
   }, [user, isAuthLoading]);
+
+  const totalPages = Math.max(1, Math.ceil(orders.length / PAGE_SIZE));
+  const pagedOrders = orders.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   if (isAuthLoading || loading) {
     return <CustomerOrderHistorySkeleton />;
@@ -95,7 +102,7 @@ export const OrderHistoryView: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-2.5">
-            {orders.map((order) => {
+            {pagedOrders.map((order) => {
               const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
 
               return (
@@ -187,6 +194,17 @@ export const OrderHistoryView: React.FC = () => {
                 </div>
               );
             })}
+
+            {/* Customer Pagination */}
+            {totalPages > 1 && (
+              <div className="pt-4">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
           </div>
         )}
       </div>

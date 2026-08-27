@@ -23,6 +23,9 @@ import { OrderStatusBadge } from "@/components/order/OrderStatusBadge";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { COMPANY_DATA } from "@/data/company";
 import { Button, Input, Tabs } from "@/components/ui";
+import { Pagination } from "@/components/product/Pagination";
+
+const PAGE_SIZE = 15;
 
 interface AdminOrderListProps {
   initialOrders: OrderDetail[];
@@ -34,6 +37,7 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   // Filter orders
   const filteredOrders = useMemo(() => {
@@ -52,6 +56,17 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
       return true;
     });
   }, [orders, selectedStatus, searchQuery]);
+
+  // Reset to page 1 when filter changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedStatus, searchQuery]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredOrders.length / PAGE_SIZE));
+  const pagedOrders = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filteredOrders.slice(start, start + PAGE_SIZE);
+  }, [filteredOrders, currentPage]);
 
   // Statistics
   const stats = useMemo(() => {
@@ -451,7 +466,7 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
               Không có đơn hàng nào phù hợp.
             </div>
           ) : (
-            filteredOrders.map((order) => (
+            pagedOrders.map((order) => (
               <Link
                 key={order.id}
                 href={`/admin/orders/${order.id}`}
@@ -521,7 +536,7 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
                   </td>
                 </tr>
               ) : (
-                filteredOrders.map((order) => {
+                pagedOrders.map((order) => {
                 const isPos = order.orderCode.startsWith("POS-") || (order as any).orderSource === "POS";
                 return (
                   <tr
@@ -590,6 +605,24 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
             </tbody>
           </table>
         </div>
+
+        {/* Pagination & Count Info Footer */}
+        {filteredOrders.length > 0 && (
+          <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="text-slate-500 dark:text-slate-400 font-medium">
+              Hiển thị <span className="font-bold text-slate-900 dark:text-white">{(currentPage - 1) * PAGE_SIZE + 1}</span> - <span className="font-bold text-slate-900 dark:text-white">{Math.min(currentPage * PAGE_SIZE, filteredOrders.length)}</span> trên tổng số <span className="font-bold text-slate-900 dark:text-white">{filteredOrders.length}</span> đơn hàng
+            </div>
+            {totalPages > 1 && (
+              <div className="!mt-0">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
