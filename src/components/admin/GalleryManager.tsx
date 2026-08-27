@@ -14,6 +14,8 @@ import {
   deleteGalleryImageAction,
 } from "../../app/admin/actions";
 import { Pagination } from "../product/Pagination";
+import { EmptyState } from "../common/EmptyState";
+import { ConfirmModal } from "../common/ConfirmModal";
 
 const PAGE_SIZE = 12;
 
@@ -31,6 +33,8 @@ interface GalleryManagerProps {
 export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deletingImageId, setDeletingImageId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [title, setTitle] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -93,14 +97,19 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa ảnh này?")) {
-      const res = await deleteGalleryImageAction(id);
+  const executeDelete = async () => {
+    if (!deletingImageId) return;
+    setIsDeleting(true);
+    try {
+      const res = await deleteGalleryImageAction(deletingImageId);
       if (res?.error) {
         alert(res.error);
       } else {
+        setDeletingImageId(null);
         window.location.reload();
       }
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -129,7 +138,7 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
               <div className="relative aspect-[4/3] bg-slate-50 dark:bg-slate-800">
                 <img src={img.url} alt={img.title} className="w-full h-full object-cover" />
                 <button
-                  onClick={() => handleDelete(img.id)}
+                  onClick={() => setDeletingImageId(img.id)}
                   aria-label="Xóa ảnh"
                   className="absolute top-2 right-2 p-2 bg-white/90 dark:bg-slate-900/90 hover:bg-red-50 dark:hover:bg-red-950/80 text-slate-500 hover:text-red-600 dark:hover:text-red-400 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm transition-colors !min-h-0 cursor-pointer"
                 >
@@ -145,12 +154,25 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({ initialImages })
         <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
         </>
       ) : (
-        <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
-          <ImageOff className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-          <h3 className="font-bold text-slate-900 dark:text-white text-lg">Chưa có hình ảnh nào</h3>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Bấm "Thêm hình ảnh" để tải ảnh lên.</p>
-        </div>
+        <EmptyState
+          icon={ImageOff}
+          title="Chưa có hình ảnh nào"
+          description="Bấm 'Thêm hình ảnh mới' để tải ảnh công trình hoặc kho hàng lên."
+          actionLabel="+ Thêm hình ảnh mới"
+          onActionClick={handleOpenAdd}
+        />
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={Boolean(deletingImageId)}
+        onClose={() => setDeletingImageId(null)}
+        onConfirm={executeDelete}
+        isLoading={isDeleting}
+        title="Xác nhận xóa hình ảnh"
+        message="Bạn có chắc chắn muốn xóa hình ảnh này khỏi thư viện? Hành động này không thể hoàn tác."
+        confirmText="Xóa ảnh"
+      />
 
       {/* Upload Modal Dialog */}
       {isModalOpen && (

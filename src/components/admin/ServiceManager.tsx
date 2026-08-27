@@ -13,6 +13,7 @@ import {
   ThermometerSun,
 } from "lucide-react";
 import { Pagination } from "../product/Pagination";
+import { EmptyState } from "../common/EmptyState";
 
 const PAGE_SIZE = 9; // 3x3 grid for Services
 
@@ -133,13 +134,13 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({ initialServices 
           />
         </>
       ) : (
-        <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
-          <Wrench className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-          <h3 className="font-bold text-slate-900 dark:text-white text-lg">Chưa có giải pháp nào</h3>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
-            Nhấp nút "Thêm giải pháp" ở trên để tạo giải pháp đầu tiên.
-          </p>
-        </div>
+        <EmptyState
+          icon={Wrench}
+          title="Chưa có giải pháp nào"
+          description="Nhấp nút '+ Thêm giải pháp mới' ở trên để tạo giải pháp đầu tiên."
+          actionLabel="+ Thêm giải pháp mới"
+          actionHref="/admin/services/new"
+        />
       )}
     </>
   );

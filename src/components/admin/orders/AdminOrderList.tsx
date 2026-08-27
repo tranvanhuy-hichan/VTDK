@@ -24,6 +24,7 @@ import { formatCurrency, formatDate } from "@/lib/format";
 import { COMPANY_DATA } from "@/data/company";
 import { Button, Input, Tabs } from "@/components/ui";
 import { Pagination } from "@/components/product/Pagination";
+import { EmptyState } from "@/components/common/EmptyState";
 
 const PAGE_SIZE = 15;
 
@@ -462,8 +463,12 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
         {/* Mobile View: Clean Card List */}
         <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
           {filteredOrders.length === 0 ? (
-            <div className="p-8 text-center text-slate-400 text-xs">
-              Không có đơn hàng nào phù hợp.
+            <div className="p-4">
+              <EmptyState
+                icon={ShoppingBag}
+                title="Không tìm thấy đơn hàng nào"
+                description="Thử thay đổi bộ lọc trạng thái hoặc nhập mã đơn hàng, số điện thoại khác."
+              />
             </div>
           ) : (
             pagedOrders.map((order) => (
@@ -516,27 +521,29 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
 
         {/* Desktop View: Full Table */}
         <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
-              <tr>
-                <th className="px-4 py-3">Mã đơn</th>
-                <th className="px-4 py-3">Khách hàng</th>
-                <th className="px-4 py-3">Giao nhận</th>
-                <th className="px-4 py-3">Ngày đặt</th>
-                <th className="px-4 py-3">Tổng tiền</th>
-                <th className="px-4 py-3">Trạng thái</th>
-                <th className="px-4 py-3 text-right">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-200 font-medium">
-              {filteredOrders.length === 0 ? (
+          {filteredOrders.length === 0 ? (
+            <div className="p-8">
+              <EmptyState
+                icon={ShoppingBag}
+                title="Không tìm thấy đơn hàng nào"
+                description="Thử thay đổi bộ lọc trạng thái hoặc từ khóa tìm kiếm."
+              />
+            </div>
+          ) : (
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
                 <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-slate-400">
-                    Không tìm thấy đơn hàng nào phù hợp.
-                  </td>
+                  <th className="px-4 py-3">Mã đơn</th>
+                  <th className="px-4 py-3">Khách hàng</th>
+                  <th className="px-4 py-3">Giao nhận</th>
+                  <th className="px-4 py-3">Ngày đặt</th>
+                  <th className="px-4 py-3">Tổng tiền</th>
+                  <th className="px-4 py-3">Trạng thái</th>
+                  <th className="px-4 py-3 text-right">Thao tác</th>
                 </tr>
-              ) : (
-                pagedOrders.map((order) => {
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-200 font-medium">
+                {pagedOrders.map((order) => {
                 const isPos = order.orderCode.startsWith("POS-") || (order as any).orderSource === "POS";
                 return (
                   <tr
@@ -600,10 +607,10 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({ initialOrders })
                     </td>
                   </tr>
                 );
-              })
-            )}
-            </tbody>
-          </table>
+              })}
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* Pagination & Count Info Footer */}

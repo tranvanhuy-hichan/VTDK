@@ -23,6 +23,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { formatCurrency, formatDate } from "../../lib/format";
+import { StockBadge } from "../common/StockBadge";
 import {
   getAdminAnalyticsAction,
   type AnalyticsData,
@@ -632,15 +633,7 @@ export const AdminAnalyticsView: React.FC<AdminAnalyticsViewProps> = ({ initialD
                         {p.sku || p.categoryName}
                       </div>
                     </div>
-                    <span
-                      className={`text-[10px] font-black px-1.5 py-0.5 rounded shrink-0 ${
-                        p.stock <= 0
-                          ? "bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800"
-                          : "bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
-                      }`}
-                    >
-                      {p.stock <= 0 ? "Hết hàng" : `Còn ${p.stock}`}
-                    </span>
+                    <StockBadge stock={p.stock} lowStockThreshold={5} />
                   </div>
                 ))}
               </div>

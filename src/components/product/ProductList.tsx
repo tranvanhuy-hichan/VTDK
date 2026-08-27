@@ -6,6 +6,7 @@ import { PackageOpen, X, Search, ChevronDown, Grid, ArrowRight } from "lucide-re
 import dynamic from "next/dynamic";
 import type { CompanyContact } from "../../lib/company";
 import { Pagination } from "./Pagination";
+import { EmptyState } from "../common/EmptyState";
 
 const BTUCalculatorModal = dynamic(
   () => import("./BTUCalculatorModal").then((m) => m.BTUCalculatorModal),
@@ -212,14 +213,15 @@ export const ProductList: React.FC<ProductListProps> = ({
             />
           </>
         ) : (
-          <div className="text-center py-12 bg-white dark:bg-slate-850 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs max-w-md mx-auto">
-            <PackageOpen className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
-              {searchTerm
-                ? `Không tìm thấy sản phẩm nào khớp với "${searchTerm}".`
-                : "Chưa có sản phẩm nào được hiển thị trong danh mục này."}
-            </p>
-          </div>
+          <EmptyState
+            icon={PackageOpen}
+            title="Không tìm thấy sản phẩm nào"
+            description={
+              searchTerm
+                ? `Không tìm thấy sản phẩm nào khớp với từ khóa "${searchTerm}".`
+                : "Chưa có sản phẩm nào được hiển thị trong danh mục này."
+            }
+          />
         )}
 
         {/* Bottom Callout to Full Catalog Page */}

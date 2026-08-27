@@ -21,6 +21,7 @@ import { formatCurrency, formatDate } from "../../lib/format";
 import { ProductDetailHeader } from "../product/ProductDetailHeader";
 import { CustomerOrderHistorySkeleton } from "../home/CustomerSkeleton";
 import { Pagination } from "../product/Pagination";
+import { EmptyState } from "../common/EmptyState";
 
 const PAGE_SIZE = 8;
 
@@ -84,22 +85,13 @@ export const OrderHistoryView: React.FC = () => {
         <ProductDetailHeader productName="Đơn hàng của tôi" />
 
         {orders.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 sm:p-10 text-center space-y-3.5 shadow-xs w-full">
-            <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-[#075FA8] dark:text-blue-400 flex items-center justify-center mx-auto">
-              <Package className="w-7 h-7" />
-            </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Bạn chưa có đơn hàng nào</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-              Khám phá danh mục ống đồng, gas lạnh, linh kiện điều hòa chính hãng và tiến hành đặt hàng nhé!
-            </p>
-            <Link
-              href="/san-pham"
-              className="inline-flex items-center justify-center gap-2 bg-[#075FA8] hover:bg-[#0B1F33] text-white font-bold text-xs py-2.5 px-5 rounded-xl shadow-md transition-all active:scale-98"
-            >
-              <span>Mua sắm ngay</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
+          <EmptyState
+            icon={Package}
+            title="Bạn chưa có đơn hàng nào"
+            description="Khám phá danh mục ống đồng, gas lạnh, linh kiện điều hòa chính hãng và tiến hành đặt hàng nhé!"
+            actionLabel="Mua sắm ngay"
+            actionHref="/san-pham"
+          />
         ) : (
           <div className="space-y-2.5">
             {pagedOrders.map((order) => {
