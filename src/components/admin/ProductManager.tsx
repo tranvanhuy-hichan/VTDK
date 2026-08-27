@@ -198,23 +198,23 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
             type="button"
             variant="outline"
             size="sm"
+            leftIcon={<Printer className="w-3.5 h-3.5" />}
             onClick={() => setIsBarcodeModalOpen(true)}
-            className="flex items-center gap-1.5 font-extrabold bg-blue-50/70 hover:bg-blue-100 text-[#075FA8] border-blue-200 dark:bg-blue-950/60 dark:border-blue-800 dark:text-blue-300"
+            className="font-extrabold bg-blue-50/70 hover:bg-blue-100 text-[#075FA8] border-blue-200 dark:bg-blue-950/60 dark:border-blue-800 dark:text-blue-300"
             title="In hàng loạt tem mã vạch dán sản phẩm"
           >
-            <Printer className="w-3.5 h-3.5" />
-            <span>In mã vạch ({filteredProducts.length})</span>
+            In mã vạch ({filteredProducts.length})
           </Button>
 
           <Button
             type="button"
             variant="outline"
             size="sm"
+            leftIcon={<Layers className="w-3.5 h-3.5 text-[#075FA8]" />}
             onClick={() => setIsCategoryModalOpen(true)}
-            className="flex items-center gap-1.5 font-extrabold"
+            className="font-extrabold"
           >
-            <Layers className="w-3.5 h-3.5 text-[#075FA8]" />
-            <span>Danh mục ({initialCategories.length})</span>
+            Danh mục ({initialCategories.length})
           </Button>
 
           <Link href="/admin/products/new">
@@ -222,10 +222,9 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
               type="button"
               variant="primary"
               size="sm"
-              className="flex items-center gap-1.5"
+              leftIcon={<Plus className="w-3.5 h-3.5" />}
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>+ Thêm sản phẩm</span>
+              Thêm sản phẩm
             </Button>
           </Link>
         </div>
@@ -316,10 +315,10 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
             <table className="w-full text-xs text-left">
               <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
                 <tr>
-                  <th className="py-2.5 px-4 w-14">Ảnh</th>
+                  <th className="py-2.5 px-4 w-14 whitespace-nowrap">Ảnh</th>
                   <th className="py-2.5 px-4">Tên sản phẩm &amp; Mã tra cứu</th>
-                  <th className="py-2.5 px-4 w-36">Danh mục</th>
-                  <th className="py-2.5 px-4 w-28 text-center">Tồn kho</th>
+                  <th className="py-2.5 px-4 w-36 whitespace-nowrap">Danh mục</th>
+                  <th className="py-2.5 px-4 w-32 text-center whitespace-nowrap">Tồn kho</th>
                   <th className="py-2.5 px-4 text-right whitespace-nowrap">Giá bán lẻ</th>
                 </tr>
               </thead>
@@ -388,7 +387,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                       </td>
 
                       {/* Stock Status Badge */}
-                      <td className="py-2.5 px-4 text-center">
+                      <td className="py-2.5 px-4 text-center whitespace-nowrap">
                         <StockBadge stock={stock} lowStockThreshold={5} />
                       </td>
 

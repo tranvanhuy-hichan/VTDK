@@ -36,7 +36,7 @@ const variantStyles: Record<ButtonVariant, string> = {
 
 const sizeStyles: Record<ButtonSize, string> = {
   xs: "h-6 text-[10px] px-2 rounded-md gap-1",
-  sm: "h-7.5 text-[11px] px-2.5 rounded-lg gap-1",
+  sm: "h-7.5 text-[11px] px-2.5 rounded-lg gap-1.5",
   md: "h-8.5 text-xs px-3 rounded-lg gap-1.5",
   lg: "h-10 text-sm px-4 rounded-xl gap-2",
 };
@@ -59,17 +59,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const baseClasses = `inline-flex items-center justify-center font-bold tracking-tight transition-all cursor-pointer select-none shrink-0 !min-h-0 disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed ${variantStyles[variant]} ${sizeStyles[size]} ${className}`;
+    const baseClasses = `inline-flex items-center justify-center whitespace-nowrap font-bold tracking-tight transition-all cursor-pointer select-none shrink-0 !min-h-0 disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed ${variantStyles[variant]} ${sizeStyles[size]} ${className}`;
 
     const content = (
       <>
         {isLoading ? (
-          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
         ) : (
-          leftIcon
+          leftIcon && <span className="shrink-0 flex items-center">{leftIcon}</span>
         )}
-        {children && <span>{children}</span>}
-        {!isLoading && rightIcon}
+        {typeof children === "string" ? <span>{children}</span> : children}
+        {!isLoading && rightIcon && <span className="shrink-0 flex items-center">{rightIcon}</span>}
       </>
     );
 
