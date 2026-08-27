@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "../lib/prisma";
 import { getCurrentUser, getCurrentAdmin } from "../lib/auth";
 import { checkRateLimit } from "../lib/rateLimit";
+import { deductInventory, restoreInventory } from "../services/inventory.service";
 import type { CreateOrderDTO, OrderDetail, OrderStatus } from "../types/order";
 
 function generateOrderCode(): string {
@@ -337,27 +338,13 @@ export async function adminUpdateOrderStatusAction(
       currentOrder.status === "PENDING" &&
       (status === "CONFIRMED" || status === "SHIPPING" || status === "COMPLETED")
     ) {
-      for (const item of currentOrder.items) {
-        if (item.productId) {
-          try {
-            await prisma.$executeRawUnsafe(
-              `UPDATE "Product" SET stock = GREATEST(0, stock - $1) WHERE id = $2`,
-              item.quantity,
-              item.productId
-            );
-            if (item.variantLabel) {
-              await prisma.$executeRawUnsafe(
-                `UPDATE "ProductVariant" SET stock = GREATEST(0, COALESCE(stock, 100) - $1) WHERE "productId" = $2 AND label = $3`,
-                item.quantity,
-                item.productId,
-                item.variantLabel
-              );
-            }
-          } catch (stockErr) {
-            console.warn(`Could not deduct stock for product ${item.productId}:`, stockErr);
-          }
-        }
-      }
+      await deductInventory(
+        currentOrder.items.map((item) => ({
+          productId: item.productId,
+          variantLabel: item.variantLabel,
+          quantity: item.quantity,
+        }))
+      );
     }
 
     // 2. If transitioning from CONFIRMED / SHIPPING / COMPLETED -> CANCELLED: Restore stock
@@ -367,27 +354,13 @@ export async function adminUpdateOrderStatusAction(
         currentOrder.status === "COMPLETED") &&
       status === "CANCELLED"
     ) {
-      for (const item of currentOrder.items) {
-        if (item.productId) {
-          try {
-            await prisma.$executeRawUnsafe(
-              `UPDATE "Product" SET stock = stock + $1 WHERE id = $2`,
-              item.quantity,
-              item.productId
-            );
-            if (item.variantLabel) {
-              await prisma.$executeRawUnsafe(
-                `UPDATE "ProductVariant" SET stock = COALESCE(stock, 100) + $1 WHERE "productId" = $2 AND label = $3`,
-                item.quantity,
-                item.productId,
-                item.variantLabel
-              );
-            }
-          } catch (stockErr) {
-            console.warn(`Could not restore stock for product ${item.productId}:`, stockErr);
-          }
-        }
-      }
+      await restoreInventory(
+        currentOrder.items.map((item) => ({
+          productId: item.productId,
+          variantLabel: item.variantLabel,
+          quantity: item.quantity,
+        }))
+      );
     }
 
     revalidatePath("/admin");
