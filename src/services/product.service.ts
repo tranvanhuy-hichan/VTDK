@@ -84,19 +84,6 @@ export function parseProductVariants(formData: FormData) {
   return variants;
 }
 
-export function parseProductSpecifications(formData: FormData): Record<string, string> {
-  const rawJson = formData.get("specificationsJson") as string | null;
-  if (rawJson) {
-    try {
-      const parsed = JSON.parse(rawJson);
-      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-        return parsed;
-      }
-    } catch {}
-  }
-  return {};
-}
-
 export async function getProducts(options?: {
   categoryId?: string;
   categorySlug?: string;
@@ -150,14 +137,11 @@ export async function createProduct(formData: FormData) {
   const sku = (formData.get("sku") as string)?.trim() || null;
   const barcode = (formData.get("barcode") as string)?.trim() || null;
   const shortDesc = (formData.get("shortDesc") as string)?.trim() || null;
-  const description = (formData.get("description") as string)?.trim() || null;
-  const featured = formData.get("featured") === "true";
   const active = formData.get("active") !== "false";
 
   const imageFile = formData.get("image") as File | null;
   const mainImageUrl = formData.get("mainImageUrl") as string | null;
   const variants = parseProductVariants(formData);
-  const specifications = parseProductSpecifications(formData);
 
   if (!name) throw new Error("Vui lòng nhập tên sản phẩm!");
   if (!categoryId) throw new Error("Vui lòng chọn danh mục cho sản phẩm!");
@@ -193,9 +177,6 @@ export async function createProduct(formData: FormData) {
       stock: finalStock,
       price,
       shortDesc,
-      description,
-      specifications,
-      featured,
       active,
       image: imagePath,
       images: galleryResult.images,
@@ -239,14 +220,11 @@ export async function updateProduct(id: string, formData: FormData) {
   const sku = (formData.get("sku") as string)?.trim() || null;
   const barcode = (formData.get("barcode") as string)?.trim() || null;
   const shortDesc = (formData.get("shortDesc") as string)?.trim() || null;
-  const description = (formData.get("description") as string)?.trim() || null;
-  const featured = formData.get("featured") === "true";
   const active = formData.get("active") !== "false";
 
   const imageFile = formData.get("image") as File | null;
   const mainImageUrl = formData.get("mainImageUrl") as string | null;
   const variants = parseProductVariants(formData);
-  const specifications = parseProductSpecifications(formData);
 
   if (!name) throw new Error("Vui lòng nhập tên sản phẩm!");
   if (!categoryId) throw new Error("Vui lòng chọn danh mục!");
@@ -299,9 +277,6 @@ export async function updateProduct(id: string, formData: FormData) {
       stock: finalStock,
       price,
       shortDesc,
-      description,
-      specifications,
-      featured,
       active,
       image: imagePath,
       images: galleryResult.images,

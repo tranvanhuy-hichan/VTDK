@@ -18,9 +18,6 @@ export const createProductSchema = z.object({
   sku: z.string().nullable().optional(),
   barcode: z.string().nullable().optional(),
   shortDesc: z.string().nullable().optional(),
-  description: z.string().nullable().optional(),
-  specifications: z.record(z.string(), z.string()).optional(),
-  featured: z.boolean().default(false),
   active: z.boolean().default(true),
   variants: z.array(productVariantSchema).default([]),
 });
