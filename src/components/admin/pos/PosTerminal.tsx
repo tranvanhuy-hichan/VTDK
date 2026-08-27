@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   Barcode,
   Plus,
+  Check,
   Trash2,
   Printer,
   CreditCard,
@@ -681,74 +682,98 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3">
-                {filteredProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    onClick={() => {
-                      if (product.variants && product.variants.length > 0) {
-                        setSelectedVariantProduct(product);
-                      } else {
-                        addItemToCart(product);
-                      }
-                    }}
-                    className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-[#075FA8] dark:hover:border-blue-500 rounded-xl p-2.5 flex flex-col justify-between shadow-2xs hover:shadow-md transition-all cursor-pointer group active:scale-98 relative select-none"
-                  >
-                    <div>
-                      {/* Image & Stock Badge */}
-                      <div className="w-full aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-2 relative">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        />
-                        <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-slate-900/80 text-white text-[9px] font-bold">
-                          Kho: {product.stock}
-                        </span>
-                        {product.variants.length > 0 && (
-                          <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-blue-600/95 text-white text-[9px] font-bold shadow-xs">
-                            {product.variants.length} quy cách
+                {filteredProducts.map((product) => {
+                  const cartItemsForProduct = cart.filter((it) => it.productId === product.id);
+                  const totalQtyInCart = cartItemsForProduct.reduce((sum, it) => sum + it.quantity, 0);
+                  const isSelected = totalQtyInCart > 0;
+
+                  return (
+                    <div
+                      key={product.id}
+                      onClick={() => {
+                        if (product.variants && product.variants.length > 0) {
+                          setSelectedVariantProduct(product);
+                        } else {
+                          addItemToCart(product);
+                        }
+                      }}
+                      className={`rounded-xl p-2.5 flex flex-col justify-between transition-all cursor-pointer group active:scale-98 relative select-none ${
+                        isSelected
+                          ? "bg-blue-50/70 dark:bg-blue-950/40 border-2 border-[#075FA8] dark:border-blue-500 shadow-md ring-2 ring-[#075FA8]/20"
+                          : "bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-[#075FA8] dark:hover:border-blue-500 shadow-2xs hover:shadow-md"
+                      }`}
+                    >
+                      <div>
+                        {/* Image & Stock Badge */}
+                        <div className="w-full aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-2 relative">
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
+                          <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-slate-900/80 text-white text-[9px] font-bold">
+                            Kho: {product.stock}
+                          </span>
+                          {product.variants.length > 0 && (
+                            <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-blue-600/95 text-white text-[9px] font-bold shadow-xs">
+                              {product.variants.length} quy cách
+                            </span>
+                          )}
+                          {isSelected && (
+                            <span className="absolute top-1 right-1 px-1.5 py-0.5 rounded-md bg-[#075FA8] dark:bg-blue-600 text-white text-[10px] font-black shadow-sm flex items-center gap-0.5 z-10 animate-in zoom-in-75">
+                              <Check className="w-3 h-3 stroke-[3]" />
+                              <span>x{totalQtyInCart}</span>
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Product Name */}
+                        <h4 className={`text-xs font-bold leading-snug line-clamp-2 mb-1 transition-colors ${
+                          isSelected
+                            ? "text-[#075FA8] dark:text-blue-400 font-extrabold"
+                            : "text-slate-900 dark:text-white group-hover:text-[#075FA8] dark:group-hover:text-blue-400"
+                        }`}>
+                          {product.name}
+                        </h4>
+
+                        {/* SKU / Barcode */}
+                        {product.sku && (
+                          <span className="text-[9px] font-mono text-slate-400 block truncate">
+                            {product.sku}
                           </span>
                         )}
                       </div>
 
-                      {/* Product Name */}
-                      <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 mb-1 group-hover:text-[#075FA8] dark:group-hover:text-blue-400 transition-colors">
-                        {product.name}
-                      </h4>
-
-                      {/* SKU / Barcode */}
-                      {product.sku && (
-                        <span className="text-[9px] font-mono text-slate-400 block truncate">
-                          {product.sku}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Price */}
-                    <div className="mt-2 pt-1 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                      <span className="text-xs font-black text-[#075FA8] dark:text-blue-400">
-                        {(() => {
-                          if (product.variants && product.variants.length > 0) {
-                            const prices = product.variants
-                              .map((v) => v.price)
-                              .filter((p) => typeof p === "number" && p > 0);
-                            if (prices.length > 0) {
-                              const min = Math.min(...prices);
-                              const max = Math.max(...prices);
-                              return min === max
-                                ? `${min.toLocaleString("vi-VN")}đ`
-                                : `${min.toLocaleString("vi-VN")}đ - ${max.toLocaleString("vi-VN")}đ`;
+                      {/* Price & Action */}
+                      <div className="mt-2 pt-1 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <span className="text-xs font-black text-[#075FA8] dark:text-blue-400">
+                          {(() => {
+                            if (product.variants && product.variants.length > 0) {
+                              const prices = product.variants
+                                .map((v) => v.price)
+                                .filter((p) => typeof p === "number" && p > 0);
+                              if (prices.length > 0) {
+                                const min = Math.min(...prices);
+                                const max = Math.max(...prices);
+                                return min === max
+                                  ? `${min.toLocaleString("vi-VN")}đ`
+                                  : `${min.toLocaleString("vi-VN")}đ - ${max.toLocaleString("vi-VN")}đ`;
+                              }
                             }
-                          }
-                          return `${product.price.toLocaleString("vi-VN")}đ`;
-                        })()}
-                      </span>
-                      <div className="w-6 h-6 rounded-lg bg-blue-50 dark:bg-blue-950 text-[#075FA8] dark:text-blue-400 flex items-center justify-center group-hover:bg-[#075FA8] group-hover:text-white transition-colors">
-                        <Plus className="w-3.5 h-3.5" />
+                            return `${product.price.toLocaleString("vi-VN")}đ`;
+                          })()}
+                        </span>
+                        <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-colors ${
+                          isSelected
+                            ? "bg-[#075FA8] text-white shadow-xs"
+                            : "bg-blue-50 dark:bg-blue-950 text-[#075FA8] dark:text-blue-400 group-hover:bg-[#075FA8] group-hover:text-white"
+                        }`}>
+                          <Plus className="w-3.5 h-3.5" />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -1066,24 +1091,50 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
               Chọn phân loại: {selectedVariantProduct.name}
             </h3>
             <div className="space-y-2">
-              {selectedVariantProduct.variants.map((v) => (
-                <button
-                  key={v.id}
-                  type="button"
-                  onClick={() => {
-                    addItemToCart(selectedVariantProduct, v);
-                    setSelectedVariantProduct(null);
-                  }}
-                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-[#075FA8] hover:bg-blue-50/50 dark:hover:bg-slate-800 flex items-center justify-between transition-all cursor-pointer"
-                >
-                  <span className="font-bold text-xs text-slate-900 dark:text-white">
-                    {v.label}
-                  </span>
-                  <span className="font-black text-xs text-[#075FA8] dark:text-blue-400">
-                    {v.price.toLocaleString("vi-VN")}đ
-                  </span>
-                </button>
-              ))}
+              {selectedVariantProduct.variants.map((v) => {
+                const variantCartItem = cart.find(
+                  (it) => it.productId === selectedVariantProduct.id && it.variantLabel === v.label
+                );
+                const variantQty = variantCartItem?.quantity || 0;
+                const isVariantSelected = variantQty > 0;
+
+                return (
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => {
+                      addItemToCart(selectedVariantProduct, v);
+                      setSelectedVariantProduct(null);
+                    }}
+                    className={`w-full p-3 rounded-xl border flex items-center justify-between transition-all cursor-pointer ${
+                      isVariantSelected
+                        ? "border-2 border-[#075FA8] dark:border-blue-500 bg-blue-50/80 dark:bg-blue-950/50 shadow-xs ring-1 ring-[#075FA8]/20"
+                        : "border-slate-200 dark:border-slate-700 hover:border-[#075FA8] hover:bg-blue-50/50 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      {isVariantSelected && (
+                        <span className="w-5 h-5 rounded-full bg-[#075FA8] text-white flex items-center justify-center text-[10px] font-black shrink-0">
+                          <Check className="w-3 h-3 stroke-[3]" />
+                        </span>
+                      )}
+                      <div className="text-left">
+                        <span className="font-bold text-xs text-slate-900 dark:text-white block">
+                          {v.label}
+                        </span>
+                        {isVariantSelected && (
+                          <span className="text-[10px] text-[#075FA8] dark:text-blue-400 font-bold">
+                            Đã chọn: x{variantQty}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <span className="font-black text-xs text-[#075FA8] dark:text-blue-400">
+                      {v.price.toLocaleString("vi-VN")}đ
+                    </span>
+                  </button>
+                );
+              })}
             </div>
             <button
               type="button"

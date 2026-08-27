@@ -606,10 +606,21 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                 const itemId = activeVariant ? `${p.id}-${activeVariant.id}` : p.id;
                 const isJustAdded = addedAnimationId === itemId;
 
+                const matchingItems = quoteItems.filter(
+                  (i) => i.id === p.id || i.id.startsWith(`${p.id}-`)
+                );
+                const totalQtyInQuote = matchingItems.reduce((sum, i) => sum + i.quantity, 0);
+                const currentVariantItem = quoteItems.find((i) => i.id === itemId);
+                const isSelected = totalQtyInQuote > 0;
+
                 return (
                   <div
                     key={p.id}
-                    className="p-2.5 bg-slate-50/70 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 rounded-xl border border-slate-200/80 dark:border-slate-700/80 transition-all flex items-center justify-between gap-2.5 group"
+                    className={`p-2.5 rounded-xl transition-all flex items-center justify-between gap-2.5 group relative ${
+                      isSelected
+                        ? "bg-blue-50/70 dark:bg-blue-950/40 border-2 border-[#075FA8] dark:border-blue-500 shadow-xs ring-1 ring-[#075FA8]/20"
+                        : "bg-slate-50/70 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80"
+                    }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       {p.image ? (
@@ -620,21 +631,41 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                             fill
                             className="object-cover group-hover:scale-105 transition-transform"
                           />
+                          {isSelected && (
+                            <div className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-[#075FA8] dark:bg-blue-600 text-white flex items-center justify-center shadow-xs">
+                              <Check className="w-2.5 h-2.5 stroke-[3]" />
+                            </div>
+                          )}
                         </div>
                       ) : (
-                        <div className="w-11 h-11 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-[10px] font-bold shrink-0">
+                        <div className="w-11 h-11 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-[10px] font-bold shrink-0 relative">
                           VTDK
+                          {isSelected && (
+                            <div className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-[#075FA8] dark:bg-blue-600 text-white flex items-center justify-center shadow-xs">
+                              <Check className="w-2.5 h-2.5 stroke-[3]" />
+                            </div>
+                          )}
                         </div>
                       )}
 
                       <div className="min-w-0 space-y-0.5">
-                        <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                        <div className={`text-xs font-bold truncate transition-colors ${
+                          isSelected
+                            ? "text-[#075FA8] dark:text-blue-400 font-extrabold"
+                            : "text-slate-900 dark:text-white"
+                        }`}>
                           {p.name}
                         </div>
-                        <div className="flex items-center gap-2 text-[10px] text-slate-500 dark:text-slate-400">
+                        <div className="flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400">
                           <span className="px-1.5 py-0.2 rounded bg-slate-200 dark:bg-slate-700 font-medium">
                             {p.category.name}
                           </span>
+                          {isSelected && (
+                            <span className="px-1.5 py-0.2 rounded bg-blue-100 dark:bg-blue-900/80 text-[#075FA8] dark:text-blue-300 font-black text-[9px] flex items-center gap-0.5">
+                              <Check className="w-2.5 h-2.5" />
+                              <span>Đã chọn ({totalQtyInQuote})</span>
+                            </span>
+                          )}
                         </div>
 
                         {/* Variant Selector */}
@@ -648,13 +679,22 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                                   [p.id]: e.target.value,
                                 }))
                               }
-                              className="px-1.5 py-0.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-[10px] font-medium"
+                              className={`px-1.5 py-0.5 rounded-md text-[10px] font-medium border ${
+                                isSelected
+                                  ? "bg-white dark:bg-slate-900 border-blue-300 dark:border-blue-700 text-slate-900 dark:text-white"
+                                  : "bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600"
+                              }`}
                             >
-                              {p.variants.map((v) => (
-                                <option key={v.id} value={v.id}>
-                                  {v.label} — {formatCurrency(v.price)}
-                                </option>
-                              ))}
+                              {p.variants.map((v) => {
+                                const vItemId = `${p.id}-${v.id}`;
+                                const vQty = quoteItems.find((i) => i.id === vItemId)?.quantity || 0;
+                                return (
+                                  <option key={v.id} value={v.id}>
+                                    {v.label} — {formatCurrency(v.price)}
+                                    {vQty > 0 ? ` (Đã chọn: ${vQty})` : ""}
+                                  </option>
+                                );
+                              })}
                             </select>
                           </div>
                         )}
@@ -675,6 +715,8 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                         className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer !min-h-0 ${
                           isJustAdded
                             ? "bg-emerald-600 text-white"
+                            : isSelected
+                            ? "bg-[#075FA8] hover:bg-[#0B3D66] text-white shadow-xs active:scale-95 ring-2 ring-blue-300 dark:ring-blue-800"
                             : "bg-[#075FA8] hover:bg-[#0B3D66] text-white shadow-xs active:scale-95"
                         }`}
                       >
@@ -682,6 +724,11 @@ export const AdminQuotationBuilder: React.FC<AdminQuotationBuilderProps> = ({
                           <>
                             <Check className="w-3 h-3" />
                             <span>Đã thêm</span>
+                          </>
+                        ) : isSelected ? (
+                          <>
+                            <Plus className="w-3 h-3" />
+                            <span>Thêm ({currentVariantItem ? currentVariantItem.quantity : totalQtyInQuote})</span>
                           </>
                         ) : (
                           <>
