@@ -39,6 +39,10 @@ interface Category {
   slug: string;
 }
 
+function toFiniteNumber(value: unknown, fallback = 0): number {
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
 interface PosTerminalProps {
   initialProducts: PosProductItem[];
   categories: Category[];
@@ -521,7 +525,50 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
       alert(res.error);
     } else if (res.order) {
       playPosCheckoutSuccess(soundEnabled);
-      setCompletedOrder(res.order as any);
+
+      const order = res.order as Partial<PosInvoiceData>;
+      const invoiceTotal = toFiniteNumber(order.totalAmount, totalAmount);
+      const invoiceItems = Array.isArray(order.items)
+        ? order.items.map((item) => ({
+            productName: item?.productName || "Sản phẩm",
+            variantLabel: item?.variantLabel || null,
+            price: toFiniteNumber(item?.price),
+            quantity: toFiniteNumber(item?.quantity, 1),
+            sku: item?.sku || null,
+          }))
+        : cart.map((item) => ({
+            productName: item.productName,
+            variantLabel: item.variantLabel || null,
+            price: toFiniteNumber(item.price),
+            quantity: toFiniteNumber(item.quantity, 1),
+            sku: item.sku || null,
+          }));
+
+      setCompletedOrder({
+        id: String(order.id || res.orderId || ""),
+        orderCode: String(order.orderCode || res.orderCode || "POS"),
+        createdAt: String(order.createdAt || res.createdAt || new Date().toISOString()),
+        customerName: String(order.customerName || customerName || "Khách mua tại quầy"),
+        customerPhone: order.customerPhone || customerPhone || undefined,
+        subtotal,
+        discountAmount: calculatedDiscount,
+        totalAmount: invoiceTotal,
+        paymentMethod: String(order.paymentMethod || paymentMethod),
+        cashReceived: toFiniteNumber(
+          order.cashReceived,
+          paymentMethod === "CASH" ? cashReceived : invoiceTotal
+        ),
+        cashChange: toFiniteNumber(order.cashChange, paymentMethod === "CASH" ? cashChange : 0),
+        items: invoiceItems,
+        company: {
+          brandName: company.brandName,
+          fullName: company.fullName,
+          address: company.address,
+          hotline: company.hotline,
+          taxCode: company.taxCode,
+          logoUrl: company.logoUrl,
+        },
+      });
       setCart([]);
       setDiscountAmount(0);
       setDiscountPercent(0);

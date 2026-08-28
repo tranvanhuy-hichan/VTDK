@@ -34,6 +34,10 @@ export interface PosInvoiceData {
   };
 }
 
+function formatNumber(value: unknown): string {
+  const parsed = typeof value === "number" ? value : Number(value);
+  return (Number.isFinite(parsed) ? parsed : 0).toLocaleString("vi-VN");
+}
 interface PosInvoiceModalProps {
   data: PosInvoiceData | null;
   company: PosInvoiceData["company"];
@@ -155,9 +159,9 @@ export const PosInvoiceModal: React.FC<PosInvoiceModalProps> = ({
                     )}
                   </div>
                   <span className="w-8 text-center font-bold text-slate-800">{item.quantity}</span>
-                  <span className="w-16 text-right text-slate-600">{item.price.toLocaleString("vi-VN")}</span>
+                  <span className="w-16 text-right text-slate-600">{formatNumber(item.price)}</span>
                   <span className="w-18 text-right font-black text-slate-900">
-                    {(item.price * item.quantity).toLocaleString("vi-VN")}
+                    {formatNumber(item.price * item.quantity)}
                   </span>
                 </div>
               ))}
@@ -167,19 +171,19 @@ export const PosInvoiceModal: React.FC<PosInvoiceModalProps> = ({
             <div className="space-y-1.5 pt-1 text-[11px]">
               <div className="flex justify-between text-slate-600">
                 <span>Tổng tiền hàng:</span>
-                <span className="font-bold">{data.subtotal.toLocaleString("vi-VN")}đ</span>
+                <span className="font-bold">{formatNumber(data.subtotal)}đ</span>
               </div>
 
               {data.discountAmount ? (
                 <div className="flex justify-between text-red-600">
                   <span>Chiết khấu / Giảm giá:</span>
-                  <span className="font-bold">-{data.discountAmount.toLocaleString("vi-VN")}đ</span>
+                  <span className="font-bold">-{formatNumber(data.discountAmount)}đ</span>
                 </div>
               ) : null}
 
               <div className="flex justify-between text-sm font-black text-slate-900 pt-1 border-t border-dashed border-slate-300">
                 <span>TỔNG THANH TOÁN:</span>
-                <span className="text-base">{data.totalAmount.toLocaleString("vi-VN")}đ</span>
+                <span className="text-base">{formatNumber(data.totalAmount)}đ</span>
               </div>
 
               <div className="flex justify-between text-slate-600 pt-1">
@@ -191,12 +195,12 @@ export const PosInvoiceModal: React.FC<PosInvoiceModalProps> = ({
                 <>
                   <div className="flex justify-between text-slate-600">
                     <span>Tiền khách đưa:</span>
-                    <span>{(data.cashReceived || data.totalAmount).toLocaleString("vi-VN")}đ</span>
+                    <span>{formatNumber(data.cashReceived ?? data.totalAmount)}đ</span>
                   </div>
                   <div className="flex justify-between text-slate-600">
                     <span>Tiền thừa trả khách:</span>
                     <span className="font-bold text-emerald-700">
-                      {(data.cashChange || 0).toLocaleString("vi-VN")}đ
+                      {formatNumber(data.cashChange)}đ
                     </span>
                   </div>
                 </>
