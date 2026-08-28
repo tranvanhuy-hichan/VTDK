@@ -169,10 +169,28 @@ export async function getFreshCompanyInfo(): Promise<CompanyContact> {
   }
 }
 
-export const getCompanyInfo = unstable_cache(
-  async (): Promise<CompanyContact> => {
-    return getFreshCompanyInfo();
-  },
+const getCachedCompanyInfo = unstable_cache(
+  async (): Promise<CompanyContact> => getFreshCompanyInfo(),
   ["company-info"],
   { revalidate: 300, tags: ["company-info"] }
 );
+
+/**
+ * Keep the cache boundary defensive. A stale deployment cache may contain an
+ * empty value even though TypeScript declares a CompanyContact return type.
+ * Normalizing here prevents pages from dereferencing fields on undefined.
+ */
+export async function getCompanyInfo(): Promise<CompanyContact> {
+  try {
+    const info = await getCachedCompanyInfo();
+
+    if (!info || typeof info !== "object") {
+      return globalForCompany.__companyInfoBackup || FALLBACK;
+    }
+
+    return formatCompanyInfo(info);
+  } catch (e) {
+    console.warn("getCompanyInfo cache read failed, using fallback:", e);
+    return globalForCompany.__companyInfoBackup || FALLBACK;
+  }
+}
