@@ -24,7 +24,7 @@ export interface PosInvoiceData {
     quantity: number;
     sku?: string | null;
   }[];
-  company: {
+  company?: {
     brandName: string;
     fullName: string;
     address: string;
@@ -36,18 +36,22 @@ export interface PosInvoiceData {
 
 interface PosInvoiceModalProps {
   data: PosInvoiceData | null;
+  company: PosInvoiceData["company"];
   onClose: () => void;
   onNewOrder: () => void;
 }
 
 export const PosInvoiceModal: React.FC<PosInvoiceModalProps> = ({
   data,
+  company,
   onClose,
   onNewOrder,
 }) => {
   const receiptRef = useRef<HTMLDivElement>(null);
 
   if (!data) return null;
+
+  const receiptCompany = data.company || company;
 
   const handlePrint = () => {
     window.print();
@@ -102,16 +106,16 @@ export const PosInvoiceModal: React.FC<PosInvoiceModalProps> = ({
             {/* Store Header */}
             <div className="text-center space-y-1 border-b border-dashed border-slate-300 pb-3">
               <h2 className="text-base font-black uppercase tracking-tight text-slate-900">
-                {data.company.brandName || data.company.fullName}
+                {receiptCompany?.brandName || receiptCompany?.fullName || "Đông Kha"}
               </h2>
               <p className="text-[11px] text-slate-600 leading-tight">
-                {data.company.address}
+                {receiptCompany?.address || ""}
               </p>
               <p className="text-[11px] font-bold text-slate-700">
-                Hotline: {data.company.hotline}
+                Hotline: {receiptCompany?.hotline || "0905 487 441"}
               </p>
-              {data.company.taxCode && (
-                <p className="text-[10px] text-slate-500 font-mono">MST: {data.company.taxCode}</p>
+              {receiptCompany?.taxCode && (
+                <p className="text-[10px] text-slate-500 font-mono">MST: {receiptCompany.taxCode}</p>
               )}
             </div>
 

@@ -709,6 +709,10 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
                           <img
                             src={product.image}
                             alt={product.name}
+                            onError={(event) => {
+                              event.currentTarget.onerror = null;
+                              event.currentTarget.src = "/images/placeholder.svg";
+                            }}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                           />
                           <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-slate-900/80 text-white text-[9px] font-bold">
@@ -1150,6 +1154,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
       {/* Completed Invoice & Print Modal */}
       <PosInvoiceModal
         data={completedOrder}
+        company={company}
         onClose={() => setCompletedOrder(null)}
         onNewOrder={handleNewOrder}
       />

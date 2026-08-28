@@ -56,6 +56,10 @@ export const OrderItemCard: React.FC<OrderItemCardProps> = ({
                 <img
                   src={image}
                   alt={title}
+                  onError={(event) => {
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = "/images/placeholder.svg";
+                  }}
                   className="w-full h-full object-cover"
                 />
               ) : (
